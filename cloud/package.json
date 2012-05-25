@@ -1,0 +1,8 @@
+{
+  "name": "Wufoo",
+  "version": "0.0.1",
+  "dependencies" : {
+    "request": "*",
+    "jsdom": "*"
+  }
+}
