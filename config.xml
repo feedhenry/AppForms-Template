@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget id="com.example.devadmin.wufoo.app" version="1.0" width="320" height="480" start="index.html">
-<title>WuFoo App</title>
+<widget id="com.example.devadmin.wufoo.app.1" version="1.0" width="320" height="480" start="index.html">
+<title>WuFoo App_1</title>
 <description>Wufoo App</description>
 <author name="" email="" url=""></author>
 <license></license>

@@ -22,7 +22,7 @@
     "screenShot": "",
     "sharable": true,
     "sizeEditable": false,
-    "title": "WuFoo App",
+    "title": "WuFoo App_1",
     "titleEditable": false,
     "type": "",
     "width": 320
@@ -30,25 +30,7 @@
   "sharing": [
     {
       "fields": {
-        "code": "embed",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "ipad",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "unavailable",
+        "code": "ios",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""
@@ -66,7 +48,7 @@
     },
     {
       "fields": {
-        "code": "mobile",
+        "code": "nokiawrt",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""
@@ -75,43 +57,7 @@
     },
     {
       "fields": {
-        "code": "windowsmobile",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "blackberry",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "android",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "iphone",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
-        "code": "w3cwgt",
+        "code": "ipad",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""
@@ -129,15 +75,6 @@
     },
     {
       "fields": {
-        "code": "studio",
-        "disableExistingShared": false,
-        "sharable": true,
-        "value": ""
-      },
-      "type": "widg_InstanceSharable"
-    },
-    {
-      "fields": {
         "code": "opera",
         "disableExistingShared": false,
         "sharable": true,
@@ -147,7 +84,34 @@
     },
     {
       "fields": {
-        "code": "nokiawrt",
+        "code": "android",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "embed",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "windowsmobile",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "unavailable",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""
@@ -165,7 +129,25 @@
     },
     {
       "fields": {
-        "code": "ios",
+        "code": "blackberry",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "iphone",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "mobile",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""
@@ -175,6 +157,24 @@
     {
       "fields": {
         "code": "windowsphone7",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "studio",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "w3cwgt",
         "disableExistingShared": false,
         "sharable": true,
         "value": ""

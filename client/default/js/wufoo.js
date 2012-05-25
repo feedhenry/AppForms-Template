@@ -10,7 +10,7 @@ var WufooController = {
       this.getForm();
     } else {
       // Multi-form app
-      this.showFormList();
+      this.getFormList();
     }
   },
 
@@ -53,14 +53,22 @@ var WufooController = {
     });
   },
 
-  renderFormHtml: function(html) {
+  renderFormHtml: function(html, show_back_button) {
+    var self = this;
     this.hideFormList();
     this.showContentArea();
     jQuery('#content').html(html);
     this.initWufoo();
+    if (show_back_button) {
+      // Inject a back button
+      var back_button = $('<a>').text('Back to form list').click(function() {
+        self.getFormList();
+      });
+      jQuery('body').prepend(back_button);
+    }
   },
 
-  getForm: function(form_hash) {
+  getForm: function(form_hash, show_back_button) {
     var form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
     $fh.act({
@@ -69,14 +77,14 @@ var WufooController = {
         "form_hash": form_hash
       }
     }, function(res) {
-      self.renderFormHtml(res.html);
+      self.renderFormHtml(res.html, show_back_button);
       self.initWufoo();
     }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
   },
 
-  showFormList: function() {
+  getFormList: function() {
     var self = this;
     $fh.act({
       act: 'getForms',
@@ -102,7 +110,7 @@ var WufooController = {
       var list_item = jQuery('<li>').addClass('fh_wufoo_form_li');
       var item_button = jQuery('<button>').addClass('fh_wufoo_form').text(form_item.Name).data('form', form_item).click(function() {
         var form_data = jQuery(this).data('form');
-        self.getForm(form_item.Hash);
+        self.getForm(form_data.Hash, true);
       });
       list_item.append(item_button);
       form_list.append(list_item);
