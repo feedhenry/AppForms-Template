@@ -1,0 +1,185 @@
+[{
+  "fields": {
+    "accessType": "p",
+    "collapsed": false,
+    "color": "",
+    "config": {"icon": {"small": "default"}},
+    "containerCriteria": "",
+    "description": "Wufoo App",
+    "disabled": false,
+    "discover": false,
+    "dock": "",
+    "fixedPos": false,
+    "height": 480,
+    "iconLarge": "",
+    "iconSmall": "",
+    "mobileFullScreen": false,
+    "origin": "d",
+    "overrides": {},
+    "params": {},
+    "prefsEditable": true,
+    "ratingData": {},
+    "screenShot": "",
+    "sharable": true,
+    "sizeEditable": false,
+    "title": "WuFoo App",
+    "titleEditable": false,
+    "type": "",
+    "width": 320
+  },
+  "sharing": [
+    {
+      "fields": {
+        "code": "embed",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "ipad",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "unavailable",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "preview",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "mobile",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "windowsmobile",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "blackberry",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "android",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "iphone",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "w3cwgt",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "feedhenry",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "studio",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "opera",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "nokiawrt",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "jil",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "ios",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    },
+    {
+      "fields": {
+        "code": "windowsphone7",
+        "disableExistingShared": false,
+        "sharable": true,
+        "value": ""
+      },
+      "type": "widg_InstanceSharable"
+    }
+  ]
+}]
