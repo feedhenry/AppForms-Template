@@ -50,7 +50,7 @@ var WufooController = {
     $fh.act({
       "act": "submitForm",
       "req": {
-        "form_data": jQuery('form').serialize(),
+        "form_data": serialized_form,
         "form_submission_url": jQuery('form').attr('action')
       }
     }, function(res) {
