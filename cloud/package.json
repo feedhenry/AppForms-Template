@@ -2,7 +2,7 @@
   "name": "Wufoo",
   "version": "0.0.1",
   "dependencies" : {
-    "request": "*",
-    "jsdom": "*"
+    "request": "2.9.202",
+    "jsdom": "0.2.14"
   }
 }
