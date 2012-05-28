@@ -43,7 +43,7 @@ var WufooController = {
     if (previous_button.length > 0) {
       // Append previousButton value to serialized form, since submit
       // buttons aren't serialized by default
-      serialized_form + "&previousPageButton="
+      serialized_form += "&previousPageButton=";
     }
 
     var self = this;
