@@ -38,6 +38,14 @@ var WufooController = {
   },
 
   submitForm: function() {
+    var serialized_form = jQuery('form').serialize();
+    var previous_button = jQuery('#previousPageButton');
+    if (previous_button.length > 0) {
+      // Append previousButton value to serialized form, since submit
+      // buttons aren't serialized by default
+      serialized_form + "&previousPageButton="
+    }
+
     var self = this;
     $fh.act({
       "act": "submitForm",
