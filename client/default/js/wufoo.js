@@ -150,6 +150,6 @@ $fh.ready(function() {
   if (typeof wufoo_config !== 'undefined') {
     wufoo_controller.init(wufoo_config);
   } else {
-    console.log('No Wufoo config available, aborting.');
+    alert('No Wufoo config available, aborting.');
   }
 });

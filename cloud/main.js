@@ -66,7 +66,6 @@ exports.getForm = function(params, callback) {
 
   request(url, function(error, res, body) {
     updateWufooHTML(body, false, function(processed_html) {
-      console.log('html processing done, sending response.');
       return callback(null, {
         "html": processed_html
       });
@@ -93,7 +92,6 @@ exports.getForms = function(params, callback) {
   var auth_header = {'Authorization': auth};
 
   request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
-    console.log('got all forms');
     return callback(null, {
       data: JSON.parse(body)
     });
@@ -105,9 +103,6 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  console.log('in submitForm with ts:' + Date.now());
-  console.log('post_data: ' + params.form_data);
-
   var post_data = processFormData(params.form_data);
 
   var req = request.post({
@@ -120,7 +115,6 @@ exports.submitForm = function(params, callback) {
     }
   }, function(error, res, body) {
     updateWufooHTML(body, true, function(processed_html) {
-      console.log('html processing done, sending response.')
       return callback(null, {
         "html": processed_html
       });
