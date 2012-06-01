@@ -16,17 +16,17 @@ var apiController = {
 		debugger;
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
-			for (var j = 0; j < bindings.length; j++) {
-				if (classes.indexOf(bindings[j])); {
+			for (var j = 0; j < this.bindings.length; j++) {
+				if (classes.indexOf(this.bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					element.click = bindFunction(bindings[j]);
+					element.click = bindFunction(thi.sbindings[j]);
 				}
 			}
 		}
 	},
 
 	bindFunction: function(className){
-		switch (className) {
+		switch className: {
 			case 'fhgeo':
 				return this.fhGeo;
 				break;
