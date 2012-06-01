@@ -12,11 +12,11 @@ var apiController = {
 	bindings: {
 		fhGeo: {
 			name: 'fhgeo',
-			fn: apiController.fhGeo
+			fn: this.fhGeo
 		},
 		fhCam: {
 			name: 'fhcam',
-			fn: apiController.fhGeo
+			fn: this.fhGeo
 		},
 	},
 
