@@ -26,7 +26,7 @@ var apiController = {
 	},
 
 	bindFunction: function(className){
-		switch className: {
+		switch (className) {
 			case 'fhgeo':
 				return this.fhGeo;
 				break;
