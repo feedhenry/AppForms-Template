@@ -48,9 +48,23 @@ var apiController = {
 	// Returns Lat and Long as sting
 	fhCam: function(id) {
 		var field = jQuery('#' + id)[0];
+		var source = 'camera';
+		// Ask for source of photo
+		navigator.notification.confirm(
+			'Would you like to take a picture or choose from Gallery?', 
+			function(btn){
+				if(btn==2){
+					source = 'photo'
+				}
+				if(btn==3){
+					return;
+				}
+			}, 
+			'Choose Source', 
+			"Camera,Gallery,Cancel");
 		$fh.cam({
 			act: "picture",
-			source: "photo",
+			source: source,
 			uri: true
 		}, function(res) {
 			if (res.uri) {
