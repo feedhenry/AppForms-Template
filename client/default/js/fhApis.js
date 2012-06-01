@@ -20,7 +20,7 @@ var apiController = {
 				if (classes.indexOf(this.bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
-					jQuery('#Field1').bind('click', function() {
+					jQuery('#'+element.id).bind('click', function() {
 						alert('User clicked on "foo."');
 					});
 				}
