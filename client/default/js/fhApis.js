@@ -19,7 +19,7 @@ var apiController = {
 			for (var j = 0; j < this.bindings.length; j++) {
 				if (classes.indexOf(this.bindings[j]) !== -1) {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					$('#'+element.id).unbind('click');
+					jQuery('#'+element.id).unbind('click');
 					this.bindFunction(this.bindings[j], element.id);
 					j = this.bindings.length;
 				}
