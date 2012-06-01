@@ -38,7 +38,7 @@ var apiController = {
 	},
 }
 
-var bindings = {
+var bindings = [
 	fhGeo: {
 		name: 'fhgeo',
 		fn: apiController.fhGeo
@@ -47,4 +47,4 @@ var bindings = {
 		name: 'fhcam',
 		fn: apiController.fhGeo
 	},
-};
+];
