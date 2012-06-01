@@ -13,7 +13,6 @@ var apiController = {
 
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
-		debugger;
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
 			for (var j = 0; j < this.bindings.length; j++) {
@@ -58,14 +57,13 @@ var apiController = {
 				field.value = filePath.toString();
 			}
 		}, function(msg, err) {
-			field.value = 'no image could be loaded/taken';
+			field.value = 'No image could be loaded/taken';
 		})
 	},
 
 	// Returns Lat and Long as sting
 	fhGeo: function(id) {
 		var field = jQuery('#' + id)[0];
-		debugger;
 		$fh.geoip(function(res) {
 			var str = '';
 			str += 'Longitude: ' + res.longitude + ', ';
