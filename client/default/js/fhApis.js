@@ -47,6 +47,7 @@ var apiController = {
 
 	// Returns Lat and Long as sting
 	fhCam: function(id) {
+    alert();
 		var field = jQuery('#' + id)[0];
 		var source = 'camera';
 		// Ask for source of photo
@@ -54,7 +55,7 @@ var apiController = {
 			'Would you like to take a picture or choose from Gallery?', 
 			function(btn){
 				if(btn==2){
-					source = 'photo'
+					source = 'photo';
 				}
 				if(btn==3){
 					source = '';
@@ -62,7 +63,7 @@ var apiController = {
 			}, 
 			'Choose Source', 
 			"Camera,Gallery,Cancel");
-		if(source==''){
+		if(source===''){
 			return;
 		}
 		$fh.cam({
@@ -78,7 +79,7 @@ var apiController = {
 			}
 		}, function(msg, err) {
 			field.value = 'No image could be loaded/taken';
-		})
+		});
 	},
 
 	// Returns Lat and Long as sting
