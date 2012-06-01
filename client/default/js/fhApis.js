@@ -6,19 +6,19 @@ var config = {
 	fields: [],
 };
 
-var bindings = {
-	fhGeo: {
-		name: 'fhgeo',
-		fn: apiController.fhGeo
-	},
-	fhCam: {
-		name: 'fhcam',
-		fn: apiController.fhGeo
-	},
-};
+
 
 var apiController = {
-	bindings: bindings,
+	bindings: {
+		fhGeo: {
+			name: 'fhgeo',
+			fn: apiController.fhGeo
+		},
+		fhCam: {
+			name: 'fhcam',
+			fn: apiController.fhGeo
+		},
+	},
 
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
@@ -46,3 +46,14 @@ var apiController = {
 		});
 	}
 }
+
+var bindings = {
+	fhGeo: {
+		name: 'fhgeo',
+		fn: apiController.fhGeo
+	},
+	fhCam: {
+		name: 'fhcam',
+		fn: apiController.fhGeo
+	},
+};
