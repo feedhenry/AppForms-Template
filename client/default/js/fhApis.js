@@ -29,7 +29,7 @@ var apiController = {
 	bindFunction: function(className, id) {
 		var fn = '';
 		var bindFn = function(id, fnName) {
-				jQuery('#' + element.id).bind('click', function() {
+				jQuery('#'+id).bind('click', function() {
 					apiController[fnName](id);
 				});
 			};
