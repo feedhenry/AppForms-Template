@@ -54,12 +54,14 @@ var apiController = {
 		navigator.notification.confirm(
 			'Would you like to take a picture or choose from Gallery?', 
 			function(btn){
+        alert(btn);
 				if(btn==2){
 					source = 'photo';
 				}
 				if(btn==3){
 					source = '';
 				}
+        alert('finished btn');
 			}, 
 			'Choose Source', 
 			"Camera,Gallery,Cancel");
