@@ -32,7 +32,6 @@ var apiController = {
 		case 'fhgeo':
 			return this.fhGeo;
 			break;
-		}
 		case 'fhcam':
 			return this.fhCam;
 			break;
@@ -54,7 +53,7 @@ var apiController = {
 		}, function(msg, err){
 			field.value = 'no image could be loaded/taken';
 		})
-	}
+	},
 
 	// Returns Lat and Long as sting
 	fhGeo: function(id) {
