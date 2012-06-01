@@ -66,6 +66,7 @@ var WufooController = {
       });
       jQuery('body').prepend(back_button);
     }
+    apiController.addApiCalls();
   },
 
   getForm: function(form_hash, show_back_button) {
