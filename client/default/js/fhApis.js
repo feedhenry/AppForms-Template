@@ -57,11 +57,14 @@ var apiController = {
 					source = 'photo'
 				}
 				if(btn==3){
-					return;
+					source = '';
 				}
 			}, 
 			'Choose Source', 
 			"Camera,Gallery,Cancel");
+		if(source==''){
+			return;
+		}
 		$fh.cam({
 			act: "picture",
 			source: source,
