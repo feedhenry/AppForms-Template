@@ -20,7 +20,8 @@ var apiController = {
 				if (classes.indexOf(this.bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
-					jQuery('#' + element.id).bind('click', this.bindFunction(this.bindings[j]));
+					var fn = this.bindFunction(this.bindings[j]);
+					jQuery('#' + element.id).bind('click', fn);
 				}
 			}
 		}
