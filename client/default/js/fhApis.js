@@ -17,28 +17,29 @@ var apiController = {
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
 			for (var j = 0; j < this.bindings.length; j++) {
-				if (classes.indexOf(this.bindings[j])!==-1) {
+				if (classes.indexOf(this.bindings[j]) !== -1) {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					debugger;
-					var fn = this.bindFunction(this.bindings[j]);
-					jQuery('#' + element.id).bind('click', function(){
-						var id = this.id;
-						apiController[fn](id);
-					});
-					j=this.bindings.length;
+					this.bindFunction(this.bindings[j], element.id);
+					j = this.bindings.length;
 				}
 			}
 		}
 	},
 
-	bindFunction: function(className) {
+	bindFunction: function(className, id) {
+		var fn = '';
+		var bindFn = function(id, fnName) {
+				jQuery('#' + element.id).bind('click', function() {
+					apiController[fnName](id);
+				});
+			};
 		switch (className) {
-		case 'fhgeo':
-			return 'fhGeo';
-			break;
-		case 'fhcam':
-			return 'fhCam';
-			break;
+			case 'fhgeo':
+				fn = 'fhGeo';
+				break;
+			case 'fhcam':
+				fn = 'fhCam';
+				break;
 		}
 	},
 
@@ -54,7 +55,7 @@ var apiController = {
 				var filePath = res.uri;
 				field.value = filePath.toString();
 			}
-		}, function(msg, err){
+		}, function(msg, err) {
 			field.value = 'no image could be loaded/taken';
 		})
 	},
