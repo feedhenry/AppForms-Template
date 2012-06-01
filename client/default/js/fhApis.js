@@ -34,7 +34,7 @@ var apiController = {
 		}, function(msg, err) {
 			return 'location could not be determined';
 		});
-	}
+	},
 
 	bindings: {
 		fhGeo: {
