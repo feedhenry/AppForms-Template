@@ -17,7 +17,7 @@ var apiController = {
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
 			for (var j = 0; j < this.bindings.length; j++) {
-				if ((classes.indexOf(this.bindings[j])!==-1)==true); {
+				if (classes.indexOf(this.bindings[j])!==-1) {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
 					var fn = this.bindFunction(this.bindings[j]);
