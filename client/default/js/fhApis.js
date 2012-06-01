@@ -25,6 +25,7 @@ var apiController = {
 						var id = this.id;
 						fn(id);
 					});
+					j=this.bindings.length;
 				}
 			}
 		}
