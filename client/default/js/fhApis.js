@@ -9,7 +9,7 @@ var config = {
 
 
 var apiController = {
-	bindings: ['fhgeo, fhcam'],
+	bindings: ['fhgeo', 'fhcam'],
 
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
