@@ -9,17 +9,7 @@ var config = {
 
 
 var apiController = {
-	bindings: {
-		fhGeo: {
-			name: 'fhgeo',
-			fn: this.fhGeo
-		},
-		fhCam: {
-			name: 'fhcam',
-			fn: this.fhGeo
-		},
-	},
-
+	
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
 		for (var i = 0; i < neededApis.length; i++) {
@@ -45,6 +35,17 @@ var apiController = {
 			return 'location could not be determined';
 		});
 	}
+
+	bindings: {
+		fhGeo: {
+			name: 'fhgeo',
+			fn: this.fhGeo
+		},
+		fhCam: {
+			name: 'fhcam',
+			fn: this.fhGeo
+		},
+	},
 }
 
 var bindings = {
