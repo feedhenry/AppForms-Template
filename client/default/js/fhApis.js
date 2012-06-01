@@ -21,7 +21,10 @@ var apiController = {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
 					var fn = this.bindFunction(this.bindings[j]);
-					jQuery('#' + element.id).bind('click', fn(element.id));
+					jQuery('#' + element.id).bind('click', function(){
+						var id = this.id;
+						fn(id);
+					});
 				}
 			}
 		}
