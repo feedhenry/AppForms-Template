@@ -18,6 +18,7 @@ var bindings = {
 };
 
 var apiController = {
+	bindings: bindings,
 
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
