@@ -70,6 +70,7 @@ var apiController = {
 			str += 'Latitude: ' + res.latitude;
 			console.log(str);
 			field.value = str;
+			field.disabled = 'true';
 		}, function(msg, err) {
 			field.value = 'Location could not be determined';
 		});

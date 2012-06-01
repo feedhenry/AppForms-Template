@@ -1,3 +1,8 @@
 #form_list {
   display: none;
 }
+
+
+input[type=text] { 
+	width: 100%; 
+} 
