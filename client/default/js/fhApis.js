@@ -3,7 +3,7 @@
  */
 
 var config = {
-  fields: [],
+	fields: [],
 };
 
 
@@ -21,7 +21,7 @@ var apiController = {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
 					var fn = this.bindFunction(this.bindings[j]);
-					jQuery('#' + element.id).bind('click', fn);
+					jQuery('#' + element.id).bind('click', fn(element.id));
 				}
 			}
 		}
@@ -33,19 +33,39 @@ var apiController = {
 			return this.fhGeo;
 			break;
 		}
+		case 'fhcam':
+			return this.fhCam;
+			break;
+		}
 	},
 
 	// Returns Lat and Long as sting
-	fhGeo: function() {
+	fhCam: function(id) {
+		var field = jQuery('#' + id);
+		$fh.cam({
+			act: "picture",
+			source: "photo",
+			uri: true
+		}, function(res) {
+			if (res.uri) {
+				var filePath = res.uri;
+				field.value = filePath.toString();
+			}
+		}, function(msg, err){
+			field.value = 'no image could be loaded/taken';
+		})
+	}
+
+	// Returns Lat and Long as sting
+	fhGeo: function(id) {
+		var field = jQuery('#' + id);
 		$fh.geoip(function(res) {
-			console.log('GEO');
 			var str = '';
 			str += 'Longitude: ' + res.longitude + ', ';
 			str += 'Latitude: ' + res.latitude;
-			return str;
+			field.value = str;
 		}, function(msg, err) {
-			console.log('GEO');
-			return 'location could not be determined';
+			field.value = 'Location could not be determined';
 		});
 	},
 }
