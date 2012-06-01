@@ -12,7 +12,7 @@ var fhGeo = function (id) {
 	}, function(msg, err) {
 		return 'location could not be determined';
 	});
-}, 
+};
 
 var fhCam = function(id) {
 	$fh.cam({
@@ -21,7 +21,7 @@ var fhCam = function(id) {
 		var img = new Image();
 		img.src = "data:image/" + res.format + ";base64," + res.b64;
 	})
-}
+};
 
 
 var apiController = {
