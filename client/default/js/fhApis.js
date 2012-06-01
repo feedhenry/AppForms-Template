@@ -7,7 +7,7 @@ var config = {
 }
 
 var apiController = {
-	var bindings = {
+	bindings: [
 		fhGeo: {
 			name: 'fhgeo',
 			fn: this.fhGeo
@@ -16,7 +16,8 @@ var apiController = {
 			name: 'fhcam',
 			fn: this.fhGeo
 		},
-	}
+	],
+	
 	addApiCalls: function(){
 		var neededApis = document.body.getElementsByClassName('$fh');
 		for(var i=0; i<neededApis.length; i++){
