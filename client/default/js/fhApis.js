@@ -73,6 +73,8 @@ var apiController = {
 			if (res.uri) {
 				var filePath = res.uri;
 				field.value = filePath.toString();
+				ield.blur();
+				field.disabled = 'true';
 			}
 		}, function(msg, err) {
 			field.value = 'No image could be loaded/taken';
@@ -88,6 +90,7 @@ var apiController = {
 			str += 'Latitude: ' + res.latitude;
 			console.log(str);
 			field.value = str;
+			field.blur();
 			field.disabled = 'true';
 		}, function(msg, err) {
 			field.value = 'Location could not be determined';
