@@ -4,26 +4,27 @@
 
 var config = {
 	fields: [],
-}
+};
+
+var bindings = {
+	fhGeo: {
+		name: 'fhgeo',
+		fn: this.fhGeo
+	},
+	fhCam: {
+		name: 'fhcam',
+		fn: this.fhGeo
+	},
+};
 
 var apiController = {
-	bindings: [
-		fhGeo: {
-			name: 'fhgeo',
-			fn: this.fhGeo
-		},
-		fhCam: {
-			name: 'fhcam',
-			fn: this.fhGeo
-		},
-	],
-	
-	addApiCalls: function(){
+
+	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
-		for(var i=0; i<neededApis.length; i++){
+		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
-			for (var j=0; j<apiController.bindings.length; j++){
-				if(classes.indexOf(apiController.bindings[j].name));{
+			for (var j = 0; j < apiController.bindings.length; j++) {
+				if (classes.indexOf(apiController.bindings[j].name)); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					element.click = apiController.bindings[j].fn;
 				}
@@ -33,15 +34,14 @@ var apiController = {
 
 
 	// Returns Lat and Long as sting
-	fhGeo: function(){
-		$fh.geoip(function(res){
+	fhGeo: function() {
+		$fh.geoip(function(res) {
 			var str = '';
-			str+='Longitude: '+res.longitude+', ';
-			str+='Latitude: '+res.latitude;
+			str += 'Longitude: ' + res.longitude + ', ';
+			str += 'Latitude: ' + res.latitude;
 			return str;
-		}, function(msg, err){
+		}, function(msg, err) {
 			return 'location could not be determined';
 		});
 	}
 }
-
