@@ -41,6 +41,7 @@ var apiController = {
 				fn = 'fhCam';
 				break;
 		}
+		bindFn(id, fn);
 	},
 
 	// Returns Lat and Long as sting
