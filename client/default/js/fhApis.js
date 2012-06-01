@@ -23,7 +23,7 @@ var apiController = {
 					var fn = this.bindFunction(this.bindings[j]);
 					jQuery('#' + element.id).bind('click', function(){
 						var id = this.id;
-						fn(id);
+						apiController[fn](id);
 					});
 					j=this.bindings.length;
 				}
@@ -34,10 +34,10 @@ var apiController = {
 	bindFunction: function(className) {
 		switch (className) {
 		case 'fhgeo':
-			return this.fhGeo;
+			return 'fhGeo';
 			break;
 		case 'fhcam':
-			return this.fhCam;
+			return 'fhCam';
 			break;
 		}
 	},
