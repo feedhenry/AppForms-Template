@@ -2,6 +2,7 @@
  * File that holds bindings for APIs
  */
 
+
 var config = {
 	fields: [],
 };
