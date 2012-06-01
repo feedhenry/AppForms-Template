@@ -19,17 +19,20 @@ var apiController = {
 			for (var j = 0; j < this.bindings.length; j++) {
 				if (classes.indexOf(this.bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					element.click = bindFunction(thi.sbindings[j]);
+					debugger;
+					jQuery('#Field1').bind('click', function() {
+						alert('User clicked on "foo."');
+					});
 				}
 			}
 		}
 	},
 
-	bindFunction: function(className){
+	bindFunction: function(className) {
 		switch (className) {
-			case 'fhgeo':
-				return this.fhGeo;
-				break;
+		case 'fhgeo':
+			return this.fhGeo;
+			break;
 		}
 	},
 
