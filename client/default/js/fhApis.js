@@ -3,7 +3,7 @@
  */
 
 var config = {
-	fields: [],
+  fields: [],
 };
 
 
@@ -18,7 +18,7 @@ var apiController = {
 			for (var j = 0; j < apiController.bindings.length; j++) {
 				if (classes.indexOf(apiController.bindings[j].name)); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					element.click = apiController.bindings[j].fn;
+					element.click = apiController.fhGeo;
 				}
 			}
 		}
@@ -35,17 +35,6 @@ var apiController = {
 		}, function(msg, err) {
 			return 'location could not be determined';
 		});
-	},
-
-	bindings: {
-		fhGeo: {
-			name: 'fhgeo',
-			fn: apiController.fhGeo
-		},
-		fhCam: {
-			name: 'fhcam',
-			fn: apiController.fhGeo
-		},
 	},
 }
 
