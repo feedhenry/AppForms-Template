@@ -9,21 +9,29 @@ var config = {
 
 
 var apiController = {
-	
+	bindings: ['fhgeo, fhcam'];
+
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
 		debugger;
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
 			for (var j = 0; j < bindings.length; j++) {
-				if (classes.indexOf(bindings[j].name)); {
+				if (classes.indexOf(bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					element.click = apiController.fhGeo;
+					element.click = bindFunction(bindings[j]);
 				}
 			}
 		}
 	},
 
+	bindFunction: function(className){
+		switch className: {
+			case 'fhgeo':
+				return this.fhGeo;
+				break;
+		}
+	},
 
 	// Returns Lat and Long as sting
 	fhGeo: function() {
@@ -37,14 +45,3 @@ var apiController = {
 		});
 	},
 }
-
-var bindings = [
-	fhGeo: {
-		name: 'fhgeo',
-		fn: apiController.fhGeo
-	},
-	fhCam: {
-		name: 'fhcam',
-		fn: apiController.fhGeo
-	},
-];
