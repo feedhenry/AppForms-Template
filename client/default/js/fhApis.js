@@ -12,6 +12,7 @@ var apiController = {
 	
 	addApiCalls: function() {
 		var neededApis = document.body.getElementsByClassName('$fh');
+		debugger;
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
 			for (var j = 0; j < apiController.bindings.length; j++) {
@@ -39,11 +40,11 @@ var apiController = {
 	bindings: {
 		fhGeo: {
 			name: 'fhgeo',
-			fn: this.fhGeo
+			fn: fhGeo
 		},
 		fhCam: {
 			name: 'fhcam',
-			fn: this.fhGeo
+			fn: fhGeo
 		},
 	},
 }
