@@ -44,10 +44,10 @@ var apiController = {
 	bindFunction: function(id, apiName) {
 		switch (apiName){
 			case 'fhgeo':
-				jQuery('#'+id).bind('click', fhGeo(id)});
+				jQuery('#'+id).bind('click', fhGeo(id));
 				break;
 			case 'fhcam':
-				jQuery('#'+id).bind('click', fhCam(id)});
+				jQuery('#'+id).bind('click', fhCam(id));
 		}
 	},
 }
