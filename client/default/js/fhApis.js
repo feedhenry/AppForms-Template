@@ -21,7 +21,7 @@ var apiController = {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					debugger;
 					jQuery('#' + element.id).bind('click', function() {
-						this.bindFunction(this.bindings[j]
+						this.bindFunction(this.bindings[j]);
 					});
 				}
 			}
