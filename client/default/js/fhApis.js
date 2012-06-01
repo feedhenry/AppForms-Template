@@ -15,8 +15,8 @@ var apiController = {
 		debugger;
 		for (var i = 0; i < neededApis.length; i++) {
 			var classes = neededApis[i].className;
-			for (var j = 0; j < apiController.bindings.length; j++) {
-				if (classes.indexOf(apiController.bindings[j].name)); {
+			for (var j = 0; j < bindings.length; j++) {
+				if (classes.indexOf(bindings[j].name)); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
 					element.click = apiController.fhGeo;
 				}
