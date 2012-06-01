@@ -5,6 +5,7 @@
 
 var fhGeo = function (id) {
   $fh.geoip(function(res) {
+		alert();
 		var str = '';
 		str += 'Longitude: ' + res.longitude + ', ';
 		str += 'Latitude: ' + res.latitude;
