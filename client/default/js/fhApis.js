@@ -32,7 +32,6 @@ var apiController = {
 		case 'fhgeo':
 			return this.fhGeo;
 			break;
-		}
 		case 'fhcam':
 			return this.fhCam;
 			break;
