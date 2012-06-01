@@ -35,7 +35,7 @@ var apiController = {
 			for (var j = 0; j < this.bindings.length; j++) {
 				if (classes.indexOf(this.bindings[j])); {
 					var element = neededApis[i].getElementsByTagName('input')[0];
-					this.bindFunction(id, this.bindings[j]);
+					this.bindFunction(element.id, this.bindings[j]);
 				}
 			}
 		}
