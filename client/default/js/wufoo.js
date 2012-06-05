@@ -204,13 +204,13 @@ var apiController = {
       source: 'camera',
       uri: true
     }, function(res) {
-      if (res.uri) {
+      /*if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
         field.blur();
         field[0].disabled = 'true';
       } 
-      alert(res.uri);
+      alert(res.uri);*/
     }, function(msg, err) {
       alert(err);
       alert(msg);
