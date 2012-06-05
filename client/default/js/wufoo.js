@@ -199,8 +199,6 @@ var apiController = {
         var filePath = res.uri;
         alert(filePath);
         jQuery(element).val(filePath);
-        jQuery(element).blur();
-        jQuery(element).attr("disabled", "disabled");
       }
     }, function(msg, err) {
       alert('Failure');
@@ -218,6 +216,8 @@ var apiController = {
       str += 'Latitude: ' + res.latitude;
       //alert(str);
       jQuery(element).val(str);
+      jQuery(element).blur();
+      jQuery(element).attr("disabled", "disabled");
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
