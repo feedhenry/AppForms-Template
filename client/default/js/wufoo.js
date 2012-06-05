@@ -180,7 +180,7 @@ var apiController = {
   bindFunction: function(className, id) {
     var fn = '';
     var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', function() {
+        jQuery('#' + id).unbind().bind('click', function() {
           apiController[fnName](id);
         });
       };
