@@ -199,7 +199,7 @@ var apiController = {
   fhCam: function(id) {
     var field = jQuery('#' + id);
     var source = '';
-    navigator.notification.confirm('Would you like to take a picture or choose from Gallery?', function(btn) {
+    /*navigator.notification.confirm('Would you like to take a picture or choose from Gallery?', function(btn) {
       if (btn == 2) {
         source = 'photo';
       }
@@ -224,7 +224,21 @@ var apiController = {
       }, function(msg, err) {
         field.value = 'No image could be loaded/taken';
       });
-    }, 'Choose Source', "Camera,Gallery,Cancel");
+    }, 'Choose Source', "Camera,Gallery,Cancel");*/
+    $fh.cam({
+      act: "picture",
+      //source: source,
+      uri: true
+    }, function(res) {
+      if (res.uri) {
+        var filePath = res.uri;
+        field[0].value = filePath.toString();
+        field.blur();
+        field[0].disabled = 'true';
+      }
+    }, function(msg, err) {
+      field[0].value = 'No image could be loaded/taken';
+    });
   },
 
   // Returns Lat and Long as sting
