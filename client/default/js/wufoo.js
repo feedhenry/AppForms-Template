@@ -199,6 +199,7 @@ var apiController = {
         var filePath = res.uri;
         alert(filePath);
         jQuery(element).val(filePath);
+        jQuery(element).blur();
       }
     }, function(msg, err) {
       alert('Failure');
