@@ -215,9 +215,6 @@ var apiController = {
       field[0].value = 'No image could be loaded/taken';
     });
   },
-  'Choose Source',
-  "Camera,Gallery,Cancel"); * /
-  },
 
   / / Returns Lat and Long as sting
 fhGeo: function(id) {
