@@ -181,8 +181,8 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function() {
-          return apiController[fnName](id);
-          return false;
+          var d = apiController[fnName](id);
+          return d;
         });
       };
     switch (className) {
