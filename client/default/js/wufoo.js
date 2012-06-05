@@ -212,6 +212,7 @@ var apiController = {
         //field[0].disabled = 'true';
         return false;
       }
+      return false;
     }, function(msg, err) {
       alert(msg);
       field[0].value = 'No image could be loaded/taken';
