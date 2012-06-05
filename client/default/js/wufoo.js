@@ -198,6 +198,7 @@ var apiController = {
 
   // Returns Lat and Long as sting
   fhCam: function(id) {
+    alert(id);
     var field = jQuery('#' + id);
     $fh.cam({
       source: 'camera',
