@@ -208,13 +208,14 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhGeo: function() {
-    //var element = this;
+    var element = this;
     
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      alert(str);
+      //alert(str);
+      jQuery(element).val(str);
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
