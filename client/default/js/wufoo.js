@@ -203,18 +203,16 @@ var apiController = {
       uri: true
     }, function(res) {
       alert('Success');
-      return false;
-      /*var field = jQuery('#' + id);
+      var field = jQuery('#' + id);
       if (res.uri) {
         var filePath = res.uri;
-        field[0].value = filePath.toString();
-        //field.blur();
-        //field[0].disabled = 'true';
-        return false;
-      }*/
+        alert(filePath);
+        /*field[0].value = filePath.toString();
+        field.blur();
+        field[0].disabled = 'true';*/
+      }
     }, function(msg, err) {
       alert('Failure');
-      return false;
       /*alert(msg);
       var field = jQuery('#' + id);
       field[0].value = 'No image could be loaded/taken';*/
