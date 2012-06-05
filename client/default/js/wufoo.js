@@ -228,7 +228,7 @@ var apiController = {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      console.log(str);
+      alert(str)
       field[0].value = str;
       field.blur();
       //field[0].disabled = 'true';
