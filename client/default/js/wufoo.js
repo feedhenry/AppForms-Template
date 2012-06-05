@@ -217,7 +217,6 @@ var apiController = {
       //alert(str);
       jQuery(element).val(str);
       jQuery(element).blur();
-      jQuery(element).attr("disabled", "disabled");
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
