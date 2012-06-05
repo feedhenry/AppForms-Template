@@ -208,9 +208,9 @@ var apiController = {
       /*if (res && res.uri) {
         var filePath = res.uri;
         alert(filePath);
-        /*field[0].value = filePath.toString();
+        field[0].value = filePath.toString();
         field.blur();
-        field[0].disabled = 'true';*/
+        field[0].disabled = 'true';
       }*/
     }, function(msg, err) {
       alert(err);
