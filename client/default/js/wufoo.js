@@ -202,9 +202,6 @@ var apiController = {
       source: 'camera',
       uri: true
     }, function(res) {
-      console.log(res);
-      alert(res)
-      alert(id);
       var field = jQuery('#' + id);
       /*if (res.uri) {
         var filePath = res.uri;
@@ -228,7 +225,7 @@ var apiController = {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      alert(str)
+      alert(str);
       field[0].value = str;
       field.blur();
       //field[0].disabled = 'true';
