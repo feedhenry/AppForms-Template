@@ -203,8 +203,8 @@ var apiController = {
       uri: true
     }, function(res) {
       console.log(res);
+      alert(res)
       var field = jQuery('#' + id);
-      console.log(field);
       /*if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
@@ -212,11 +212,9 @@ var apiController = {
         //field[0].disabled = 'true';
         return false;
       }*/
-      return false;
     }, function(msg, err) {
       alert(msg);
       field[0].value = 'No image could be loaded/taken';
-      return false;
     });
     return false;
   },
