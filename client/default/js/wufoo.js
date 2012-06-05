@@ -214,7 +214,6 @@ var apiController = {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      //alert(str);
       jQuery(element).val(str);
       alert('Location was automatically detected.');
       return false;
