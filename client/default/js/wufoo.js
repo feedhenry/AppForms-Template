@@ -234,7 +234,7 @@ var apiController = {
         var filePath = res.uri;
         field[0].value = filePath.toString();
         field.blur();
-        field[0].disabled = 'true';
+        //field[0].disabled = 'true';
       }
     }, function(msg, err) {
       alert(msg);
@@ -253,7 +253,7 @@ var apiController = {
       console.log(str);
       field[0].value = str;
       field.blur();
-      field[0].disabled = 'true';
+      //field[0].disabled = 'true';
     }, function(msg, err) {
       field.value = 'Location could not be determined';
     });
