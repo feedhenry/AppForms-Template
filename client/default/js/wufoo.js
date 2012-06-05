@@ -198,7 +198,7 @@ var apiController = {
       if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
-        jQuery(element).val(filePath);
+        jQuery(element).value(filePath);
       }
     }, function(msg, err) {
       alert('Failure');
@@ -214,7 +214,7 @@ var apiController = {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      jQuery(element).val(str);
+      jQuery(element).value(str);
       alert('Location was automatically detected.');
       return false;
     }, function(msg, err) {
