@@ -199,9 +199,9 @@ var apiController = {
   // Returns Lat and Long as sting
   fhCam: function(id) {
     var field = jQuery('#' + id);
-    var source = '';
     $fh.cam({
       act: "picture",
+      source: 'camera',
       uri: true
     }, function(res) {
       if (res.uri) {
@@ -210,6 +210,7 @@ var apiController = {
         field.blur();
         field[0].disabled = 'true';
       } 
+      alert(res.uri);
     }, function(msg, err) {
       alert(err);
       field[0].value = 'No image could be loaded/taken';
