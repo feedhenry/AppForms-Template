@@ -215,6 +215,7 @@ var apiController = {
       }*/
     }, function(msg, err) {
       alert(msg);
+      var field = jQuery('#' + id);
       field[0].value = 'No image could be loaded/taken';
     });
     return false;
