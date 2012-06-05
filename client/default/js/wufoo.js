@@ -198,14 +198,15 @@ var apiController = {
 
   // Returns Lat and Long as sting
   fhCam: function(id) {
-    alert(id);
+    console.log(id);
     var field = jQuery('#' + id);
+    console.log(field);
     $fh.cam({
       source: 'camera',
       uri: true
     }, function(res) {
       console.log(res);
-      alert(JSON.stringify(res));
+      //alert(JSON.stringify(res));
       /*if (res && res.uri) {
         var filePath = res.uri;
         alert(filePath);
