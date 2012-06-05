@@ -213,6 +213,7 @@ var apiController = {
       alert(res.uri);
     }, function(msg, err) {
       alert(err);
+      alert(msg);
       field[0].value = 'No image could be loaded/taken';
     });
   },
@@ -231,5 +232,5 @@ var apiController = {
     }, function(msg, err) {
       field.value = 'Location could not be determined';
     });
-  },
-}
+  }
+};
