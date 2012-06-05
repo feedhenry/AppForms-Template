@@ -98,6 +98,8 @@ var WufooController = {
         self.renderFormList(self.all_forms);
       }
     }, function(err) {
+      alert('Get form list error');
+      alert(err);
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
   },
@@ -156,12 +158,6 @@ $fh.ready(function() {
 /*
  * File that holds bindings for APIs
  */
-
-
-var config = {
-  fields: [],
-};
-
 
 
 var apiController = {
