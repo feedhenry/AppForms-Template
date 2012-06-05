@@ -197,6 +197,7 @@ var apiController = {
 
   // Returns Lat and Long as sting
   fhCam: function(id) {
+    alert();
     console.log('begin cam');
     var field = jQuery('#' + id)[0];
     var source = '';
@@ -239,15 +240,15 @@ var apiController = {
 
   // Returns Lat and Long as sting
   fhGeo: function(id) {
-    var field = jQuery('#' + id)[0];
+    var field = jQuery('#' + id);
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
       console.log(str);
-      field.value = str;
+      field[0].value = str;
       field.blur();
-      field.disabled = 'true';
+      field[0].disabled = 'true';
     }, function(msg, err) {
       field.value = 'Location could not be determined';
     });
