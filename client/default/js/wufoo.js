@@ -10,7 +10,6 @@ var WufooController = {
       this.getForm();
     } else {
       // Multi-form app
-      alert('Get List');
       this.getFormList();
     }
   },
@@ -87,19 +86,15 @@ var WufooController = {
   },
 
   getFormList: function() {
-    alert('getting list');
     var self = this;
     $fh.act({
       act: 'getForms',
     }, function(res) {
       if (res) {
-        alert('got list');
         self.all_forms = res.data.Forms;
         self.renderFormList(self.all_forms);
       }
     }, function(err) {
-      alert('Get form list error');
-      alert(err);
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
   },
@@ -121,7 +116,6 @@ var WufooController = {
       list_item.append(item_button);
       form_list.append(list_item);
     }
-    alert('finish form rendering');
   },
 
   hideFormList: function() {
