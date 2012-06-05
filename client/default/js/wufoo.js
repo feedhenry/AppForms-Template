@@ -10,6 +10,7 @@ var WufooController = {
       this.getForm();
     } else {
       // Multi-form app
+      alert('Get List');
       this.getFormList();
     }
   },
@@ -91,6 +92,7 @@ var WufooController = {
       act: 'getForms',
     }, function(res) {
       if (res) {
+        alert('got list');
         self.all_forms = res.data.Forms;
         self.renderFormList(self.all_forms);
       }
@@ -116,6 +118,7 @@ var WufooController = {
       list_item.append(item_button);
       form_list.append(list_item);
     }
+    alert('finish form rendering');
   },
 
   hideFormList: function() {
@@ -128,6 +131,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#form_list').show();
+    alert('shwo list');
   },
 
   showContentArea: function() {
