@@ -176,7 +176,7 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function() {
-          apiController[fnName](id);
+          apiController[fnName]();
           return false;
         });
       };
@@ -192,40 +192,29 @@ var apiController = {
   },
 
   // Open camera and return URI
-  fhCam: function(id) {
+  fhCam: function() {
     $fh.cam({
       source: 'camera',
       uri: true
     }, function(res) {
       alert('Success');
-      var field = jQuery('#' + id);
       if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
-        /*field[0].value = filePath.toString();
-        field.blur();
-        field[0].disabled = 'true';*/
       }
     }, function(msg, err) {
       alert('Failure');
-      /*alert(msg);
-      var field = jQuery('#' + id);
-      field[0].value = 'No image could be loaded/taken';*/
     });
     return false;
   },
 
   //Returns Lat and Long as sting
-  fhGeo: function(id) {
-    var field = jQuery('#' + id);
+  fhGeo: function() {
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
       alert(str);
-      field[0].value = str;
-      field.blur();
-      //field[0].disabled = 'true';
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
