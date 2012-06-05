@@ -205,9 +205,8 @@ var apiController = {
       uri: true
     }, function(res) {
       console.log(res);
-      if (res && res.uri) {
+      if (res.uri) {
         var filePath = res.uri;
-        alert(filePath);
         field[0].value = filePath.toString();
         field.blur();
         field[0].disabled = 'true';
