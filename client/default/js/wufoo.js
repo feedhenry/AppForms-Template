@@ -169,7 +169,7 @@ var apiController = {
       for (var j = 0; j < this.bindings.length; j++) {
         if (classes.indexOf(this.bindings[j]) !== -1) {
           var element = neededApis[i].getElementsByTagName('input')[0];
-          jQuery('#'+element.id).unbind('click');
+          jQuery('#'+element.id).unbind();
           this.bindFunction(this.bindings[j], element.id);
           j = this.bindings.length;
         }
@@ -198,10 +198,10 @@ var apiController = {
   // Returns Lat and Long as sting
   fhCam: function(id) {
     alert();
-    console.log('begin cam');
+    alert('begin cam');
     var field = jQuery('#' + id)[0];
     var source = '';
-    console.log('got field and source');
+    alert('got field and source');
     navigator.notification.confirm(
       'Would you like to take a picture or choose from Gallery?', 
       function(btn){
