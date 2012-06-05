@@ -218,7 +218,6 @@ var apiController = {
       field[0].value = 'No image could be loaded/taken';
       return false;
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
