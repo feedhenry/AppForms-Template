@@ -181,6 +181,7 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).unbind().bind('click', function() {
+          alert('Bind '+fnName+' to ' +id);
           apiController[fnName](id);
           return false;
         });
@@ -198,7 +199,6 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function(id) {
-    console.log(id);
     var field = jQuery('#' + id);
     console.log(field);
     $fh.cam({
@@ -214,7 +214,7 @@ var apiController = {
         field[0].disabled = 'true';
       }*/
     }, function(msg, err) {
-      alert(msg)
+      alert(msg);
       field[0].value = 'No image could be loaded/taken';
     });
   },
