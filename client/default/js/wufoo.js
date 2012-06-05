@@ -196,7 +196,7 @@ var apiController = {
     bindFn(id, fn);
   },
 
-  // Returns Lat and Long as sting
+  // Open camera and return URI
   fhCam: function(id) {
     console.log(id);
     var field = jQuery('#' + id);
