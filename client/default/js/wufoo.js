@@ -210,11 +210,13 @@ var apiController = {
         field[0].value = filePath.toString();
         field.blur();
         field[0].disabled = 'true';
-      }
+      } 
+      return false;
     }, function(msg, err) {
       field[0].value = 'No image could be loaded/taken';
+      return false;
     });
-
+    return false;
   },
 
   //Returns Lat and Long as sting
