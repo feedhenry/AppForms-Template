@@ -198,13 +198,13 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function(id) {
-    var field = jQuery('#' + id);
-    console.log(field);
     $fh.cam({
       source: 'camera',
       uri: true
     }, function(res) {
       console.log(res);
+      var field = jQuery('#' + id);
+      console.log(field);
       /*if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
