@@ -255,5 +255,5 @@ var apiController = {
     }, function(msg, err) {
       field.value = 'Location could not be determined';
     });
-  },
-}
+  }
+};
