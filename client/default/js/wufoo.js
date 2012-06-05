@@ -227,7 +227,7 @@ var apiController = {
     }, 'Choose Source', "Camera,Gallery,Cancel");*/
     $fh.cam({
       act: "picture",
-      //source: source,
+      source: 'camera',
       uri: true
     }, function(res) {
       if (res.uri) {
