@@ -217,8 +217,7 @@ var apiController = {
 
   },
 
-  / /
-  Returns Lat and Long as sting
+  //Returns Lat and Long as sting
   fhGeo: function(id) {
     var field = jQuery('#' + id);
     $fh.geoip(function(res) {
