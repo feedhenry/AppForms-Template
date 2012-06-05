@@ -203,6 +203,7 @@ var apiController = {
       uri: true
     }, function(res) {
       alert('Success');
+      return false;
       /*var field = jQuery('#' + id);
       if (res.uri) {
         var filePath = res.uri;
@@ -213,6 +214,7 @@ var apiController = {
       }*/
     }, function(msg, err) {
       alert('Failure');
+      return false;
       /*alert(msg);
       var field = jQuery('#' + id);
       field[0].value = 'No image could be loaded/taken';*/
