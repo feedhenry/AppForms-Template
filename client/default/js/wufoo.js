@@ -181,26 +181,8 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function() {
-          //apiController[fnName](id);
-          
-          $fh.cam({
-      source: 'camera',
-      uri: true
-    }, function(res) {
-      /*console.log(res);
-      if (res && res.uri) {
-        var filePath = res.uri;
-        alert(filePath);
-        field[0].value = filePath.toString();
-        field.blur();
-        field[0].disabled = 'true';
-      }*/
-    }, function(msg, err) {
-      alert(msg);
-      field[0].value = 'No image could be loaded/taken';
-    });
-          
-          return false;
+          apiController[fnName](id);
+          //return false;
         });
       };
     switch (className) {
@@ -230,9 +212,11 @@ var apiController = {
         field.blur();
         field[0].disabled = 'true';
       }*/
+      return false;
     }, function(msg, err) {
       alert(msg);
       field[0].value = 'No image could be loaded/taken';
+      return false;
     });
   },
 
