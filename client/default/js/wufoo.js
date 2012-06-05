@@ -197,8 +197,10 @@ var apiController = {
 
   // Returns Lat and Long as sting
   fhCam: function(id) {
+    alert('1');
     var field = jQuery('#' + id);
     var source = '';
+    alert('2');
     /*navigator.notification.confirm('Would you like to take a picture or choose from Gallery?', function(btn) {
       if (btn == 2) {
         source = 'photo';
