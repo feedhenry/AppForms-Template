@@ -216,9 +216,10 @@ var apiController = {
       str += 'Latitude: ' + res.latitude;
       //alert(str);
       jQuery(element).val(str);
+      alert('Location was automatically detected.');
       return false;
     }, function(msg, err) {
-      field.value = 'Location could not be determined';
+      alert('Location could not be determined. Please enter it manually');
       return false;
     });
   }
