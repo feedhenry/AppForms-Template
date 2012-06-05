@@ -208,10 +208,10 @@ var apiController = {
       if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
-        field.blur();
-        field[0].disabled = 'true';
+        //field.blur();
+        //field[0].disabled = 'true';
+        return false;
       }
-      return false;
     }, function(msg, err) {
       alert(msg);
       field[0].value = 'No image could be loaded/taken';
