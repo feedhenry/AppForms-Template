@@ -183,7 +183,6 @@ var apiController = {
         jQuery('#' + id).unbind().bind('click', function() {
           alert('Bind '+fnName+' to ' +id);
           apiController[fnName](id);
-          
           return false;
         });
       };
@@ -216,7 +215,7 @@ var apiController = {
       }*/
     }, function(msg, err) {
       alert(msg);
-      //field[0].value = 'No image could be loaded/taken';
+      field[0].value = 'No image could be loaded/taken';
     });
   },
 
