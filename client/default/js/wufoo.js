@@ -198,7 +198,6 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function(id) {
-    alert();
     var field = jQuery('#' + id);
     console.log(field);
     $fh.cam({
