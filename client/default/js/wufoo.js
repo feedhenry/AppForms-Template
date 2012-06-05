@@ -181,8 +181,8 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function() {
-          var d = apiController[fnName](id);
-          return d;
+          apiController[fnName](id);
+          return false;
         });
       };
     switch (className) {
@@ -212,13 +212,10 @@ var apiController = {
         field.blur();
         field[0].disabled = 'true';
       }*/
-      return false;
     }, function(msg, err) {
       alert(msg);
       field[0].value = 'No image could be loaded/taken';
-      return false;
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
@@ -232,10 +229,8 @@ var apiController = {
       field[0].value = str;
       field.blur();
       field[0].disabled = 'true';
-      return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
-      return false;
     });
   }
 };
