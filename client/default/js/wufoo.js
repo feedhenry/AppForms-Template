@@ -200,7 +200,6 @@ var apiController = {
   fhCam: function(id) {
     var field = jQuery('#' + id);
     $fh.cam({
-      act: 'photo',
       source: 'camera',
       uri: true
     }, function(res) {
