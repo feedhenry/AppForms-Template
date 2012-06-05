@@ -169,7 +169,7 @@ var apiController = {
       for (var j = 0; j < this.bindings.length; j++) {
         if (classes.indexOf(this.bindings[j]) !== -1) {
           var element = neededApis[i].getElementsByTagName('input')[0];
-          jQuery('#'+element.id).unbind();
+          jQuery('#' + element.id).unbind();
           this.bindFunction(this.bindings[j], element.id);
           j = this.bindings.length;
         }
@@ -180,17 +180,17 @@ var apiController = {
   bindFunction: function(className, id) {
     var fn = '';
     var bindFn = function(id, fnName) {
-        jQuery('#'+id).bind('click', function() {
+        jQuery('#' + id).bind('click', function() {
           apiController[fnName](id);
         });
       };
     switch (className) {
-      case 'fhgeo':
-        fn = 'fhGeo';
-        break;
-      case 'fhcam':
-        fn = 'fhCam';
-        break;
+    case 'fhgeo':
+      fn = 'fhGeo';
+      break;
+    case 'fhcam':
+      fn = 'fhCam';
+      break;
     }
     bindFn(id, fn);
   },
@@ -199,43 +199,39 @@ var apiController = {
   fhCam: function(id) {
     alert();
     alert('begin cam');
-    var field = jQuery('#' + id)[0];
+    var field = jQuery('#' + id);
     var source = '';
     alert('got field and source');
-    navigator.notification.confirm(
-      'Would you like to take a picture or choose from Gallery?', 
-      function(btn){
-        alert(btn);
-        if(btn==2){
-          source = 'photo';
-        }
-        if(btn==1){
-          source = 'camera';
-        }
-        alert('finished btn');
-      }, 
-      'Choose Source', 
-      "Camera,Gallery,Cancel");
-    console.log('picked source cam');
-    if(source===''){
-      console.log('cancel cam');
-      return;
-    }
-    console.log('before cam');
-    $fh.cam({
-      act: "picture",
-      source: 'camera',
-      uri: true
-    }, function(res) {
-      if (res.uri) {
-        var filePath = res.uri;
-        field.value = filePath.toString();
-        ield.blur();
-        field.disabled = 'true';
+    navigator.notification.confirm('Would you like to take a picture or choose from Gallery?', function(btn) {
+      alert(btn);
+      if (btn == 2) {
+        source = 'photo';
       }
-    }, function(msg, err) {
-      field.value = 'No image could be loaded/taken';
-    });
+      if (btn == 1) {
+        source = 'camera';
+      }
+      if (source === '') {
+        console.log('cancel cam');
+        return;
+      }
+      alert('before cam');
+      $fh.cam({
+        act: "picture",
+        source: source,
+        uri: true
+      }, function(res) {
+        if (res.uri) {
+          var filePath = res.uri;
+          field[0].value = filePath.toString();
+          field.blur();
+          field[0].disabled = 'true';
+        }
+      }, function(msg, err) {
+        field.value = 'No image could be loaded/taken';
+      });
+    }, 'Choose Source', "Camera,Gallery,Cancel");
+    alert('picked source cam');
+
   },
 
   // Returns Lat and Long as sting
