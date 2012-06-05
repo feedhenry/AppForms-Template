@@ -227,15 +227,15 @@ var apiController = {
     }, 'Choose Source', "Camera,Gallery,Cancel");*/
     $fh.cam({
       act: "picture",
-      //source: source,
+      source: 'photo',
       uri: true
     }, function(res) {
-      if (res.uri) {
+      /*if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
         field.blur();
         field[0].disabled = 'true';
-      }
+      }*/
     }, function(msg, err) {
       field[0].value = 'No image could be loaded/taken';
     });
