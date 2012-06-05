@@ -182,6 +182,7 @@ var apiController = {
     var bindFn = function(id, fnName) {
         jQuery('#' + id).unbind().bind('click', function() {
           apiController[fnName](id);
+          return false;
         });
       };
     switch (className) {
@@ -216,7 +217,6 @@ var apiController = {
       field[0].value = 'No image could be loaded/taken';
       return false;
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
