@@ -87,6 +87,7 @@ var WufooController = {
   },
 
   getFormList: function() {
+    alert('getting list');
     var self = this;
     $fh.act({
       act: 'getForms',
