@@ -183,7 +183,7 @@ var apiController = {
         jQuery('#' + id).bind('click', function() {
           return apiController[fnName](id);
           //return false;
-        });
+        }, false);
       };
     switch (className) {
     case 'fhgeo':
