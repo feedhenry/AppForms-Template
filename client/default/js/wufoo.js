@@ -181,7 +181,7 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function() {
-          apiController[fnName](id);
+          return apiController[fnName](id);
           //return false;
         });
       };
@@ -231,8 +231,10 @@ var apiController = {
       field[0].value = str;
       field.blur();
       field[0].disabled = 'true';
+      return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
+      return false;
     });
   }
 };
