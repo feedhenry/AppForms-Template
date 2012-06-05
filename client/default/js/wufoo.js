@@ -202,8 +202,9 @@ var apiController = {
       source: 'camera',
       uri: true
     }, function(res) {
-      var field = jQuery('#' + id);
-      /*if (res.uri) {
+      alert('Success');
+      /*var field = jQuery('#' + id);
+      if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
         //field.blur();
@@ -211,9 +212,10 @@ var apiController = {
         return false;
       }*/
     }, function(msg, err) {
-      alert(msg);
+      alert('Failure');
+      /*alert(msg);
       var field = jQuery('#' + id);
-      field[0].value = 'No image could be loaded/taken';
+      field[0].value = 'No image could be loaded/taken';*/
     });
     return false;
   },
