@@ -216,7 +216,6 @@ var apiController = {
       str += 'Latitude: ' + res.latitude;
       //alert(str);
       jQuery(element).val(str);
-      jQuery(element).blur();
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
