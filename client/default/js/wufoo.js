@@ -200,6 +200,7 @@ var apiController = {
         alert(filePath);
         jQuery(element).val(filePath);
         jQuery(element).blur();
+        jQuery(element).attr("disabled", "disabled");
       }
     }, function(msg, err) {
       alert('Failure');
