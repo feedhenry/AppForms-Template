@@ -174,10 +174,7 @@ var apiController = {
   bindFunction: function(className, id) {
     var fn = '';
     var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', function() {
-          apiController[fnName]();
-          return false;
-        });
+        jQuery('#' + id).bind('click', apiController[fnName]);
       };
     switch (className) {
     case 'fhgeo':
@@ -192,7 +189,7 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function() {
-    var element = this;
+    //var element = this;
     $fh.cam({
       source: 'camera',
       uri: true
@@ -201,6 +198,7 @@ var apiController = {
       if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
+        //var field =
       }
     }, function(msg, err) {
       alert('Failure');
@@ -210,7 +208,7 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhGeo: function() {
-    var element = this;
+    //var element = this;
     console.log(element);
     $fh.geoip(function(res) {
       var str = '';
