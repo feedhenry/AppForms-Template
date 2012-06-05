@@ -204,6 +204,7 @@ var apiController = {
     }, function(res) {
       console.log(res);
       alert(res)
+      alert(id);
       var field = jQuery('#' + id);
       /*if (res.uri) {
         var filePath = res.uri;
