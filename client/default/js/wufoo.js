@@ -204,6 +204,7 @@ var apiController = {
       uri: true
     }, function(res) {
       console.log(res);
+      alert(JSON.stringify(res));
       /*if (res && res.uri) {
         var filePath = res.uri;
         alert(filePath);
