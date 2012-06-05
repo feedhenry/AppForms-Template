@@ -128,7 +128,6 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#form_list').show();
-    alert('shwo list');
   },
 
   showContentArea: function() {
