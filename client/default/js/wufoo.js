@@ -189,7 +189,7 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function() {
-    //var element = this;
+    var element = this;
     $fh.cam({
       source: 'camera',
       uri: true
@@ -198,7 +198,7 @@ var apiController = {
       if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
-        //var field =
+        jQuery(element).val(filePath);
       }
     }, function(msg, err) {
       alert('Failure');
