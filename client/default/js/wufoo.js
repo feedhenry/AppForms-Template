@@ -230,7 +230,7 @@ var apiController = {
       console.log(str);
       field[0].value = str;
       field.blur();
-      field[0].disabled = 'true';
+      //field[0].disabled = 'true';
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
