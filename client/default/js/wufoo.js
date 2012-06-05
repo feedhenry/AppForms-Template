@@ -214,21 +214,23 @@ var apiController = {
     }, function(msg, err) {
       field[0].value = 'No image could be loaded/taken';
     });
+
   },
 
-  / / Returns Lat and Long as sting
-fhGeo: function(id) {
-  var field = jQuery('#' + id);
-  $fh.geoip(function(res) {
-    var str = '';
-    str += 'Longitude: ' + res.longitude + ', ';
-    str += 'Latitude: ' + res.latitude;
-    console.log(str);
-    field[0].value = str;
-    field.blur();
-    field[0].disabled = 'true';
-  }, function(msg, err) {
-    field.value = 'Location could not be determined';
-  });
-},
+  / /
+  Returns Lat and Long as sting
+  fhGeo: function(id) {
+    var field = jQuery('#' + id);
+    $fh.geoip(function(res) {
+      var str = '';
+      str += 'Longitude: ' + res.longitude + ', ';
+      str += 'Latitude: ' + res.latitude;
+      console.log(str);
+      field[0].value = str;
+      field.blur();
+      field[0].disabled = 'true';
+    }, function(msg, err) {
+      field.value = 'Location could not be determined';
+    });
+  },
 }
