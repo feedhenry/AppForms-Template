@@ -181,7 +181,6 @@ var apiController = {
     var fn = '';
     var bindFn = function(id, fnName) {
         jQuery('#' + id).unbind().bind('click', function() {
-          alert('Bind '+fnName+' to ' +id);
           apiController[fnName](id);
           return false;
         });
