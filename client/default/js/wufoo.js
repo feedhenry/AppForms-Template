@@ -215,7 +215,7 @@ var apiController = {
       }*/
     }, function(msg, err) {
       alert(msg);
-      field[0].value = 'No image could be loaded/taken';
+      //field[0].value = 'No image could be loaded/taken';
     });
   },
 
