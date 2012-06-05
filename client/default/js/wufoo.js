@@ -193,6 +193,7 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function() {
+    var element = this;
     $fh.cam({
       source: 'camera',
       uri: true
@@ -210,6 +211,8 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhGeo: function() {
+    var element = this;
+    console.log(this);
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
