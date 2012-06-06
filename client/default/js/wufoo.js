@@ -200,6 +200,7 @@ var apiController = {
       alert('Failure');  
       return false;
     });
+    return false;
   },
 
   //Returns Lat and Long as sting
