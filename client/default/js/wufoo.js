@@ -195,6 +195,7 @@ var apiController = {
       uri: true
     }, function(res) {
       alert('Success');
+      return false;
       /*if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
@@ -202,8 +203,9 @@ var apiController = {
       }*/
     }, function(msg, err) {
       alert('Failure');
+      return false;
     });
-    return false;
+    //return false;
   },
 
   //Returns Lat and Long as sting
