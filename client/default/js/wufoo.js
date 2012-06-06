@@ -198,7 +198,6 @@ var apiController = {
     }, function(msg, err) {
       alert('err');  
     });
-    alert('Camf');
   },
 
   //Returns Lat and Long as sting
