@@ -174,7 +174,10 @@ var apiController = {
   bindFunction: function(className, id) {
     var fn = '';
     var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', apiController[fnName]);
+        jQuery('#' + id).bind('click', function(event){
+          event.preventDefault();
+          apiController[fnName];
+        });
       };
     switch (className) {
     case 'fhgeo':
@@ -200,13 +203,11 @@ var apiController = {
       alert('Failure');  
       return false;
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
   fhGeo: function() {
     var element = this;
-    
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
