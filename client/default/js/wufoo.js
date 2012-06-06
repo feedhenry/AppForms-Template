@@ -192,12 +192,10 @@ var apiController = {
     //var element = this;
     alert('Cams');
     $fh.cam({
-      source: 'camera',
       uri: true
     }, function(res) {
-      alert('Success');
     }, function(msg, err) {
-      alert('Failure');  
+      alert('err');  
     });
     alert('Camf');
   },
