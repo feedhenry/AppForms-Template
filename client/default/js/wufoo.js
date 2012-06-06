@@ -199,7 +199,6 @@ var apiController = {
     }, {
       quality: 10
     });
-    
   },
 
   //Returns Lat and Long as sting
