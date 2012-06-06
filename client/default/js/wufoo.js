@@ -189,7 +189,7 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function() {
-    var element = this;
+    //var element = this;
     $fh.cam({
       source: 'camera',
       uri: true
