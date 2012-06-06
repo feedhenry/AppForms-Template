@@ -195,7 +195,7 @@ var apiController = {
       img.src = "data:image/jpeg;base64," + imageData;
       //$('#images').append(img);
     }, function() {
-      alert('err');
+      //error
     }, {
       quality: 10
     });
@@ -209,7 +209,7 @@ var apiController = {
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
       jQuery(element).val(str);
-      //jQuery(element).blur();
+      jQuery(element).blur();
       alert('Location was automatically detected.');
       return false;
     }, function(msg, err) {
