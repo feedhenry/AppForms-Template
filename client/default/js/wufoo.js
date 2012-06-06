@@ -174,7 +174,7 @@ var apiController = {
   bindFunction: function(className, id) {
     var fn = '';
     var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', apiController[fnName], false);
+        jQuery('#' + id).bind('click', apiController[fnName]);
       };
     switch (className) {
     case 'fhgeo':
