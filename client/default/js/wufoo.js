@@ -195,10 +195,11 @@ var apiController = {
       img.src = "data:image/jpeg;base64," + imageData;
       //$('#images').append(img);
     }, function() {
-      //error
+      alert('err');
     }, {
       quality: 10
     });
+    
   },
 
   //Returns Lat and Long as sting
