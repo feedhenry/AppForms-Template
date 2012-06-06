@@ -195,11 +195,11 @@ var apiController = {
       uri: true
     }, function(res) {
       alert('Success');
-      if (res.uri) {
+      /*if (res.uri) {
         var filePath = res.uri;
         alert(filePath);
         jQuery(element).val(filePath);
-      }
+      }*/
     }, function(msg, err) {
       alert('Failure');
     });
