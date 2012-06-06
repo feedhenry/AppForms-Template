@@ -175,7 +175,10 @@ var apiController = {
     var fn = '';
 
     var bindFn = function(id, fnName) {
-        document.getElementById(id).onclick = apiController[fnName];
+        document.getElementById(id).onclick = function(){
+          apiController[fnName]();
+          return false;
+        };
       };
     switch (className) {
     case 'fhgeo':
