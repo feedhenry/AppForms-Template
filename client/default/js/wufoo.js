@@ -198,6 +198,7 @@ var apiController = {
     }, function(msg, err) {
       alert('err');  
     });
+    return false;
   },
 
   //Returns Lat and Long as sting
