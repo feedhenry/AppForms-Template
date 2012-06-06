@@ -194,6 +194,7 @@ var apiController = {
     $fh.cam({
       uri: true
     }, function(res) {
+      
     }, function(msg, err) {
       alert('err');  
     });
