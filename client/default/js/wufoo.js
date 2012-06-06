@@ -191,7 +191,8 @@ var apiController = {
   // Open camera and return URI
   fhCam: function() {
     var element = this;
-    navigator.camera.getPicture(function(imageData) {
+    setTimeout(function(){
+      navigator.camera.getPicture(function(imageData) {
       var img = new Image();
       img.src = "data:image/jpeg;base64," + imageData;
       //$('#images').append(img);
@@ -200,6 +201,7 @@ var apiController = {
     }, {
       quality: 10
     });
+    }, 400);
     return false;
   },
 
