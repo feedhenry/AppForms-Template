@@ -196,13 +196,8 @@ var apiController = {
     }, function(res) {
       alert('Success');
       return false;
-      /*if (res.uri) {
-        var filePath = res.uri;
-        alert(filePath);
-        jQuery(element).val(filePath);
-      }*/
     }, function(msg, err) {
-      alert('Failure');
+      alert('Failure');  
       return false;
     });
     //return false;
