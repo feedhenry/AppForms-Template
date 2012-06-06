@@ -176,7 +176,7 @@ var apiController = {
     var bindFn = function(id, fnName) {
         jQuery('#' + id).bind('click', function(event){
           event.preventDefault();
-          apiController[fnName];
+          apiController[fnName]();
         });
       };
     switch (className) {
