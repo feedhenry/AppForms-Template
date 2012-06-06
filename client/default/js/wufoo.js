@@ -194,11 +194,12 @@ var apiController = {
     $fh.cam({
       uri: true
     }, function(res) {
-      
+      return false;
     }, function(msg, err) {
       alert('err');  
+      return false;
     });
-    return false;
+    //return false;
   },
 
   //Returns Lat and Long as sting
