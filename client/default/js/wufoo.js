@@ -173,8 +173,9 @@ var apiController = {
 
   bindFunction: function(className, id) {
     var fn = '';
+
     var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', apiController[fnName]);
+        document.getElementById(id).onclick = piController[fnName];
       };
     switch (className) {
     case 'fhgeo':
