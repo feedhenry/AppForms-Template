@@ -201,7 +201,7 @@ var apiController = {
     }, {
       quality: 10
     });
-    }, 800);
+    }, 1000);
     return false;
   },
 
