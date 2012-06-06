@@ -190,14 +190,15 @@ var apiController = {
   // Open camera and return URI
   fhCam: function() {
     var element = this;
-    $fh.cam({
-      uri: true
-    }, function(res) {
-      
-    }, function(msg, err) {
-      alert('err');  
+    navigator.camera.getPicture(function(imageData) {
+      var img = new Image();
+      img.src = "data:image/jpeg;base64," + imageData;
+      //$('#images').append(img);
+    }, function() {
+      alert('err');
+    }, {
+      quality: 10
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
