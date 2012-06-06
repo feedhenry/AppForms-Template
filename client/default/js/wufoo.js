@@ -190,7 +190,6 @@ var apiController = {
   // Open camera and return URI
   fhCam: function() {
     //var element = this;
-    alert('Cams');
     $fh.cam({
       uri: true
     }, function(res) {
