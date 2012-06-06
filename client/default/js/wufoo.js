@@ -190,7 +190,7 @@ var apiController = {
   // Open camera and return URI
   fhCam: function() {
     //var element = this;
-    alert('Cams')
+    alert('Cams');
     $fh.cam({
       source: 'camera',
       uri: true
@@ -199,8 +199,7 @@ var apiController = {
     }, function(msg, err) {
       alert('Failure');  
     });
-    alert('Camf')
-    return false;
+    alert('Camf');
   },
 
   //Returns Lat and Long as sting
