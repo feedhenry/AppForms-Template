@@ -201,6 +201,10 @@ var apiController = {
         apiController[fn]();
         return false;
       });
+      jQuery(button).onclick=function(){
+        apiController[fn]();
+        return false;
+      };
       jQuery(element).append(button);
     }
 
