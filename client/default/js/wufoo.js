@@ -184,19 +184,19 @@ var apiController = {
         if (classes.indexOf(this.bindings[j]) !== -1) {
           var element = neededApis[i].getElementsByTagName('input')[0];
           jQuery('#' + element.id).unbind();
-          this.bindFunction(this.bindings[j], element);
+          this.bindFunction(this.bindings[j], neededApis[i]);
           j = this.bindings.length;
         }
       }
     }
   },
 
-  bindFunction: function(className, id) {
+  bindFunction: function(className, element) {
     var fn = '';
     var btnText = '';
 
-    function bindFn(id) {
-      jQuery(id).append('<button>'+btnText+'</button>')
+    function bindFn(element) {
+      jQuery(id).append('<button>'+btnText+'</button>');
       jQuery('#' + id).bind('click', function() {
         apiController[fn]();
         return false;
@@ -213,7 +213,7 @@ var apiController = {
       btnText = 'Take Photo';
       break;
     }
-    bindFn();
+    bindFn(element);
   },
 
   // Open camera and return URI
