@@ -189,7 +189,7 @@ var apiController = {
         }
       }
     }
-  }
+  },
 
   bindFunction: function(className, id) {
     var fn = '';
