@@ -201,7 +201,7 @@ var apiController = {
         apiController[fn]();
         return false;
       });
-      jQuery(id).append(button);
+      jQuery(element).append(button);
     }
 
     switch (className) {
