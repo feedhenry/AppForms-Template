@@ -196,11 +196,12 @@ var apiController = {
     var btnText = '';
 
     function bindFn(element) {
-      jQuery(id).append('<button>'+btnText+'</button>');
-      jQuery('#' + id).bind('click', function() {
+      var button = '<button>'+btnText+'</button>';
+      jQuery(button).bind('click', function() {
         apiController[fn]();
         return false;
       });
+      jQuery(id).append(button);
     }
 
     switch (className) {
