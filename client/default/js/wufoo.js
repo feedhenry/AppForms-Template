@@ -184,7 +184,7 @@ var apiController = {
         if (classes.indexOf(this.bindings[j]) !== -1) {
           var element = neededApis[i].getElementsByTagName('input')[0];
           jQuery('#' + element.id).unbind();
-          this.bindFunction(this.bindings[j], element.id);
+          this.bindFunction(this.bindings[j], element);
           j = this.bindings.length;
         }
       }
