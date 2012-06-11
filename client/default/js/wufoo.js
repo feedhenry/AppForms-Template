@@ -206,6 +206,7 @@ var apiController = {
         return false;
       };
       jQuery(element).append(button);
+      debugger;
     }
 
     switch (className) {
