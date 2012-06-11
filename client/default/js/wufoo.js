@@ -162,6 +162,20 @@ var config = {
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
 
+  /*addApiCalls: function() {
+    var neededApis = document.body.getElementsByClassName('$fh');
+    for (var i = 0; i < neededApis.length; i++) {
+      var classes = neededApis[i].className;
+      for (var j = 0; j < this.bindings.length; j++) {
+        if (classes.indexOf(this.bindings[j]) !== -1) {
+          var element = neededApis[i].getElementsByTagName('input')[0];
+          jQuery('#' + element.id).unbind();
+          this.bindFunction(this.bindings[j], element.id);
+          j = this.bindings.length;
+        }
+      }
+    }
+  },*/
   addApiCalls: function() {
     var neededApis = document.body.getElementsByClassName('$fh');
     for (var i = 0; i < neededApis.length; i++) {
@@ -175,25 +189,31 @@ var apiController = {
         }
       }
     }
-  },
+  }
 
   bindFunction: function(className, id) {
     var fn = '';
-    var bindFn = function(id, fnName) {
-        jQuery('#' + id).bind('click', function() {
-          apiController[fnName](id);
-          return false;
-        });
-      };
+    var btnText = '';
+
+    function bindFn(id) {
+      jQuery(id).append('<button>'+btnText+'</button>')
+      jQuery('#' + id).bind('click', function() {
+        apiController[fn]();
+        return false;
+      });
+    }
+
     switch (className) {
     case 'fhgeo':
       fn = 'fhGeo';
+      btnText = 'Get Location';
       break;
     case 'fhcam':
       fn = 'fhCam';
+      btnText = 'Take Photo';
       break;
     }
-    bindFn(id, fn);
+    bindFn();
   },
 
   // Open camera and return URI
