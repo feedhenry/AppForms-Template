@@ -193,7 +193,6 @@ var apiController = {
 
   bindFunction: function(className, element) {
     var fn = '';
-    var btnText = '';
 
     function bindFn(element) {
       var button = document.createElement('button');
@@ -205,8 +204,6 @@ var apiController = {
       button.style.left = (input.offsetLeft+input.offsetWidth).toString()+'px';
       button.style.position = 'absolute';
       jQuery(element).append(button);
-
-      debugger;
 
       button.click = function(){
         var input = this.inputField;
@@ -227,11 +224,9 @@ var apiController = {
     switch (className) {
     case 'fhgeo':
       fn = 'fhGeo';
-      btnText = 'Get Location';
       break;
     case 'fhcam':
       fn = 'fhCam';
-      btnText = 'Take Photo';
       break;
     }
 
