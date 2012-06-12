@@ -6,3 +6,11 @@
 input[type=text] { 
 	width: 100%; 
 } 
+
+.wufoo li {
+  width: 80% !important;
+}
+
+input.medium, select.medium {
+	width: 40% ! important;
+}
