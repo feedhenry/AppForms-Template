@@ -197,11 +197,18 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
+      var top;
+
+      alert(navigator.userAgent.toLowerCase());
+      if(navigator.userAgent.toLowerCase().indexOf('android') != -1){
+        top='-34px';
+      }
+
       setTimeout(function() {        
         input.style.height = '23px';
         button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
         button.inputField = element;
-        button.style.top = '-31px';//(input.offsetTop - 2).toString() + 'px';
+        button.style.top = if(!top){return (input.offsetTop - 2).toString() + 'px')} return top;
         button.style.left = (input.offsetLeft + input.offsetWidth).toString() + 'px';
         button.style.position = 'relative';
       }, 100);
