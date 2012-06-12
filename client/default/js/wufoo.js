@@ -208,7 +208,7 @@ var apiController = {
       }*/
 
       setTimeout(function() {        
-        button.innerHTML = '<img height="20px" src="../img/' + fn + '.png" />'
+        button.innerHTML = '<img height="20px" src="./img/' + fn + '.png" />'
         button.inputField = element;
         button.style.top = top;
         button.style.left = '10px';
