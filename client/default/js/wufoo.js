@@ -198,7 +198,7 @@ var apiController = {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
       input.style.height = '23px';
-      var top = '-31px';
+      var top = '4px';
 
       /*alert(navigator.userAgent.toLowerCase());
       if(navigator.userAgent.toLowerCase().indexOf('android') != -1){
@@ -211,7 +211,7 @@ var apiController = {
         button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
         button.inputField = element;
         button.style.top = top;
-        button.style.left = (input.offsetLeft + input.offsetWidth).toString() + 'px';
+        button.style.left = '10px';
         button.style.position = 'relative';
       }, 100);
 
