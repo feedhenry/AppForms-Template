@@ -197,7 +197,7 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
-      setTimeout(function() {        
+      setTimeout(function() {
         input.style.height = '23px';
         button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
         button.inputField = element;
@@ -246,7 +246,8 @@ var apiController = {
       alert('error');
     }, {
       quality: 10
-  },
+    });
+},
 
   //Returns Lat and Long as sting
   fhGeo: function(input) {
