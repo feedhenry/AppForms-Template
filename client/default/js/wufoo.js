@@ -195,9 +195,9 @@ var apiController = {
     var fn = '';
 
     function bindFn(element) {
-      setTimeout(function() {
-        var button = document.createElement('button');
-        var input = element.getElementsByTagName('input')[0];
+      var button = document.createElement('button');
+      var input = element.getElementsByTagName('input')[0];
+      setTimeout(function() {        
         input.style.height = '23px';
         button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
         button.inputField = element;
