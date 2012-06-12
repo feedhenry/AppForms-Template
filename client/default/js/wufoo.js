@@ -201,12 +201,12 @@ var apiController = {
       button.inputField = element;
       jQuery(element).append(button);
 
-      button.click = function(){
+      button.click = function() {
         var input = this.inputField;
         apiController[fn](input);
         return false;
       };
-      button.onclick = function(){
+      button.onclick = function() {
         var input = this.inputField;
         apiController[fn](input);
         return false;
@@ -228,21 +228,30 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function(input) {
-    var field = input.getElementsByTagName('input');
+
+    navigator.camera.getPicture(function(uri){
+      alert(uri);
+    }, function(err){
+      alert(err)
+    }, {
+      quality: 20,
+      destinationType: destinationType.FILE_URI,
+    });
+
+    /*var field = input.getElementsByTagName('input');
     $fh.cam({
       source: 'camera',
       uri: true
     }, function(res) {
-      alert('Success '+res.uri);
-      /*var field = jQuery('#' + id);
+      alert('Success ' + res.uri);
       if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
         //field[0].blur();
-      }*/
+      }
     }, function(msg, err) {
       alert(msg);
-    });
+    });*/
   },
 
   //Returns Lat and Long as sting
