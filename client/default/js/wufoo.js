@@ -196,7 +196,7 @@ var apiController = {
     var btnText = '';
 
     function bindFn(element) {
-      var button = document.createElement('input');
+      var button = document.createElement('button');
       button.innerText = btnText;
       jQuery(element).append(button);
       debugger;
