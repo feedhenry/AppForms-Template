@@ -92,6 +92,7 @@ exports.getForms = function(params, callback) {
   var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
   var auth_header = {'Authorization': auth};
 
+  console.log('before do request');
   request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
     console.log('got all forms');
     return callback(null, {
