@@ -200,11 +200,11 @@ var apiController = {
       button.innerText = btnText;
       jQuery(element).append(button);
       debugger;
-      button.click = function(){
+      button.click = function(element){
         apiController[fn]();
         return false;
       };
-      button.onclick = function(){
+      button.onclick = function(element){
         apiController[fn]();
         return false;
       }
