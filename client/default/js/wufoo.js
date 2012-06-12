@@ -104,7 +104,7 @@ var WufooController = {
     self.showFormList();
     self.hideContentArea();
 
-    var form_list = $('#form_list');
+    var form_list = jQuery('#form_list');
     // Render buttons for each form
     for (var i = 0; i < forms.length; i++) {
       var form_item = forms[i];
@@ -237,7 +237,7 @@ var apiController = {
     $fh.cam({
       act: 'picture',
       source: 'camera',
-      uri: 'true'
+      uri: true
     }, function(res) {
       alert('Success '+res.uri);
       /*var field = jQuery('#' + id);
