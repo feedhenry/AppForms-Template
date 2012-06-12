@@ -197,33 +197,19 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
-      input.style.height = '23px';
-      var top = '4px';
 
-      /*alert(navigator.userAgent.toLowerCase());
-      if(navigator.userAgent.toLowerCase().indexOf('android') != -1){
-        top='-34px';
-      } else {
-        top = (input.offsetTop - 2).toString() + 'px';
-      }*/
-
-      setTimeout(function() {        
+      // Make sure fields are rendered before styling
+      setTimeout(function() {
+        input.style.height = '23px';
         button.innerHTML = '<img style="min-height:20px;" src="./img/' + fn + '.png" />'
         button.inputField = element;
-        button.style.top = top;
+        button.style.top = '4px';
         button.style.left = '10px';
         button.style.position = 'relative';
       }, 100);
 
       jQuery(element.getElementsByTagName('div')[0]).append(button);
 
-      button.click = function() {
-        var input = this.inputField;
-        setTimeout(function() {
-          apiController[fn](input);
-        }, 50);
-        return false;
-      };
       button.onclick = function() {
         var input = this.inputField;
         setTimeout(function() {
@@ -275,10 +261,8 @@ var apiController = {
       str += 'Latitude: ' + res.latitude;
       field[0].value = str;
       field[0].blur();
-      return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
-      return false;
     });
   }
 };
