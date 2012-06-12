@@ -32,8 +32,8 @@ updateWufooHTML = function(html, remove_script, cb) {
     });
 
     var processed_html = $('html').html();
-    processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
-    processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
+    processed_html = processed_html.replace('/images/icons/', 'http://wufoo.com/images/icons/');
+    processed_html = processed_html.replace('/stylesheets/public/forms/', 'http://wufoo.com/stylesheets/public/forms/');
     window.close();
     return cb(processed_html);
   });
