@@ -201,18 +201,18 @@ var apiController = {
       button.inputField = element;
       jQuery(element).append(button);
 
-      button.click = function(){
+      /*button.click = function(){
         var input = this.inputField;
         setTimeout(function(){
           apiController[fn](input);
-        }, 50);
+        }, 400);
         return false;
-      };
+      };*/
       button.onclick = function(){
         var input = this.inputField;
         setTimeout(function(){
           apiController[fn](input);
-        }, 50);
+        }, 400);
         return false;
       };
     }
