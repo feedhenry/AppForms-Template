@@ -8,9 +8,9 @@ input[type=text] {
 } 
 
 .wufoo li {
-  width: 80% !important;
+  width: 98% !important;
 }
 
 input.medium, select.medium {
-	width: 40% ! important;
+	width: 55% ! important;
 }
