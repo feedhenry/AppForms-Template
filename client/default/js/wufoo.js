@@ -196,18 +196,26 @@ var apiController = {
     var btnText = '';
 
     function bindFn(element) {
-      var button = '<button>'+btnText+'</button>';
+      var button = document.createElement('input');
+      button.innerText = btnText;
+      jQuery(element).append(button);
       debugger;
-      jQuery(button).bind('click', function() {
+      button.click = function(){
+        apiController[fn]();
+        return false;
+      };
+      button.onclick = function(){
+        apiController[fn]();
+        return false;
+      }
+      /*jQuery(button).bind('click', function() {
         apiController[fn]();
         return false;
       });
       jQuery(button).onclick=function(){
         apiController[fn]();
         return false;
-      };
-      jQuery(element).append(button);
-      debugger;
+      };*/
     }
 
     switch (className) {
