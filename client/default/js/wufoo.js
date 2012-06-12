@@ -200,7 +200,7 @@ var apiController = {
       var input = element.getElementsByTagName('input')[0];
       button.innerText = btnText;
       button.inputField = element;
-      button.style.top = input.offsetTop.toString()+'px';
+      //button.style.top = input.offsetTop.toString()+'px';
       button.style.left = (input.offsetLeft+input.offsetWidth).toString()+'px';
       button.style.position = 'absolute';
       jQuery(element).append(button);
