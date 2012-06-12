@@ -197,7 +197,7 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
-      setTimeout(function() {
+      setTimeout(function() {        
         input.style.height = '23px';
         button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
         button.inputField = element;
@@ -240,14 +240,22 @@ var apiController = {
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
     alert('cam start');
-    navigator.camera.getPicture(function(imageData) {
-      alert('success');
-    }, function() {
-      alert('error');
-    }, {
-      quality: 10
+    $fh.cam({
+      act: 'picture',
+      source: 'camera',
+      uri: true
+    }, function(res) {
+      alert('Success ' + res.uri);
+      /*var field = jQuery('#' + id);
+      if (res.uri) {
+        var filePath = res.uri;
+        field[0].value = filePath.toString();
+        //field[0].blur();
+      }*/
+    }, function(msg, err) {
+      alert(msg);
     });
-},
+  },
 
   //Returns Lat and Long as sting
   fhGeo: function(input) {
