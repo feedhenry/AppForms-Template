@@ -32,8 +32,9 @@ updateWufooHTML = function(html, remove_script, cb) {
     });
 
     var processed_html = $('html').html();
-    processed_html = processed_html.replace('/images/icons/', 'http://wufoo.com/images/icons/');
-    processed_html = processed_html.replace('/stylesheets/public/forms/', 'http://wufoo.com/stylesheets/public/forms/');
+    processed_html = processed_html.getElementsByTagName('a')[0].href = '#';
+    processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
+    processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
     window.close();
     return cb(processed_html);
   });
@@ -92,7 +93,6 @@ exports.getForms = function(params, callback) {
   var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
   var auth_header = {'Authorization': auth};
 
-  console.log('before do request');
   request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
     console.log('got all forms');
     return callback(null, {
