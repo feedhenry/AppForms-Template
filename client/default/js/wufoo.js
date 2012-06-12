@@ -252,7 +252,7 @@ var apiController = {
   //Returns Lat and Long as sting
   fhGeo: function(input) {
     debugger;
-    var filed = input.getElementsByTagName('input');
+    var field = input.getElementsByTagName('input');
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
