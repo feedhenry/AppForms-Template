@@ -197,6 +197,7 @@ var apiController = {
 
     function bindFn(element) {
       var button = '<button>'+btnText+'</button>';
+      debugger;
       jQuery(button).bind('click', function() {
         apiController[fn]();
         return false;
