@@ -239,10 +239,10 @@ var apiController = {
   // Open camera and return URI
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
+    alert('cam start');
     $fh.cam({
       act: 'picture',
-      source: 'camera',
-      uri: true
+      source: 'camera'
     }, function(res) {
       alert('Success ' + res.uri);
       /*var field = jQuery('#' + id);
