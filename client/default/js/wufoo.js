@@ -237,7 +237,7 @@ var apiController = {
     $fh.cam({
       act: 'picture',
       source: 'camera',
-      uri: true
+      uri: 'true'
     }, function(res) {
       alert('Success '+res.uri);
       /*var field = jQuery('#' + id);
