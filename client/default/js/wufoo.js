@@ -240,20 +240,12 @@ var apiController = {
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
     alert('cam start');
-    $fh.cam({
-      act: 'picture',
-      source: 'camera'
-    }, function(res) {
-      alert('Success ' + res.uri);
-      /*var field = jQuery('#' + id);
-      if (res.uri) {
-        var filePath = res.uri;
-        field[0].value = filePath.toString();
-        //field[0].blur();
-      }*/
-    }, function(msg, err) {
-      alert(msg);
-    });
+    navigator.camera.getPicture(function(imageData) {
+      alert('success');
+    }, function() {
+      alert('error');
+    }, {
+      quality: 10
   },
 
   //Returns Lat and Long as sting
