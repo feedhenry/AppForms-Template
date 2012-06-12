@@ -198,13 +198,14 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       button.innerText = btnText;
+      button.inputField = element;
       jQuery(element).append(button);
-      button.click = function(element){
+      button.click = function(){
         debugger;
         apiController[fn]();
         return false;
       };
-      button.onclick = function(element){
+      button.onclick = function(){
         debugger;
         apiController[fn]();
         return false;
