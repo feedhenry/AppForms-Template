@@ -198,7 +198,7 @@ var apiController = {
     function bindFn(element) {
       var button = document.createElement('button');
       var input = element.getElementsByTagName('input')[0];
-      button.innerText = btnText;
+      button.innerHTML = '<img src="default/img/'+fn+'.png" />'
       button.inputField = element;
       button.style.top = (input.offsetTop-2).toString()+'px';
       button.style.left = (input.offsetLeft+input.offsetWidth).toString()+'px';
