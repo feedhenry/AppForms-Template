@@ -199,12 +199,12 @@ var apiController = {
       var input = element.getElementsByTagName('input')[0];
       setTimeout(function() {        
         input.style.height = '23px';
-        button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
+        button.innerHTML = '<img height="20px" src="../js/' + fn + '.png" />'
         button.inputField = element;
         button.style.top = (input.offsetTop - 2).toString() + 'px';
         button.style.left = (input.offsetLeft + input.offsetWidth).toString() + 'px';
         button.style.position = 'absolute';
-      }, 1000);
+      }, 100);
 
       jQuery(element).append(button);
 
