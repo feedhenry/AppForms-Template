@@ -31,11 +31,13 @@ updateWufooHTML = function(html, remove_script, cb) {
       }
     });
 
+    console.log('Before Process');
     var processed_html = $('html').html();
     processed_html = processed_html.getElementsByTagName('a')[0].href = '#';
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
     processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
     window.close();
+    console.log('After Process');
     return cb(processed_html);
   });
 };
