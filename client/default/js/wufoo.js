@@ -201,23 +201,15 @@ var apiController = {
       button.inputField = element;
       jQuery(element).append(button);
       button.click = function(){
-        debugger;
-        apiController[fn]();
+        var input = this.inputField;
+        apiController[fn](input);
         return false;
       };
       button.onclick = function(){
-        debugger;
-        apiController[fn]();
+        var input = this.inputField;
+        apiController[fn](input);
         return false;
-      }
-      /*jQuery(button).bind('click', function() {
-        apiController[fn]();
-        return false;
-      });
-      jQuery(button).onclick=function(){
-        apiController[fn]();
-        return false;
-      };*/
+      };
     }
 
     switch (className) {
@@ -234,7 +226,7 @@ var apiController = {
   },
 
   // Open camera and return URI
-  fhCam: function(id) {
+  fhCam: function(input) {
     $fh.cam({
       source: 'camera',
       uri: true
@@ -258,9 +250,9 @@ var apiController = {
   },
 
   //Returns Lat and Long as sting
-  fhGeo: function(id) {
+  fhGeo: function(input) {
     debugger;
-    var field = jQuery('#' + id);
+    var filed = input.getElementsByTagName('input');
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
