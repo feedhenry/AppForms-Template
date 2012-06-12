@@ -195,26 +195,29 @@ var apiController = {
     var fn = '';
 
     function bindFn(element) {
-      var button = document.createElement('button');
-      var input = element.getElementsByTagName('input')[0];
-      input.style.height = '23px';
-      button.innerHTML = '<img height="20px" src="./client/default/img/'+fn+'.png" />'
-      button.inputField = element;
-      button.style.top = (input.offsetTop-2).toString()+'px';
-      button.style.left = (input.offsetLeft+input.offsetWidth).toString()+'px';
-      button.style.position = 'absolute';
+      setTimeout(function() {
+        var button = document.createElement('button');
+        var input = element.getElementsByTagName('input')[0];
+        input.style.height = '23px';
+        button.innerHTML = '<img height="20px" src="./client/default/img/' + fn + '.png" />'
+        button.inputField = element;
+        button.style.top = (input.offsetTop - 2).toString() + 'px';
+        button.style.left = (input.offsetLeft + input.offsetWidth).toString() + 'px';
+        button.style.position = 'absolute';
+      }, 1000);
+
       jQuery(element).append(button);
 
-      button.click = function(){
+      button.click = function() {
         var input = this.inputField;
-        setTimeout(function(){
+        setTimeout(function() {
           apiController[fn](input);
         }, 50);
         return false;
       };
-      button.onclick = function(){
+      button.onclick = function() {
         var input = this.inputField;
-        setTimeout(function(){
+        setTimeout(function() {
           apiController[fn](input);
         }, 50);
         return false;
@@ -241,7 +244,7 @@ var apiController = {
       source: 'camera',
       uri: true
     }, function(res) {
-      alert('Success '+res.uri);
+      alert('Success ' + res.uri);
       /*var field = jQuery('#' + id);
       if (res.uri) {
         var filePath = res.uri;
