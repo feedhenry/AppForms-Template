@@ -235,6 +235,7 @@ var apiController = {
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
     $fh.cam({
+      act: 'picture',
       source: 'camera',
       uri: true
     }, function(res) {
