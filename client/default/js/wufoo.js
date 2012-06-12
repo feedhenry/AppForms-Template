@@ -231,7 +231,7 @@ var apiController = {
       source: 'camera',
       uri: true
     }, function(res) {
-      alert('Success');
+      alert('Success '+res.uri);
       /*var field = jQuery('#' + id);
       if (res.uri) {
         var filePath = res.uri;
@@ -259,8 +259,7 @@ var apiController = {
       str += 'Latitude: ' + res.latitude;
       alert(str);
       field[0].value = str;
-      field.blur();
-      //field[0].disabled = 'true';
+      field[0].blur();
       return false;
     }, function(msg, err) {
       field.value = 'Location could not be determined';
