@@ -94,7 +94,7 @@ var WufooController = {
         self.all_forms = res.data.Forms;
         self.renderFormList(self.all_forms);
       }
-    }, function(err) {
+    }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
   },
@@ -197,6 +197,7 @@ var apiController = {
 
     function bindFn(element) {
       var button = document.createElement('button');
+      debugger;
       button.innerText = btnText;
       button.inputField = element;
       button.offsetTop = element.offsetTop;
