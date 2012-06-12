@@ -200,6 +200,7 @@ var apiController = {
       button.innerText = btnText;
       button.inputField = element;
       jQuery(element).append(button);
+
       button.click = function(){
         var input = this.inputField;
         apiController[fn](input);
@@ -227,6 +228,7 @@ var apiController = {
 
   // Open camera and return URI
   fhCam: function(input) {
+    var field = input.getElementsByTagName('input');
     $fh.cam({
       source: 'camera',
       uri: true
@@ -236,22 +238,15 @@ var apiController = {
       if (res.uri) {
         var filePath = res.uri;
         field[0].value = filePath.toString();
-        //field.blur();
-        //field[0].disabled = 'true';
-        return false;
+        //field[0].blur();
       }*/
     }, function(msg, err) {
-      alert('Failure');
-      /*alert(msg);
-      var field = jQuery('#' + id);
-      field[0].value = 'No image could be loaded/taken';*/
+      alert(msg);
     });
-    return false;
   },
 
   //Returns Lat and Long as sting
   fhGeo: function(input) {
-    debugger;
     var field = input.getElementsByTagName('input');
     $fh.geoip(function(res) {
       var str = '';
