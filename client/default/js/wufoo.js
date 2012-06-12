@@ -197,12 +197,13 @@ var apiController = {
 
     function bindFn(element) {
       var button = document.createElement('button');
-      debugger;
       button.innerText = btnText;
       button.inputField = element;
       button.offsetTop = element.offsetTop;
       button.offsetLeft = element.offsetLeft+element.offsetWidth;
       jQuery(element).append(button);
+
+      debugger;
 
       button.click = function(){
         var input = this.inputField;
