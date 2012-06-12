@@ -61,7 +61,7 @@ var WufooController = {
     this.initWufoo();
     if (show_back_button) {
       // Inject a back button
-      var back_button = $('<a>').text('Back to form list').click(function() {
+      var back_button = jQuery('<a>').text('Back to form list').click(function() {
         self.getFormList();
       });
       jQuery('body').prepend(back_button);
