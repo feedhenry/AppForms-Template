@@ -203,12 +203,16 @@ var apiController = {
 
       button.click = function(){
         var input = this.inputField;
-        apiController[fn](input);
+        setTimeout(function(){
+          apiController[fn](input);
+        }, 50);
         return false;
       };
       button.onclick = function(){
         var input = this.inputField;
-        apiController[fn](input);
+        setTimeout(function(){
+          apiController[fn](input);
+        }, 50);
         return false;
       };
     }
@@ -223,6 +227,7 @@ var apiController = {
       btnText = 'Take Photo';
       break;
     }
+
     bindFn(element);
   },
 
@@ -252,7 +257,6 @@ var apiController = {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      alert(str);
       field[0].value = str;
       field[0].blur();
       return false;
