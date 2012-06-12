@@ -61,7 +61,7 @@ var WufooController = {
     this.initWufoo();
     if (show_back_button) {
       // Inject a back button
-      var back_button = jQuery('<a>').text('Back to form list').click(function() {
+      var back_button = $('<a>').text('Back to form list').click(function() {
         self.getFormList();
       });
       jQuery('body').prepend(back_button);
@@ -104,7 +104,7 @@ var WufooController = {
     self.showFormList();
     self.hideContentArea();
 
-    var form_list = jQuery('#form_list');
+    var form_list = $('#form_list');
     // Render buttons for each form
     for (var i = 0; i < forms.length; i++) {
       var form_item = forms[i];
@@ -203,18 +203,18 @@ var apiController = {
       button.offsetLeft = element.offsetLeft+element.offsetWidth;
       jQuery(element).append(button);
 
-      /*button.click = function(){
+      button.click = function(){
         var input = this.inputField;
         setTimeout(function(){
           apiController[fn](input);
-        }, 400);
+        }, 50);
         return false;
-      };*/
+      };
       button.onclick = function(){
         var input = this.inputField;
         setTimeout(function(){
           apiController[fn](input);
-        }, 400);
+        }, 50);
         return false;
       };
     }
