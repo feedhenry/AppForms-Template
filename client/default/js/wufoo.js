@@ -215,7 +215,7 @@ var apiController = {
         button.style.position = 'relative';
       }, 100);
 
-      jQuery(element).append(button);
+      jQuery(element.getElementsByTagName('div')[0]).append(button);
 
       button.click = function() {
         var input = this.inputField;
