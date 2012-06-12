@@ -148,34 +148,14 @@ $fh.ready(function() {
 
 
 /**************** API Binding Code ******************/
-/*
- * File that holds bindings for APIs
- */
-
 
 var config = {
   fields: [],
 };
 
-
-
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
 
-  /*addApiCalls: function() {
-    var neededApis = document.body.getElementsByClassName('$fh');
-    for (var i = 0; i < neededApis.length; i++) {
-      var classes = neededApis[i].className;
-      for (var j = 0; j < this.bindings.length; j++) {
-        if (classes.indexOf(this.bindings[j]) !== -1) {
-          var element = neededApis[i].getElementsByTagName('input')[0];
-          jQuery('#' + element.id).unbind();
-          this.bindFunction(this.bindings[j], element.id);
-          j = this.bindings.length;
-        }
-      }
-    }
-  },*/
   addApiCalls: function() {
     var neededApis = document.body.getElementsByClassName('$fh');
     for (var i = 0; i < neededApis.length; i++) {
@@ -241,12 +221,6 @@ var apiController = {
       uri: true
     }, function(res) {
       alert('Success ' + res.uri);
-      /*var field = jQuery('#' + id);
-      if (res.uri) {
-        var filePath = res.uri;
-        field[0].value = filePath.toString();
-        //field[0].blur();
-      }*/
     }, function(msg, err) {
       alert(msg);
     });
