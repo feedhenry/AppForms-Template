@@ -197,10 +197,11 @@ var apiController = {
 
     function bindFn(element) {
       var button = document.createElement('button');
+      var input = element.getElementsByTagName('input')[0];
       button.innerText = btnText;
       button.inputField = element;
-      button.style.top = element.offsetTop.toString()+'px';
-      button.style.left = (element.offsetLeft+element.offsetWidth).toString()+'px';
+      button.style.top = input.offsetTop.toString()+'px';
+      button.style.left = (input.offsetLeft+input.offsetWidth/2).toString()+'px';
       button.style.position = 'absolute';
       jQuery(element).append(button);
 
