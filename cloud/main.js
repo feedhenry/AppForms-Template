@@ -23,7 +23,7 @@ updateWufooHTML = function(html, remove_script, cb) {
       var script_source = script.attr('src');
 
       if (script_source) {
-        script.attr('src', "http://wufoo.com" + script_source);
+        script.attr('src', "https://wufoo.com" + script_source);
       }
 
       if (remove_script) {
@@ -34,9 +34,10 @@ updateWufooHTML = function(html, remove_script, cb) {
     // Remove link to wufoo
     $('#logo').find('a')[0].href = '#';
     var processed_html = $('html').html();
-    processed_html = processed_html.replace('/images/icons/', 'http://wufoo.com/images/icons/');
-    processed_html = processed_html.replace('/stylesheets/public/forms/', 'http://wufoo.com/stylesheets/public/forms/');
+    processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
+    processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
     window.close();
+    console.log(processed_html);
     return cb(processed_html);
   });
 };
