@@ -18,6 +18,12 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
+        // Wufoo's Array prototype alteration breaks 
+        // PhoneGap, so we remove it.
+        if (window.Prototype) {
+          delete Array.prototype.toJSON;
+        }
+
         // Wufoo Global - init() - available, 
         // call and clear the interval
         init();
@@ -143,7 +149,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   },
 
   showContentArea: function() {
