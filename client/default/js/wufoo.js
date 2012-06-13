@@ -186,7 +186,7 @@ var apiController = {
         button.style.top = '4px';
         button.style.left = '10px';
         button.style.position = 'relative';
-      }, 100);
+      }, 50);
 
       jQuery(element.getElementsByTagName('div')[0]).append(button);
 
