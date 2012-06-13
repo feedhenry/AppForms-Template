@@ -32,7 +32,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     });
 
     // Remove link to wufoo
-    $('a')[0].href = '#';
+    $('#logo').find('a')[0].href = '#';
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
     processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
