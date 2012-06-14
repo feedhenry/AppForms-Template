@@ -222,7 +222,7 @@ var apiController = {
       alert('Could not send image');
     }
     self.getImageData(self.images[0], success, fail);
-  }
+  },
 
   addApiCalls: function() {
     var neededApis = document.body.getElementsByClassName('$fh');

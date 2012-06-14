@@ -44,6 +44,7 @@ html, body {
 #fh_wufoo_progressbar { 
   height: 3%; 
   width: 90%;
+  margin: 0 auto;
   position: absolute;
   top: 45%;
   background: #555;
