@@ -201,6 +201,7 @@ var apiController = {
       return;
     }
 
+    jQuery('#fh_wufoo_progressbar').show();
     var success = function(data, imageObj) {
       $fh.act({
         act: 'postPicture',
