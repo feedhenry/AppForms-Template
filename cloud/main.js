@@ -31,6 +31,20 @@ updateWufooHTML = function(html, remove_script, cb) {
       }
     });
 
+    //Process signature field
+    var sigFields = $('li.fhsig');
+    if(sigFields.length > 0){
+      $.each(sigFields, function(i, field){
+        var sigValue = $('<input>',{"class":'sigValue',type:'hidden', name:'sigValue' + i});
+        var sigField = $('<div>', {"class":'sigField'});
+        var sigImg = $('<img>', {"class":'sigImage'});
+        sigButton = $('<button>', {"class":'cap_sig_btn'});
+        sigField.append(sigImg).append(sigButton);
+        $(field).find('div').remove();
+        $(field).append(sigValue).append(sigField);
+      })
+    }
+
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
     processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
