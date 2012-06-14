@@ -183,6 +183,7 @@ var apiController = {
     // First call to send images, show progress bar
     if (count) {
       self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
+      jQuery('#progress').width(0);
       jQuery('#fh_wufoo_progressbar').show();
     }
 
