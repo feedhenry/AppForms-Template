@@ -169,6 +169,7 @@ var apiController = {
   bindings: ['fhgeo', 'fhcam'],
   images: [],
 
+  // get image daat from device as base 64 then upload (win function)
   getImageData: function(imageObj, win, fail) {
     // Create a file reader
     var reader = new FileReader();
@@ -193,9 +194,7 @@ var apiController = {
     reader.readAsDataURL(imageObj.uri);
   },
 
-  /*
-   * If we have images send them, else return
-   */
+  //If we have images send them, else return
   sendImages: function() {
     var self = this;
     if(!self.images || self.images.length===0){
@@ -206,12 +205,13 @@ var apiController = {
       $fh.act({
         act: 'postPicture',
         req: {
-          ts: images[0].ts,
-          formUrl: images[0].url
-          data:
+          ts: imageObj.ts,
+          formUrl: imageObj.url
+          data: data
         }
       }, function(res){
         alert('Upload Success');
+        // Remove image at index 1 and send next image in queue(array)
         apiController.images.splice(0, 1);
         sendImages();
       }, function(msg, err){
