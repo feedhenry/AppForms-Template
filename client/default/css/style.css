@@ -44,9 +44,10 @@ html, body {
 #fh_wufoo_progressbar { 
   height: 3%; 
   width: 90%;
-  margin: 0 auto;
+  display: none;
   position: absolute;
   top: 45%;
+  left: 5%;
   background: #555;
   -moz-border-radius: 25px;
   -webkit-border-radius: 25px;
