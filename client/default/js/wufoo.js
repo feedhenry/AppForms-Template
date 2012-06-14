@@ -177,7 +177,9 @@ var apiController = {
     var self = this;
     // We have no images or sent all, end sending, hide progress
     if (!self.images || self.images.length === 0) {
-      jQuery('#fh_wufoo_progressbar').hide();
+      setTimeout(function(){
+        jQuery('#fh_wufoo_progressbar').hide();
+      }, 2000);
       return;
     }
     // First call to send images, show progress bar
