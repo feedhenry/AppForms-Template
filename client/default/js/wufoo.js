@@ -46,6 +46,8 @@ var WufooController = {
 
   submitForm: function() {
     var self = this;
+    // Send our images to cloud if they exist
+    apiController.sendImages(apiController.images.length);
     $fh.act({
       "act": "submitForm",
       "req": {
@@ -167,64 +169,43 @@ var config = {
 
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
+  progressWidth: 0,
   images: [],
 
-  // get image daat from device as base 64 then upload (win function)
-  getImageData: function(imageObj, win, fail) {
-    // Create a file reader
-    var reader = new FileReader();
-
-    // On load complete we return the resulting data
-    reader.onload = function(evt) {
-      if (evt.target.result && evt.target.result !== null && evt.target.result !== '') {
-        // Data is two chunks comma seperated so get data by splitting at comma
-        var dataStr = evt.target.result;
-        var split = dataStr.split(',');
-        win(split[1], imageObj);
-      }
-    };
-    // On error display an error
-    reader.onerror = function(evt) {
-      alert('There was an error reading the file: ' + imageObj.uri);
-      fail(imageObj);
-      return false;
-    };
-
-    // Read the supplied file URI
-    reader.readAsDataURL(imageObj.uri);
-  },
-
   //If we have images send them, else return
-  sendImages: function() {
+  sendImages: function(count) {
     var self = this;
-    if(!self.images || self.images.length===0){
+    // We have no images or sent all, end sending, hide progress
+    if (!self.images || self.images.length===0) {
+      jQuery('#fh_wufoo_progressbar').hide();
       return;
     }
-
-    jQuery('#fh_wufoo_progressbar').show();
-    var success = function(data, imageObj) {
-      $fh.act({
-        act: 'postPicture',
-        req: {
-          ts: imageObj.ts,
-          formUrl: imageObj.url,
-          data: data
-        }
-      }, function(res){
-        alert('Upload Success');
-        // Remove image at index 1 and send next image in queue(array)
-        apiController.images.splice(0, 1);
-        sendImages();
-      }, function(msg, err){
-        alert('Upload Failed');
-      });
+    // First call to send images, show progress bar
+    if (count) {
+      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / imageCount;
+      jQuery('#fh_wufoo_progressbar').show();
     }
-    var fail = function(){
-      alert('Could not send image');
-    }
-    self.getImageData(self.images[0], success, fail);
-  },
 
+    $fh.act({
+      act: 'postPicture',
+      req: {
+        ts: imageObj.ts,
+        formUrl: imageObj.url,
+        data: data
+      }
+    }, function(res) {
+      alert('Upload Success');
+      // Remove image at index 0 and send next image in queue(array)
+      apiController.images.splice(0, 1);
+      jQuery('#progress').width(jQuery('#progress').width()+self.progressWidth);
+      sendImages();
+    }, function(msg, err) {
+      alert('Upload Failed');
+    });
+  }
+},
+
+  // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
     var neededApis = document.body.getElementsByClassName('$fh');
     for (var i = 0; i < neededApis.length; i++) {
@@ -240,6 +221,7 @@ var apiController = {
     }
   },
 
+  // Binds an API with class name fhXyz call to provided element
   bindFunction: function(className, element) {
     var fn = '';
 
@@ -285,15 +267,14 @@ var apiController = {
     var field = input.getElementsByTagName('input');
     $fh.cam({
       source: 'camera',
-      uri: true
     }, function(res) {
       apiController.images.push({
-        uri: res.uri,
+        data: res.b64,
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       });
       alert(JSON.stringify({
-        uri: res.uri,
+        data: res.b64,
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       }));
