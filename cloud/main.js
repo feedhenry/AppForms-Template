@@ -134,9 +134,6 @@ exports.submitForm = function(params, callback) {
 
 
 
-var util = require('util');
-var transfer = require('transfer');
-
 exports.transfer = function(params, callback) {
   console.log('in transfer with ts: ' + Date.now());
   transfer.doTransfer(function(err, listOfUrls) {
