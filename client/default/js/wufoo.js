@@ -271,11 +271,6 @@ var apiController = {
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       });
-      alert(JSON.stringify({
-        data: imageData,
-        formUrl: jQuery('form').attr('action').toString(),
-        ts: new Date().getTime()
-      }));
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
