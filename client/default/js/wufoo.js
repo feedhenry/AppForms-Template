@@ -18,6 +18,9 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
+        if (window.Prototype) {
+          delete Array.prototype.toJSON;
+        }
         // Wufoo Global - init() - available, 
         // call and clear the interval
         init();
@@ -25,6 +28,9 @@ var WufooController = {
 
         // Bind events
         self.bind();
+
+        // process fields
+        self.initSignatureFields();
       }
     }, 50);
   },
@@ -45,7 +51,6 @@ var WufooController = {
       // buttons aren't serialized by default
       serialized_form += "&previousPageButton=";
     }
-
     var self = this;
     $fh.act({
       "act": "submitForm",
@@ -148,6 +153,60 @@ var WufooController = {
 
   showContentArea: function() {
     jQuery('#fh_wufoo_content').show();
+  },
+
+  initSignatureFields: function(){
+    var self = this;
+    var sigButton = jQuery('.cap_sig_btn');
+    if(sigButton.length == 0){
+      jQuery.each(jQuery('li.fhsig'), function(i, el){
+        var sigValue = jQuery('<input>',{"class":'sigValue',type:'hidden', name:'sigValue' + i});
+        var sigField = jQuery('<div>', {"class":'sigField'});
+        var sigImg = jQuery('<img>', {"class":'sigImage', width: 150, height: 40});
+        sigButton = jQuery('<button>', {"class":'cap_sig_btn', text:'Capture'});
+        sigField.append(sigImg).append(sigButton);
+        jQuery(el).find('div').remove();
+        jQuery(el).append(sigValue).append(sigField);
+      })
+    } else {
+      jQuery('.cap_sig_btn').text('Capture');
+      jQuery('.sigImage').attr('width', 150).attr('height', 40);
+    }
+    jQuery.each(sigButton, function(i, button){
+      jQuery(this).unbind().bind('click', function(e){
+        self.captureSignature(e, jQuery(button).parent().parent());
+      })
+    })
+  },
+  
+  captureSignature: function(e, ctx){
+    e.preventDefault();
+    if(ctx.data('sigpadInited')){
+      jQuery('.sigPad', ctx).show();
+    } else {
+      var template = ['<form class="sigPad">'];
+      template.push('<ul class="sigNav">');
+      template.push('<li class="clearButton"><a href="#clear">Clear</a></li>');
+      template.push('</ul>');
+      template.push('<div class="sig sigWrapper">');
+      template.push('<canvas class="pad" width="248" height="100"></canvas>');
+      template.push('<input type="hidden" name="output" class="output">');
+      template.push('</div>');
+      template.push('<button class="cap_sig_done_btn" type="button">Done</button>');
+      template.push('</form>');
+    
+      var sigField = jQuery(template.join(""));
+      jQuery('.sigField', ctx).append(sigField);
+      jQuery('.sigPad', ctx).signaturePad({drawOnly:true, lineTop: 80});
+      ctx.data('sigpadInited',true);
+      jQuery('.cap_sig_done_btn', ctx).bind('click', function(e){
+        var sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
+        var img = jQuery('.sigImage', ctx)[0];
+        img.src = sigData;
+        jQuery('.sigValue', ctx).val(sigData);
+        jQuery('.sigPad', ctx).hide();
+      })
+    }
   }
 };
 
