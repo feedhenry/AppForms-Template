@@ -195,13 +195,12 @@ var apiController = {
         data: self.images[0].data
       }
     }, function(res) {
-      alert('Upload Success');
       // Remove image at index 0 and send next image in queue(array)
       apiController.images.splice(0, 1);
       jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
-      self.sendImages();
     }, function(msg, err) {
-      alert('Upload Failed');
+      alert('Uploading an image failed');
+      self.sendImages();
     });
   },
 
