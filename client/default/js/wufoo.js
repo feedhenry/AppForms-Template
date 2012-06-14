@@ -64,16 +64,17 @@ var WufooController = {
     var self = this;
     this.hideFormList();
     this.showContentArea();
-    jQuery('#content').html(html);
+    jQuery('#fh_wufoo_content').html(html);
     this.initWufoo();
     if (show_back_button) {
       // Inject a back button
-      var back_button = $('<a>').text('Back to form list').click(function() {
-        self.getFormList();
+      var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
+        self.getFormList(false);
+        jQuery(this).remove();
+        return false;
       });
       jQuery('body').prepend(back_button);
     }
-    apiController.addApiCalls();
   },
 
   getForm: function(form_hash, show_back_button) {
@@ -111,7 +112,7 @@ var WufooController = {
     self.showFormList();
     self.hideContentArea();
 
-    var form_list = $('#form_list');
+    var form_list = $('#fh_wufoo_form_list');
     // Render buttons for each form
     for (var i = 0; i < forms.length; i++) {
       var form_item = forms[i];
@@ -126,19 +127,20 @@ var WufooController = {
   },
 
   hideFormList: function() {
-    jQuery('#form_list').hide();
+    jQuery('#fh_wufoo_form_list').hide();
   },
 
   hideContentArea: function() {
-    jQuery('#content').hide();
+    jQuery('#fh_wufoo_content').hide();
   },
 
   showFormList: function() {
-    jQuery('#form_list').show();
+    jQuery('#fh_wufoo_form_list').show();
+    window.scrollTo(0,0);
   },
 
   showContentArea: function() {
-    jQuery('#content').show();
+    jQuery('#fh_wufoo_content').show();
   }
 };
 
