@@ -261,24 +261,25 @@ var apiController = {
     bindFn(element);
   },
 
-  // Open camera and return URI
+  // Open camera and return base64 data
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
-    $fh.cam({
-      source: 'camera',
-    }, function(res) {
+
+    navigator.camera.getPicture(function(imageData) {
       apiController.images.push({
-        data: res.b64,
+        data: imageData,
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       });
       alert(JSON.stringify({
-        data: res.b64,
+        data: imageData,
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       }));
-    }, function(msg, err) {
-      alert('Camera Error');
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
     });
   },
 
