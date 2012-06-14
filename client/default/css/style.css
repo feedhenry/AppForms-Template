@@ -42,7 +42,7 @@ html, body {
  * Image progress code
  */
 #fh_wufoo_progressbar { 
-  height: 5%; 
+  height: 3%; 
   width: 90%;
   position: absolute;
   top: 45%;

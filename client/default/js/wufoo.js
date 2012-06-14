@@ -206,7 +206,7 @@ var apiController = {
         act: 'postPicture',
         req: {
           ts: imageObj.ts,
-          formUrl: imageObj.url
+          formUrl: imageObj.url,
           data: data
         }
       }, function(res){
