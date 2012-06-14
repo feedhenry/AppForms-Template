@@ -137,7 +137,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   },
 
   showContentArea: function() {
@@ -163,8 +163,66 @@ var config = {
   fields: [],
 };
 
+
+
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
+  images: [],
+
+  getImageData: function(imageObj, win, fail) {
+    // Create a file reader
+    var reader = new FileReader();
+
+    // On load complete we return the resulting data
+    reader.onload = function(evt) {
+      if (evt.target.result && evt.target.result !== null && evt.target.result !== '') {
+        // Data is two chunks comma seperated so get data by splitting at comma
+        var dataStr = evt.target.result;
+        var split = dataStr.split(',');
+        win(split[1], imageObj);
+      }
+    };
+    // On error display an error
+    reader.onerror = function(evt) {
+      alert('There was an error reading the file: ' + imageObj.uri);
+      fail(imageObj);
+      return false;
+    };
+
+    // Read the supplied file URI
+    reader.readAsDataURL(imageObj.uri);
+  },
+
+  /*
+   * If we have images send them, else return
+   */
+  sendImages: function() {
+    var self = this;
+    if(!self.images || self.images.length===0){
+      return;
+    }
+
+    var success = function(data, imageObj) {
+      $fh.act({
+        act: 'postPicture',
+        req: {
+          ts: images[0].ts,
+          formUrl: images[0].url
+          data:
+        }
+      }, function(res){
+        alert('Upload Success');
+        apiController.images.splice(0, 1);
+        sendImages();
+      }, function(msg, err){
+        alert('Upload Failed');
+      });
+    }
+    var fail = function(){
+      alert('Could not send image');
+    }
+    self.getImageData(self.images[0], success, fail);
+  }
 
   addApiCalls: function() {
     var neededApis = document.body.getElementsByClassName('$fh');
@@ -224,15 +282,22 @@ var apiController = {
   // Open camera and return URI
   fhCam: function(input) {
     var field = input.getElementsByTagName('input');
-    alert('cam start');
     $fh.cam({
-      act: 'picture',
       source: 'camera',
       uri: true
     }, function(res) {
-      alert('Success ' + res.uri);
+      apiController.images.push({
+        uri: res.uri,
+        formUrl: jQuery('form').attr('action').toString(),
+        ts: new Date().getTime()
+      });
+      alert(JSON.stringify({
+        uri: res.uri,
+        formUrl: jQuery('form').attr('action').toString(),
+        ts: new Date().getTime()
+      }));
     }, function(msg, err) {
-      alert(msg);
+      alert('Camera Error');
     });
   },
 
