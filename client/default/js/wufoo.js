@@ -176,7 +176,7 @@ var apiController = {
   sendImages: function(count) {
     var self = this;
     // We have no images or sent all, end sending, hide progress
-    if (!self.images || self.images.length===0) {
+    if (!self.images || self.images.length === 0) {
       jQuery('#fh_wufoo_progressbar').hide();
       return;
     }
@@ -189,21 +189,20 @@ var apiController = {
     $fh.act({
       act: 'postPicture',
       req: {
-        ts: imageObj.ts,
-        formUrl: imageObj.url,
-        data: data
+        ts: self.images[0].ts,
+        formUrl: self.images[0].formUrl,
+        data: self.images[0].data
       }
     }, function(res) {
       alert('Upload Success');
       // Remove image at index 0 and send next image in queue(array)
       apiController.images.splice(0, 1);
-      jQuery('#progress').width(jQuery('#progress').width()+self.progressWidth);
+      jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
       sendImages();
     }, function(msg, err) {
       alert('Upload Failed');
     });
-  }
-},
+  },
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
