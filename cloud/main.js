@@ -169,7 +169,7 @@ exports.postPicture = function(params, callback) {
     "fields": {
       "data": params.data,
       "ts": params.ts,
-      "formUrl": params.formUrl
+      "formUrl": params.formUrl,
       "transferred": false
     }
   }, function(err, data) {
