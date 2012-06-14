@@ -134,29 +134,6 @@ exports.submitForm = function(params, callback) {
 
 
 
-exports.transfer = function(params, callback) {
-  console.log('in transfer with ts: ' + Date.now());
-  transfer.doTransfer(function(err, listOfUrls) {
-    console.log('doTransfer callback, err: ', err);
-    console.log('doTransfer callback, listOfUrls: ', listOfUrls);
-
-    var urls = (listOfUrls)?listOfUrls:[]; 
-
-    var ret = {
-      status:"ok",
-      message:"saved " + urls.length + " images",
-      urls: urls
-    };
-
-    if (err) {
-      ret.status = "error";
-      ret.message = err.toString();
-    }
-
-    return callback(null, ret);
-  });
-};
-
 exports.postPicture = function(params, callback) {
   console.log('in postPicture with ts:' + Date.now());
 
