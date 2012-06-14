@@ -42,12 +42,12 @@ html, body {
  * Image progress code
  */
 #fh_wufoo_progressbar { 
-  height: 3%; 
+  height: 2.5%; 
   width: 90%;
   display: none;
   position: absolute;
-  top: 45%;
-  left: 5%;
+  top: 92%;
+  left: 2.5%;
   background: #555;
   -moz-border-radius: 25px;
   -webkit-border-radius: 25px;

@@ -182,7 +182,7 @@ var apiController = {
     }
     // First call to send images, show progress bar
     if (count) {
-      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / imageCount;
+      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
       jQuery('#fh_wufoo_progressbar').show();
     }
 
@@ -198,7 +198,7 @@ var apiController = {
       // Remove image at index 0 and send next image in queue(array)
       apiController.images.splice(0, 1);
       jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
-      sendImages();
+      self.sendImages();
     }, function(msg, err) {
       alert('Upload Failed');
     });
