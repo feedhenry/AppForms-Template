@@ -31,29 +31,31 @@ updateWufooHTML = function(html, remove_script, cb) {
       }
     });
 
+    // Create btn function
+    function createButton(name){
+      var button = window.document.createElement('button');
+      button.style.top = '4px';
+      button.style.left = '10px';
+      button.style.position = 'relative';
+      button.inputField = field;
+      button.innerHTML = '<img style="min-height:20px;" src="./img/' + name + '.png" />';
+      return button;
+    }
     // API binding names
     var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
-    console.log('Remove link href');
     $('#logo').find('a')[0].href = '#';
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
-    console.log('Begin for each field');
     $.each(fields, function(i, field){
       var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])!=-1){
-          var button = window.document.createElement('button');
-          button.style.top = '4px';
-          button.style.left = '10px';
-          button.style.position = 'relative';
-          button.inputField = field;
-          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
+          var button = createButton(bindings[i]);
           $(field.getElementsByTagName('div')[0]).append(button);
         }
       }
     });
-    console.log('End for each field');
 
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
