@@ -39,8 +39,8 @@ updateWufooHTML = function(html, remove_script, cb) {
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
     console.log('Begin for each field');
-    $('.fh').each(function(i){
-      var classes = $(this).attr('class');
+    $.each(fields, function(i, field){
+      var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])){
           var button = window.document.createElement('button');
@@ -49,7 +49,7 @@ updateWufooHTML = function(html, remove_script, cb) {
           button.style.position = 'relative';
           button.inputField = field;
           button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
-          $(this).getElementsByTagName('div')[0].append(button);
+          $(field.getElementsByTagName('div')[0]).append(button);
         }
       }
     });
