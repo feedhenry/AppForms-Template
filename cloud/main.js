@@ -42,7 +42,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     $.each(fields, function(i, field){
       var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
-        if(classes.indexOf(bindings[i])){
+        if(classes.indexOf(bindings[i])!=-1){
           var button = window.document.createElement('button');
           button.style.top = '4px';
           button.style.left = '10px';
@@ -50,7 +50,6 @@ updateWufooHTML = function(html, remove_script, cb) {
           button.inputField = field;
           button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
           $(field.getElementsByTagName('div')[0]).append(button);
-          i=bindings.length;
         }
       }
     });
