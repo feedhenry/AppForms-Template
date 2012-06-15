@@ -238,51 +238,10 @@ var apiController = {
         }, 50);
         return false;
       };
-
-
-    /*var fn = '';
-
-    function bindFn(element) {
-      var button = document.createElement('button');
-      var input = element.getElementsByTagName('input')[0];
-
-      // Make sure fields are rendered before styling
-      setTimeout(function() {
-        input.style.height = '23px';
-        button.innerHTML = '<img style="min-height:20px;" src="./img/' + fn + '.png" />'
-        button.inputField = element;
-        button.style.top = '4px';
-        button.style.left = '10px';
-        button.style.position = 'relative';
-      }, 50);
-
-      jQuery(element.getElementsByTagName('div')[0]).append(button);
-
-      button.onclick = function() {
-        var input = this.inputField;
-        setTimeout(function() {
-          apiController[fn](input);
-        }, 50);
-        return false;
-      };
-    }
-
-    switch (className) {
-    case 'fhgeo':
-      fn = 'fhGeo';
-      break;
-    case 'fhcam':
-      fn = 'fhCam';
-      break;
-    }
-
-    bindFn(element);*/
   },
 
   // Open camera and return base64 data
   fhcam: function(input) {
-    var field = input.getElementsByTagName('input');
-
     navigator.camera.getPicture(function(imageData) {
       apiController.images.push({
         data: imageData,
@@ -298,15 +257,14 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhgeo: function(input) {
-    var field = input.getElementsByTagName('input');
     $fh.geoip(function(res) {
       var str = '';
       str += 'Longitude: ' + res.longitude + ', ';
       str += 'Latitude: ' + res.latitude;
-      field[0].value = str;
-      field[0].blur();
+      input.value = str;
+      input.blur();
     }, function(msg, err) {
-      field.value = 'Location could not be determined';
+      input.value = 'Location could not be determined';
     });
   }
 };
