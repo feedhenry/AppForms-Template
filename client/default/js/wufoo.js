@@ -216,7 +216,7 @@ var apiController = {
       for(var j=0; j<self.bindings.length; j++){
         if(className.indexOf(self.bindings[j])!==-1){
           var element = neededApis[i].getElementsByTagName('input')[0];
-          self.bindFunction(bindings[j], neededApis[i]);
+          self.bindFunction(self.bindings[j], neededApis[i]);
         }
       }
     }
