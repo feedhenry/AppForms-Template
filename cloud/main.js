@@ -39,10 +39,9 @@ updateWufooHTML = function(html, remove_script, cb) {
     function fieldLogic(field){
       console.log('Field logic start');
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
-      console.log(type);
       if(type==='file'){
         $(field.getElementsByTagName('input')[0]).hide();
-        console.log(JSON.stringify($(field.getElementsByTagName('input')[0]).hide()));
+        console.log('Hide file element');
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
       }
       console.log('Field logic end');
