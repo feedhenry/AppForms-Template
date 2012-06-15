@@ -46,6 +46,19 @@ updateWufooHTML = function(html, remove_script, cb) {
       })
     }
 
+    //Process map field
+    var mapFields = $('li.fhmap');
+    if(mapFields.length > 0){
+      $.each(mapFields, function(i, field){
+        var originInput = $(field).find('div').find('input');
+        var mapValue = $('<input>',{"class":'mapValue',type:'hidden', name:'fh_map_' + originInput.attr('name')});
+        var mapDiv = $('<div>', {'class':'fh_map_canvas'});
+        $(field).find('div').remove();
+        $(field).append(mapValue).append(mapDiv);
+      })
+    }
+    
+
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
     processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');

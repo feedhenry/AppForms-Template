@@ -31,6 +31,9 @@ var WufooController = {
 
         // process fields
         self.initSignatureFields();
+        self.getLocation(function(location){
+          self.initMapFields(location);
+        });
       }
     }, 50);
   },
@@ -60,7 +63,7 @@ var WufooController = {
       }
     }, function(res) {
       self.renderFormHtml(res.html);
-      self.initWufoo();
+      //self.initWufoo();
     }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
@@ -93,7 +96,7 @@ var WufooController = {
       }
     }, function(res) {
       self.renderFormHtml(res.html, show_back_button);
-      self.initWufoo();
+      //self.initWufoo();
     }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
@@ -175,7 +178,7 @@ var WufooController = {
     }
     jQuery.each(sigButton, function(i, button){
       jQuery(this).unbind().bind('click', function(e){
-        self.captureSignature(e, jQuery(button).parent().parent());
+        self.captureSignature(e, jQuery(button).parents('li:first'));
       })
     })
   },
@@ -210,6 +213,74 @@ var WufooController = {
         jQuery('.sigValue', ctx).val(sigData);
         jQuery('.sigPad', ctx).hide();
       })
+    }
+  },
+
+  getLocation: function(callback){
+    $fh.geo({act:'register', interval: 0}, function(location){
+        callback(location);
+      }, function(err){
+        if(typeof navigator.geolocation != "undefined"){
+            navigator.geolocation.getCurrentPosition(function(position){
+              var location = {lon: position.coords.longitude, lat: position.coords.latitude};
+              callback(location);
+            })
+          }
+      });
+  },
+
+  initMapFields: function(location){
+    var self = this;
+    var mapCanvas = jQuery('.fh_map_canvas');
+    if(mapCanvas.length == 0){
+      jQuery.each(jQuery('li.fhmap'), function(i, field){
+        var originInput = jQuery(field).find('div').find('input');
+        var mapValue = jQuery('<input>',{"class":'mapValue',type:'hidden', name:'fh_map_' + originInput.attr('name')});
+        var mapDiv = jQuery('<div>', {'class':'fh_map_canvas'});
+        jQuery(field).find('div').remove();
+        jQuery(field).append(mapValue).append(mapDiv);
+      })
+    }
+    var firstMapField = jQuery('.fh_map_canvas:first').parents('li:first');
+    self.showMap(location, firstMapField, function(){
+      jQuery.each(jQuery('.fh_map_canvas:gt(0)'), function(i, canvas){
+        self.showMap(location, jQuery(this).parents('li:first'));
+      })
+    });
+  },
+
+  showMap: function(location, ctx, callback){
+    if(typeof ctx.data('fh_map') == "undefined"){
+      var mapDiv = jQuery('.fh_map_canvas', ctx);
+      $fh.map({target: mapDiv[0], lon: location.lon, lat: location.lat, zoom: 8}, function(res){
+          var map = res.map;
+          ctx.data('fh_map', map);
+          var marker = new google.maps.Marker({
+            position: map.getCenter(),
+            map: map,
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+            title: "Drag this to set position"
+          });
+          ctx.data('fh_map_marker', marker);
+          google.maps.event.addListener(marker, "dragend", function(){
+            var ps = marker.getPosition().toString();
+            jQuery('.mapValue', ctx).val(ps);
+          })
+          if(callback){
+            callback();
+          }
+      })
+    } else {
+      var map = ctx.data('fh_map');
+      var marker = ctx.data('fh_map_marker');
+      var center = new google.maps.LatLng(location.lat, location.lon);
+      map.panTo(center);
+      marker.setPosition(center);
+      jQuery('.mapValue', ctx).val(center.toString());
+      if(callback){
+        callback();
+      }
     }
   }
 };

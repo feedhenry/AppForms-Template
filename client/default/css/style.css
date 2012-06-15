@@ -37,3 +37,8 @@ html, body {
   display: block;
   margin: 10px 0 10px 0;
 }
+
+.fh_map_canvas {
+  height: 300px;
+  width: 100%;
+}
