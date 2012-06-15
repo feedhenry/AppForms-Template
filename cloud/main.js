@@ -39,7 +39,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     function fieldLogic(field){
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
       if(type==='file'){
-        $(field.getElementsByTagName('input')[0]).style.display = "none";
+        //$(field.getElementsByTagName('input')[0]).style.display = "none";
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
       }
     }
