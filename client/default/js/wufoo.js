@@ -197,10 +197,13 @@ var WufooController = {
     
       var sigField = jQuery(template.join(""));
       jQuery('.sigField', ctx).append(sigField);
-      jQuery('.sigPad', ctx).signaturePad({drawOnly:true, lineTop: 80});
+      var sigPad = jQuery('.sigPad', ctx).signaturePad({drawOnly:true, lineTop: 80});
       ctx.data('sigpadInited',true);
       jQuery('.cap_sig_done_btn', ctx).bind('click', function(e){
-        var sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
+        var sigData = sigPad.getSignatureImage();
+        if(sigData == "data:,"){ 
+          var sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
+        }
         var img = jQuery('.sigImage', ctx)[0];
         img.src = sigData;
         jQuery('.sigValue', ctx).val(sigData);

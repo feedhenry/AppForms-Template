@@ -35,7 +35,8 @@ updateWufooHTML = function(html, remove_script, cb) {
     var sigFields = $('li.fhsig');
     if(sigFields.length > 0){
       $.each(sigFields, function(i, field){
-        var sigValue = $('<input>',{"class":'sigValue',type:'hidden', name:'sigValue' + i});
+        var originInput = $(field).find('div').find('input');
+        var sigValue = $('<input>',{"class":'sigValue',type:'hidden', name: originInput.attr('name'), id: originInput.attr('id')});
         var sigField = $('<div>', {"class":'sigField'});
         var sigImg = $('<img>', {"class":'sigImage'});
         sigButton = $('<button>', {"class":'cap_sig_btn'});
