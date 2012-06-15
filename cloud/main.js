@@ -1,6 +1,8 @@
 var util = require('util');
 var request = require('request');
 var jsdom = require("jsdom");
+var url = require("url");
+var https = require("https");
 
 /* 
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
@@ -33,13 +35,24 @@ updateWufooHTML = function(html, remove_script, cb) {
 
     //Process signature field
     var sigFields = $('li.fhsig');
-    if(sigFields.length > 0){
-      $.each(sigFields, function(i, field){
+    if (sigFields.length > 0) {
+      $.each(sigFields, function(i, field) {
         var originInput = $(field).find('div').find('input');
-        var sigValue = $('<input>',{"class":'sigValue',type:'hidden', name: originInput.attr('name'), id: originInput.attr('id')});
-        var sigField = $('<div>', {"class":'sigField'});
-        var sigImg = $('<img>', {"class":'sigImage'});
-        sigButton = $('<button>', {"class":'cap_sig_btn'});
+        var sigValue = $('<input>', {
+          "class": 'sigValue',
+          type: 'hidden',
+          name: originInput.attr('name'),
+          id: originInput.attr('id')
+        });
+        var sigField = $('<div>', {
+          "class": 'sigField'
+        });
+        var sigImg = $('<img>', {
+          "class": 'sigImage'
+        });
+        sigButton = $('<button>', {
+          "class": 'cap_sig_btn'
+        });
         sigField.append(sigImg).append(sigButton);
         $(field).find('div').remove();
         $(field).append(sigValue).append(sigField);
@@ -54,25 +67,54 @@ updateWufooHTML = function(html, remove_script, cb) {
   });
 };
 
-processFormData = function(form_data, cb) {
+formDataToMultipart = function(form_data, cb) {
   var data = form_data;
+  var multipart_data = [];
 
-  // clickOrEnter needs to be set to blank or 
-  // multi-page forms won't work correctly
-  data = data.replace('clickOrEnter=click', 'clickOrEnter=');
+  form_data.forEach(function(field) {
+    if (field.name == 'clickOrEnter') {
+      // clickOrEnter needs to be set to blank or 
+      // multi-page forms won't work correctly
+      field.value = '';
+    }
 
-  // Parse the queryString
-  var form_data = querystring.parse(data);
-  console.log(form_data);
+    if (field.type == 'text') {
+      if (field.value != '') {
+        var multipart_part = {
+          'Content-Disposition': 'form-data; name="' + field.name + '";"',
+          body: field.value,
+        }
+      } else {
+        var multipart_part = {
+          'Content-Disposition': 'form-data; name="' + field.name + '";"',
+          body: '',
+        }
+      }
+      multipart_data.push(multipart_part);
+    } else if (field.type == 'file') {
 
-  // var base64Matcher = new RegExp("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$");
-  // if (base64Matcher.test(someString)) {
-  //     // It's likely base64 encoded.
-  // } else {
-  //     // It's definitely not base64 encoded.
-  // }
+      if (field.value != '') {
+        var multipart_part = {
+          'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
+          'Content-Type': 'image/jpeg',
+          body: new Buffer(field.value, 'base64'),
+        }
+      } else {
+        var multipart_part = {
+          'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
+          'Content-Type': 'image/jpeg',
+          body: '',
+        }
+      }
 
-  return data;
+      multipart_data.push(multipart_part);
+    } else {
+      console.log('Error, unknown field type: ' + field.type);
+    }
+  });
+
+  console.log(multipart_data);
+  return multipart_data;
 };
 
 /* 
@@ -116,9 +158,14 @@ exports.getForms = function(params, callback) {
   var forms_url = "https://" + domain + "/api/v3/forms.json";
 
   var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
-  var auth_header = {'Authorization': auth};
+  var auth_header = {
+    'Authorization': auth
+  };
 
-  request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
+  request.get({
+    url: forms_url,
+    headers: auth_header
+  }, function(error, res, body) {
     return callback(null, {
       data: JSON.parse(body)
     });
@@ -130,21 +177,63 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  var post_data = processFormData(params.form_data);
+  // var multipart_data = formDataToMultipart(params.form_data);
+  // var req = request({
+  //   method: 'POST',
+  //   uri: params.form_submission_url,
+  //   followAllRedirects: true,
+  //   headers: {
+  //     'Content-Type': 'multipart/form-data'
+  //   },
+  //   multipart: multipart_data
+  // }, function(error, response, body) {
+  //   updateWufooHTML(body, true, function(processed_html) {
+  //     return callback(null, {
+  //       "html": processed_html
+  //     });
+  //   });
+  // });
+  var form_url = url.parse(params.form_submission_url);
 
-  var req = request.post({
-    url: params.form_submission_url,
-    body: post_data,
-    followAllRedirects: true,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Length': post_data.length
-    }
-  }, function(error, res, body) {
-    updateWufooHTML(body, true, function(processed_html) {
-      return callback(null, {
-        "html": processed_html
-      });
-    });
+  var post_options = {
+    host: form_url.host,
+    port: '443',
+    path: form_url.pathname,
+    method: 'POST'
+  };
+
+
+  // Set up the request
+  var form_req = https.request(post_options, function(res) {
+    console.log("Got response: " + res.body);
+    console.log("Got response: " + res.statusCode);
   });
+
+  var boundary = Math.random().toString(16);
+  form_req.setHeader('Content-Type', 'multipart/form-data; boundary="' + boundary + '"');
+
+  params.form_data.forEach(function(field) {
+    if (field.type == 'text') {
+      writeMultipart(form_req, boundary, field.name, field.value);
+    } else if (field.name == 'file') {
+
+    }
+  });
+  form_req.end();
 };
+
+/* 
+ * Utility method to flush Multipart form data
+ * out onto request, prior to sending
+ */
+
+function writeMultipart(form_req, boundary, name, value, file, filename) {
+  if (file) {
+
+  } else {
+    var part = "--" + boundary + "\r\n";
+    part += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
+    part += value + "\r\n";
+    form_req.write(part);
+  }
+}
