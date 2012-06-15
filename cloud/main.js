@@ -37,19 +37,16 @@ updateWufooHTML = function(html, remove_script, cb) {
     console.log('Remove link href');
     $('#logo').find('a')[0].href = '#';
     // Modify the HTML inputs to have buttons etc
-    console.log('Begin create button');
-    var button = window.document.createElement('button');
-    button.style.top = '4px';
-    button.style.left = '10px';
-    button.style.position = 'relative';
-    console.log('End create button');
-    
     var fields = $('.fh');
     console.log('Begin for each field');
     $.each(fields, function(i, field){
       var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])){
+          var button = window.document.createElement('button');
+          button.style.top = '4px';
+          button.style.left = '10px';
+          button.style.position = 'relative';
           button.inputField = field;
           button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
           $(field.getElementsByTagName('div')[0]).append(button);
