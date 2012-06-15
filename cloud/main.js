@@ -45,6 +45,18 @@ processFormData = function(form_data, cb) {
   // clickOrEnter needs to be set to blank or 
   // multi-page forms won't work correctly
   data = data.replace('clickOrEnter=click', 'clickOrEnter=');
+
+  // Parse the queryString
+  var form_data = querystring.parse(data);
+  console.log(form_data);
+
+  // var base64Matcher = new RegExp("^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{4})$");
+  // if (base64Matcher.test(someString)) {
+  //     // It's likely base64 encoded.
+  // } else {
+  //     // It's definitely not base64 encoded.
+  // }
+
   return data;
 };
 
