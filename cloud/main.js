@@ -31,18 +31,6 @@ updateWufooHTML = function(html, remove_script, cb) {
       }
     });
 
-    // Create btn function
-    var createButton = function(name){
-      console.log('Create button start');
-      var button = window.document.createElement('button');
-      button.style.top = '4px';
-      button.style.left = '10px';
-      button.style.position = 'relative';
-      button.inputField = field;
-      button.innerHTML = '<img style="min-height:20px;" src="./img/' + name + '.png" />';
-      console.log('Create button end');
-      return button;
-    }
     // API binding names
     var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
@@ -53,7 +41,12 @@ updateWufooHTML = function(html, remove_script, cb) {
       var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])!=-1){
-          var button = createButton(bindings[i]);
+          var button = window.document.createElement('button');
+          button.style.top = '4px';
+          button.style.left = '10px';
+          button.style.position = 'relative';
+          button.inputField = field;
+          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
           $(field.getElementsByTagName('div')[0]).append(button);
         }
       }
