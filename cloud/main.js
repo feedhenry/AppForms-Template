@@ -42,18 +42,21 @@ updateWufooHTML = function(html, remove_script, cb) {
     button.style.top = '4px';
     button.style.left = '10px';
     button.style.position = 'relative';
+    console.log('End create button');
     
     var fields = $('.fh');
+    console.log('Begin for each field');
     $.each(fields, function(i, field){
-      var classes = (jQuery(field).attr('class'))
+      var classes = (jQuery(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])){
           button.inputField = field;
-          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />'
+          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
+          $(field.getElementsByTagName('div')[0]).append(button);
         }
       }
-      $(field.getElementsByTagName('div')[0]).append(button);
     });
+    console.log('End for each field');
 
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
