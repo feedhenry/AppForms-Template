@@ -42,6 +42,7 @@ updateWufooHTML = function(html, remove_script, cb) {
       console.log(type);
       if(type==='file'){
         $(field.getElementsByTagName('input')[0]).hide();
+        console.log(JSON.stringify($(field.getElementsByTagName('input')[0]).hide()));
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
       }
       console.log('Field logic end');
