@@ -37,14 +37,11 @@ updateWufooHTML = function(html, remove_script, cb) {
     $('#logo').find('a')[0].href = '#';
     // Do field logic function
     function fieldLogic(field){
-      console.log('Field logic start');
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
       if(type==='file'){
-        $(field.getElementsByTagName('input')[0]).hide();
-        console.log('Hide file element');
+        $(field.getElementsByTagName('input')[0]).style.display = "none";
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
       }
-      console.log('Field logic end');
     }
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
