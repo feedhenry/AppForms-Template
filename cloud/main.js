@@ -37,8 +37,8 @@ updateWufooHTML = function(html, remove_script, cb) {
     console.log('Remove link href');
     $('#logo').find('a')[0].href = '#';
     // Modify the HTML inputs to have buttons etc
-    console.log('Create button');
-    var button = document.createElement('button');
+    console.log('Begin create button');
+    var button = window.document.createElement('button');
     button.style.top = '4px';
     button.style.left = '10px';
     button.style.position = 'relative';
