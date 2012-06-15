@@ -38,7 +38,8 @@ updateWufooHTML = function(html, remove_script, cb) {
     // Do field logic function
     function fieldLogic(field){
       console.log('Field logic start');
-      var type = ($(field).attr('type'));
+      var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
+      console.log(type);
       if(type==='file'){
         $(field.getElementsByTagName('div')[0]).hide();
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
