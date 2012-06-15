@@ -209,22 +209,25 @@ var apiController = {
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
-    var neededApis = document.body.getElementsByClassName('$fh');
-    for (var i = 0; i < neededApis.length; i++) {
-      var classes = neededApis[i].className;
-      for (var j = 0; j < this.bindings.length; j++) {
-        if (classes.indexOf(this.bindings[j]) !== -1) {
+    var self = this;
+    var neededApis = document.body.getElementsByClassName('apibtn');
+    for(var i=0; i<neededApis.length; i++){
+      var className = neededApis[i].className;
+      for(var j=0; j<self.bindings.length; j++){
+        if(className.indexOf(self.bindings[j])!==-1){
           var element = neededApis[i].getElementsByTagName('input')[0];
-          jQuery('#' + element.id).unbind();
-          this.bindFunction(this.bindings[j], neededApis[i]);
-          j = this.bindings.length;
+          self.bindFunction(bindings[j], neededApis[i]);
         }
       }
     }
   },
 
   // Binds an API with class name fhXyz call to provided element
-  bindFunction: function(className, element) {
+  bindFunction: function(fnName, btn) {
+    console.log('BIND FN');
+    console.log(fnName);
+    console.log(btn);
+
     /*var fn = '';
 
     function bindFn(element) {
