@@ -228,6 +228,18 @@ var apiController = {
     console.log(fnName);
     console.log(btn);
 
+    var inputField = btn.parentElement.getElementsByTagName('input')[0];
+    console.log(inputField);
+
+    btn.onclick = function() {
+        var input = this.inputField;
+        setTimeout(function() {
+          apiController[fnName](inputField);
+        }, 50);
+        return false;
+      };
+
+
     /*var fn = '';
 
     function bindFn(element) {
@@ -268,7 +280,7 @@ var apiController = {
   },
 
   // Open camera and return base64 data
-  fhCam: function(input) {
+  fhcam: function(input) {
     var field = input.getElementsByTagName('input');
 
     navigator.camera.getPicture(function(imageData) {
@@ -285,7 +297,7 @@ var apiController = {
   },
 
   //Returns Lat and Long as sting
-  fhGeo: function(input) {
+  fhgeo: function(input) {
     var field = input.getElementsByTagName('input');
     $fh.geoip(function(res) {
       var str = '';
