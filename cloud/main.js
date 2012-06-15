@@ -34,7 +34,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     // API binding names
     var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
-    $('#logo').find('a')[0].href = '#';
+    $('#logo a')[0].href = '#';
     // Do field logic function
     function fieldLogic(field){
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));

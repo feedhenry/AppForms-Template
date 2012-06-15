@@ -177,7 +177,6 @@ var apiController = {
     var self = this;
     // We have no images or sent all, end sending, hide progress
     if (!self.images || self.images.length === 0) {
-      jQuery('#uploadStatus').text('UPLOAD COMPLETE');
       setTimeout(function(){
         jQuery('#fh_wufoo_progressbar').hide();
       }, 2000);
@@ -188,7 +187,6 @@ var apiController = {
       self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
       jQuery('#progress').width(0);
       jQuery('#fh_wufoo_progressbar').show();
-      jQuery('#uploadStatus').text('UPLOADING IMAGES');
     }
 
     $fh.act({
