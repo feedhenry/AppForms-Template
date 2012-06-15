@@ -241,7 +241,7 @@ var apiController = {
         formUrl: jQuery('form').attr('action').toString(),
         ts: new Date().getTime()
       });
-      input.parentElement.getElementsByTagName('div')[0].innerHTML = "Picture saved. Thank You!"
+      input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved. Thank You!"
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
