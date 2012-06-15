@@ -202,7 +202,7 @@ var WufooController = {
       jQuery('.cap_sig_done_btn', ctx).bind('click', function(e){
         var sigData = sigPad.getSignatureImage();
         if(sigData == "data:,"){ 
-          var sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
+          sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
         }
         var img = jQuery('.sigImage', ctx)[0];
         img.src = sigData;
