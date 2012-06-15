@@ -41,7 +41,7 @@ updateWufooHTML = function(html, remove_script, cb) {
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
       console.log(type);
       if(type==='file'){
-        $(field.getElementsByTagName('div')[0]).hide();
+        $(field.getElementsByTagName('input')[0]).hide();
         $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
       }
       console.log('Field logic end');
