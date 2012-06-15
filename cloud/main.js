@@ -32,13 +32,15 @@ updateWufooHTML = function(html, remove_script, cb) {
     });
 
     // Create btn function
-    function createButton(name){
+    var createButton = function(name){
+      console.log('Create button start');
       var button = window.document.createElement('button');
       button.style.top = '4px';
       button.style.left = '10px';
       button.style.position = 'relative';
       button.inputField = field;
       button.innerHTML = '<img style="min-height:20px;" src="./img/' + name + '.png" />';
+      console.log('Create button end');
       return button;
     }
     // API binding names
