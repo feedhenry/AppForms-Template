@@ -51,11 +51,7 @@ updateWufooHTML = function(html, remove_script, cb) {
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])!=-1){
           var button = window.document.createElement('button');
-          // button.style.top = '4px';
-          // button.style.left = '10px';
-          // button.style.position = 'relative';
           button.className = 'apibtn '+bindings[i];
-          button.inputField = field;
           button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
           $(field.getElementsByTagName('div')[0]).append(button);
         }
