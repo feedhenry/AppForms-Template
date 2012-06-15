@@ -34,10 +34,11 @@ updateWufooHTML = function(html, remove_script, cb) {
     // API binding names
     var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
+    console.log('Remove link href');
     $('#logo').find('a')[0].href = '#';
     // Modify the HTML inputs to have buttons etc
+    console.log('Create button');
     var button = document.createElement('button');
-    button.inputField = element;
     button.style.top = '4px';
     button.style.left = '10px';
     button.style.position = 'relative';
@@ -47,6 +48,7 @@ updateWufooHTML = function(html, remove_script, cb) {
       var classes = (jQuery(field).attr('class'))
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])){
+          button.inputField = field;
           button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />'
         }
       }
