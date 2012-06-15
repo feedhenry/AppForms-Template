@@ -160,7 +160,8 @@ var WufooController = {
     var sigButton = jQuery('.cap_sig_btn');
     if(sigButton.length == 0){
       jQuery.each(jQuery('li.fhsig'), function(i, el){
-        var sigValue = jQuery('<input>',{"class":'sigValue',type:'hidden', name:'sigValue' + i});
+        var originInput = jQuery(el).find('div').find('input');
+        var sigValue = jQuery('<input>',{"class":'sigValue',type:'hidden', name:'fh_file_' + originInput.attr('name')});
         var sigField = jQuery('<div>', {"class":'sigField'});
         var sigImg = jQuery('<img>', {"class":'sigImage', width: 150, height: 40});
         sigButton = jQuery('<button>', {"class":'cap_sig_btn', text:'Capture'});
