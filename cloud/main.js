@@ -35,10 +35,21 @@ updateWufooHTML = function(html, remove_script, cb) {
     var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
     $('#logo').find('a')[0].href = '#';
+    // Do field logic function
+    function fieldLogic(field){
+      console.log('Field logic start');
+      var type = ($(field).attr('type'));
+      if(type==='file'){
+        $(field.getElementsByTagName('div')[0]).hide();
+        $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
+      }
+      console.log('Field logic end');
+    }
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
     $.each(fields, function(i, field){
       var classes = ($(field).attr('class'));
+      fieldLogic(field);
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])!=-1){
           var button = window.document.createElement('button');
