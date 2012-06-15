@@ -224,15 +224,8 @@ var apiController = {
 
   // Binds an API with class name fhXyz call to provided element
   bindFunction: function(fnName, btn) {
-    console.log('BIND FN');
-    console.log(fnName);
-    console.log(btn);
-
     var inputField = btn.parentElement.getElementsByTagName('input')[0];
-    console.log(inputField);
-
     btn.onclick = function() {
-        var input = this.inputField;
         setTimeout(function() {
           apiController[fnName](inputField);
         }, 50);
