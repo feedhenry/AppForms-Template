@@ -47,7 +47,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     var fields = $('.fh');
     console.log('Begin for each field');
     $.each(fields, function(i, field){
-      var classes = (jQuery(field).attr('class'));
+      var classes = ($(field).attr('class'));
       for(var i=0; i<bindings.length; i++){
         if(classes.indexOf(bindings[i])){
           button.inputField = field;
