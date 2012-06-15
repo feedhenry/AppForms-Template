@@ -225,7 +225,7 @@ var apiController = {
 
   // Binds an API with class name fhXyz call to provided element
   bindFunction: function(className, element) {
-    var fn = '';
+    /*var fn = '';
 
     function bindFn(element) {
       var button = document.createElement('button');
@@ -261,7 +261,7 @@ var apiController = {
       break;
     }
 
-    bindFn(element);
+    bindFn(element);*/
   },
 
   // Open camera and return base64 data

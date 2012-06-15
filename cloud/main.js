@@ -31,8 +31,28 @@ updateWufooHTML = function(html, remove_script, cb) {
       }
     });
 
+    // API binding names
+    var bindings = ['fhgeo', 'fhcam'];
     // Remove link to wufoo
     $('#logo').find('a')[0].href = '#';
+    // Modify the HTML inputs to have buttons etc
+    var button = document.createElement('button');
+    button.inputField = element;
+    button.style.top = '4px';
+    button.style.left = '10px';
+    button.style.position = 'relative';
+    
+    var fields = $('.fh');
+    $.each(fields, function(i, field){
+      var classes = (jQuery(field).attr('class'))
+      for(var i=0; i<bindings.length; i++){
+        if(classes.indexOf(bindings[i])){
+          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />'
+        }
+      }
+      $(field.getElementsByTagName('div')[0]).append(button);
+    });
+
     var processed_html = $('html').html();
     processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
     processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
