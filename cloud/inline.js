@@ -5,6 +5,7 @@ var crypto = require('crypto');
 
 exports = module.exports = function (opts, cb) {
   var html = opts.html;
+  var id = opts.id || 'defaultId'; // used for hashing, should be unique for each unique html block passed in
   var removeScripts = opts.removeScripts || false;
   var baseUrl = opts.baseUrl || '';
 
@@ -45,7 +46,8 @@ exports = module.exports = function (opts, cb) {
               if (!err && res.statusCode == 200) {
                 // create hash of src url
                 var shasum = crypto.createHash('sha1');
-                shasum.update(src);
+                // shasum.update(id + src);
+                shasum.update(src); // don't include id as this script will be the same for each form
                 var hash = shasum.digest('hex');
 
                 // do replacement of $$ with $$$ because of special meaning of $ in replace
@@ -59,7 +61,7 @@ exports = module.exports = function (opts, cb) {
           } else {
             // inline script, add to placeholders for processing later
             var shasum = crypto.createHash('sha1');
-            shasum.update('SCRIPTPLACEHOLDER-' + (inlineCounter += 1));
+            shasum.update(id + (inlineCounter += 1));
             var hash = shasum.digest('hex');
             scriptPlaceholders[hash] = script.text().replace(/\$\$/g, '$$$$$$');
             script.after(hash).remove();
