@@ -1,81 +1,22 @@
 var util = require('util');
 var request = require('request');
-var jsdom = require("jsdom");
 var url = require("url");
-var https = require("https");
+var inline = require('./inline.js');
 
-/* 
+/*
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
  * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
  * from the HTML, as this JavaScript will already be loaded client side as this point.
  */
 updateWufooHTML = function(html, remove_script, cb) {
-  var jsdom = require("jsdom"),
-      window = jsdom.jsdom().createWindow();
-
-  jsdom.jQueryify(window, './jquery.js', function() {
-    var $ = window.$;
-
-    $('html')[0].innerHTML = html;
-
-    // Process Wufoo Scripts
-    var scripts = $('script');
-    $.each(scripts, function(i, script) {
-      var script = $(script);
-      var script_source = script.attr('src');
-
-      if (script_source) {
-        script.attr('src', "https://wufoo.com" + script_source);
-      }
-
-      if (remove_script) {
-        script.remove();
-      }
-    });
-
-    //Process signature field
-    var sigFields = $('li.fhsig');
-    if (sigFields.length > 0) {
-      $.each(sigFields, function(i, field) {
-        var originInput = $(field).find('div').find('input');
-        var sigValue = $('<input>', {
-          "class": 'sigValue',
-          type: 'hidden',
-          name: originInput.attr('name'),
-          id: originInput.attr('id')
-        });
-        var sigField = $('<div>', {
-          "class": 'sigField'
-        });
-        var sigImg = $('<img>', {
-          "class": 'sigImage'
-        });
-        sigButton = $('<button>', {
-          "class": 'cap_sig_btn'
-        });
-        sigField.append(sigImg).append(sigButton);
-        $(field).find('div').remove();
-        $(field).append(sigValue).append(sigField);
-      })
+  inline({
+    "html": html,
+    "baseUrl": "https://wufoo.com",
+    "removeScripts": remove_script
+  }, function (err, processed_html) {
+    if (err != null) {
+      console.error('error inlining html:' + err);
     }
-
-    //Process map field
-    var mapFields = $('li.fhmap');
-    if(mapFields.length > 0){
-      $.each(mapFields, function(i, field){
-        var originInput = $(field).find('div').find('input');
-        var mapValue = $('<input>',{"class":'mapValue',type:'hidden', name:'fh_map_' + originInput.attr('name')});
-        var mapDiv = $('<div>', {'class':'fh_map_canvas'});
-        $(field).find('div').remove();
-        $(field).append(mapValue).append(mapDiv);
-      })
-    }
-    
-
-    var processed_html = $('html').html();
-    processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
-    processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
-    window.close();
     return cb(processed_html);
   });
 };
@@ -94,39 +35,25 @@ formDataToMultipart = function(form_data, cb) {
     if (field.type == 'text') {
       if (field.value != '') {
         var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '";"',
+          'Content-Disposition': 'form-data; name="' + field.name + '"',
           body: field.value,
         }
-      } else {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '";"',
-          body: '',
-        }
+        multipart_data.push(multipart_part);
       }
-      multipart_data.push(multipart_part);
     } else if (field.type == 'file') {
-
       if (field.value != '') {
         var multipart_part = {
           'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
           'Content-Type': 'image/jpeg',
           body: new Buffer(field.value, 'base64'),
         }
-      } else {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
-          'Content-Type': 'image/jpeg',
-          body: '',
-        }
+        multipart_data.push(multipart_part);
       }
-
-      multipart_data.push(multipart_part);
     } else {
       console.log('Error, unknown field type: ' + field.type);
     }
   });
 
-  console.log(multipart_data);
   return multipart_data;
 };
 
@@ -190,63 +117,21 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  // var multipart_data = formDataToMultipart(params.form_data);
-  // var req = request({
-  //   method: 'POST',
-  //   uri: params.form_submission_url,
-  //   followAllRedirects: true,
-  //   headers: {
-  //     'Content-Type': 'multipart/form-data'
-  //   },
-  //   multipart: multipart_data
-  // }, function(error, response, body) {
-  //   updateWufooHTML(body, true, function(processed_html) {
-  //     return callback(null, {
-  //       "html": processed_html
-  //     });
-  //   });
-  // });
-  var form_url = url.parse(params.form_submission_url);
-
-  var post_options = {
-    host: form_url.host,
-    port: '443',
-    path: form_url.pathname,
-    method: 'POST'
-  };
-
-
-  // Set up the request
-  var form_req = https.request(post_options, function(res) {
-    console.log("Got response: " + res.body);
-    console.log("Got response: " + res.statusCode);
+  var multipart_data = formDataToMultipart(params.form_data);
+  var req = request({
+    method: 'POST',
+    uri: params.form_submission_url,
+    followAllRedirects: true,
+    headers: {
+      'content-type': 'multipart/form-data;'
+    },
+    multipart: multipart_data
+  }, function(e, r, b) {
+    console.log(r);
+    updateWufooHTML(b, true, function(processed_html) {
+      return callback(null, {
+        "html": processed_html
+      });
+    });
   });
-
-  var boundary = Math.random().toString(16);
-  form_req.setHeader('Content-Type', 'multipart/form-data; boundary="' + boundary + '"');
-
-  params.form_data.forEach(function(field) {
-    if (field.type == 'text') {
-      writeMultipart(form_req, boundary, field.name, field.value);
-    } else if (field.name == 'file') {
-
-    }
-  });
-  form_req.end();
 };
-
-/* 
- * Utility method to flush Multipart form data
- * out onto request, prior to sending
- */
-
-function writeMultipart(form_req, boundary, name, value, file, filename) {
-  if (file) {
-
-  } else {
-    var part = "--" + boundary + "\r\n";
-    part += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
-    part += value + "\r\n";
-    form_req.write(part);
-  }
-}
