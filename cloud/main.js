@@ -13,7 +13,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     "html": html,
     "baseUrl": "https://wufoo.com",
     "removeScripts": remove_script
-  }, function (err, processed_html) {
+  }, function(err, processed_html) {
     if (err != null) {
       console.error('error inlining html:' + err);
     }
@@ -132,6 +132,75 @@ exports.submitForm = function(params, callback) {
       return callback(null, {
         "html": processed_html
       });
+    });
+  });
+};
+
+exports.postPicture = function(params, callback) {
+  $fh.db({
+    "act": "create",
+    "type": "pictures",
+    "fields": {
+      "data": params.data,
+      "ts": params.ts,
+      "formUrl": params.formUrl,
+      "transferred": false
+    }
+  }, function(err, data) {
+    if (err) {
+      console.log('Picture write failed');
+      console.log("Error " + err);
+      return callback(null, {
+        status: "Fail"
+      });
+    } else {
+      console.log('Picture wrote okay!');
+/*setTimeout(function() {
+        exports.transfer(function(err, ret) {
+          console.log('transfer finished with status: ', ret);
+        });
+      }, 1); */
+      return callback(null, {
+        status: "Success"
+      });
+    }
+  });
+};
+
+exports.getList = function(params, callback) {
+  $fh.db({
+    "act": "list",
+    "type": "pictures"
+  }, function(err, data) {
+    return callback(null, {
+      status: "ok",
+      pictures: data
+    });
+  });
+};
+
+exports.deletePictures = function(params, callback) {
+  $fh.db({
+    "act": "list",
+    "type": "pictures",
+    "fields": ["ts", "transferred"]
+  }, function(err, data) {
+    var pictures = data.list;
+    var picture_count = pictures.length;
+
+    for (var i = 0; i < picture_count; i++) {
+      var picture = pictures[i];
+      var guid = picture.guid;
+
+      $fh.db({
+        "act": "delete",
+        "type": "pictures",
+        "guid": guid
+      }, function(err, data) {});
+    };
+
+    return callback(null, {
+      status: "ok"
     });
   });
 };
