@@ -18,8 +18,7 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
-
-        // Wufoo's Array prototype alteration breaks 
+        // Wufoo's Array prototype alteration breaks
         // PhoneGap, so we remove it.
         if (window.Prototype) {
           delete Array.prototype.toJSON;
@@ -86,6 +85,7 @@ var WufooController = {
     var serialized_form = this.serializeForm();
 
     var self = this;
+    apiController.sendImages(apiController.images.length);
     $fh.act({
       "act": "submitForm",
       "req": {
@@ -115,10 +115,11 @@ var WufooController = {
       });
       jQuery('body').prepend(back_button);
     }
+    apiController.addApiCalls();
   },
 
   getForm: function(form_hash, show_back_button) {
-    form_hash = form_hash || wufoo_config.form_hash;
+    var form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
     $fh.act({
@@ -127,7 +128,6 @@ var WufooController = {
         "form_hash": form_hash
       }
     }, function(res) {
-
       // cache html in local storage (asynchronous)
       var html = res.html;
       $fh.data({
@@ -301,3 +301,106 @@ $fh.ready(function() {
     alert('No Wufoo config available, aborting.');
   }
 });
+
+
+/**************** API Binding Code ******************/
+
+var config = {
+  fields: [],
+};
+
+var apiController = {
+  bindings: ['fhgeo', 'fhcam'],
+  progressWidth: 0,
+  images: [],
+
+  //If we have images send them, else return
+  sendImages: function(count) {
+    var self = this;
+    // We have no images or sent all, end sending, hide progress
+    if (!self.images || self.images.length === 0) {
+      setTimeout(function(){
+        jQuery('#fh_wufoo_progressbar').hide();
+      }, 2000);
+      return;
+    }
+    // First call to send images, show progress bar
+    if (count) {
+      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
+      jQuery('#progress').width(0);
+      jQuery('#fh_wufoo_progressbar').show();
+    }
+
+    $fh.act({
+      act: 'postPicture',
+      req: {
+        ts: self.images[0].ts,
+        formUrl: self.images[0].formUrl,
+        data: self.images[0].data
+      }
+    }, function(res) {
+      // Remove image at index 0 and send next image in queue(array)
+      apiController.images.splice(0, 1);
+      jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
+      self.sendImages();
+    }, function(msg, err) {
+      alert('Uploading an image failed');
+      self.sendImages();
+    });
+  },
+
+  // Get elements with class $fh and add needed api to click events
+  addApiCalls: function() {
+    var self = this;
+    var neededApis = document.body.getElementsByClassName('apibtn');
+    for(var i=0; i<neededApis.length; i++){
+      var className = neededApis[i].className;
+      for(var j=0; j<self.bindings.length; j++){
+        if(className.indexOf(self.bindings[j])!==-1){
+          var element = neededApis[i].getElementsByTagName('input')[0];
+          self.bindFunction(self.bindings[j], neededApis[i]);
+        }
+      }
+    }
+  },
+
+  // Binds an API with class name fhXyz call to provided element
+  bindFunction: function(fnName, btn) {
+    var inputField = btn.parentElement.getElementsByTagName('input')[0];
+    btn.onclick = function() {
+        setTimeout(function() {
+          apiController[fnName](inputField);
+        }, 50);
+        return false;
+      };
+  },
+
+  // Open camera and return base64 data
+  fhcam: function(input) {
+    navigator.camera.getPicture(function(imageData) {
+      apiController.images.push({
+        data: imageData,
+        formUrl: jQuery('form').attr('action').toString(),
+        ts: new Date().getTime()
+      });
+      input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved. Thank You!"
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
+    });
+  },
+
+  //Returns Lat and Long as sting
+  fhgeo: function(input) {
+    $fh.geoip(function(res) {
+      var str = '';
+      str += 'Longitude: ' + res.longitude + ', ';
+      str += 'Latitude: ' + res.latitude;
+      input.value = str;
+      input.blur();
+    }, function(msg, err) {
+      input.value = 'Location could not be determined';
+    });
+  }
+};
