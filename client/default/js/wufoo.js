@@ -48,6 +48,7 @@ var WufooController = {
   },
 
   serializeForm: function(add_previous_button) {
+    var self = this;
     var fields = jQuery('form').serializeArray();
     var previous_button = jQuery('#previousPageButton');
 
@@ -63,7 +64,9 @@ var WufooController = {
     // Add metadata
     jQuery.each(fields, function(i, field) {
       var el = jQuery('input[name=' + field.name + ']');
-      if (el.parents().hasClass('fhcam')) {
+      if((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")){
+        fields[i] = self.specialFields[field.name].toJSON();
+      } else if (el.parents().hasClass('fhcam')) {
         // Camera file
         field['type'] = "file";
         field['filename'] = "picture";
@@ -84,7 +87,7 @@ var WufooController = {
 
   submitForm: function() {
     var serialized_form = this.serializeForm();
-
+    console.log(serialized_form);
     var self = this;
     $fh.act({
       "act": "submitForm",
@@ -219,14 +222,15 @@ var WufooController = {
 
   initFields: function() {
     var self = this;
-    self.sigFields = {};
+    self.specialFields = self.specialFields || {};
     jQuery.each(jQuery('li.fhsig'), function(i, el){
       var sigField = jQuery(el).sigField({});
-      self.sigFields[sigField.getName()] = sigField;
+      self.specialFields[sigField.getName()] = sigField;
     });
     utils.getLocation(function(location){
       jQuery.each(jQuery('li.fhmap'), function(i, field){
         var mapField = jQuery(field).mapField({'location': location});
+        self.specialFields[mapField.getName()] = mapField;
       })
     });
   }
