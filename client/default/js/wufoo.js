@@ -118,18 +118,46 @@ var WufooController = {
   },
 
   getForm: function(form_hash, show_back_button) {
-    var form_hash = form_hash || wufoo_config.form_hash;
+    form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
+
     $fh.act({
       "act": "getForm",
       "req": {
         "form_hash": form_hash
       }
     }, function(res) {
-      self.renderFormHtml(res.html, show_back_button);
+
+      // cache html in local storage (asynchronous)
+      var html = res.html;
+      $fh.data({
+        "act": "save",
+        "key": "form-" + form_hash,
+        "val": html
+      }, function () {
+        console.log('Form html save ok');
+      }, function (msg, err) {
+        console.log('Form html save failed:' + msg);
+      });
+
+      // ok to leave this happen straight away ($fh.data above is asynchronous)
+      // as it doesn't depend on the save having completed
+      self.renderFormHtml(html, show_back_button);
       self.initWufoo();
     }, function(msg, err) {
-      console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+      console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+      // falling back to cached form, if available
+      $fh.data({
+        key: "form-" + form_hash
+      }, function(res) {
+        // got form html from cache, render it
+        self.renderFormHtml(res.val, show_back_button);
+        self.initWufoo();
+      }, function(msg, err) {
+        //load failed
+        console.log('Form html load from cache failed');
+        // TODO: alert user?
+      });
     });
   },
 

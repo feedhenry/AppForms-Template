@@ -1,67 +1,22 @@
 var util = require('util');
 var request = require('request');
-var jsdom = require("jsdom");
 var url = require("url");
+var inline = require('./inline.js');
 
-/* 
+/*
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
  * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
  * from the HTML, as this JavaScript will already be loaded client side as this point.
  */
 updateWufooHTML = function(html, remove_script, cb) {
-  var jsdom = require("jsdom"),
-      window = jsdom.jsdom().createWindow();
-
-  jsdom.jQueryify(window, './jquery.js', function() {
-    var $ = window.$;
-
-    $('html')[0].innerHTML = html;
-
-    // Process Wufoo Scripts
-    var scripts = $('script');
-    $.each(scripts, function(i, script) {
-      var script = $(script);
-      var script_source = script.attr('src');
-
-      if (script_source) {
-        script.attr('src', "https://wufoo.com" + script_source);
-      }
-
-      if (remove_script) {
-        script.remove();
-      }
-    });
-
-    //Process signature field
-    var sigFields = $('li.fhsig');
-    if (sigFields.length > 0) {
-      $.each(sigFields, function(i, field) {
-        var originInput = $(field).find('div').find('input');
-        var sigValue = $('<input>', {
-          "class": 'sigValue',
-          type: 'hidden',
-          name: originInput.attr('name'),
-          id: originInput.attr('id')
-        });
-        var sigField = $('<div>', {
-          "class": 'sigField'
-        });
-        var sigImg = $('<img>', {
-          "class": 'sigImage'
-        });
-        sigButton = $('<button>', {
-          "class": 'cap_sig_btn'
-        });
-        sigField.append(sigImg).append(sigButton);
-        $(field).find('div').remove();
-        $(field).append(sigValue).append(sigField);
-      })
+  inline({
+    "html": html,
+    "baseUrl": "https://wufoo.com",
+    "removeScripts": remove_script
+  }, function (err, processed_html) {
+    if (err != null) {
+      console.error('error inlining html:' + err);
     }
-
-    var processed_html = $('html').html();
-    processed_html = processed_html.replace('/images/icons/', 'https://wufoo.com/images/icons/');
-    processed_html = processed_html.replace('/stylesheets/public/forms/', 'https://wufoo.com/stylesheets/public/forms/');
-    window.close();
     return cb(processed_html);
   });
 };
