@@ -177,22 +177,6 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  // var multipart_data = formDataToMultipart(params.form_data);
-  // var req = request({
-  //   method: 'POST',
-  //   uri: params.form_submission_url,
-  //   followAllRedirects: true,
-  //   headers: {
-  //     'Content-Type': 'multipart/form-data'
-  //   },
-  //   multipart: multipart_data
-  // }, function(error, response, body) {
-  //   updateWufooHTML(body, true, function(processed_html) {
-  //     return callback(null, {
-  //       "html": processed_html
-  //     });
-  //   });
-  // });
   var form_url = url.parse(params.form_submission_url);
 
   var post_options = {
@@ -201,7 +185,6 @@ exports.submitForm = function(params, callback) {
     path: form_url.pathname,
     method: 'POST'
   };
-
 
   // Set up the request
   var form_req = https.request(post_options, function(res) {
