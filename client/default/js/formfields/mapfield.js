@@ -16,15 +16,20 @@
         ctx.append(mapValue).append(mapDiv);
       } 
       ctx.find('.fh_map_canvas').css({width: settings.mapWidth, height: settings.mapHeight});
-      console.log($._map_field_loadingMap);
       if(!$._map_field_loadingMap){
         $._map_field_loadingMap = true;
         showMap();
       } else {
+        var timer = 0;
         var interval = setInterval(function(){
+          timer += 50;
           if((typeof google != "undefined") && (typeof google.maps != "undefined")){
             clearInterval(interval);
             showMap();
+          }
+          if(timer >= 30000){
+            clearInterval(interval);
+            console.log("Failed to load map component.");
           }
         }, 50);
       }

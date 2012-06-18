@@ -43,6 +43,25 @@ exports = module.exports = function (opts, cb) {
       });
     }
 
+    //Process map field
+    var mapFields = $('li.fhmap');
+    if(mapFields.length > 0){
+      $.each(mapFields, function(i, field){
+        var originInput = $(field).find('div').find('input');
+        var mapValue = $('<input>',{
+          "class":'mapValue',
+          type:'hidden', 
+          name: originInput.attr('name'),
+          id : originInput.attr('id')
+        });
+        var mapDiv = $('<div>', {
+          'class':'fh_map_canvas'
+        });
+        $(field).find('div').remove();
+        $(field).append(mapValue).append(mapDiv);
+      })
+    }
+
     // move all element in head down to body
     // and remove any unnecessary elements e.g. meta
     var firstBodyItem = $('<div>');
