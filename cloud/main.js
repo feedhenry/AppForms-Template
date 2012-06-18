@@ -26,33 +26,36 @@ formDataToMultipart = function(form_data, cb) {
   var multipart_data = [];
 
   form_data.forEach(function(field) {
-    if (field.name == 'clickOrEnter') {
-      // clickOrEnter needs to be set to blank or 
-      // multi-page forms won't work correctly
-      field.value = '';
-    }
+    if (field.name != 'output' && typeof field.value != 'undefined') {
+      if (field.name == 'clickOrEnter') {
+        // clickOrEnter needs to be set to blank or 
+        // multi-page forms won't work correctly
+        field.value = '';
+      }
 
-    if (field.type == 'text') {
-      if (field.value != '') {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '"',
-          body: field.value,
+      if (field.type == 'text') {
+        if (field.value != '') {
+          var multipart_part = {
+            'Content-Disposition': 'form-data; name="' + field.name + '"',
+            body: field.value,
+          }
+          multipart_data.push(multipart_part);
         }
-        multipart_data.push(multipart_part);
-      }
-    } else if (field.type == 'file') {
-      if (field.value != '') {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
-          'Content-Type': 'image/jpeg',
-          body: new Buffer(field.value, 'base64'),
+      } else if (field.type == 'file') {
+        if (field.value != '') {
+          var multipart_part = {
+            'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
+            'Content-Type': 'image/' + field.extension,
+            body: new Buffer(field.value, 'base64'),
+          }
+          multipart_data.push(multipart_part);
         }
-        multipart_data.push(multipart_part);
+      } else {
+        console.log('Error, unknown field type: ' + field.type);
       }
-    } else {
-      console.log('Error, unknown field type: ' + field.type);
     }
   });
+
 
   return multipart_data;
 };
