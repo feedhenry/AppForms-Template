@@ -63,7 +63,7 @@ var WufooController = {
     // Add metadata
     jQuery.each(fields, function(i, field) {
       var el = jQuery('input[name=' + field.name + ']');
-      if((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")){
+      if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
       } else if (el.parents().hasClass('fhcam')) {
         // Camera file
@@ -88,7 +88,7 @@ var WufooController = {
     var serialized_form = this.serializeForm();
     console.log(serialized_form);
     var self = this;
-    apiController.sendImages(apiController.images.length);
+
     $fh.act({
       "act": "submitForm",
       "req": {
@@ -223,13 +223,15 @@ var WufooController = {
   initFields: function() {
     var self = this;
     self.specialFields = self.specialFields || {};
-    jQuery.each(jQuery('li.fhsig'), function(i, el){
+    jQuery.each(jQuery('li.fhsig'), function(i, el) {
       var sigField = jQuery(el).sigField({});
       self.specialFields[sigField.getName()] = sigField;
     });
-    utils.getLocation(function(location){
-      jQuery.each(jQuery('li.fhmap'), function(i, field){
-        var mapField = jQuery(field).mapField({'location': location});
+    utils.getLocation(function(location) {
+      jQuery.each(jQuery('li.fhmap'), function(i, field) {
+        var mapField = jQuery(field).mapField({
+          'location': location
+        });
         self.specialFields[mapField.getName()] = mapField;
       })
     });
@@ -249,51 +251,8 @@ $fh.ready(function() {
 });
 
 
-/**************** API Binding Code ******************/
-
-var config = {
-  fields: [],
-};
-
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
-  progressWidth: 0,
-  images: [],
-
-  //If we have images send them, else return
-  sendImages: function(count) {
-    var self = this;
-    // We have no images or sent all, end sending, hide progress
-    if (!self.images || self.images.length === 0) {
-      setTimeout(function() {
-        jQuery('#fh_wufoo_progressbar').hide();
-      }, 2000);
-      return;
-    }
-    // First call to send images, show progress bar
-    if (count) {
-      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
-      jQuery('#progress').width(0);
-      jQuery('#fh_wufoo_progressbar').show();
-    }
-
-    $fh.act({
-      act: 'postPicture',
-      req: {
-        ts: self.images[0].ts,
-        formUrl: self.images[0].formUrl,
-        data: self.images[0].data
-      }
-    }, function(res) {
-      // Remove image at index 0 and send next image in queue(array)
-      apiController.images.splice(0, 1);
-      jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
-      self.sendImages();
-    }, function(msg, err) {
-      alert('Uploading an image failed');
-      self.sendImages();
-    });
-  },
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
