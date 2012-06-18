@@ -2,7 +2,7 @@
   "name": "Wufoo",
   "version": "0.0.1",
   "dependencies" : {
-    "request": "2.9.202",
+    "request": "git://github.com/mikeal/request.git",
     "jsdom": "0.2.14"
   }
 }
