@@ -2,7 +2,6 @@ var util = require('util');
 var request = require('request');
 var jsdom = require("jsdom");
 var url = require("url");
-var https = require("https");
 
 /* 
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
@@ -81,39 +80,25 @@ formDataToMultipart = function(form_data, cb) {
     if (field.type == 'text') {
       if (field.value != '') {
         var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '";"',
+          'Content-Disposition': 'form-data; name="' + field.name + '"',
           body: field.value,
         }
-      } else {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '";"',
-          body: '',
-        }
+        multipart_data.push(multipart_part);
       }
-      multipart_data.push(multipart_part);
     } else if (field.type == 'file') {
-
       if (field.value != '') {
         var multipart_part = {
           'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
           'Content-Type': 'image/jpeg',
           body: new Buffer(field.value, 'base64'),
         }
-      } else {
-        var multipart_part = {
-          'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
-          'Content-Type': 'image/jpeg',
-          body: '',
-        }
+        multipart_data.push(multipart_part);
       }
-
-      multipart_data.push(multipart_part);
     } else {
       console.log('Error, unknown field type: ' + field.type);
     }
   });
 
-  console.log(multipart_data);
   return multipart_data;
 };
 
@@ -177,65 +162,21 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  var form_url = url.parse(params.form_submission_url);
-
-  var post_options = {
-    host: form_url.host,
-    port: '443',
-    path: form_url.pathname,
-    method: 'POST'
-  };
-
-  // Set up the request
-  var form_req = https.request(post_options, function(res) {
-    var status_code = res.statusCode;
-    console.log(res);
-    if (status_code == 302 || status_code == 301) {
-      // Redirect
-      var new_location = res.headers.location;
-      request(new_location, function(error, res, body) {
-        updateWufooHTML(body, false, function(processed_html) {
-          return callback(null, {
-            "html": processed_html
-          });
-        });
-      });
-    }
-
-    res.on("data", function(chunk) {
-      updateWufooHTML(chunk, false, function(processed_html) {
-        return callback(null, {
-          "html": processed_html
-        });
+  var multipart_data = formDataToMultipart(params.form_data);
+  var req = request({
+    method: 'POST',
+    uri: params.form_submission_url,
+    followAllRedirects: true,
+    headers: {
+      'content-type': 'multipart/form-data;'
+    },
+    multipart: multipart_data
+  }, function(e, r, b) {
+    console.log(r);
+    updateWufooHTML(b, true, function(processed_html) {
+      return callback(null, {
+        "html": processed_html
       });
     });
   });
-
-  var boundary = Math.random().toString(16);
-  form_req.setHeader('Content-Type', 'multipart/form-data; boundary="' + boundary + '"');
-
-  params.form_data.forEach(function(field) {
-    if (field.type == 'text') {
-      writeMultipart(form_req, boundary, field.name, field.value);
-    } else if (field.name == 'file') {
-
-    }
-  });
-  form_req.end();
 };
-
-/* 
- * Utility method to flush Multipart form data
- * out onto request, prior to sending
- */
-
-function writeMultipart(form_req, boundary, name, value, file, filename) {
-  if (file) {
-
-  } else {
-    var part = "--" + boundary + "\r\n";
-    part += "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n";
-    part += value + "\r\n";
-    form_req.write(part);
-  }
-}
