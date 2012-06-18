@@ -43,6 +43,33 @@ exports = module.exports = function (opts, cb) {
       });
     }
 
+    // API binding names
+    var bindings = ['fhgeo', 'fhcam'];
+    // Remove link to wufoo
+    $('#logo a')[0].href = '#';
+    // Do field logic function
+    function fieldLogic(field){
+      var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
+      if(type==='file'){
+        $(field.getElementsByTagName('input')[0]).attr('style', 'display: none')
+        $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
+      }
+    }
+    // Modify the HTML inputs to have buttons etc
+    var fields = $('.fh');
+    $.each(fields, function(i, field){
+      var classes = ($(field).attr('class'));
+      fieldLogic(field);
+      for(var i=0; i<bindings.length; i++){
+        if(classes.indexOf(bindings[i])!=-1){
+          var button = window.document.createElement('button');
+          button.className = 'apibtn '+bindings[i];
+          button.innerHTML = '<img style="min-height:20px;" src="./img/' + bindings[i] + '.png" />';
+          $(field.getElementsByTagName('div')[0]).append(button);
+        }
+      }
+    });
+
     // move all element in head down to body
     // and remove any unnecessary elements e.g. meta
     var firstBodyItem = $('<div>');
