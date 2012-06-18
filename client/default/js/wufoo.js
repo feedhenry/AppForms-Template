@@ -34,10 +34,7 @@ var WufooController = {
         self.bind();
 
         // process fields
-        self.initSignatureFields();
-        self.getLocation(function(location){
-          self.initMapFields(location);
-        });
+        self.initFields();
       }
     }, 50);
   },
@@ -192,146 +189,20 @@ var WufooController = {
     jQuery('#fh_wufoo_content').show();
   },
 
-  initSignatureFields: function() {
+  initFields: function() {
     var self = this;
-    var sigButton = jQuery('.cap_sig_btn');
-    if (sigButton.length == 0) {
-      jQuery.each(jQuery('li.fhsig'), function(i, el) {
-        var sigValue = jQuery('<input>', {
-          "class": 'sigValue',
-          type: 'hidden',
-          name: 'sigValue' + i
-        });
-        var sigField = jQuery('<div>', {
-          "class": 'sigField'
-        });
-        var sigImg = jQuery('<img>', {
-          "class": 'sigImage',
-          width: 150,
-          height: 40
-        });
-        sigButton = jQuery('<button>', {
-          "class": 'cap_sig_btn',
-          text: 'Capture'
-        });
-        sigField.append(sigImg).append(sigButton);
-        jQuery(el).find('div').remove();
-        jQuery(el).append(sigValue).append(sigField);
-      })
-    } else {
-      jQuery('.cap_sig_btn').text('Capture');
-      jQuery('.sigImage').attr('width', 150).attr('height', 40);
-    }
-    jQuery.each(sigButton, function(i, button){
-      jQuery(this).unbind().bind('click', function(e){
-        self.captureSignature(e, jQuery(button).parents('li:first'));
-      })
-    })
-  },
-
-  captureSignature: function(e, ctx) {
-    e.preventDefault();
-    if (ctx.data('sigpadInited')) {
-      jQuery('.sigPad', ctx).show();
-    } else {
-      var template = ['<form class="sigPad">'];
-      template.push('<ul class="sigNav">');
-      template.push('<li class="clearButton"><a href="#clear">Clear</a></li>');
-      template.push('</ul>');
-      template.push('<div class="sig sigWrapper">');
-      template.push('<canvas class="pad" width="248" height="100"></canvas>');
-      template.push('<input type="hidden" name="output" class="output">');
-      template.push('</div>');
-      template.push('<button class="cap_sig_done_btn" type="button">Done</button>');
-      template.push('</form>');
-
-      var sigField = jQuery(template.join(""));
-      jQuery('.sigField', ctx).append(sigField);
-      var sigPad = jQuery('.sigPad', ctx).signaturePad({
-        drawOnly: true,
-        lineTop: 80
-      });
-      ctx.data('sigpadInited', true);
-      jQuery('.cap_sig_done_btn', ctx).bind('click', function(e) {
-        var sigData = sigPad.getSignatureImage();
-        if(sigData == "data:,"){ 
-          sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
-        }
-        var img = jQuery('.sigImage', ctx)[0];
-        img.src = sigData;
-        jQuery('.sigValue', ctx).val(sigData);
-        jQuery('.sigPad', ctx).hide();
-      })
-    }
-  },
-
-  getLocation: function(callback){
-    $fh.geo({act:'register', interval: 0}, function(location){
-        callback(location);
-      }, function(err){
-        if(typeof navigator.geolocation != "undefined"){
-            navigator.geolocation.getCurrentPosition(function(position){
-              var location = {lon: position.coords.longitude, lat: position.coords.latitude};
-              callback(location);
-            })
-          }
-      });
-  },
-
-  initMapFields: function(location){
-    var self = this;
-    var mapCanvas = jQuery('.fh_map_canvas');
-    if(mapCanvas.length == 0){
+    self.sigFields = {};
+    jQuery.each(jQuery('li.fhsig'), function(i, el){
+      var sigField = jQuery(el).sigField({});
+      self.sigFields[sigField.getName()] = sigField;
+    });
+    utils.getLocation(function(location){
       jQuery.each(jQuery('li.fhmap'), function(i, field){
-        var originInput = jQuery(field).find('div').find('input');
-        var mapValue = jQuery('<input>',{"class":'mapValue',type:'hidden', name:'fh_map_' + originInput.attr('name')});
-        var mapDiv = jQuery('<div>', {'class':'fh_map_canvas'});
-        jQuery(field).find('div').remove();
-        jQuery(field).append(mapValue).append(mapDiv);
-      })
-    }
-    var firstMapField = jQuery('.fh_map_canvas:first').parents('li:first');
-    self.showMap(location, firstMapField, function(){
-      jQuery.each(jQuery('.fh_map_canvas:gt(0)'), function(i, canvas){
-        self.showMap(location, jQuery(this).parents('li:first'));
+        var mapField = jQuery(field).mapField({'location': location});
       })
     });
-  },
-
-  showMap: function(location, ctx, callback){
-    if(typeof ctx.data('fh_map') == "undefined"){
-      var mapDiv = jQuery('.fh_map_canvas', ctx);
-      $fh.map({target: mapDiv[0], lon: location.lon, lat: location.lat, zoom: 8}, function(res){
-          var map = res.map;
-          ctx.data('fh_map', map);
-          var marker = new google.maps.Marker({
-            position: map.getCenter(),
-            map: map,
-            draggable: true,
-            animation: google.maps.Animation.DROP,
-            title: "Drag this to set position"
-          });
-          ctx.data('fh_map_marker', marker);
-          google.maps.event.addListener(marker, "dragend", function(){
-            var ps = marker.getPosition().toString();
-            jQuery('.mapValue', ctx).val(ps);
-          })
-          if(callback){
-            callback();
-          }
-      })
-    } else {
-      var map = ctx.data('fh_map');
-      var marker = ctx.data('fh_map_marker');
-      var center = new google.maps.LatLng(location.lat, location.lon);
-      map.panTo(center);
-      marker.setPosition(center);
-      jQuery('.mapValue', ctx).val(center.toString());
-      if(callback){
-        callback();
-      }
-    }
   }
+
 };
 
 
