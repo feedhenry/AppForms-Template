@@ -50,6 +50,7 @@ var WufooController = {
     $fh.act({
       "act": "submitForm",
       "req": {
+        "form_hash": jQuery('form').data('form_hash'),
         "form_data": serialized_form,
         "form_submission_url": jQuery('form').attr('action')
       }
@@ -61,12 +62,13 @@ var WufooController = {
     });
   },
 
-  renderFormHtml: function(html, show_back_button) {
+  renderFormHtml: function(html, show_back_button, form_hash) {
     var self = this;
     this.hideFormList();
     this.showContentArea();
     jQuery('#fh_wufoo_content').html(html);
     this.initWufoo();
+    jQuery('form').data('form_hash', form_hash);
     if (show_back_button) {
       // Inject a back button
       var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
@@ -103,7 +105,7 @@ var WufooController = {
 
       // ok to leave this happen straight away ($fh.data above is asynchronous)
       // as it doesn't depend on the save having completed
-      self.renderFormHtml(html, show_back_button);
+      self.renderFormHtml(html, show_back_button, form_hash);
       self.initWufoo();
     }, function(msg, err) {
       console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -112,7 +114,7 @@ var WufooController = {
         key: "form-" + form_hash
       }, function(res) {
         // got form html from cache, render it
-        self.renderFormHtml(res.val, show_back_button);
+        self.renderFormHtml(res.val, show_back_button, form_hash);
         self.initWufoo();
       }, function(msg, err) {
         //load failed
