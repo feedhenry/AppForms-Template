@@ -49,7 +49,6 @@ exports = module.exports = function(opts, cb) {
     $('#logo a')[0].href = '#';
     // Do field logic function
 
-
     function fieldLogic(field) {
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
       if (type === 'file') {
