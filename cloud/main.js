@@ -3,7 +3,7 @@ var request = require('request');
 var url = require("url");
 var inline = require('./inline.js');
 
-/* 
+/*
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
  * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
  * from the HTML, as this JavaScript will already be loaded client side as this point.
@@ -102,7 +102,10 @@ exports.getForms = function(params, callback) {
     'Authorization': auth
   };
 
-  request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
+  request.get({
+    url: forms_url,
+    headers: auth_header
+  }, function(error, res, body) {
     return callback(null, {
       data: JSON.parse(body)
     });

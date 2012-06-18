@@ -18,7 +18,7 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
-        // Wufoo's Array prototype alteration breaks
+        // Wufoo's Array prototype alteration breaks 
         // PhoneGap, so we remove it.
         if (window.Prototype) {
           delete Array.prototype.toJSON;
@@ -119,7 +119,7 @@ var WufooController = {
   },
 
   getForm: function(form_hash, show_back_button) {
-    var form_hash = form_hash || wufoo_config.form_hash;
+    form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
     $fh.act({
