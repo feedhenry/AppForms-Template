@@ -83,7 +83,7 @@
     function toJSON(){
       return {
         name: getName(),
-        value: $('.sigValue', ctx).val(),
+        value: $('.sigValue', ctx).val().split(",")[1],
         'type': 'file',
         'extension' : extension,
         'filename': 'signature'
