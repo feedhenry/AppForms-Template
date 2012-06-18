@@ -205,8 +205,27 @@ exports.submitForm = function(params, callback) {
 
   // Set up the request
   var form_req = https.request(post_options, function(res) {
-    console.log("Got response: " + res.body);
-    console.log("Got response: " + res.statusCode);
+    var status_code = res.statusCode;
+    console.log(res);
+    if (status_code == 302 || status_code == 301) {
+      // Redirect
+      var new_location = res.headers.location;
+      request(new_location, function(error, res, body) {
+        updateWufooHTML(body, false, function(processed_html) {
+          return callback(null, {
+            "html": processed_html
+          });
+        });
+      });
+    }
+
+    res.on("data", function(chunk) {
+      updateWufooHTML(chunk, false, function(processed_html) {
+        return callback(null, {
+          "html": processed_html
+        });
+      });
+    });
   });
 
   var boundary = Math.random().toString(16);
