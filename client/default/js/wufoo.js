@@ -33,7 +33,7 @@ var WufooController = {
         self.bind();
 
         // process fields
-        self.initSignatureFields();
+        self.initFields();
       }
     }, 50);
   },
@@ -94,7 +94,7 @@ var WufooController = {
       }
     }, function(res) {
       self.renderFormHtml(res.html);
-      self.initWufoo();
+      //self.initWufoo();
     }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
@@ -134,9 +134,9 @@ var WufooController = {
         "act": "save",
         "key": "form-" + form_hash,
         "val": html
-      }, function () {
+      }, function() {
         console.log('Form html save ok');
-      }, function (msg, err) {
+      }, function(msg, err) {
         console.log('Form html save failed:' + msg);
       });
 
@@ -217,78 +217,22 @@ var WufooController = {
     jQuery('#fh_wufoo_content').show();
   },
 
-  initSignatureFields: function() {
+  initFields: function() {
     var self = this;
-    var sigButton = jQuery('.cap_sig_btn');
-    if (sigButton.length == 0) {
-      jQuery.each(jQuery('li.fhsig'), function(i, el) {
-        var sigValue = jQuery('<input>', {
-          "class": 'sigValue',
-          type: 'hidden',
-          name: 'sigValue' + i
+    self.sigFields = {};
+    jQuery.each(jQuery('li.fhsig'), function(i, el) {
+      var sigField = jQuery(el).sigField({});
+      self.sigFields[sigField.getName()] = sigField;
+    });
+    utils.getLocation(function(location) {
+      jQuery.each(jQuery('li.fhmap'), function(i, field) {
+        var mapField = jQuery(field).mapField({
+          'location': location
         });
-        var sigField = jQuery('<div>', {
-          "class": 'sigField'
-        });
-        var sigImg = jQuery('<img>', {
-          "class": 'sigImage',
-          width: 150,
-          height: 40
-        });
-        sigButton = jQuery('<button>', {
-          "class": 'cap_sig_btn',
-          text: 'Capture'
-        });
-        sigField.append(sigImg).append(sigButton);
-        jQuery(el).find('div').remove();
-        jQuery(el).append(sigValue).append(sigField);
       })
-    } else {
-      jQuery('.cap_sig_btn').text('Capture');
-      jQuery('.sigImage').attr('width', 150).attr('height', 40);
-    }
-    jQuery.each(sigButton, function(i, button) {
-      jQuery(this).unbind().bind('click', function(e) {
-        self.captureSignature(e, jQuery(button).parent().parent());
-      })
-    })
-  },
-
-  captureSignature: function(e, ctx) {
-    e.preventDefault();
-    if (ctx.data('sigpadInited')) {
-      jQuery('.sigPad', ctx).show();
-    } else {
-      var template = ['<form class="sigPad">'];
-      template.push('<ul class="sigNav">');
-      template.push('<li class="clearButton"><a href="#clear">Clear</a></li>');
-      template.push('</ul>');
-      template.push('<div class="sig sigWrapper">');
-      template.push('<canvas class="pad" width="248" height="100"></canvas>');
-      template.push('<input type="hidden" name="output" class="output">');
-      template.push('</div>');
-      template.push('<button class="cap_sig_done_btn" type="button">Done</button>');
-      template.push('</form>');
-
-      var sigField = jQuery(template.join(""));
-      jQuery('.sigField', ctx).append(sigField);
-      var sigPad = jQuery('.sigPad', ctx).signaturePad({
-        drawOnly: true,
-        lineTop: 80
-      });
-      ctx.data('sigpadInited', true);
-      jQuery('.cap_sig_done_btn', ctx).bind('click', function(e) {
-        var sigData = sigPad.getSignatureImage();
-        if (sigData == "data:,") {
-          var sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
-        }
-        var img = jQuery('.sigImage', ctx)[0];
-        img.src = sigData;
-        jQuery('.sigValue', ctx).val(sigData);
-        jQuery('.sigPad', ctx).hide();
-      })
-    }
+    });
   }
+
 };
 
 
@@ -319,7 +263,7 @@ var apiController = {
     var self = this;
     // We have no images or sent all, end sending, hide progress
     if (!self.images || self.images.length === 0) {
-      setTimeout(function(){
+      setTimeout(function() {
         jQuery('#fh_wufoo_progressbar').hide();
       }, 2000);
       return;
@@ -353,10 +297,10 @@ var apiController = {
   addApiCalls: function() {
     var self = this;
     var neededApis = document.body.getElementsByClassName('apibtn');
-    for(var i=0; i<neededApis.length; i++){
+    for (var i = 0; i < neededApis.length; i++) {
       var className = neededApis[i].className;
-      for(var j=0; j<self.bindings.length; j++){
-        if(className.indexOf(self.bindings[j])!==-1){
+      for (var j = 0; j < self.bindings.length; j++) {
+        if (className.indexOf(self.bindings[j]) !== -1) {
           var element = neededApis[i].getElementsByTagName('input')[0];
           self.bindFunction(self.bindings[j], neededApis[i]);
         }
@@ -368,11 +312,11 @@ var apiController = {
   bindFunction: function(fnName, btn) {
     var inputField = btn.parentElement.getElementsByTagName('input')[0];
     btn.onclick = function() {
-        setTimeout(function() {
-          apiController[fnName](inputField);
-        }, 50);
-        return false;
-      };
+      setTimeout(function() {
+        apiController[fnName](inputField);
+      }, 50);
+      return false;
+    };
   },
 
   // Open camera and return base64 data

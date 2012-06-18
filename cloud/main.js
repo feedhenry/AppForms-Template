@@ -13,7 +13,7 @@ updateWufooHTML = function(html, remove_script, cb) {
     "html": html,
     "baseUrl": "https://wufoo.com",
     "removeScripts": remove_script
-  }, function (err, processed_html) {
+  }, function(err, processed_html) {
     if (err != null) {
       console.error('error inlining html:' + err);
     }
@@ -155,7 +155,7 @@ exports.postPicture = function(params, callback) {
       });
     } else {
       console.log('Picture wrote okay!');
-      /*setTimeout(function() {
+/*setTimeout(function() {
         exports.transfer(function(err, ret) {
           console.log('transfer finished with status: ', ret);
         });
