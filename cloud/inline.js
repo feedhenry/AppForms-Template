@@ -1,6 +1,7 @@
 var request = require('request');
 var jsdom = require("jsdom");
 var async = require('async');
+var crypto = require('crypto');
 
 exports = module.exports = function (opts, cb) {
   var html = opts.html;
@@ -31,6 +32,7 @@ exports = module.exports = function (opts, cb) {
     var links = $('link[rel!="canonical"]');
 
     async.parallel([function (oCallback) {
+      var inlineCounter = 0;
       //load scripts parallellellellellelly, temporarlily storing the content
       async.forEach(scripts, function (item, aCallback) {
         var script = $(item);
@@ -41,15 +43,26 @@ exports = module.exports = function (opts, cb) {
           if (src != null && src !== '') {
             getRemoteResource(baseUrl + src, function (err, res, body) {
               if (!err && res.statusCode == 200) {
+                // create hash of src url
+                var shasum = crypto.createHash('sha1');
+                shasum.update(src);
+                var hash = shasum.digest('hex');
+
                 // do replacement of $$ with $$$ because of special meaning of $ in replace
-                scriptPlaceholders[src] = body.replace(/\$\$/g, '$$$$$$');
-                script.after('SCRIPTPLACEHOLDER-' + src).remove();
+                scriptPlaceholders[hash] = body.replace(/\$\$/g, '$$$$$$');
+                script.after(hash).remove();
                 aCallback(null);
               } else {
                 aCallback(err);
               }
             });
           } else {
+            // inline script, add to placeholders for processing later
+            var shasum = crypto.createHash('sha1');
+            shasum.update('SCRIPTPLACEHOLDER-' + (inlineCounter += 1));
+            var hash = shasum.digest('hex');
+            scriptPlaceholders[hash] = script.text().replace(/\$\$/g, '$$$$$$');
+            script.after(hash).remove();
             aCallback(null);
           }
         } else {
@@ -171,8 +184,11 @@ exports = module.exports = function (opts, cb) {
         // using placeholders for where script goes and replace it with script text now,
         // because if we do the script insertion with jsdom above, doesn't work.
         var processed_html = $('body').html();
-        for (var script in scriptPlaceholders) {
-          processed_html = processed_html.replace('SCRIPTPLACEHOLDER-' + script, '<script>' + scriptPlaceholders[script] + '</script>');
+        for (var hash in scriptPlaceholders) {
+          // insert script content, and include initialisation check
+          // so javascript is only executed once
+          var content = scriptPlaceholders[hash];
+          processed_html = processed_html.replace(hash, '<script>if(typeof window["' + hash + '"] === "undefined"){window["' + hash + '"] = true;' + content + '}</script>');
         }
 
         window.close();
