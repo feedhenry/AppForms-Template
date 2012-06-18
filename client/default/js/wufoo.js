@@ -18,9 +18,13 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
+
+        // Wufoo's Array prototype alteration breaks 
+        // PhoneGap, so we remove it.
         if (window.Prototype) {
           delete Array.prototype.toJSON;
         }
+
         // Wufoo Global - init() - available, 
         // call and clear the interval
         init();
@@ -46,14 +50,44 @@ var WufooController = {
     });
   },
 
-  submitForm: function() {
-    var serialized_form = jQuery('form').serialize();
+  serializeForm: function(add_previous_button) {
+    var fields = jQuery('form').serializeArray();
     var previous_button = jQuery('#previousPageButton');
+
     if (previous_button.length > 0) {
       // Append previousButton value to serialized form, since submit
       // buttons aren't serialized by default
-      serialized_form += "&previousPageButton=";
+      fields.push({
+        name: 'previousPageButton',
+        value: ''
+      })
     }
+
+    // Add metadata
+    jQuery.each(fields, function(i, field) {
+      var el = jQuery('input[name=' + field.name + ']');
+      if (el.parents().hasClass('fhcam')) {
+        // Camera file
+        field['type'] = "file";
+        field['filename'] = "picture";
+        field['extension'] = "jpg";
+      } else if (el.parents().hasClass('fhsig')) {
+        // Signature
+        field['type'] = "file";
+        field['filename'] = "signature";
+        field['extension'] = "bmp";
+      } else {
+        // Regular text field
+        field['type'] = "text";
+      }
+    });
+
+    return fields;
+  },
+
+  submitForm: function() {
+    var serialized_form = this.serializeForm();
+
     var self = this;
     $fh.act({
       "act": "submitForm",
@@ -151,23 +185,35 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   },
 
   showContentArea: function() {
     jQuery('#fh_wufoo_content').show();
   },
 
-  initSignatureFields: function(){
+  initSignatureFields: function() {
     var self = this;
     var sigButton = jQuery('.cap_sig_btn');
-    if(sigButton.length == 0){
-      jQuery.each(jQuery('li.fhsig'), function(i, el){
-        var originInput = jQuery(el).find('div').find('input');
-        var sigValue = jQuery('<input>',{"class":'sigValue',type:'hidden', name:'fh_file_' + originInput.attr('name')});
-        var sigField = jQuery('<div>', {"class":'sigField'});
-        var sigImg = jQuery('<img>', {"class":'sigImage', width: 150, height: 40});
-        sigButton = jQuery('<button>', {"class":'cap_sig_btn', text:'Capture'});
+    if (sigButton.length == 0) {
+      jQuery.each(jQuery('li.fhsig'), function(i, el) {
+        var sigValue = jQuery('<input>', {
+          "class": 'sigValue',
+          type: 'hidden',
+          name: 'sigValue' + i
+        });
+        var sigField = jQuery('<div>', {
+          "class": 'sigField'
+        });
+        var sigImg = jQuery('<img>', {
+          "class": 'sigImage',
+          width: 150,
+          height: 40
+        });
+        sigButton = jQuery('<button>', {
+          "class": 'cap_sig_btn',
+          text: 'Capture'
+        });
         sigField.append(sigImg).append(sigButton);
         jQuery(el).find('div').remove();
         jQuery(el).append(sigValue).append(sigField);
@@ -182,10 +228,10 @@ var WufooController = {
       })
     })
   },
-  
-  captureSignature: function(e, ctx){
+
+  captureSignature: function(e, ctx) {
     e.preventDefault();
-    if(ctx.data('sigpadInited')){
+    if (ctx.data('sigpadInited')) {
       jQuery('.sigPad', ctx).show();
     } else {
       var template = ['<form class="sigPad">'];
@@ -198,12 +244,15 @@ var WufooController = {
       template.push('</div>');
       template.push('<button class="cap_sig_done_btn" type="button">Done</button>');
       template.push('</form>');
-    
+
       var sigField = jQuery(template.join(""));
       jQuery('.sigField', ctx).append(sigField);
-      var sigPad = jQuery('.sigPad', ctx).signaturePad({drawOnly:true, lineTop: 80});
-      ctx.data('sigpadInited',true);
-      jQuery('.cap_sig_done_btn', ctx).bind('click', function(e){
+      var sigPad = jQuery('.sigPad', ctx).signaturePad({
+        drawOnly: true,
+        lineTop: 80
+      });
+      ctx.data('sigpadInited', true);
+      jQuery('.cap_sig_done_btn', ctx).bind('click', function(e) {
         var sigData = sigPad.getSignatureImage();
         if(sigData == "data:,"){ 
           sigData = toBitmapURL(jQuery('.sigPad', ctx).find('canvas')[0]);
