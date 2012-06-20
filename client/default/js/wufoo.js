@@ -63,7 +63,7 @@ var WufooController = {
     // Add metadata
     jQuery.each(fields, function(i, field) {
       var el = jQuery('input[name=' + field.name + ']');
-      if((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")){
+      if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
       } else if (el.parents().hasClass('fhcam')) {
         // Camera file
@@ -86,29 +86,49 @@ var WufooController = {
 
   submitForm: function() {
     var serialized_form = this.serializeForm();
-    console.log(serialized_form);
     var self = this;
-    apiController.sendImages(apiController.images.length);
-    $fh.act({
-      "act": "submitForm",
-      "req": {
-        "form_data": serialized_form,
-        "form_submission_url": jQuery('form').attr('action')
+    var form_hash = jQuery('form').data('form_hash');
+    var form_name = jQuery('#header').find('h2').text();
+    var saveFormData = function(){
+      self.savePending(form_hash, form_name, serialized_form, function(){
+        console.log("Form data saved");
+      }, function(){
+        console.log("Failed to save form data for form : " + form_hash);
+      });
+    };
+    utils.isOnline(function(online){
+      if(online){
+        $fh.act(
+          {
+            "act": "submitForm",
+            "req": {
+              "form_hash": form_hash,
+              "form_data": serialized_form,
+              "form_submission_url": jQuery('form').attr('action')
+            }
+          }, function(res) {
+            self.renderFormHtml(res.html);
+            //self.initWufoo();
+          }, function(msg, err) {
+            console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+            saveFormData();
+          }
+        );
+      } else {
+        console.log("Can not submit your form due to network issue. Save it as pending form.");
+        saveFormData();
       }
-    }, function(res) {
-      self.renderFormHtml(res.html);
-      //self.initWufoo();
-    }, function(msg, err) {
-      console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-    });
+    })
+    
   },
 
-  renderFormHtml: function(html, show_back_button) {
+  renderFormHtml: function(html, show_back_button, form_hash) {
     var self = this;
     this.hideFormList();
     this.showContentArea();
     jQuery('#fh_wufoo_content').html(html);
     this.initWufoo();
+    jQuery('form').data('form_hash', form_hash);
     if (show_back_button) {
       // Inject a back button
       var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
@@ -145,7 +165,7 @@ var WufooController = {
 
       // ok to leave this happen straight away ($fh.data above is asynchronous)
       // as it doesn't depend on the save having completed
-      self.renderFormHtml(html, show_back_button);
+      self.renderFormHtml(html, show_back_button, form_hash);
       self.initWufoo();
     }, function(msg, err) {
       console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -154,7 +174,7 @@ var WufooController = {
         key: "form-" + form_hash
       }, function(res) {
         // got form html from cache, render it
-        self.renderFormHtml(res.val, show_back_button);
+        self.renderFormHtml(res.val, show_back_button, form_hash);
         self.initWufoo();
       }, function(msg, err) {
         //load failed
@@ -223,18 +243,129 @@ var WufooController = {
   initFields: function() {
     var self = this;
     self.specialFields = self.specialFields || {};
-    jQuery.each(jQuery('li.fhsig'), function(i, el){
+    jQuery.each(jQuery('li.fhsig'), function(i, el) {
       var sigField = jQuery(el).sigField({});
       self.specialFields[sigField.getName()] = sigField;
     });
-    utils.getLocation(function(location){
-      jQuery.each(jQuery('li.fhmap'), function(i, field){
-        var mapField = jQuery(field).mapField({'location': location});
+    utils.getLocation(function(location) {
+      jQuery.each(jQuery('li.fhmap'), function(i, field) {
+        var mapField = jQuery(field).mapField({
+          'location': location
+        });
         self.specialFields[mapField.getName()] = mapField;
       })
     });
-  }
+  }, 
 
+  saveDraft: function(form_id, form_name, form_data, success, error) {
+    this.saveData('draft', form_id, form_name, form_data, success, error);
+  },
+
+  getDraft: function(form_hash, ts, success, error) {
+    this.getData("draft", form_hash, ts, success, error);
+  },
+
+  listDrafts: function(success, error) {
+    this.listData("draft", success, error);
+  },
+
+  deleteDraft: function(form_hash, ts, success, error){
+    this.deleteData("draft", form_hash, ts, success, error);
+  },
+
+  savePending: function(form_id, form_name, form_data, success, error) {
+    this.saveData('pending', form_id, form_name, form_data, success, error);
+  },
+
+  getPending: function(form_hash, ts, success, error) {
+    this.getData("pending", form_hash, ts, success, error);
+  },
+
+  listPending: function(success, error) {
+    this.listData("pending", success, error);
+  },
+
+  deletePending: function(form_hash, ts, success, error){
+    this.deleteData("pending", form_hash, ts, success, error);
+  },
+
+  saveData: function(type, form_hash, form_name, form_data, success, error){
+    var entryListId = type + "_" + "forms_list";
+    var updatedTime = new Date().getTime();
+    var entryId = type + "_" + form_hash + "_" + updatedTime;
+    var entryData = {data: form_data};
+    var entryIndexData = {ts: updatedTime, name:form_name, id: form_hash, type: type};
+    var saveFormData = function(done, fail){
+      $fh.data({act:'save', key: entryId, val: JSON.stringify(entryData)}, function(){
+        done();
+      }, function(){
+        fail();
+      });
+    }
+    $fh.data({'act':'load', 'key':entryListId}, function(data){
+      var entryListData = {list: []};
+      if(utils.isValid(data.val)){
+        entryListData = JSON.parse(data.val);
+      }
+      entryListData.list.push(entryIndexData);
+      $fh.data({'act':'save', key: entryListId, val: JSON.stringify(entryListData)}, function(){
+          saveFormData(success, error);
+      }, error);
+    }, error);
+  },
+
+  listData: function(type, success, error){
+    var entryListId = type + "_" + "forms_list";
+    $fh.data({act:'load', key: entryListId}, function(data){
+      var list = [];
+      if(utils.isValid(data.val)){
+        var listData = JSON.parse(data.val);
+        list = listData.list;
+      }
+      success(list);
+    }, error);
+  },
+
+  getData: function(type, form_hash, ts, success, error){
+    var entryId = type + "_" + form_hash + "_" + ts;
+    $fh.data({act:'load', key: entryId}, function(data){
+      var form = {};
+      if(utils.isValid(data.val)){
+        var formData = JSON.parse(data.val);
+        form = formData.data;
+      }
+      success(form);
+    }, error);
+  },
+
+  deleteData: function(type, form_hash, ts, success, error){
+    var entryId = type + "_" + form_hash + "_" + ts;
+    $fh.data({act:'remove', key: entryId}, function(){
+      var entryListId = type + "_" + "forms_list";
+      $fh.data({act:'load', key: entryListId}, function(data){
+        if(utils.isValid(data.val)){
+          var listData = JSON.parse(data.val);
+          var list = listData.list;
+          var foundIndex = -1;
+          for(var i=0;i<list.length;i++){
+            var entry = list[i];
+            if(entry.ts == ts && entry.id == form_hash){
+              foundIndex = i;
+              break;
+            }
+          }
+          if(foundIndex > -1){
+            list.splice(foundIndex, 1);
+          }
+          $fh.data({act:'save', key: entryListId, val: JSON.stringify(listData)}, function(){
+            success();
+          }, error);
+        } else {
+          success();
+        }
+      }, error);
+    }, error);
+  }
 };
 
 
@@ -249,51 +380,8 @@ $fh.ready(function() {
 });
 
 
-/**************** API Binding Code ******************/
-
-var config = {
-  fields: [],
-};
-
 var apiController = {
   bindings: ['fhgeo', 'fhcam'],
-  progressWidth: 0,
-  images: [],
-
-  //If we have images send them, else return
-  sendImages: function(count) {
-    var self = this;
-    // We have no images or sent all, end sending, hide progress
-    if (!self.images || self.images.length === 0) {
-      setTimeout(function() {
-        jQuery('#fh_wufoo_progressbar').hide();
-      }, 2000);
-      return;
-    }
-    // First call to send images, show progress bar
-    if (count) {
-      self.progressWidth = jQuery('#fh_wufoo_progressbar').width() / count;
-      jQuery('#progress').width(0);
-      jQuery('#fh_wufoo_progressbar').show();
-    }
-
-    $fh.act({
-      act: 'postPicture',
-      req: {
-        ts: self.images[0].ts,
-        formUrl: self.images[0].formUrl,
-        data: self.images[0].data
-      }
-    }, function(res) {
-      // Remove image at index 0 and send next image in queue(array)
-      apiController.images.splice(0, 1);
-      jQuery('#progress').width(jQuery('#progress').width() + self.progressWidth);
-      self.sendImages();
-    }, function(msg, err) {
-      alert('Uploading an image failed');
-      self.sendImages();
-    });
-  },
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
@@ -324,12 +412,10 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     navigator.camera.getPicture(function(imageData) {
-      apiController.images.push({
-        data: imageData,
-        formUrl: jQuery('form').attr('action').toString(),
-        ts: new Date().getTime()
-      });
-      input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved. Thank You!"
+      setTimeout(function() {
+        input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved.";
+        jQuery(input).val(imageData);
+      }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
@@ -340,10 +426,7 @@ var apiController = {
   //Returns Lat and Long as sting
   fhgeo: function(input) {
     $fh.geoip(function(res) {
-      var str = '';
-      str += 'Longitude: ' + res.longitude + ', ';
-      str += 'Latitude: ' + res.latitude;
-      input.value = str;
+      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
       input.blur();
     }, function(msg, err) {
       input.value = 'Location could not be determined';

@@ -5,6 +5,7 @@ var crypto = require('crypto');
 
 exports = module.exports = function(opts, cb) {
   var html = opts.html;
+  var id = opts.id || 'defaultId'; // used for hashing, should be unique for each unique html block passed in  
   var removeScripts = opts.removeScripts || false;
   var baseUrl = opts.baseUrl || '';
 
@@ -48,20 +49,28 @@ exports = module.exports = function(opts, cb) {
     // Remove link to wufoo
     $('#logo a')[0].href = '#';
     // Do field logic function
-
-
-    function fieldLogic(field) {
-      var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
-      if (type === 'file') {
-        $(field.getElementsByTagName('input')[0]).attr('style', 'display: none')
-        $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
+    function fieldLogic(field, classes) {
+      var type = ($(field.getElementsByTagName('input')[0]).attr('type'))
+      if (type === 'file' && classes.indexOf('fhcam') !== -1) {
+        var originInput = $(field).find('div').find('input');
+        var imgData = $('<input>', {
+          type: 'hidden',
+          name: originInput.attr('name'),
+          id: originInput.attr('id')
+        });
+        var imgField = $('<div>', {});
+        var imgFieldDesc = $('<p>').text('Click to upload a picture')[0];
+        imgField.append(imgFieldDesc);
+        imgField.append(imgData);
+        $(field).find('div').remove();
+        $(field).append(imgField);
       }
     }
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
     $.each(fields, function(i, field) {
       var classes = ($(field).attr('class'));
-      fieldLogic(field);
+      fieldLogic(field, classes);
       for (var i = 0; i < bindings.length; i++) {
         if (classes.indexOf(bindings[i]) != -1) {
           var button = window.document.createElement('button');
@@ -119,6 +128,8 @@ exports = module.exports = function(opts, cb) {
               if (!err && res.statusCode == 200) {
                 // create hash of src url
                 var shasum = crypto.createHash('sha1');
+
+                // don't include id as this script will be the same for each form
                 shasum.update(src);
                 var hash = shasum.digest('hex');
 
@@ -133,7 +144,7 @@ exports = module.exports = function(opts, cb) {
           } else {
             // inline script, add to placeholders for processing later
             var shasum = crypto.createHash('sha1');
-            shasum.update('SCRIPTPLACEHOLDER-' + (inlineCounter += 1));
+            shasum.update(id + (inlineCounter += 1));
             var hash = shasum.digest('hex');
             scriptPlaceholders[hash] = script.text().replace(/\$\$/g, '$$$$$$');
             script.after(hash).remove();
@@ -226,7 +237,7 @@ exports = module.exports = function(opts, cb) {
         }
         async.forEach(matches, function(match, mCallback) {
           var src = match[1];
-          console.log('image src in style:' + src);
+          //console.log('image src in style:' + src);
           getRemoteResource({
             "uri": baseUrl + src,
             "encoding": null // return as buffer
@@ -234,7 +245,7 @@ exports = module.exports = function(opts, cb) {
             if (!err && res.statusCode == 200) {
               var mimeType = src.match(/(.*)\.(.*?$)/); // get file extension from src
               mimeType = mimeType[mimeType.length - 1];
-              console.log('image src=' + src + ' mimeType=' + mimeType + ' typeof body:' + typeof body);
+              //console.log('image src=' + src + ' mimeType=' + mimeType + ' typeof body:' + typeof body);
               styleText = styleText.replace(match[0], 'url("data:image/' + mimeType + ';base64,' + body.toString('base64') + '")');
               mCallback(null);
             } else {
@@ -281,7 +292,7 @@ var getRemoteResource = function(path, cb) {
     }
 
     request(options, function(err, res, body) {
-      console.log('got response for link:' + options.uri + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
+      //console.log('got response for link:' + options.uri + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
       cb(err, res, body);
     });
     };
