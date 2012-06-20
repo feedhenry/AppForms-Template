@@ -49,7 +49,6 @@ exports = module.exports = function(opts, cb) {
     // Remove link to wufoo
     $('#logo a')[0].href = '#';
     // Do field logic function
-
     function fieldLogic(field, classes) {
       var type = ($(field.getElementsByTagName('input')[0]).attr('type'))
       if (type === 'file' && classes.indexOf('fhcam') !== -1) {
