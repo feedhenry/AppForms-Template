@@ -14,7 +14,7 @@ updateWufooHTML = function(form_id, html, remove_script, cb) {
     "baseUrl": "https://wufoo.com",
     "removeScripts": remove_script,
     "id": form_id
-  }, function (err, processed_html) {
+  }, function(err, processed_html) {
     if (err != null) {
       console.error('error inlining html:' + err);
     }
@@ -27,6 +27,8 @@ formDataToMultipart = function(form_data, cb) {
   var multipart_data = [];
 
   form_data.forEach(function(field) {
+    if (form_data)
+
     if (field.name != 'output' && typeof field.value != 'undefined') {
       if (field.name == 'clickOrEnter') {
         // clickOrEnter needs to be set to blank or 
@@ -71,6 +73,8 @@ exports.getForm = function(params, callback) {
       "error": "No config."
     });
   }
+
+  // Unlock password
 
   var domain = wufoo_config.wufoo_config.api_domain;
   var form_hash = params.form_hash;
