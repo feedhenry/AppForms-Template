@@ -57,7 +57,6 @@ formDataToMultipart = function(form_data, cb) {
     }
   });
 
-
   return multipart_data;
 };
 
@@ -131,7 +130,6 @@ exports.submitForm = function(params, callback) {
     },
     multipart: multipart_data
   }, function(e, r, b) {
-    console.log(r);
     updateWufooHTML(params.form_hash, b, true, function(processed_html) {
       return callback(null, {
         "html": processed_html
