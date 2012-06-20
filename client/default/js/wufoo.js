@@ -19,8 +19,12 @@ var WufooController = {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible, button[type=submit]:visible');
     var saveDraftBtn = jQuery("#saveDraftForm");
-    if(saveDraftBtn.length == 0){
-      saveDraftBtn = jQuery("<button>", {"id": "saveDraftForm", "class": submitBtn.attr("class"), "text":"Save As Draft"});
+    if (saveDraftBtn.length == 0) {
+      saveDraftBtn = jQuery("<button>", {
+        "id": "saveDraftForm",
+        "class": submitBtn.attr("class"),
+        "text": "Save As Draft"
+      });
       submitBtn.before(saveDraftBtn);
     }
     submitBtn.unbind().click(function() {
@@ -28,7 +32,7 @@ var WufooController = {
       return false;
     });
 
-    saveDraftBtn.unbind().click(function (){
+    saveDraftBtn.unbind().click(function() {
       self.saveDraftForm();
       return false;
     })
@@ -53,14 +57,41 @@ var WufooController = {
   },
 
   showDrafts: function() {
+    var self = this;
     this.hideAll();
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
+    this.loadDrafts();
+  },
 
+  loadDrafts: function() {
+    var self = this;
     this.listDrafts(function(data) {
-      console.log(data);
+      self.renderDrafts(data);
     }, function() {
       console.log('An error occured loading drafts');
+    });
+  },
+
+  renderDrafts: function(data) {
+    var self = this;
+    var drafts_list = jQuery('#fh_wufoo_drafts_list');
+
+    // Empty
+    drafts_list.find('li').remove();
+
+    jQuery.each(data, function(i, draft) {
+      var view_button = jQuery('<button>').text('View').addClass('view');
+      var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
+        self.deleteDraft(draft.id, draft.ts, function() {
+          console.log('deleted, reloading drafts');
+          self.loadDrafts();
+        }, function(err) {
+          console.log('draft delete failed');
+        });
+      });
+      var draft_el = jQuery('<li>').text(' ' + draft.name).append(delete_button).append(view_button).data('form', draft);
+      drafts_list.append(draft_el);
     });
   },
 
@@ -183,14 +214,14 @@ var WufooController = {
 
   },
 
-  saveDraftForm: function(){
+  saveDraftForm: function() {
     var serialized_form = this.serializeForm();
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    self.saveDraft(form_hash, form_name, serialized_form, function(){
+    self.saveDraft(form_hash, form_name, serialized_form, function() {
       console.log("Form saved as draft.");
-    }, function(){
+    }, function() {
       console.log("Failed to save form as draft.");
     });
   },
@@ -382,6 +413,10 @@ var WufooController = {
           fail();
         });
         }
+        
+        
+        
+        
         
     $fh.data({
       'act': 'load',
