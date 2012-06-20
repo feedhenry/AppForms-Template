@@ -84,6 +84,33 @@ var WufooController = {
     return fields;
   },
 
+  deserializeForm: function (form) {
+    var formObj = jQuery('form');
+    for (var key in form) {
+      if (form.hasOwnProperty(key)) {
+        var field = form[key];
+        if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "object")) {
+          // repopulate as a special field
+
+        } else if ('file' === field.type) {
+          if ('signature' === field.filename) {
+            // repopulate signature image and field
+
+          } else {
+            // repopulate as an image/picture field
+            var fieldObj = formObj.find('[name=' + field.name + ']');
+            var pic = field.value.replace(/data:image\/.*?;base64,/, '');
+            fieldObj.attr('value', pic);
+            fieldObj.parent().find('.sigField img').attr('src', field.value);
+          }
+        } else {
+          // repopulate as a text field
+          formObj.find('[name=' + field.name + ']').attr('value', field.value);
+        }
+      }
+    }
+  },
+
   submitForm: function() {
     var serialized_form = this.serializeForm();
     var self = this;
