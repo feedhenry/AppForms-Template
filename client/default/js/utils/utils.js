@@ -10,6 +10,54 @@ var UtilsFunctions = {
             })
           }
       });
+  },
+
+  isOnline: function(callback){
+    var online = true;
+    //first, check if navigator.online is available
+    if(typeof navigator.onLine != "undefined"){
+      online = navigator.onLine;
+    }
+    if(online){
+      //use phonegap to determin if the network is available
+      if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
+        var networkType = navigator.network.connection.type;
+        if(networkType == navigator.network.connection.none){
+          online = false;
+        }
+        callback(online);
+      } else {
+        try{
+          //no phonegap available, send ajax call to google to see if a connection is available
+          jQuery.ajax({
+            url: 'http://www.google.com',
+            async: true,
+            cache: false,
+            timeout: 1000,
+            complete: function(xhr, status){
+              if(status != "success" && status != "notmodified"){
+                //have trouble connecting to google, treat it as a network issue
+                online = false;
+              }
+              callback(online);
+            }
+          })
+        } catch(e){
+          console.log(e);
+          callback(online);
+        }
+      } 
+    } else {
+      callback(online);
+    }
+  },
+
+  isValid: function(value){
+    var valid = false;
+    if(value && typeof value != "undefined" && value != ""){
+      valid = true;
+    }
+    return valid;
   }
 }
 
