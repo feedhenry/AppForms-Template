@@ -86,7 +86,6 @@ var WufooController = {
 
   submitForm: function() {
     var serialized_form = this.serializeForm();
-    console.log(serialized_form);
     var self = this;
 
     $fh.act({
@@ -283,12 +282,6 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     navigator.camera.getPicture(function(imageData) {
-      apiController.images.push({
-        data: imageData,
-        formUrl: jQuery('form').attr('action').toString(),
-        ts: new Date().getTime()
-      });
-      input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved. Thank You!"
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
@@ -299,10 +292,7 @@ var apiController = {
   //Returns Lat and Long as sting
   fhgeo: function(input) {
     $fh.geoip(function(res) {
-      var str = '';
-      str += 'Longitude: ' + res.longitude + ', ';
-      str += 'Latitude: ' + res.latitude;
-      input.value = str;
+      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
       input.blur();
     }, function(msg, err) {
       input.value = 'Location could not be determined';
