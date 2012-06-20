@@ -195,7 +195,7 @@ var WufooController = {
     });
   },
 
-  renderFormHtml: function(html, show_back_button, form_hash) {
+  renderFormHtml: function(html, form_hash) {
     var self = this;
     this.hideFormList();
     this.showContentArea();
