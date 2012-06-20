@@ -100,9 +100,9 @@ var WufooController = {
 
   renderDraftsCount: function(count) {
     if (count > 0) {
-      jQuery('.fh_wufoo_drafts .count').removeClass('hidden').text(count);
+      jQuery('.fh_wufoo_drafts .count').show().text(count);
     } else {
-      jQuery('.fh_wufoo_drafts .count').addClass('hidden')
+      jQuery('.fh_wufoo_drafts .count').hide();
     }
   },
 
@@ -267,6 +267,7 @@ var WufooController = {
     var form_name = jQuery('#header').find('h2').text();
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
+      self.loadDrafts();
     }, function() {
       console.log("Failed to save form as draft.");
     });
