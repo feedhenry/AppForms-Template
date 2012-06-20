@@ -11,7 +11,7 @@ var WufooController = {
       this.getForm();
     } else {
       // Multi-form app
-      this.getFormList();
+      this.getFormList(true);
     }
   },
 
