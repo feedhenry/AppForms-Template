@@ -18,6 +18,12 @@ var WufooController = {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
+        // Wufoo's Array prototype alteration breaks 
+        // PhoneGap, so we remove it.
+        if (window.Prototype) {
+          delete Array.prototype.toJSON;
+        }
+
         // Wufoo Global - init() - available, 
         // call and clear the interval
         init();
@@ -25,6 +31,9 @@ var WufooController = {
 
         // Bind events
         self.bind();
+
+        // process fields
+        self.initFields();
       }
     }, 50);
   },
@@ -37,16 +46,48 @@ var WufooController = {
     });
   },
 
-  submitForm: function() {
-    var serialized_form = jQuery('form').serialize();
+  serializeForm: function(add_previous_button) {
+    var self = this;
+    var fields = jQuery('form').serializeArray();
     var previous_button = jQuery('#previousPageButton');
+
     if (previous_button.length > 0) {
       // Append previousButton value to serialized form, since submit
       // buttons aren't serialized by default
-      serialized_form += "&previousPageButton=";
+      fields.push({
+        name: 'previousPageButton',
+        value: ''
+      })
     }
 
+    // Add metadata
+    jQuery.each(fields, function(i, field) {
+      var el = jQuery('input[name=' + field.name + ']');
+      if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
+        fields[i] = self.specialFields[field.name].toJSON();
+      } else if (el.parents().hasClass('fhcam')) {
+        // Camera file
+        field['type'] = "file";
+        field['filename'] = "picture";
+        field['extension'] = "jpg";
+      } else if (el.parents().hasClass('fhsig')) {
+        // Signature
+        field['type'] = "file";
+        field['filename'] = "signature";
+        field['extension'] = "bmp";
+      } else {
+        // Regular text field
+        field['type'] = "text";
+      }
+    });
+
+    return fields;
+  },
+
+  submitForm: function() {
+    var serialized_form = this.serializeForm();
     var self = this;
+
     $fh.act({
       "act": "submitForm",
       "req": {
@@ -56,7 +97,7 @@ var WufooController = {
       }
     }, function(res) {
       self.renderFormHtml(res.html);
-      self.initWufoo();
+      //self.initWufoo();
     }, function(msg, err) {
       console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
     });
@@ -78,6 +119,7 @@ var WufooController = {
       });
       jQuery('body').prepend(back_button);
     }
+    apiController.addApiCalls();
   },
 
   getForm: function(form_hash, show_back_button) {
@@ -90,16 +132,15 @@ var WufooController = {
         "form_hash": form_hash
       }
     }, function(res) {
-
       // cache html in local storage (asynchronous)
       var html = res.html;
       $fh.data({
         "act": "save",
         "key": "form-" + form_hash,
         "val": html
-      }, function () {
+      }, function() {
         console.log('Form html save ok');
-      }, function (msg, err) {
+      }, function(msg, err) {
         console.log('Form html save failed:' + msg);
       });
 
@@ -173,12 +214,30 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
-    window.scrollTo(0,0);
+    window.scrollTo(0, 0);
   },
 
   showContentArea: function() {
     jQuery('#fh_wufoo_content').show();
+  },
+
+  initFields: function() {
+    var self = this;
+    self.specialFields = self.specialFields || {};
+    jQuery.each(jQuery('li.fhsig'), function(i, el) {
+      var sigField = jQuery(el).sigField({});
+      self.specialFields[sigField.getName()] = sigField;
+    });
+    utils.getLocation(function(location) {
+      jQuery.each(jQuery('li.fhmap'), function(i, field) {
+        var mapField = jQuery(field).mapField({
+          'location': location
+        });
+        self.specialFields[mapField.getName()] = mapField;
+      })
+    });
   }
+
 };
 
 
@@ -191,3 +250,58 @@ $fh.ready(function() {
     alert('No Wufoo config available, aborting.');
   }
 });
+
+
+var apiController = {
+  bindings: ['fhgeo', 'fhcam'],
+
+  // Get elements with class $fh and add needed api to click events
+  addApiCalls: function() {
+    var self = this;
+    var neededApis = document.body.getElementsByClassName('apibtn');
+    for (var i = 0; i < neededApis.length; i++) {
+      var className = neededApis[i].className;
+      for (var j = 0; j < self.bindings.length; j++) {
+        if (className.indexOf(self.bindings[j]) !== -1) {
+          var element = neededApis[i].getElementsByTagName('input')[0];
+          self.bindFunction(self.bindings[j], neededApis[i]);
+        }
+      }
+    }
+  },
+
+  // Binds an API with class name fhXyz call to provided element
+  bindFunction: function(fnName, btn) {
+    var inputField = btn.parentElement.getElementsByTagName('input')[0];
+    btn.onclick = function() {
+      setTimeout(function() {
+        apiController[fnName](inputField);
+      }, 50);
+      return false;
+    };
+  },
+
+  // Open camera and return base64 data
+  fhcam: function(input) {
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved.";
+        jQuery(input).val(imageData);
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
+    });
+  },
+
+  //Returns Lat and Long as sting
+  fhgeo: function(input) {
+    $fh.geoip(function(res) {
+      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
+      input.blur();
+    }, function(msg, err) {
+      input.value = 'Location could not be determined';
+    });
+  }
+};
