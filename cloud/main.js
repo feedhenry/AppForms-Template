@@ -1,5 +1,6 @@
 var util = require('util');
 var request = require('request');
+var url = require("url");
 var inline = require('./inline.js');
 
 /*
@@ -21,13 +22,42 @@ updateWufooHTML = function(form_id, html, remove_script, cb) {
   });
 };
 
-processFormData = function(form_data, cb) {
+formDataToMultipart = function(form_data, cb) {
   var data = form_data;
+  var multipart_data = [];
 
-  // clickOrEnter needs to be set to blank or 
-  // multi-page forms won't work correctly
-  data = data.replace('clickOrEnter=click', 'clickOrEnter=');
-  return data;
+  form_data.forEach(function(field) {
+    if (field.name != 'output' && typeof field.value != 'undefined') {
+      if (field.name == 'clickOrEnter') {
+        // clickOrEnter needs to be set to blank or 
+        // multi-page forms won't work correctly
+        field.value = '';
+      }
+
+      if (field.type == 'text') {
+        if (field.value != '') {
+          var multipart_part = {
+            'Content-Disposition': 'form-data; name="' + field.name + '"',
+            body: field.value,
+          }
+          multipart_data.push(multipart_part);
+        }
+      } else if (field.type == 'file') {
+        if (field.value != '') {
+          var multipart_part = {
+            'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
+            'Content-Type': 'image/' + field.extension,
+            body: new Buffer(field.value, 'base64'),
+          }
+          multipart_data.push(multipart_part);
+        }
+      } else {
+        console.log('Error, unknown field type: ' + field.type);
+      }
+    }
+  });
+
+  return multipart_data;
 };
 
 /* 
@@ -71,9 +101,14 @@ exports.getForms = function(params, callback) {
   var forms_url = "https://" + domain + "/api/v3/forms.json";
 
   var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
-  var auth_header = {'Authorization': auth};
+  var auth_header = {
+    'Authorization': auth
+  };
 
-  request.get({url: forms_url, headers: auth_header}, function(error, res, body) {
+  request.get({
+    url: forms_url,
+    headers: auth_header
+  }, function(error, res, body) {
     return callback(null, {
       data: JSON.parse(body)
     });
@@ -85,18 +120,17 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  var post_data = processFormData(params.form_data);
-
-  var req = request.post({
-    url: params.form_submission_url,
-    body: post_data,
+  var multipart_data = formDataToMultipart(params.form_data);
+  var req = request({
+    method: 'POST',
+    uri: params.form_submission_url,
     followAllRedirects: true,
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Content-Length': post_data.length
-    }
-  }, function(error, res, body) {
-    updateWufooHTML(params.form_hash, body, true, function(processed_html) {
+      'content-type': 'multipart/form-data;'
+    },
+    multipart: multipart_data
+  }, function(e, r, b) {
+    updateWufooHTML(params.form_hash, b, true, function(processed_html) {
       return callback(null, {
         "html": processed_html
       });

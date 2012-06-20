@@ -2,6 +2,11 @@ html, body {
   background: #eee;
 }
 
+
+.wufoo li {
+  width: 100% !important;
+}
+
 #fh_wufoo_form_list {
   width: 80%;
   max-width: 640px;
