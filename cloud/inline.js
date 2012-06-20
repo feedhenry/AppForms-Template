@@ -50,18 +50,28 @@ exports = module.exports = function(opts, cb) {
     $('#logo a')[0].href = '#';
     // Do field logic function
 
-    function fieldLogic(field) {
-      var type = ($(field.getElementsByTagName('input')[0]).attr('type'));
-      if (type === 'file') {
-        $(field.getElementsByTagName('input')[0]).attr('style', 'display: none')
-        $(field.getElementsByTagName('div')[0]).prepend('<p>Click to upload a picture</p>');
+    function fieldLogic(field, classes) {
+      var type = ($(field.getElementsByTagName('input')[0]).attr('type'))
+      if (type === 'file' && classes.indexOf('fhcam') !== -1) {
+        var originInput = $(field).find('div').find('input');
+        var imgData = $('<input>', {
+          type: 'hidden',
+          name: originInput.attr('name'),
+          id: originInput.attr('id')
+        });
+        var imgField = $('<div>', {});
+        var imgFieldDesc = $('<p>').text('Click to upload a picture')[0];
+        imgField.append(imgFieldDesc);
+        imgField.append(imgData);
+        $(field).find('div').remove();
+        $(field).append(imgField);
       }
     }
     // Modify the HTML inputs to have buttons etc
     var fields = $('.fh');
     $.each(fields, function(i, field) {
       var classes = ($(field).attr('class'));
-      fieldLogic(field);
+      fieldLogic(field, classes);
       for (var i = 0; i < bindings.length; i++) {
         if (classes.indexOf(bindings[i]) != -1) {
           var button = window.document.createElement('button');

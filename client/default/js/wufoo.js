@@ -284,6 +284,10 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved.";
+        jQuery(input).val(imageData);
+      }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
