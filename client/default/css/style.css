@@ -1,5 +1,6 @@
 html, body {
   background: #eee;
+  min-height: 101%;
 }
 
 .hidden {
@@ -91,6 +92,7 @@ html, body {
 }
 
 #fh_wufoo_header li .count {
+  display: inline-block;
   margin-left: 3px;
   text-align: center;
   width: 17px;
@@ -108,7 +110,6 @@ html, body {
   -webkit-border-radius: 14px;
    background-color: #72B0D4;
   line-height: 16px;
-  display: inline-block;
   background-position: 0 0 !important;
   background-image: -webkit-gradient(linear,left top,left bottom, color-stop(0, #72B0D4),color-stop(1, #4B88B6));
   background-image: -webkit-linear-gradient(top, #72B0D4, #4B88B6);

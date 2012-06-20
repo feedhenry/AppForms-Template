@@ -48,6 +48,9 @@ var WufooController = {
     jQuery('#fh_wufoo_header .fh_wufoo_pending').unbind().click(function() {
       self.showPending();
     });
+
+    this.loadDrafts();
+    this.loadPending();
   },
 
   showHome: function() {
@@ -57,7 +60,6 @@ var WufooController = {
   },
 
   showDrafts: function() {
-    var self = this;
     this.hideAll();
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
@@ -68,6 +70,7 @@ var WufooController = {
     var self = this;
     this.listDrafts(function(data) {
       self.renderDrafts(data);
+      self.renderDraftsCount(data.length);
     }, function() {
       console.log('An error occured loading drafts');
     });
@@ -95,15 +98,58 @@ var WufooController = {
     });
   },
 
+  renderDraftsCount: function(count) {
+    if (count > 0) {
+      jQuery('.fh_wufoo_drafts .count').removeClass('hidden').text(count);
+    } else {
+      jQuery('.fh_wufoo_drafts .count').addClass('hidden')
+    }
+  },
+
   showPending: function() {
     this.hideAll();
     jQuery('#fh_wufoo_pending_list').show();
     this.makeActive('fh_wufoo_pending');
+    this.loadPending();
+  },
 
+  loadPending: function() {
+    var self = this;
     this.listPending(function(data) {
-      console.log(data);
+      self.renderPending(data);
+      self.renderPendingCount(data.length);
     }, function() {
       console.log('An error occured loading pending');
+    });
+  },
+
+  renderPendingCount: function(count) {
+    if (count > 0) {
+      jQuery('.fh_wufoo_pending .count').show().text(count);
+    } else {
+      jQuery('.fh_wufoo_pending .count').hide();
+    }
+  },
+
+  renderPending: function(data) {
+    var self = this;
+    var list = jQuery('#fh_wufoo_pending_list');
+
+    // Empty
+    list.find('li').remove();
+
+    jQuery.each(data, function(i, draft) {
+      var view_button = jQuery('<button>').text('View').addClass('view');
+      var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
+        self.deleteDraft(draft.id, draft.ts, function() {
+          console.log('deleted, reloading drafts');
+          self.loadDrafts();
+        }, function(err) {
+          console.log('draft delete failed');
+        });
+      });
+      var draft_el = jQuery('<li>').text(' ' + draft.name).append(delete_button).append(view_button).data('form', draft);
+      list.append(draft_el);
     });
   },
 
