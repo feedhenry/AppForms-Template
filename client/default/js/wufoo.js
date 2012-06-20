@@ -138,18 +138,18 @@ var WufooController = {
     // Empty
     list.find('li').remove();
 
-    jQuery.each(data, function(i, draft) {
+    jQuery.each(data, function(i, pending) {
       var view_button = jQuery('<button>').text('View').addClass('view');
       var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
-        self.deleteDraft(draft.id, draft.ts, function() {
-          console.log('deleted, reloading drafts');
-          self.loadDrafts();
+        self.deletePending(pending.id, pending.ts, function() {
+          console.log('deleted, reloading pending');
+          self.loadPending();
         }, function(err) {
-          console.log('draft delete failed');
+          console.log('pending delete failed');
         });
       });
-      var draft_el = jQuery('<li>').text(' ' + draft.name).append(delete_button).append(view_button).data('form', draft);
-      list.append(draft_el);
+      var pending_el = jQuery('<li>').text(' ' + pending.name).append(delete_button).append(view_button).data('form', pending);
+      list.append(pending_el);
     });
   },
 
@@ -342,7 +342,7 @@ var WufooController = {
           self.renderFormList(self.all_forms);
         }
       }, function(err) {
-        console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+        console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
       });
     } else {
       // Show existing form list

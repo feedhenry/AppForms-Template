@@ -25,6 +25,23 @@ updateWufooHTML = function(form_id, html, remove_script, cb) {
 formDataToMultipart = function(form_data, cb) {
   var data = form_data;
   var multipart_data = [];
+  var wufoo_config = require('wufoo_config.js');
+
+  if (typeof wufoo_config == 'undefined') {
+    return callback(null, {
+      "html": "",
+      "error": "No config."
+    });
+  }
+
+  // Password unlock on submit
+  if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+    var multipart_part = {
+      'Content-Disposition': 'form-data; name=password"',
+      body: wufoo_config.wufoo_config.form_password,
+    }
+    multipart_data.push(multipart_part);
+  }
 
   form_data.forEach(function(field) {
     if (form_data)
@@ -58,6 +75,8 @@ formDataToMultipart = function(form_data, cb) {
       }
     }
   });
+
+  console.log(multipart_data);
 
   return multipart_data;
 };
