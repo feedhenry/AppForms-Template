@@ -8,12 +8,13 @@ var inline = require('./inline.js');
  * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
  * from the HTML, as this JavaScript will already be loaded client side as this point.
  */
-updateWufooHTML = function(html, remove_script, cb) {
+updateWufooHTML = function(form_id, html, remove_script, cb) {
   inline({
     "html": html,
     "baseUrl": "https://wufoo.com",
-    "removeScripts": remove_script
-  }, function(err, processed_html) {
+    "removeScripts": remove_script,
+    "id": form_id
+  }, function (err, processed_html) {
     if (err != null) {
       console.error('error inlining html:' + err);
     }
@@ -77,7 +78,7 @@ exports.getForm = function(params, callback) {
   var url = "https://" + domain + "/forms/" + form_hash + "/";
 
   request(url, function(error, res, body) {
-    updateWufooHTML(body, false, function(processed_html) {
+    updateWufooHTML(form_hash, body, false, function(processed_html) {
       return callback(null, {
         "html": processed_html
       });
@@ -131,7 +132,7 @@ exports.submitForm = function(params, callback) {
     multipart: multipart_data
   }, function(e, r, b) {
     console.log(r);
-    updateWufooHTML(b, true, function(processed_html) {
+    updateWufooHTML(params.form_hash, b, true, function(processed_html) {
       return callback(null, {
         "html": processed_html
       });
