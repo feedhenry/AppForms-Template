@@ -4,6 +4,7 @@ var WufooController = {
 
   init: function(config) {
     this.config = config;
+    this.bind();
 
     if (wufoo_config.app_type == 'single_form') {
       // Single form app
@@ -12,6 +13,43 @@ var WufooController = {
       // Multi-form app
       this.getFormList(true);
     }
+  },
+
+  bind: function() {
+    var self = this;
+    jQuery('input[type=submit]:visible, button[type=submit]:visible').unbind().click(function() {
+      self.submitForm();
+      return false;
+    });
+
+    jQuery('#fh_wufoo_header .fh_wufoo_home').unbind().click(function() {
+      self.showHome();
+    });
+
+    jQuery('#fh_wufoo_header .fh_wufoo_drafts').unbind().click(function() {
+      self.showDrafts();
+    });    
+  },
+
+  showHome: function() {
+    this.hideAll();
+    jQuery('#fh_wufoo_form_list').show();
+    this.makeActive('fh_wufoo_home');
+  },
+
+  showDrafts: function() {
+    this.hideAll();
+    jQuery('#fh_wufoo_drafts_list').show();
+    this.makeActive('fh_wufoo_drafts');
+  },
+
+  hideAll: function() {
+    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list').hide();
+  },
+
+  makeActive: function(active_item) {
+    jQuery('#fh_wufoo_header').find('.fh_wufoo_home, .fh_wufoo_drafts, .fh_wufoo_pending').removeClass('active');
+    jQuery('.' + active_item + '').addClass('active');
   },
 
   initWufoo: function() {
@@ -36,14 +74,6 @@ var WufooController = {
         self.initFields();
       }
     }, 50);
-  },
-
-  bind: function() {
-    var self = this;
-    jQuery('input[type=submit]:visible, button[type=submit]:visible').unbind().click(function() {
-      self.submitForm();
-      return false;
-    });
   },
 
   serializeForm: function(add_previous_button) {
@@ -129,15 +159,15 @@ var WufooController = {
     jQuery('#fh_wufoo_content').html(html);
     this.initWufoo();
     jQuery('form').data('form_hash', form_hash);
-    if (show_back_button) {
-      // Inject a back button
-      var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
-        self.getFormList(false);
-        jQuery(this).remove();
-        return false;
-      });
-      jQuery('body').prepend(back_button);
-    }
+    // if (show_back_button) {
+    //   // Inject a back button
+    //   var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
+    //     self.getFormList(false);
+    //     jQuery(this).remove();
+    //     return false;
+    //   });
+    //   jQuery(back_button).insertAfter('#fh_wufoo_header');
+    // }
     apiController.addApiCalls();
   },
 
@@ -184,7 +214,12 @@ var WufooController = {
     });
   },
 
+  clearFormList: function() {
+    jQuery('#fh_wufoo_form_list li').remove();
+  },
+
   getFormList: function(load) {
+    this.clearFormList();
     var self = this;
     if (load) {
       $fh.act({
