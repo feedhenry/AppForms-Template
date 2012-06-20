@@ -3,10 +3,6 @@ html, body {
   min-height: 101%;
 }
 
-.hidden {
-  display: none;
-}
-
 .wufoo li {
   width: 100% !important;
 }
@@ -119,4 +115,8 @@ html, body {
   background-image: -ms-linear-gradient(top, #72B0D4, #4B88B6);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorStr='#72b0d4', EndColorStr='#4b88b6');
   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#72b0d4', EndColorStr='#4b88b6')";
+}
+
+.hidden {
+  display: none;
 }
