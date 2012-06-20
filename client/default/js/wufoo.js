@@ -28,7 +28,11 @@ var WufooController = {
 
     jQuery('#fh_wufoo_header .fh_wufoo_drafts').unbind().click(function() {
       self.showDrafts();
-    });    
+    });
+
+    jQuery('#fh_wufoo_header .fh_wufoo_pending').unbind().click(function() {
+      self.showPending();
+    });
   },
 
   showHome: function() {
@@ -43,8 +47,14 @@ var WufooController = {
     this.makeActive('fh_wufoo_drafts');
   },
 
+  showPending: function() {
+    this.hideAll();
+    jQuery('#fh_wufoo_pending_list').show();
+    this.makeActive('fh_wufoo_pending');
+  },
+
   hideAll: function() {
-    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list').hide();
+    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list').hide();
   },
 
   makeActive: function(active_item) {

@@ -14,7 +14,7 @@ html, body {
   padding-top: 20px;
 }
 
-#fh_wufoo_form_list, #fh_wufoo_drafts_list {
+#fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
   width: 80%;
   max-width: 640px;
   text-align: center;
@@ -32,7 +32,7 @@ html, body {
   box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 5px;
 }
 
-#fh_wufoo_form_list h2, #fh_wufoo_drafts_list h2 {
+#fh_wufoo_form_list h2, #fh_wufoo_drafts_list h2, #fh_wufoo_pending_list h2 {
   margin: 0;
   padding: 0;
   background: #dedede;
@@ -40,7 +40,7 @@ html, body {
   line-height: 40px;
 }
 
-#fh_wufoo_form_list li, #fh_wufoo_drafts_list li {
+#fh_wufoo_form_list li, #fh_wufoo_drafts_list li, #fh_wufoo_pending_list li {
   margin-bottom: 5px;
 }
 
