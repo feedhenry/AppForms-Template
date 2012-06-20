@@ -230,12 +230,12 @@ var WufooController = {
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var saveFormData = function() {
-        self.savePending(form_hash, form_name, serialized_form, function() {
-          console.log("Form data saved");
-        }, function() {
-          console.log("Failed to save form data for form : " + form_hash);
-        });
-        };
+      self.savePending(form_hash, form_name, serialized_form, function() {
+        console.log("Form data saved");
+      }, function() {
+        console.log("Failed to save form data for form : " + form_hash);
+      });
+    };
     utils.isOnline(function(online) {
       if (online) {
         $fh.act({
@@ -266,7 +266,7 @@ var WufooController = {
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     self.saveDraft(form_hash, form_name, serialized_form, function() {
-      console.log("Form saved as draft.");
+      alert('Draft saved.');
     }, function() {
       console.log("Failed to save form as draft.");
     });
@@ -449,21 +449,17 @@ var WufooController = {
       type: type
     };
     var saveFormData = function(done, fail) {
-        $fh.data({
-          act: 'save',
-          key: entryId,
-          val: JSON.stringify(entryData)
-        }, function() {
-          done();
-        }, function() {
-          fail();
-        });
-        }
-        
-        
-        
-        
-        
+      $fh.data({
+        act: 'save',
+        key: entryId,
+        val: JSON.stringify(entryData)
+      }, function() {
+        done();
+      }, function() {
+        fail();
+      });
+    }
+
     $fh.data({
       'act': 'load',
       'key': entryListId
@@ -606,7 +602,7 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 10,
+      quality: 10
     });
   },
 
