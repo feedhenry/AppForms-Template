@@ -74,19 +74,39 @@ exports.getForm = function(params, callback) {
     });
   }
 
-  // Unlock password
-
   var domain = wufoo_config.wufoo_config.api_domain;
   var form_hash = params.form_hash;
   var url = "https://" + domain + "/forms/" + form_hash + "/";
 
-  request(url, function(error, res, body) {
-    updateWufooHTML(form_hash, body, false, function(processed_html) {
-      return callback(null, {
-        "html": processed_html
+  // Unlock password
+  if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+    console.log('Unlocking form');
+    var req = request({
+      method: 'POST',
+      url: url,
+      followAllRedirects: true,
+      headers: {
+        'content-type': 'multipart/form-data;'
+      },
+      form: {
+        password: wufoo_config.wufoo_config.form_password
+      }
+    }, function(error, res, body) {
+      updateWufooHTML(form_hash, body, false, function(processed_html) {
+        return callback(null, {
+          "html": processed_html
+        });
       });
     });
-  });
+  } else {
+    request(url, function(error, res, body) {
+      updateWufooHTML(form_hash, body, false, function(processed_html) {
+        return callback(null, {
+          "html": processed_html
+        });
+      });
+    });
+  }
 };
 
 /* 
