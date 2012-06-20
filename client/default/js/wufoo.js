@@ -57,6 +57,12 @@ var WufooController = {
     this.hideAll();
     jQuery('#fh_wufoo_pending_list').show();
     this.makeActive('fh_wufoo_pending');
+
+    this.listPending(function(data) {
+      console.log(data);
+    }, function() {
+      console.log('An error occured loading pending');
+    });
   },
 
   hideAll: function() {
