@@ -17,10 +17,21 @@ var WufooController = {
 
   bind: function() {
     var self = this;
-    jQuery('input[type=submit]:visible, button[type=submit]:visible').unbind().click(function() {
+    var submitBtn = jQuery('input[type=submit]:visible, button[type=submit]:visible');
+    var saveDraftBtn = jQuery("#saveDraftForm");
+    if(saveDraftBtn.length == 0){
+      saveDraftBtn = jQuery("<button>", {"id": "saveDraftForm", "class": submitBtn.attr("class"), "text":"Save As Draft"});
+      submitBtn.before(saveDraftBtn);
+    }
+    submitBtn.unbind().click(function() {
       self.submitForm();
       return false;
     });
+
+    saveDraftBtn.unbind().click(function (){
+      self.saveDraftForm();
+      return false;
+    })
 
     jQuery('#fh_wufoo_header .fh_wufoo_home').unbind().click(function() {
       self.showHome();
@@ -172,7 +183,19 @@ var WufooController = {
 
   },
 
-  renderFormHtml: function(html, form_hash) {
+  saveDraftForm: function(){
+    var serialized_form = this.serializeForm();
+    var self = this;
+    var form_hash = jQuery('form').data('form_hash');
+    var form_name = jQuery('#header').find('h2').text();
+    self.saveDraft(form_hash, form_name, serialized_form, function(){
+      console.log("Form saved as draft.");
+    }, function(){
+      console.log("Failed to save form as draft.");
+    });
+  },
+
+  renderFormHtml: function(html, show_back_button, form_hash) {
     var self = this;
     this.hideFormList();
     this.showContentArea();
