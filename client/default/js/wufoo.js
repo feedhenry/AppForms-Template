@@ -11,7 +11,7 @@ var WufooController = {
       this.getForm();
     } else {
       // Multi-form app
-      this.getFormList(true);
+      this.getFormList();
     }
   },
 
@@ -45,6 +45,12 @@ var WufooController = {
     this.hideAll();
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
+
+    this.listDrafts(function(data) {
+      console.log(data);
+    }, function() {
+      console.log('An error occured loading drafts');
+    });
   },
 
   showPending: function() {
@@ -129,59 +135,48 @@ var WufooController = {
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    var saveFormData = function(){
-      self.savePending(form_hash, form_name, serialized_form, function(){
-        console.log("Form data saved");
-      }, function(){
-        console.log("Failed to save form data for form : " + form_hash);
-      });
-    };
-    utils.isOnline(function(online){
-      if(online){
-        $fh.act(
-          {
-            "act": "submitForm",
-            "req": {
-              "form_hash": form_hash,
-              "form_data": serialized_form,
-              "form_submission_url": jQuery('form').attr('action')
-            }
-          }, function(res) {
-            self.renderFormHtml(res.html);
-            //self.initWufoo();
-          }, function(msg, err) {
-            console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-            saveFormData();
+    var saveFormData = function() {
+        self.savePending(form_hash, form_name, serialized_form, function() {
+          console.log("Form data saved");
+        }, function() {
+          console.log("Failed to save form data for form : " + form_hash);
+        });
+        };
+    utils.isOnline(function(online) {
+      if (online) {
+        $fh.act({
+          "act": "submitForm",
+          "req": {
+            "form_hash": form_hash,
+            "form_data": serialized_form,
+            "form_submission_url": jQuery('form').attr('action')
           }
-        );
+        }, function(res) {
+          self.renderFormHtml(res.html);
+          //self.initWufoo();
+        }, function(msg, err) {
+          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          saveFormData();
+        });
       } else {
         console.log("Can not submit your form due to network issue. Save it as pending form.");
         saveFormData();
       }
     })
-    
+
   },
 
-  renderFormHtml: function(html, show_back_button, form_hash) {
+  renderFormHtml: function(html, form_hash) {
     var self = this;
     this.hideFormList();
     this.showContentArea();
     jQuery('#fh_wufoo_content').html(html);
     this.initWufoo();
     jQuery('form').data('form_hash', form_hash);
-    // if (show_back_button) {
-    //   // Inject a back button
-    //   var back_button = jQuery('<a>').attr('href', '#').text('Back To Form List').addClass('fh_wufoo_formlist_btn').click(function() {
-    //     self.getFormList(false);
-    //     jQuery(this).remove();
-    //     return false;
-    //   });
-    //   jQuery(back_button).insertAfter('#fh_wufoo_header');
-    // }
     apiController.addApiCalls();
   },
 
-  getForm: function(form_hash, show_back_button) {
+  getForm: function(form_hash) {
     form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
@@ -205,7 +200,7 @@ var WufooController = {
 
       // ok to leave this happen straight away ($fh.data above is asynchronous)
       // as it doesn't depend on the save having completed
-      self.renderFormHtml(html, show_back_button, form_hash);
+      self.renderFormHtml(html, form_hash);
       self.initWufoo();
     }, function(msg, err) {
       console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -214,7 +209,7 @@ var WufooController = {
         key: "form-" + form_hash
       }, function(res) {
         // got form html from cache, render it
-        self.renderFormHtml(res.val, show_back_button, form_hash);
+        self.renderFormHtml(res.val, form_hash);
         self.initWufoo();
       }, function(msg, err) {
         //load failed
@@ -261,7 +256,7 @@ var WufooController = {
       var list_item = jQuery('<li>').addClass('fh_wufoo_form_li');
       var item_button = jQuery('<button>').addClass('fh_wufoo_form').text(form_item.Name).data('form', form_item).click(function() {
         var form_data = jQuery(this).data('form');
-        self.getForm(form_data.Hash, true);
+        self.getForm(form_data.Hash);
       });
       list_item.append(item_button);
       form_list.append(list_item);
@@ -300,7 +295,7 @@ var WufooController = {
         self.specialFields[mapField.getName()] = mapField;
       })
     });
-  }, 
+  },
 
   saveDraft: function(form_id, form_name, form_data, success, error) {
     this.saveData('draft', form_id, form_name, form_data, success, error);
@@ -314,7 +309,7 @@ var WufooController = {
     this.listData("draft", success, error);
   },
 
-  deleteDraft: function(form_hash, ts, success, error){
+  deleteDraft: function(form_hash, ts, success, error) {
     this.deleteData("draft", form_hash, ts, success, error);
   },
 
@@ -330,40 +325,64 @@ var WufooController = {
     this.listData("pending", success, error);
   },
 
-  deletePending: function(form_hash, ts, success, error){
+  deletePending: function(form_hash, ts, success, error) {
     this.deleteData("pending", form_hash, ts, success, error);
   },
 
-  saveData: function(type, form_hash, form_name, form_data, success, error){
+  saveData: function(type, form_hash, form_name, form_data, success, error) {
     var entryListId = type + "_" + "forms_list";
     var updatedTime = new Date().getTime();
     var entryId = type + "_" + form_hash + "_" + updatedTime;
-    var entryData = {data: form_data};
-    var entryIndexData = {ts: updatedTime, name:form_name, id: form_hash, type: type};
-    var saveFormData = function(done, fail){
-      $fh.data({act:'save', key: entryId, val: JSON.stringify(entryData)}, function(){
-        done();
-      }, function(){
-        fail();
-      });
-    }
-    $fh.data({'act':'load', 'key':entryListId}, function(data){
-      var entryListData = {list: []};
-      if(utils.isValid(data.val)){
+    var entryData = {
+      data: form_data
+    };
+    var entryIndexData = {
+      ts: updatedTime,
+      name: form_name,
+      id: form_hash,
+      type: type
+    };
+    var saveFormData = function(done, fail) {
+        $fh.data({
+          act: 'save',
+          key: entryId,
+          val: JSON.stringify(entryData)
+        }, function() {
+          done();
+        }, function() {
+          fail();
+        });
+        }
+        
+    $fh.data({
+      'act': 'load',
+      'key': entryListId
+    }, function(data) {
+      var entryListData = {
+        list: []
+      };
+      if (utils.isValid(data.val)) {
         entryListData = JSON.parse(data.val);
       }
       entryListData.list.push(entryIndexData);
-      $fh.data({'act':'save', key: entryListId, val: JSON.stringify(entryListData)}, function(){
-          saveFormData(success, error);
+      $fh.data({
+        'act': 'save',
+        key: entryListId,
+        val: JSON.stringify(entryListData)
+      }, function() {
+        saveFormData(success, error);
       }, error);
     }, error);
   },
 
-  listData: function(type, success, error){
+  listData: function(type, success, error) {
     var entryListId = type + "_" + "forms_list";
-    $fh.data({act:'load', key: entryListId}, function(data){
+    $fh.data({
+      act: 'load',
+      key: entryListId
+    }, function(data) {
       var list = [];
-      if(utils.isValid(data.val)){
+      if (utils.isValid(data.val)) {
         var listData = JSON.parse(data.val);
         list = listData.list;
       }
@@ -371,11 +390,14 @@ var WufooController = {
     }, error);
   },
 
-  getData: function(type, form_hash, ts, success, error){
+  getData: function(type, form_hash, ts, success, error) {
     var entryId = type + "_" + form_hash + "_" + ts;
-    $fh.data({act:'load', key: entryId}, function(data){
+    $fh.data({
+      act: 'load',
+      key: entryId
+    }, function(data) {
       var form = {};
-      if(utils.isValid(data.val)){
+      if (utils.isValid(data.val)) {
         var formData = JSON.parse(data.val);
         form = formData.data;
       }
@@ -383,26 +405,36 @@ var WufooController = {
     }, error);
   },
 
-  deleteData: function(type, form_hash, ts, success, error){
+  deleteData: function(type, form_hash, ts, success, error) {
     var entryId = type + "_" + form_hash + "_" + ts;
-    $fh.data({act:'remove', key: entryId}, function(){
+    $fh.data({
+      act: 'remove',
+      key: entryId
+    }, function() {
       var entryListId = type + "_" + "forms_list";
-      $fh.data({act:'load', key: entryListId}, function(data){
-        if(utils.isValid(data.val)){
+      $fh.data({
+        act: 'load',
+        key: entryListId
+      }, function(data) {
+        if (utils.isValid(data.val)) {
           var listData = JSON.parse(data.val);
           var list = listData.list;
           var foundIndex = -1;
-          for(var i=0;i<list.length;i++){
+          for (var i = 0; i < list.length; i++) {
             var entry = list[i];
-            if(entry.ts == ts && entry.id == form_hash){
+            if (entry.ts == ts && entry.id == form_hash) {
               foundIndex = i;
               break;
             }
           }
-          if(foundIndex > -1){
+          if (foundIndex > -1) {
             list.splice(foundIndex, 1);
           }
-          $fh.data({act:'save', key: entryListId, val: JSON.stringify(listData)}, function(){
+          $fh.data({
+            act: 'save',
+            key: entryListId,
+            val: JSON.stringify(listData)
+          }, function() {
             success();
           }, error);
         } else {
