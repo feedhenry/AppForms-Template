@@ -76,6 +76,10 @@ var WufooController = {
     });
   },
 
+  formatTimestamp: function(ts) {
+    return moment(ts).format("DD-MM-YYYY HH:mm");
+  },
+
   renderDrafts: function(data) {
     var self = this;
     var drafts_list = jQuery('#fh_wufoo_drafts_list');
@@ -93,7 +97,8 @@ var WufooController = {
           console.log('draft delete failed');
         });
       });
-      var draft_el = jQuery('<li>').text(' ' + draft.name).append(delete_button).append(view_button).data('form', draft);
+      var timestamp = self.formatTimestamp(draft.ts);
+      var draft_el = jQuery('<li>').text(timestamp + ' - ' + draft.name).append(delete_button).append(view_button).data('form', draft);
       drafts_list.append(draft_el);
     });
   },
@@ -148,7 +153,8 @@ var WufooController = {
           console.log('pending delete failed');
         });
       });
-      var pending_el = jQuery('<li>').text(' ' + pending.name).append(delete_button).append(view_button).data('form', pending);
+      var timestamp = self.formatTimestamp(pending.ts);
+      var pending_el = jQuery('<li>').text(timestamp + ' - ' + pending.name).append(delete_button).append(view_button).data('form', pending);
       list.append(pending_el);
     });
   },
