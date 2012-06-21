@@ -88,7 +88,16 @@ var WufooController = {
     drafts_list.find('li').remove();
 
     jQuery.each(data, function(i, draft) {
-      var view_button = jQuery('<button>').text('View').addClass('view');
+      var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
+        self.getDraft(draft.id, draft.ts, function(data) {
+          self.hideAll();
+          console.log(data);
+          self.getForm(draft.id, function() {
+            self.deserializeForm(data);
+          }, true);
+        });
+      });
+
       var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
         self.deleteDraft(draft.id, draft.ts, function() {
           console.log('deleted, reloading drafts');
@@ -168,7 +177,7 @@ var WufooController = {
     jQuery('.' + active_item + '').addClass('active');
   },
 
-  initWufoo: function() {
+  initWufoo: function(target_location) {
     var self = this;
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
@@ -187,7 +196,7 @@ var WufooController = {
         self.bind();
 
         // process fields
-        self.initFields();
+        self.initFields(target_location);
       }
     }, 50);
   },
@@ -211,18 +220,11 @@ var WufooController = {
       var el = jQuery('input[name=' + field.name + ']');
       if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
-      } else if (el.parents().hasClass('fhmap')) {
-        field['type'] = "map";
       } else if (el.parents().hasClass('fhcam')) {
         // Camera file
         field['type'] = "file";
         field['filename'] = "picture";
         field['extension'] = "jpg";
-      } else if (el.parents().hasClass('fhsig')) {
-        // Signature
-        field['type'] = "file";
-        field['filename'] = "signature";
-        field['extension'] = "bmp";
       } else {
         // Regular text field
         field['type'] = "text";
@@ -232,37 +234,37 @@ var WufooController = {
     return fields;
   },
 
-  deserializeForm: function (form) {
+  deserializeForm: function(form) {
     var formObj = jQuery('form');
-    for (var key in form) {
-      if (form.hasOwnProperty(key)) {
-        var field = form[key];
-        var fieldObj = formObj.find('[name=' + field.name + ']');
+    jQuery.each(form, function(i, field) {
+      var fieldObj = formObj.find('[name=' + field.name + ']');
 
-        if ('file' === field.type) {
-          if ('picture' === field.filename) {
-            // repopulate hidden input field value
-            fieldObj.attr('value', field.value);
-          } else {
-            // repopulate signature hidden input field and set image source
-            var pic = field.value.replace(/data:image\/.*?;base64,/, '');
-            fieldObj.attr('value', pic);
-            fieldObj.parent().find('.sigField img').attr('src', field.value);
-          }
-        } else if ('map' === field.type) {
+      if ('file' === field.type) {
+        if ('picture' === field.filename) {
+          // repopulate hidden input field value
           fieldObj.attr('value', field.value);
-          var map = fieldObj.data('fh_map');
-          var marker = fieldObj.data('fh_map_marker');
-          var location = field.value.match(/\((.*)?,[\s\S](.*)?\)/);
-          var latLng = new google.maps.LatLng(location[2], location[3]);
-          map.setCenter(latLng);
-          marker.setPosition(latLng);
         } else {
-          // repopulate as a text field
+          // repopulate signature hidden input field and set image source
           fieldObj.attr('value', field.value);
+          fieldObj.parent().find('.sigField img').attr('src', 'data:image/' + field.extension + ';base64,' + field.value);
         }
+      } else if ('map' === field.type) {
+        fieldObj.attr('value', field.value);
+        var location = field.value.match(/\((.*)?,[\s\S](.*)?\)/);
+
+        fieldObj.parent().mapField({
+          'location': {
+            'lon': location[2],
+            'lat': location[1]
+          }
+        });
+
+      } else {
+        // repopulate as a text field
+        fieldObj.attr('value', field.value);
       }
-    }
+    });
+
   },
 
   submitForm: function() {
@@ -271,14 +273,14 @@ var WufooController = {
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var saveFormData = function() {
-      self.savePending(form_hash, form_name, serialized_form, function() {
-        console.log("Form data saved");
-        self.loadDrafts();
-        self.loadPending();
-      }, function() {
-        console.log("Failed to save form data for form : " + form_hash);
-      });
-    };
+        self.savePending(form_hash, form_name, serialized_form, function() {
+          console.log("Form data saved");
+          self.loadDrafts();
+          self.loadPending();
+        }, function() {
+          console.log("Failed to save form data for form : " + form_hash);
+        });
+      };
     utils.isOnline(function(online) {
       if (online) {
         $fh.act({
@@ -290,7 +292,7 @@ var WufooController = {
           }
         }, function(res) {
           self.renderFormHtml(res.html);
-          //self.initWufoo();
+          self.initWufoo();
         }, function(msg, err) {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           saveFormData();
@@ -321,12 +323,11 @@ var WufooController = {
     this.hideFormList();
     this.showContentArea();
     jQuery('#fh_wufoo_content').html(html);
-    this.initWufoo();
     jQuery('form').data('form_hash', form_hash);
     apiController.addApiCalls();
   },
 
-  getForm: function(form_hash) {
+  getForm: function(form_hash, cb, target_location) {
     form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
@@ -351,7 +352,10 @@ var WufooController = {
       // ok to leave this happen straight away ($fh.data above is asynchronous)
       // as it doesn't depend on the save having completed
       self.renderFormHtml(html, form_hash);
-      self.initWufoo();
+      self.initWufoo(target_location);
+      if (typeof cb !== 'undefined') {
+        return cb();
+      }
     }, function(msg, err) {
       console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
       // falling back to cached form, if available
@@ -360,7 +364,10 @@ var WufooController = {
       }, function(res) {
         // got form html from cache, render it
         self.renderFormHtml(res.val, form_hash);
-        self.initWufoo();
+        self.initWufoo(target_location);
+        if (typeof cb !== 'undefined') {
+          return cb();
+        }
       }, function(msg, err) {
         //load failed
         console.log('Form html load from cache failed');
@@ -430,21 +437,23 @@ var WufooController = {
     jQuery('#fh_wufoo_content').show();
   },
 
-  initFields: function() {
+  initFields: function(target_location) {
     var self = this;
     self.specialFields = self.specialFields || {};
     jQuery.each(jQuery('li.fhsig'), function(i, el) {
       var sigField = jQuery(el).sigField({});
       self.specialFields[sigField.getName()] = sigField;
     });
-    utils.getLocation(function(location) {
-      jQuery.each(jQuery('li.fhmap'), function(i, field) {
-        var mapField = jQuery(field).mapField({
-          'location': location
-        });
-        self.specialFields[mapField.getName()] = mapField;
-      })
-    });
+    if (!target_location) {
+      utils.getLocation(function(location) {
+        jQuery.each(jQuery('li.fhmap'), function(i, field) {
+          var mapField = jQuery(field).mapField({
+            'location': location
+          });
+          self.specialFields[mapField.getName()] = mapField;
+        })
+      });
+    }
   },
 
   saveDraft: function(form_id, form_name, form_data, success, error) {
@@ -494,16 +503,16 @@ var WufooController = {
       type: type
     };
     var saveFormData = function(done, fail) {
-      $fh.data({
-        act: 'save',
-        key: entryId,
-        val: JSON.stringify(entryData)
-      }, function() {
-        done();
-      }, function() {
-        fail();
-      });
-    }
+        $fh.data({
+          act: 'save',
+          key: entryId,
+          val: JSON.stringify(entryData)
+        }, function() {
+          done();
+        }, function() {
+          fail();
+        });
+      }
 
     $fh.data({
       'act': 'load',
