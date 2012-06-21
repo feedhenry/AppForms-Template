@@ -49,6 +49,7 @@
             title: "Drag this to set position"
           });
           ctx.data('fh_map_marker', marker);
+          $('.mapValue', ctx).val(map.getCenter().toString());
           google.maps.event.addListener(marker, "dragend", function(){
             var ps = marker.getPosition().toString();
             $('.mapValue', ctx).val(ps);

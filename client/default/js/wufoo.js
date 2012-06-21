@@ -237,31 +237,34 @@ var WufooController = {
   deserializeForm: function(form) {
     var formObj = jQuery('form');
     jQuery.each(form, function(i, field) {
-      var fieldObj = formObj.find('[name=' + field.name + ']');
-
-      if ('file' === field.type) {
-        if ('picture' === field.filename) {
-          // repopulate hidden input field value
-          fieldObj.attr('value', field.value);
-        } else {
-          // repopulate signature hidden input field and set image source
-          fieldObj.attr('value', field.value);
-          fieldObj.parent().find('.sigField img').attr('src', 'data:image/' + field.extension + ';base64,' + field.value);
-        }
-      } else if ('map' === field.type) {
-        fieldObj.attr('value', field.value);
-        var location = field.value.match(/\((.*)?,[\s\S](.*)?\)/);
-
-        fieldObj.parent().mapField({
-          'location': {
-            'lon': location[2],
-            'lat': location[1]
+      if(field.value != null && field.value !== ""){
+        var fieldObj = formObj.find('[name=' + field.name + ']');
+        if ('file' === field.type) {
+          if ('picture' === field.filename) {
+            // repopulate hidden input field value
+            fieldObj.attr('value', field.value);
+            fieldObj.parent().find("p").text("Picture saved.");
+          } else {
+            // repopulate signature hidden input field and set image source
+            var data = 'data:image/' + field.extension + ';base64,' + field.value;
+            fieldObj.attr('value', data);
+            fieldObj.parent().find('.sigField img').attr('src', data);
           }
-        });
+        } else if ('map' === field.type) {
+          fieldObj.attr('value', field.value);
+          var location = field.value.match(/\((.*)?,[\s\S](.*)?\)/);
 
-      } else {
-        // repopulate as a text field
-        fieldObj.attr('value', field.value);
+          fieldObj.parent().mapField({
+            'location': {
+              'lon': location[2],
+              'lat': location[1]
+            }
+          });
+
+        } else {
+          // repopulate as a text field
+          fieldObj.attr('value', field.value);
+        }
       }
     });
 
@@ -650,7 +653,7 @@ var apiController = {
   fhcam: function(input) {
     navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
-        input.parentElement.getElementsByTagName('p')[0].innerHTML = "Picture saved.";
+        jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
       }, 2000);
     }, function(err) {
