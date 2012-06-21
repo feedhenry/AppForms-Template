@@ -211,6 +211,8 @@ var WufooController = {
       var el = jQuery('input[name=' + field.name + ']');
       if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
+      } else if (el.parents().hasClass('fhmap')) {
+        field['type'] = "map";
       } else if (el.parents().hasClass('fhcam')) {
         // Camera file
         field['type'] = "file";
@@ -228,6 +230,39 @@ var WufooController = {
     });
 
     return fields;
+  },
+
+  deserializeForm: function (form) {
+    var formObj = jQuery('form');
+    for (var key in form) {
+      if (form.hasOwnProperty(key)) {
+        var field = form[key];
+        var fieldObj = formObj.find('[name=' + field.name + ']');
+
+        if ('file' === field.type) {
+          if ('picture' === field.filename) {
+            // repopulate hidden input field value
+            fieldObj.attr('value', field.value);
+          } else {
+            // repopulate signature hidden input field and set image source
+            var pic = field.value.replace(/data:image\/.*?;base64,/, '');
+            fieldObj.attr('value', pic);
+            fieldObj.parent().find('.sigField img').attr('src', field.value);
+          }
+        } else if ('map' === field.type) {
+          fieldObj.attr('value', field.value);
+          var map = fieldObj.data('fh_map');
+          var marker = fieldObj.data('fh_map_marker');
+          var location = field.value.match(/\((.*)?,[\s\S](.*)?\)/);
+          var latLng = new google.maps.LatLng(location[2], location[3]);
+          map.setCenter(latLng);
+          marker.setPosition(latLng);
+        } else {
+          // repopulate as a text field
+          fieldObj.attr('value', field.value);
+        }
+      }
+    }
   },
 
   submitForm: function() {
