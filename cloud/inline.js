@@ -5,7 +5,7 @@ var crypto = require('crypto');
 
 exports = module.exports = function(opts, cb) {
   var html = opts.html;
-  var id = opts.id || 'defaultId'; // used for hashing, should be unique for each unique html block passed in  
+  var id = opts.id || 'defaultId'; // used for hashing, should be unique for each unique html block passed in
   var removeScripts = opts.removeScripts || false;
   var baseUrl = opts.baseUrl || '';
 

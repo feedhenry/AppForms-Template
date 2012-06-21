@@ -34,14 +34,14 @@ formDataToMultipart = function(form_data, cb) {
     });
   }
 
-  // Password unlock on submit
-  if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
-    var multipart_part = {
-      'Content-Disposition': 'form-data; name=password"',
-      body: wufoo_config.wufoo_config.form_password,
-    }
-    multipart_data.push(multipart_part);
-  }
+  // // Password unlock on submit
+  // if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+  //   var multipart_part = {
+  //     'Content-Disposition': 'form-data; name=password"',
+  //     body: wufoo_config.wufoo_config.form_password,
+  //   }
+  //   multipart_data.push(multipart_part);
+  // }
 
   form_data.forEach(function(field) {
     if (form_data)
