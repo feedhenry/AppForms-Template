@@ -19,8 +19,12 @@ var WufooController = {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible, button[type=submit]:visible');
     var saveDraftBtn = jQuery("#saveDraftForm");
-    if(saveDraftBtn.length == 0){
-      saveDraftBtn = jQuery("<button>", {"id": "saveDraftForm", "class": submitBtn.attr("class"), "text":"Save As Draft"});
+    if (saveDraftBtn.length == 0) {
+      saveDraftBtn = jQuery("<button>", {
+        "id": "saveDraftForm",
+        "class": submitBtn.attr("class"),
+        "text": "Save As Draft"
+      });
       submitBtn.before(saveDraftBtn);
     }
     submitBtn.unbind().click(function() {
@@ -28,7 +32,7 @@ var WufooController = {
       return false;
     });
 
-    saveDraftBtn.unbind().click(function (){
+    saveDraftBtn.unbind().click(function() {
       self.saveDraftForm();
       return false;
     })
@@ -44,6 +48,9 @@ var WufooController = {
     jQuery('#fh_wufoo_header .fh_wufoo_pending').unbind().click(function() {
       self.showPending();
     });
+
+    this.loadDrafts();
+    this.loadPending();
   },
 
   showHome: function() {
@@ -56,23 +63,93 @@ var WufooController = {
     this.hideAll();
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
+    this.loadDrafts();
+  },
 
+  loadDrafts: function() {
+    var self = this;
     this.listDrafts(function(data) {
-      console.log(data);
+      self.renderDrafts(data);
+      self.renderDraftsCount(data.length);
     }, function() {
       console.log('An error occured loading drafts');
     });
+  },
+
+  renderDrafts: function(data) {
+    var self = this;
+    var drafts_list = jQuery('#fh_wufoo_drafts_list');
+
+    // Empty
+    drafts_list.find('li').remove();
+
+    jQuery.each(data, function(i, draft) {
+      var view_button = jQuery('<button>').text('View').addClass('view');
+      var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
+        self.deleteDraft(draft.id, draft.ts, function() {
+          console.log('deleted, reloading drafts');
+          self.loadDrafts();
+        }, function(err) {
+          console.log('draft delete failed');
+        });
+      });
+      var draft_el = jQuery('<li>').text(' ' + draft.name).append(delete_button).append(view_button).data('form', draft);
+      drafts_list.append(draft_el);
+    });
+  },
+
+  renderDraftsCount: function(count) {
+    if (count > 0) {
+      jQuery('.fh_wufoo_drafts .count').show().text(count);
+    } else {
+      jQuery('.fh_wufoo_drafts .count').hide();
+    }
   },
 
   showPending: function() {
     this.hideAll();
     jQuery('#fh_wufoo_pending_list').show();
     this.makeActive('fh_wufoo_pending');
+    this.loadPending();
+  },
 
+  loadPending: function() {
+    var self = this;
     this.listPending(function(data) {
-      console.log(data);
+      self.renderPending(data);
+      self.renderPendingCount(data.length);
     }, function() {
       console.log('An error occured loading pending');
+    });
+  },
+
+  renderPendingCount: function(count) {
+    if (count > 0) {
+      jQuery('.fh_wufoo_pending .count').show().text(count);
+    } else {
+      jQuery('.fh_wufoo_pending .count').hide();
+    }
+  },
+
+  renderPending: function(data) {
+    var self = this;
+    var list = jQuery('#fh_wufoo_pending_list');
+
+    // Empty
+    list.find('li').remove();
+
+    jQuery.each(data, function(i, pending) {
+      var view_button = jQuery('<button>').text('View').addClass('view');
+      var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
+        self.deletePending(pending.id, pending.ts, function() {
+          console.log('deleted, reloading pending');
+          self.loadPending();
+        }, function(err) {
+          console.log('pending delete failed');
+        });
+      });
+      var pending_el = jQuery('<li>').text(' ' + pending.name).append(delete_button).append(view_button).data('form', pending);
+      list.append(pending_el);
     });
   },
 
@@ -153,12 +230,14 @@ var WufooController = {
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var saveFormData = function() {
-        self.savePending(form_hash, form_name, serialized_form, function() {
-          console.log("Form data saved");
-        }, function() {
-          console.log("Failed to save form data for form : " + form_hash);
-        });
-        };
+      self.savePending(form_hash, form_name, serialized_form, function() {
+        console.log("Form data saved");
+        self.loadDrafts();
+        self.loadPending();
+      }, function() {
+        console.log("Failed to save form data for form : " + form_hash);
+      });
+    };
     utils.isOnline(function(online) {
       if (online) {
         $fh.act({
@@ -183,14 +262,15 @@ var WufooController = {
 
   },
 
-  saveDraftForm: function(){
+  saveDraftForm: function() {
     var serialized_form = this.serializeForm();
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    self.saveDraft(form_hash, form_name, serialized_form, function(){
-      console.log("Form saved as draft.");
-    }, function(){
+    self.saveDraft(form_hash, form_name, serialized_form, function() {
+      alert('Draft saved.');
+      self.loadDrafts();
+    }, function() {
       console.log("Failed to save form as draft.");
     });
   },
@@ -264,7 +344,7 @@ var WufooController = {
           self.renderFormList(self.all_forms);
         }
       }, function(err) {
-        console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+        console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
       });
     } else {
       // Show existing form list
@@ -359,6 +439,7 @@ var WufooController = {
   },
 
   saveData: function(type, form_hash, form_name, form_data, success, error) {
+    var self = this;
     var entryListId = type + "_" + "forms_list";
     var updatedTime = new Date().getTime();
     var entryId = type + "_" + form_hash + "_" + updatedTime;
@@ -372,17 +453,17 @@ var WufooController = {
       type: type
     };
     var saveFormData = function(done, fail) {
-        $fh.data({
-          act: 'save',
-          key: entryId,
-          val: JSON.stringify(entryData)
-        }, function() {
-          done();
-        }, function() {
-          fail();
-        });
-        }
-        
+      $fh.data({
+        act: 'save',
+        key: entryId,
+        val: JSON.stringify(entryData)
+      }, function() {
+        done();
+      }, function() {
+        fail();
+      });
+    }
+
     $fh.data({
       'act': 'load',
       'key': entryListId
@@ -525,7 +606,7 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 10,
+      quality: 10
     });
   },
 

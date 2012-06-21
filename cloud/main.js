@@ -14,7 +14,7 @@ updateWufooHTML = function(form_id, html, remove_script, cb) {
     "baseUrl": "https://wufoo.com",
     "removeScripts": remove_script,
     "id": form_id
-  }, function (err, processed_html) {
+  }, function(err, processed_html) {
     if (err != null) {
       console.error('error inlining html:' + err);
     }
@@ -25,8 +25,27 @@ updateWufooHTML = function(form_id, html, remove_script, cb) {
 formDataToMultipart = function(form_data, cb) {
   var data = form_data;
   var multipart_data = [];
+  var wufoo_config = require('wufoo_config.js');
+
+  if (typeof wufoo_config == 'undefined') {
+    return callback(null, {
+      "html": "",
+      "error": "No config."
+    });
+  }
+
+  // Password unlock on submit
+  if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+    var multipart_part = {
+      'Content-Disposition': 'form-data; name=password"',
+      body: wufoo_config.wufoo_config.form_password,
+    }
+    multipart_data.push(multipart_part);
+  }
 
   form_data.forEach(function(field) {
+    if (form_data)
+
     if (field.name != 'output' && typeof field.value != 'undefined') {
       if (field.name == 'clickOrEnter') {
         // clickOrEnter needs to be set to blank or 
@@ -57,6 +76,8 @@ formDataToMultipart = function(form_data, cb) {
     }
   });
 
+  console.log(multipart_data);
+
   return multipart_data;
 };
 
@@ -76,13 +97,35 @@ exports.getForm = function(params, callback) {
   var form_hash = params.form_hash;
   var url = "https://" + domain + "/forms/" + form_hash + "/";
 
-  request(url, function(error, res, body) {
-    updateWufooHTML(form_hash, body, false, function(processed_html) {
-      return callback(null, {
-        "html": processed_html
+  // Unlock password
+  if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+    console.log('Unlocking form');
+    var req = request({
+      method: 'POST',
+      url: url,
+      followAllRedirects: true,
+      headers: {
+        'content-type': 'multipart/form-data;'
+      },
+      form: {
+        password: wufoo_config.wufoo_config.form_password
+      }
+    }, function(error, res, body) {
+      updateWufooHTML(form_hash, body, false, function(processed_html) {
+        return callback(null, {
+          "html": processed_html
+        });
       });
     });
-  });
+  } else {
+    request(url, function(error, res, body) {
+      updateWufooHTML(form_hash, body, false, function(processed_html) {
+        return callback(null, {
+          "html": processed_html
+        });
+      });
+    });
+  }
 };
 
 /* 
