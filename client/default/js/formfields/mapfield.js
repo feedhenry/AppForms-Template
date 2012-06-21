@@ -23,7 +23,7 @@
         var timer = 0;
         var interval = setInterval(function(){
           timer += 50;
-          if((typeof google != "undefined") && (typeof google.maps != "undefined")){
+          if((typeof google != "undefined") && (typeof google.maps != "undefined") && (typeof google.maps.Map != "undefined")){
             clearInterval(interval);
             showMap();
           }
