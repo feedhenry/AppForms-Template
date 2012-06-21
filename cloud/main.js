@@ -53,7 +53,7 @@ formDataToMultipart = function(form_data, cb) {
         field.value = '';
       }
 
-      if (field.type == 'text') {
+      if (field.type == 'text' || field.type == 'map') {
         if (field.value != '') {
           var multipart_part = {
             'Content-Disposition': 'form-data; name="' + field.name + '"',
