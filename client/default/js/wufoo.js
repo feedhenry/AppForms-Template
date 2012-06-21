@@ -232,6 +232,8 @@ var WufooController = {
     var saveFormData = function() {
       self.savePending(form_hash, form_name, serialized_form, function() {
         console.log("Form data saved");
+        self.loadDrafts();
+        self.loadPending();
       }, function() {
         console.log("Failed to save form data for form : " + form_hash);
       });
@@ -437,6 +439,7 @@ var WufooController = {
   },
 
   saveData: function(type, form_hash, form_name, form_data, success, error) {
+    var self = this;
     var entryListId = type + "_" + "forms_list";
     var updatedTime = new Date().getTime();
     var entryId = type + "_" + form_hash + "_" + updatedTime;
