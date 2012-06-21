@@ -77,7 +77,7 @@ var WufooController = {
   },
 
   formatTimestamp: function(ts) {
-    return moment(ts).format("DD-MM-YYYY HH:mm");
+    return moment(ts).format("DD-MM-YYYY HH:mm:ss");
   },
 
   renderDrafts: function(data) {
@@ -261,7 +261,7 @@ var WufooController = {
           saveFormData();
         });
       } else {
-        console.log("Can not submit your form due to network issue. Save it as pending form.");
+        alert("We couldn't submit your form at this time. We've saved it in your pending items.");
         saveFormData();
       }
     })
