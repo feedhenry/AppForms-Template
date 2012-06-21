@@ -74,7 +74,7 @@
       return {
         name: getName(),
         value: $('.mapValue', ctx).val(),
-        'type': 'text'
+        'type': 'map'
       }
     }
 
