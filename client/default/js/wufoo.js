@@ -31,6 +31,7 @@ var WufooController = {
 
     jQuery('#fh_wufoo_header .fh_wufoo_home').unbind().click(function() {
       self.showHome();
+      self.getFormList(true);
     });
 
     jQuery('#fh_wufoo_header .fh_wufoo_drafts').unbind().click(function() {
