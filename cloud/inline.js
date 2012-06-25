@@ -105,7 +105,7 @@ exports = module.exports = function(opts, cb) {
     var firstBodyItem = $('<div>');
     $('body').prepend(firstBodyItem);
     $('head').children(':not(meta):not(title)').each(function() {
-      firstBodyItem.after($(this));
+      firstBodyItem.before($(this));
     });
     firstBodyItem.remove();
 
@@ -238,8 +238,10 @@ exports = module.exports = function(opts, cb) {
         async.forEach(matches, function(match, mCallback) {
           var src = match[1];
           //console.log('image src in style:' + src);
+          // Check for absolute vs relative path
+          var full_src = src.indexOf('http') == 0 ? src : baseUrl+ src;
           getRemoteResource({
-            "uri": baseUrl + src,
+            "uri": full_src,
             "encoding": null // return as buffer
           }, function(err, res, body) {
             if (!err && res.statusCode == 200) {
