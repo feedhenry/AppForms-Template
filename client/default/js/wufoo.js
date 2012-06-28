@@ -46,6 +46,14 @@ var WufooController = {
     this.loadPending();
   },
 
+  showLoading: function(message) {
+    jQuery('#fh_loading').fadeIn();
+  },
+
+  hideLoading: function() {
+    jQuery('#fh_loading').fadeOut();
+  },
+
   showHome: function() {
     this.hideAll();
     jQuery('#fh_wufoo_form_list').show();
@@ -57,6 +65,13 @@ var WufooController = {
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
     this.loadDrafts();
+  },
+
+  showPending: function() {
+    this.hideAll();
+    jQuery('#fh_wufoo_pending_list').show();
+    this.makeActive('fh_wufoo_pending');
+    this.loadPending();
   },
 
   loadDrafts: function() {
@@ -110,13 +125,6 @@ var WufooController = {
     } else {
       jQuery('.fh_wufoo_drafts .count').hide();
     }
-  },
-
-  showPending: function() {
-    this.hideAll();
-    jQuery('#fh_wufoo_pending_list').show();
-    this.makeActive('fh_wufoo_pending');
-    this.loadPending();
   },
 
   loadPending: function() {
@@ -204,6 +212,7 @@ var WufooController = {
   serializeForm: function(add_previous_button) {
     var self = this;
     var fields = jQuery('form').serializeArray();
+
     // Add nextPageButton to serialized array if exists
     var nextPageButton = jQuery('input[type=submit]');
     if (nextPageButton.length > 0) {
@@ -345,6 +354,8 @@ var WufooController = {
     form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
+    self.showLoading();
+
     $fh.act({
       "act": "getForm",
       "req": {
@@ -367,6 +378,7 @@ var WufooController = {
       // as it doesn't depend on the save having completed
       self.renderFormHtml(html, form_hash);
       self.initWufoo(target_location);
+      self.hideLoading();
       if (typeof cb !== 'undefined') {
         return cb();
       }
@@ -379,12 +391,14 @@ var WufooController = {
         // got form html from cache, render it
         self.renderFormHtml(res.val, form_hash);
         self.initWufoo(target_location);
+        self.hideLoading();
         if (typeof cb !== 'undefined') {
           return cb();
         }
       }, function(msg, err) {
         //load failed
         console.log('Form html load from cache failed');
+        self.hideLoading();
         // TODO: alert user?
       });
     });
@@ -398,6 +412,7 @@ var WufooController = {
     this.clearFormList();
     var self = this;
     if (load) {
+      self.showLoading();
       $fh.act({
         act: 'getForms',
       }, function(res) {
@@ -405,7 +420,9 @@ var WufooController = {
           self.all_forms = res.data.Forms;
           self.renderFormList(self.all_forms);
         }
+        self.hideLoading();
       }, function(err) {
+        self.hideLoading();
         console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
       });
     } else {
