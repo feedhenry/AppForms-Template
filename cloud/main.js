@@ -238,6 +238,10 @@ exports.getForms = function(params, callback) {
       return callback(null, err);
     }
 
+    var app_type = wufoo_config.wufoo_config.app_type;
+    var domain = wufoo_config.wufoo_config.api_domain;
+    var api_key = wufoo_config.wufoo_config.api_key;
+
     if (app_type == 'single_form') {
       var form_hash = wufoo_config.wufoo_config.form_hash;
       getFormData(form_hash, function(error, res, body) {
@@ -246,10 +250,6 @@ exports.getForms = function(params, callback) {
         });
       });
     } else {
-      var domain = wufoo_config.wufoo_config.api_domain;
-      var api_key = wufoo_config.wufoo_config.api_key;
-      var app_type = wufoo_config.wufoo_config.app_type;
-
       var forms_url = "https://" + domain + "/api/v3/forms.json";
 
       var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
