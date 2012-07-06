@@ -388,12 +388,17 @@ var WufooController = {
       $fh.data({
         key: "form-" + form_hash
       }, function(res) {
-        // got form html from cache, render it
-        self.renderFormHtml(res.val, form_hash);
-        self.initWufoo(target_location);
-        self.hideLoading();
-        if (typeof cb !== 'undefined') {
-          return cb();
+        if(utils.isValid(res.val)){
+          // got form html from cache, render it
+          self.renderFormHtml(res.val, form_hash);
+          self.initWufoo(target_location);
+          self.hideLoading();
+          if (typeof cb !== 'undefined') {
+            return cb();
+          }
+        } else {
+          self.hideLoading();
+          alert('Can not load form data from server or cached.');
         }
       }, function(msg, err) {
         //load failed
@@ -413,17 +418,38 @@ var WufooController = {
     var self = this;
     if (load) {
       self.showLoading();
-      $fh.act({
-        act: 'getForms',
-      }, function(res) {
-        if (res) {
-          self.all_forms = res.data.Forms;
-          self.renderFormList(self.all_forms);
-        }
-        self.hideLoading();
-      }, function(err) {
-        self.hideLoading();
-        console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
+      utils.isOnline(function(online){
+        if(online){
+          $fh.act({
+            act: 'getForms',
+          }, function(res) {
+            if (res) {
+              self.all_forms = res.data.Forms;
+              $fh.data({act: 'save', key: 'all_form_list', val: JSON.stringify(res.data.Forms)}, function(){
+                console.log("Form data saved");
+              });
+              self.renderFormList(self.all_forms);
+            }
+            self.hideLoading();
+          }, function(err) {
+            self.hideLoading();
+            console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
+          });
+       } else {
+        $fh.data({act:'load', key: 'all_form_list'}, function(cached){
+          if(utils.isValid(cached.val)){
+            self.all_forms = JSON.parse(cached.val);
+            self.renderFormList(self.all_forms);
+            self.hideLoading();
+          } else {
+            self.hideLoading();
+            alert("Can not load form data from server or local cache.");
+          }
+        }, function(){
+          self.hideLoading();
+          alert("Can not load form data from local cache.");
+        })
+       } 
       });
     } else {
       // Show existing form list
