@@ -5,24 +5,16 @@ var WufooController = {
   init: function(config) {
     this.config = config;
     this.bind();
-
-    if (wufoo_config.app_type == 'single_form') {
-      // Single form app
-      this.getForm();
-    } else {
-      // Multi-form app
-      this.getFormList(true);
-    }
+    this.getFormList(true);
   },
 
   bind: function() {
     var self = this;
-    var submitBtn = jQuery('input[type=submit]:visible, button[type=submit]:visible');
-    var saveDraftBtn = jQuery("#saveDraftForm");
+    var submitBtn = jQuery('input[type=submit]:visible');
+    var saveDraftBtn = jQuery(".saveDraftForm");
     if (saveDraftBtn.length == 0) {
       saveDraftBtn = jQuery("<button>", {
-        "id": "saveDraftForm",
-        "class": submitBtn.attr("class"),
+        "class": submitBtn.attr("class") + ' saveDraftForm',
         "text": "Save As Draft"
       });
       submitBtn.before(saveDraftBtn);
@@ -39,6 +31,7 @@ var WufooController = {
 
     jQuery('#fh_wufoo_header .fh_wufoo_home').unbind().click(function() {
       self.showHome();
+      self.getFormList(true);
     });
 
     jQuery('#fh_wufoo_header .fh_wufoo_drafts').unbind().click(function() {
@@ -53,6 +46,14 @@ var WufooController = {
     this.loadPending();
   },
 
+  showLoading: function(message) {
+    jQuery('#fh_loading').fadeIn();
+  },
+
+  hideLoading: function() {
+    jQuery('#fh_loading').fadeOut();
+  },
+
   showHome: function() {
     this.hideAll();
     jQuery('#fh_wufoo_form_list').show();
@@ -64,6 +65,13 @@ var WufooController = {
     jQuery('#fh_wufoo_drafts_list').show();
     this.makeActive('fh_wufoo_drafts');
     this.loadDrafts();
+  },
+
+  showPending: function() {
+    this.hideAll();
+    jQuery('#fh_wufoo_pending_list').show();
+    this.makeActive('fh_wufoo_pending');
+    this.loadPending();
   },
 
   loadDrafts: function() {
@@ -91,7 +99,6 @@ var WufooController = {
       var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
         self.getDraft(draft.id, draft.ts, function(data) {
           self.hideAll();
-          console.log(data);
           self.getForm(draft.id, function() {
             self.deserializeForm(data);
           }, true);
@@ -120,13 +127,6 @@ var WufooController = {
     }
   },
 
-  showPending: function() {
-    this.hideAll();
-    jQuery('#fh_wufoo_pending_list').show();
-    this.makeActive('fh_wufoo_pending');
-    this.loadPending();
-  },
-
   loadPending: function() {
     var self = this;
     this.listPending(function(data) {
@@ -153,7 +153,15 @@ var WufooController = {
     list.find('li').remove();
 
     jQuery.each(data, function(i, pending) {
-      var view_button = jQuery('<button>').text('View').addClass('view');
+      var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
+        self.getPending(pending.id, pending.ts, function(data) {
+          self.hideAll();
+          self.getForm(pending.id, function() {
+            self.deserializeForm(data);
+          }, true);
+        });
+      });
+
       var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
         self.deletePending(pending.id, pending.ts, function() {
           console.log('deleted, reloading pending');
@@ -204,6 +212,16 @@ var WufooController = {
   serializeForm: function(add_previous_button) {
     var self = this;
     var fields = jQuery('form').serializeArray();
+
+    // Add nextPageButton to serialized array if exists
+    var nextPageButton = jQuery('input[type=submit]');
+    if (nextPageButton.length > 0) {
+      fields.push({
+        name: nextPageButton.attr('name'),
+        value: nextPageButton.val()
+      })
+    }
+
     var previous_button = jQuery('#previousPageButton');
 
     if (previous_button.length > 0) {
@@ -237,7 +255,7 @@ var WufooController = {
   deserializeForm: function(form) {
     var formObj = jQuery('form');
     jQuery.each(form, function(i, field) {
-      if(field.value != null && field.value !== ""){
+      if (field.value != null && field.value !== "") {
         var fieldObj = formObj.find('[name=' + field.name + ']');
         if ('file' === field.type) {
           if ('picture' === field.filename) {
@@ -275,15 +293,17 @@ var WufooController = {
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    var saveFormData = function() {
-        self.savePending(form_hash, form_name, serialized_form, function() {
-          console.log("Form data saved");
-          self.loadDrafts();
-          self.loadPending();
-        }, function() {
-          console.log("Failed to save form data for form : " + form_hash);
-        });
-      };
+
+    function saveFormData() {
+      self.savePending(form_hash, form_name, serialized_form, function() {
+        console.log("Form data saved");
+        self.loadDrafts();
+        self.loadPending();
+      }, function() {
+        console.log("Failed to save form data for form : " + form_hash);
+      });
+    };
+
     utils.isOnline(function(online) {
       if (online) {
         $fh.act({
@@ -334,6 +354,8 @@ var WufooController = {
     form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
+    self.showLoading();
+
     $fh.act({
       "act": "getForm",
       "req": {
@@ -356,6 +378,7 @@ var WufooController = {
       // as it doesn't depend on the save having completed
       self.renderFormHtml(html, form_hash);
       self.initWufoo(target_location);
+      self.hideLoading();
       if (typeof cb !== 'undefined') {
         return cb();
       }
@@ -368,12 +391,14 @@ var WufooController = {
         // got form html from cache, render it
         self.renderFormHtml(res.val, form_hash);
         self.initWufoo(target_location);
+        self.hideLoading();
         if (typeof cb !== 'undefined') {
           return cb();
         }
       }, function(msg, err) {
         //load failed
         console.log('Form html load from cache failed');
+        self.hideLoading();
         // TODO: alert user?
       });
     });
@@ -387,6 +412,7 @@ var WufooController = {
     this.clearFormList();
     var self = this;
     if (load) {
+      self.showLoading();
       $fh.act({
         act: 'getForms',
       }, function(res) {
@@ -394,7 +420,9 @@ var WufooController = {
           self.all_forms = res.data.Forms;
           self.renderFormList(self.all_forms);
         }
+        self.hideLoading();
       }, function(err) {
+        self.hideLoading();
         console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
       });
     } else {
@@ -409,7 +437,7 @@ var WufooController = {
     self.showFormList();
     self.hideContentArea();
 
-    var form_list = $('#fh_wufoo_form_list');
+    var form_list = jQuery('#fh_wufoo_form_list');
     // Render buttons for each form
     for (var i = 0; i < forms.length; i++) {
       var form_item = forms[i];
@@ -505,17 +533,18 @@ var WufooController = {
       id: form_hash,
       type: type
     };
-    var saveFormData = function(done, fail) {
-        $fh.data({
-          act: 'save',
-          key: entryId,
-          val: JSON.stringify(entryData)
-        }, function() {
-          done();
-        }, function() {
-          fail();
-        });
-      }
+
+    function saveFormData(done, fail) {
+      $fh.data({
+        act: 'save',
+        key: entryId,
+        val: JSON.stringify(entryData)
+      }, function() {
+        done();
+      }, function() {
+        fail();
+      });
+    };
 
     $fh.data({
       'act': 'load',
