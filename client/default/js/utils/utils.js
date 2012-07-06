@@ -22,7 +22,7 @@ var UtilsFunctions = {
       //use phonegap to determin if the network is available
       if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
         var networkType = navigator.network.connection.type;
-        if(networkType == navigator.network.connection.none){
+        if(networkType == "none" || networkType == null){
           online = false;
         }
       }
