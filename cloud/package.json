@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies" : {
     "request": "2.9.202",
-    "jsdom": "0.2.14",
+    "cheerio" : "*",
     "async": "0.1.22"
   }
 }
