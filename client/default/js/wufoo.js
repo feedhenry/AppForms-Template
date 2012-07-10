@@ -289,8 +289,9 @@ var WufooController = {
   },
 
   submitForm: function() {
-    var serialized_form = this.serializeForm();
     var self = this;
+    self.showLoading();
+    var serialized_form = this.serializeForm();
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
 
@@ -314,13 +315,16 @@ var WufooController = {
             "form_submission_url": jQuery('form').attr('action')
           }
         }, function(res) {
+          self.hideLoading();
           self.renderFormHtml(res.html);
           self.initWufoo();
         }, function(msg, err) {
+          self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           saveFormData();
         });
       } else {
+        self.hideLoading();
         alert("We couldn't submit your form at this time. We've saved it in your pending items.");
         saveFormData();
       }
