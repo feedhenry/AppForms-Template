@@ -3,6 +3,11 @@ var request = require('request');
 var url = require("url");
 var inline = require('./inline.js');
 
+function cacheable() {
+  // Should page fragments be cached?
+  return false;
+}
+
 /*
  * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
  * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
@@ -26,18 +31,22 @@ updateWufooHTML = function(form_hash, updated, html, remove_script, cb) {
         "updated": updated,
         "html": processed_html
       });
-      //console.log('form_data=' + form_data);
-      $fh.cache({
-        act: "save",
-        key: form_hash,
-        value: form_data
-      }, function(err, res) {
-        if (err) {
-          console.error('Error saving form html to cache :' + err.toString());
-        }
 
+      if (cacheable()) {
+        $fh.cache({
+          act: "save",
+          key: form_hash,
+          value: form_data
+        }, function(err, res) {
+          if (err) {
+            console.error('Error saving form html to cache :' + err.toString());
+          }
+
+          return cb(processed_html);
+        });
+      } else {
         return cb(processed_html);
-      });
+      }
     } else {
       return cb(processed_html);
     }
@@ -158,71 +167,102 @@ exports.getForm = function(params, callback) {
         console.error('Error parsing form api res body, process as normal:' + e);
         // ignore and process html as normal
       }
-      //console.log('updated=' + updated);
-      //console.log('body_json=' + JSON.stringify(body_json));
-      // check if we have some form html in cache
-      //console.log('tyepof $fh:' + typeof $fh);
-      $fh.cache({
-        act: "load",
-        key: form_hash
-      }, function(err, res) {
-        var res_updated = null;
-        var res_json = null;
 
-        if (err) {
-          console.error('cache val not found for key:' + form_hash + ' err=' + err);
-          // treat error like key not found, and fall back to parsing html anyways as we
-          // can't compare last updated date
-        } else {
-          try {
-            res_json = JSON.parse(res);
-            res_updated = res_json.updated;
-          } catch (e) {
-            console.error('Error parsing cache res, process as normal:' + e);
-          }
-        }
-        //console.log('res_json=' + JSON.stringify(res_json));
-        //console.log('res_updated=' + res_updated);
-        if (res_updated === null || updated !== res_updated) {
-          // need to get latest html as update date has changed, or can't get html from cache
-          var domain = wufoo_config.wufoo_config.api_domain;
-          var url = "https://" + domain + "/forms/" + form_hash + "/";
+      if (cacheable()) {
+        $fh.cache({
+          act: "load",
+          key: form_hash
+        }, function(err, res) {
+          var res_updated = null;
+          var res_json = null;
 
-          // Unlock password
-          if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
-            var req = request({
-              method: 'POST',
-              url: url,
-              followAllRedirects: true,
-              headers: {
-                'content-type': 'multipart/form-data;'
-              },
-              form: {
-                password: wufoo_config.wufoo_config.form_password
-              }
-            }, function(error, res, body) {
-              updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                return callback(null, {
-                  "html": processed_html
-                });
-              });
-            });
+          if (err) {
+            console.error('cache val not found for key:' + form_hash + ' err=' + err);
+            // treat error like key not found, and fall back to parsing html anyways as we
+            // can't compare last updated date
           } else {
-            request(url, function(error, res, body) {
-              updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                return callback(null, {
-                  "html": processed_html
+            try {
+              res_json = JSON.parse(res);
+              res_updated = res_json.updated;
+            } catch (e) {
+              console.error('Error parsing cache res, process as normal:' + e);
+            }
+          }
+
+          if (res_updated === null || updated !== res_updated) {
+            // need to get latest html as update date has changed, or can't get html from cache
+            var domain = wufoo_config.wufoo_config.api_domain;
+            var url = "https://" + domain + "/forms/" + form_hash + "/";
+
+            // Unlock password
+            if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+              var req = request({
+                method: 'POST',
+                url: url,
+                followAllRedirects: true,
+                headers: {
+                  'content-type': 'multipart/form-data;'
+                },
+                form: {
+                  password: wufoo_config.wufoo_config.form_password
+                }
+              }, function(error, res, body) {
+                updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
+                  return callback(null, {
+                    "html": processed_html
+                  });
                 });
               });
+            } else {
+              request(url, function(error, res, body) {
+                updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
+                  return callback(null, {
+                    "html": processed_html
+                  });
+                });
+              });
+            }
+          } else {
+            return callback(null, {
+              "cached": true,
+              "html": res_json.html
             });
           }
+        });
+      } else {
+        // need to get latest html as update date has changed, or can't get html from cache
+        var domain = wufoo_config.wufoo_config.api_domain;
+        var url = "https://" + domain + "/forms/" + form_hash + "/";
+
+        // Unlock password
+        if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
+          var req = request({
+            method: 'POST',
+            url: url,
+            followAllRedirects: true,
+            headers: {
+              'content-type': 'multipart/form-data;'
+            },
+            form: {
+              password: wufoo_config.wufoo_config.form_password
+            }
+          }, function(error, res, body) {
+            updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
+              return callback(null, {
+                "html": processed_html
+              });
+            });
+          });
         } else {
-          return callback(null, {
-            "cached": true,
-            "html": res_json.html
+          request(url, function(error, res, body) {
+            updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
+              return callback(null, {
+                "html": processed_html
+              });
+            });
           });
         }
-      });
+      }
 
 
     });
