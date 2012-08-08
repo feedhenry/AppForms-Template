@@ -235,7 +235,7 @@ exports = module.exports = function(opts, cb) {
           console.error('error inlining image reference:' + err.message);
         }
         // all images inlined as base64, set the full style text
-        style.text(styleText);
+        style.html(styleText);
         aCallback(null);
       });
     }, function(err) {
