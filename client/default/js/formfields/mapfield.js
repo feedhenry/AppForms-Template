@@ -104,7 +104,7 @@
   $.fn.mapField.defaults = {
     mapWidth: '100%',
     mapHeight: '300px',
-    defaultZoom: 14,
+    defaultZoom: 16,
     location: {}
   }
 })(jQuery);
