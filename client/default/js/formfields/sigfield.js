@@ -42,24 +42,34 @@
     function captureSignature(e){
       e.preventDefault();
       if (ctx.data('sigpadInited')) {
-        $('.sigPad', ctx).show();
+        $('.sigPad', ctx).parent().show();
       } else {
-        var template = ['<form class="sigPad">'];
+        var winHeight = $(window).height();
+        var winWidth = $(window).width();
+        var canvasHeight = winHeight - 70;
+        var canvasWidth = winWidth - 2;
+        var lineTop = canvasHeight - 20; 
+        var template = ['<div><form class="sigPad">'];
         template.push('<ul class="sigNav">');
         template.push('<li class="clearButton"><a href="#clear">Clear</a></li>');
         template.push('</ul>');
         template.push('<div class="sig sigWrapper">');
-        template.push('<canvas class="pad" width="'+settings.canvasWidth+'" height="'+settings.canvasHeight+'"></canvas>');
+        template.push('<canvas class="pad" width="'+canvasWidth+'" height="'+canvasHeight+'"></canvas>');
         template.push('<input type="hidden" name="output" class="output">');
         template.push('</div>');
         template.push('<button class="cap_sig_done_btn" type="button">Done</button>');
-        template.push('</form>');
+        template.push('</form></div>');
 
         var sigField = $(template.join(""));
         $('.sigField', ctx).append(sigField);
+        $('.sigPad', ctx).parent().css({position: 'fixed', 'z-index': 9999, 'width': winWidth + 'px', 'height':winHeight + 'px', top: '0px', left: '0px', 'background-color':'#fff'});
+        var navHeight = $('.sigNav', ctx).outerHeight();
+        var buttonHeight = $('.cap_sig_done_btn', ctx).outerHeight();
+        $('.sigPad', ctx).css({width: '100%', height: winHeight + 'px'});
+        $('.sigWrapper', ctx).css({height: (winHeight - navHeight - buttonHeight - 20) + "px"});
         sigPad = $('.sigPad', ctx).signaturePad({
           drawOnly: true,
-          lineTop: settings.canvasLineTop
+          lineTop: lineTop
         });
         ctx.data('sigpadInited', true);
         $('.cap_sig_done_btn', ctx).unbind('click').bind('click', function(e) {
@@ -71,7 +81,7 @@
           var img = $('.sigImage', ctx)[0];
           img.src = sigData;
           $('.sigValue', ctx).val(sigData);
-          $('.sigPad', ctx).hide();
+          $('.sigPad', ctx).parent().hide();
         })
       }
     }
