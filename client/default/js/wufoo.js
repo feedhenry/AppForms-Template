@@ -680,7 +680,7 @@ $fh.ready(function() {
 
 
 var apiController = {
-  bindings: ['fhgeo', 'fhcam'],
+  bindings: ['fhgeo', 'fhcam', 'fhdate', 'fhtime'],
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
@@ -724,11 +724,55 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhgeo: function(input) {
-    $fh.geoip(function(res) {
-      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
-      input.blur();
-    }, function(msg, err) {
-      input.value = 'Location could not be determined';
+    this.fhpics(input);
+    // $fh.geoip(function(res) {
+    //   jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
+    //   input.blur();
+    // }, function(msg, err) {
+    //   input.value = 'Location could not be determined';
+    // });
+  },
+
+  fhdate: function(input){
+    var d = new Date();
+
+    var curr_date  = '0' + d.getDate();
+    var curr_month = '0' + (d.getMonth() + 1); //Months are zero based
+    var curr_year  = d.getFullYear();
+    var formatDate = curr_date.slice(-2)+'-'+curr_month.slice(-2)+'-'+curr_year;
+
+    jQuery(input).val(formatDate);
+    input.blur();
+  },
+
+  fhtime: function(input){
+    var d = new Date();
+
+    var sec = '0' + d.getSeconds();
+    var min = '0' + d.getMinutes();
+    var hour= '0' + d.getHours();
+    var formatTime = hour.slice(-2) +':'+min.slice(-2)+':'+sec.slice(-2);
+
+    jQuery(input).val(formatTime);
+    input.blur();
+  },
+
+  fhpics: function(input){
+    console.log('reading pics');
+    $fh.cam({
+      act: "picture",
+      source: "photo",
+      uri: true
+    }, function(res) {
+      console.log(res);
+      if (res.uri) {
+        file_path = res.uri;
+        console.log(file_path);
+        jQuery(input).val(file_path);
+        var img = new Image();
+        img.src = file_path;
+        $("#photo").css("width", "100%").css("height", "100%").append(img);
+      }
     });
   }
 };
