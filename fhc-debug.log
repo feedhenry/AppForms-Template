@@ -1,0 +1,28 @@
+info it worked if it ends with ok
+info using fhc@0.7.5-132
+info using node@v0.8.8
+verbose /usr/bin/node node symlink
+verbose config file /home/ecrosby/.fhcrc
+verbose config file /usr/etc/fhcrc
+ERR! Error: Cannot find module 'async'
+ERR!     at Function.Module._resolveFilename (module.js:338:15)
+ERR!     at Function.Module._load (module.js:280:25)
+ERR!     at Module.require (module.js:362:17)
+ERR!     at require (module.js:378:17)
+ERR!     at Object.<anonymous> (/home/ecrosby/workspace/wufoo/cloud/inline.js:2:13)
+ERR!     at Module._compile (module.js:449:26)
+ERR!     at Object.Module._extensions..js (module.js:467:10)
+ERR!     at Module.load (module.js:356:32)
+ERR!     at Function.Module._load (module.js:312:12)
+ERR!     at Module.require (module.js:362:17)
+ERR! Error: Cannot load cloud code
+ERR!     at LocalActHandler.init (/usr/lib/node_modules/fh-fhc/lib/local.js:368:24)
+ERR!     at new LocalActHandler (/usr/lib/node_modules/fh-fhc/lib/local.js:322:8)
+ERR!     at local (/usr/lib/node_modules/fh-fhc/lib/local.js:136:64)
+ERR!     at /usr/lib/node_modules/fh-fhc/bin/fhc.js:59:3
+ERR!     at fhc.load.loadListeners.length (/usr/lib/node_modules/fh-fhc/lib/fhc.js:173:38)
+ERR!     at process.startup.processNextTick.process._tickCallback (node.js:244:9)
+ERR! 
+ERR! System Linux 3.2.0-29-generic
+ERR! command "node" "/usr/bin/fhc" "local"
+verbose exit [ 1, true ]
