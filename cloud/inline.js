@@ -72,6 +72,7 @@ exports = module.exports = function(opts, cb) {
       fieldLogic(field, classes);
       for (var i = 0; i < bindings.length; i++) {
         if (classes.indexOf(bindings[i]) != -1) {
+          console.log(bindings[i]);
           var button = $('<button>')
           button.attr('class', 'apibtn ' + bindings[i]);
           var img = $('<img>');
