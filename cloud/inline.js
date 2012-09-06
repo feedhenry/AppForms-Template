@@ -44,7 +44,7 @@ exports = module.exports = function(opts, cb) {
       });
     }
     // API binding names
-    var bindings = ['fhgeo', 'fhcam', 'fhdate', 'fhtime'];
+    var bindings = ['fhgeo', 'fhcam', 'fhdate', 'fhtime', 'fhpics'];
     // Remove link to wufoo
     $('#logo a').attr('href', '#');
     // Do field logic function
