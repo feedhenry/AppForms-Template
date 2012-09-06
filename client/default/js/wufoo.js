@@ -1,3 +1,10 @@
+// 06/09/12
+//-------------------------------------------------------------
+// Bindings available are, fhgeo, fhcam, fhpics, fhdata, fhtime 
+// fhgeo will return lat/lon unless an additional class 'fhgeoEN'
+// is defined, in which case easting/northing will be returned
+//
+
 var WufooController = {
   config: null,
   all_forms: null,
@@ -683,7 +690,7 @@ $fh.ready(function() {
 
 
 var apiController = {
-  bindings: ['fhgeo', 'fhcam', 'fhdate', 'fhtime'],
+  bindings: ['fhgeo', 'fhcam', 'fhdate', 'fhtime', 'fhpics'],
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
@@ -713,29 +720,49 @@ var apiController = {
 
   // Open camera and return base64 data
   fhcam: function(input) {
-    this.fhpics(input);
-    // navigator.camera.getPicture(function(imageData) {
-    //   setTimeout(function() {
-    //     jQuery(input).parent().find("p").text("Picture saved.");
-    //     jQuery(input).val(imageData);
-    //   }, 2000);
-    // }, function(err) {
-    //   alert('Camera Error: ' + err);
-    // }, {
-    //   quality: 10
-    // });
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10
+    });
   },
 
   //Returns Lat and Long as sting
   fhgeo: function(input) {
-    this.fhdate(input);
-    // $fh.geoip(function(res) {
-    //   jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
-    //   input.blur();
-    // }, function(msg, err) {
-    //   input.value = 'Location could not be determined';
-    // });
+    var self = this;
+    var inputField = jQuery(input);
+    var location;
+    var classType;
+    $fh.geoip(function(res) {
+      classType = jQuery(input).parent().parent().attr('class');
+      location = res;
+
+      if(classType.indexOf('fhgeoEN') != -1){
+        //convert from lat/lon to eastings/northings
+        location = self.convertLocation(location);
+        console.log('converted to EN');
+        inputField.val('('+ location.easting +','+ location.northing +')');
+      } else{
+        inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
+      }//end of handling output
+    }, function(msg, err) {
+      input.value = 'Location could not be determined';
+    });
+    input.blur();
   },
+
+  convertLocation: function(location){
+    var lat = location.latitude;
+    var lon = location.longitude;
+    var params = {lat: function(){return lat}, lon: function(){return lon}};
+    return OsGridRef.latLongToOsGrid(params);
+  },
+
 
   fhdate: function(input){
     var d = new Date();
