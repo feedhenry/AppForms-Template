@@ -326,7 +326,7 @@ exports.submitForm = function(params, callback) {
   }, function(e, r, b) {
     updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
       return callback(null, {
-        "html": processed_html + '<button onclick="this.showHome()">Home</button>'
+        "html": processed_html + '<button onclick="showHome()">Home</button>'
       });
     });
   });
