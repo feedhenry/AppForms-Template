@@ -52,6 +52,8 @@ html, body {
 #fh_wufoo_header {
   position: fixed;
   top: 0;
+  right: 0;
+  left: 0;
   border-bottom: 3px solid #000;
   border-top: 3px solid #000;
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
