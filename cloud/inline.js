@@ -72,7 +72,6 @@ exports = module.exports = function(opts, cb) {
       fieldLogic(field, classes);
       for (var i = 0; i < bindings.length; i++) {
         if (classes.indexOf(bindings[i]) != -1) {
-          console.log(bindings[i]);
           var button = $('<button>')
           button.attr('class', 'apibtn ' + bindings[i]);
           var img = $('<img>');
@@ -80,6 +79,16 @@ exports = module.exports = function(opts, cb) {
           img.attr('src', './img/' + bindings[i] + '.png');
           button.append(img);
           $(field).find('div').first().append(button);
+          
+          if(bindings[i] == 'fhcam'){//add button to select pics from gallery
+            var button = $('<button>')
+            button.attr('class', 'apibtn ' + 'fhpics');
+            var img = $('<img>');
+            img.attr('style', 'min-height:20px;');
+            img.attr('src', './img/' + bindings[i] + '.png');
+            button.append(img);
+            $(field).find('div').first().append(button);
+          }
         }
       }
     });
