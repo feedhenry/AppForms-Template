@@ -325,8 +325,7 @@ var WufooController = {
           self.hideLoading();
           self.renderFormHtml(res.html);
           self.initWufoo();
-          //Show thank you screen for 2 sec before redirecting to Home screen
-          setTimeout(self.showHome(), 5000);
+
           
         }, function(msg, err) {
           self.hideLoading();
