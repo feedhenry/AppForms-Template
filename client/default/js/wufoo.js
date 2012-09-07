@@ -1,3 +1,10 @@
+// 06/09/12
+//-------------------------------------------------------------
+// Bindings available are, fhgeo, fhcam, fhpics, fhdata, fhtime 
+// fhgeo will return lat/lon unless an additional class 'fhgeoEN'
+// is defined, in which case easting/northing will be returned
+//
+
 var WufooController = {
   config: null,
   all_forms: null,
@@ -318,6 +325,8 @@ var WufooController = {
           self.hideLoading();
           self.renderFormHtml(res.html);
           self.initWufoo();
+
+          
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -680,7 +689,7 @@ $fh.ready(function() {
 
 
 var apiController = {
-  bindings: ['fhgeo', 'fhcam'],
+  bindings: ['fhgeo', 'fhcam', 'fhdate', 'fhtime', 'fhpics'],
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
@@ -724,11 +733,78 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhgeo: function(input) {
+    var self = this;
+    var inputField = jQuery(input);
+    var location;
+    var classType;
     $fh.geoip(function(res) {
-      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
-      input.blur();
+      classType = jQuery(input).parent().parent().attr('class');
+      location = res;
+
+      if(classType.indexOf('fhgeoEN') != -1){
+        //convert from lat/lon to eastings/northings
+        location = self.convertLocation(location);
+        console.log('converted to EN');
+        inputField.val('('+ location.easting +','+ location.northing +')');
+      } else{
+        inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
+      }//end of handling output
     }, function(msg, err) {
       input.value = 'Location could not be determined';
+    });
+    input.blur();
+  },
+
+  convertLocation: function(location){
+    var lat = location.latitude;
+    var lon = location.longitude;
+    var params = {lat: function(){return lat}, lon: function(){return lon}};
+    return OsGridRef.latLongToOsGrid(params);
+  },
+
+
+  fhdate: function(input){
+    var d = new Date();
+
+    var curr_date  = '0' + d.getDate();
+    var curr_month = '0' + (d.getMonth() + 1); //Months are zero based
+    var curr_year  = d.getFullYear();
+    var formatDate = curr_date.slice(-2)+'-'+curr_month.slice(-2)+'-'+curr_year;
+
+    jQuery(input).val(formatDate);
+    input.blur();
+  },
+
+  fhtime: function(input){
+    var d = new Date();
+
+    var sec = '0' + d.getSeconds();
+    var min = '0' + d.getMinutes();
+    var hour= '0' + d.getHours();
+    var formatTime = hour.slice(-2) +':'+min.slice(-2)+':'+sec.slice(-2);
+
+    jQuery(input).val(formatTime);
+    input.blur();
+  },
+
+  fhpics: function(input){
+    console.log('reading pics');
+    $fh.cam({
+      act: "picture",
+      source: "photo",
+      uri: true
+    }, function(res) {
+      console.log(res);
+      if (res.uri) {
+        file_path = res.uri;
+        console.log(file_path);
+        jQuery(input).val(file_path);
+        var img = new Image();
+        img.src = file_path;
+        $("#photo").css("width", "100%").css("height", "100%").append(img);
+      }
+    }, function(err){
+      console.log(err);
     });
   }
 };

@@ -44,7 +44,7 @@ exports = module.exports = function(opts, cb) {
       });
     }
     // API binding names
-    var bindings = ['fhgeo', 'fhcam'];
+    var bindings = ['fhgeo', 'fhcam', 'fhdate', 'fhtime', 'fhpics'];
     // Remove link to wufoo
     $('#logo a').attr('href', '#');
     // Do field logic function
@@ -79,6 +79,16 @@ exports = module.exports = function(opts, cb) {
           img.attr('src', './img/' + bindings[i] + '.png');
           button.append(img);
           $(field).find('div').first().append(button);
+          
+          if(bindings[i] == 'fhcam'){//add button to select pics from gallery
+            var button = $('<button>')
+            button.attr('class', 'apibtn ' + 'fhpics');
+            var img = $('<img>');
+            img.attr('style', 'min-height:20px;');
+            img.attr('src', './img/' + bindings[i] + '.png');
+            button.append(img);
+            $(field).find('div').first().append(button);
+          }
         }
       }
     });
