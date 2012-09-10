@@ -326,7 +326,6 @@ var WufooController = {
           self.renderFormHtml(res.html);
           self.initWufoo();
 
-          
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -401,7 +400,7 @@ var WufooController = {
       $fh.data({
         key: "form-" + form_hash
       }, function(res) {
-        if(utils.isValid(res.val)){
+        if (utils.isValid(res.val)) {
           // got form html from cache, render it
           self.renderFormHtml(res.val, form_hash);
           self.initWufoo(target_location);
@@ -431,14 +430,18 @@ var WufooController = {
     var self = this;
     if (load) {
       self.showLoading();
-      utils.isOnline(function(online){
-        if(online){
+      utils.isOnline(function(online) {
+        if (online) {
           $fh.act({
             act: 'getForms',
           }, function(res) {
             if (res) {
               self.all_forms = res.data.Forms;
-              $fh.data({act: 'save', key: 'all_form_list', val: JSON.stringify(res.data.Forms)}, function(){
+              $fh.data({
+                act: 'save',
+                key: 'all_form_list',
+                val: JSON.stringify(res.data.Forms)
+              }, function() {
                 console.log("Form data saved");
               });
               self.renderFormList(self.all_forms);
@@ -448,21 +451,24 @@ var WufooController = {
             self.hideLoading();
             console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
           });
-       } else {
-        $fh.data({act:'load', key: 'all_form_list'}, function(cached){
-          if(utils.isValid(cached.val)){
-            self.all_forms = JSON.parse(cached.val);
-            self.renderFormList(self.all_forms);
+        } else {
+          $fh.data({
+            act: 'load',
+            key: 'all_form_list'
+          }, function(cached) {
+            if (utils.isValid(cached.val)) {
+              self.all_forms = JSON.parse(cached.val);
+              self.renderFormList(self.all_forms);
+              self.hideLoading();
+            } else {
+              self.hideLoading();
+              alert("Can not load form data from server or local cache.");
+            }
+          }, function() {
             self.hideLoading();
-          } else {
-            self.hideLoading();
-            alert("Can not load form data from server or local cache.");
-          }
-        }, function(){
-          self.hideLoading();
-          alert("Can not load form data from local cache.");
-        })
-       } 
+            alert("Can not load form data from local cache.");
+          })
+        }
       });
     } else {
       // Show existing form list
@@ -741,70 +747,73 @@ var apiController = {
       classType = jQuery(input).parent().parent().attr('class');
       location = res;
 
-      if(classType.indexOf('fhgeoEN') != -1){
+
+      if (classType.indexOf('fhgeoEN') != -1) {
         //convert from lat/lon to eastings/northings
         location = self.convertLocation(location);
         console.log('converted to EN');
-        inputField.val('('+ location.easting +','+ location.northing +')');
-      } else{
+        inputField.val('(' + location.easting + ',' + location.northing + ')');
+      } else {
         inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
-      }//end of handling output
+      } //end of handling output
     }, function(msg, err) {
       input.value = 'Location could not be determined';
     });
     input.blur();
   },
 
-  convertLocation: function(location){
+  convertLocation: function(location) {
     var lat = location.latitude;
     var lon = location.longitude;
-    var params = {lat: function(){return lat}, lon: function(){return lon}};
+    var params = {
+      lat: function() {
+        return lat
+      },
+      lon: function() {
+        return lon
+      }
+    };
     return OsGridRef.latLongToOsGrid(params);
   },
 
 
-  fhdate: function(input){
+
+  fhdate: function(input) {
     var d = new Date();
 
-    var curr_date  = '0' + d.getDate();
+    var curr_date = '0' + d.getDate();
     var curr_month = '0' + (d.getMonth() + 1); //Months are zero based
-    var curr_year  = d.getFullYear();
-    var formatDate = curr_date.slice(-2)+'-'+curr_month.slice(-2)+'-'+curr_year;
+    var curr_year = d.getFullYear();
+    var formatDate = curr_date.slice(-2) + '-' + curr_month.slice(-2) + '-' + curr_year;
 
     jQuery(input).val(formatDate);
     input.blur();
   },
 
-  fhtime: function(input){
+
+  fhtime: function(input) {
     var d = new Date();
 
     var sec = '0' + d.getSeconds();
     var min = '0' + d.getMinutes();
-    var hour= '0' + d.getHours();
-    var formatTime = hour.slice(-2) +':'+min.slice(-2)+':'+sec.slice(-2);
+    var hour = '0' + d.getHours();
+    var formatTime = hour.slice(-2) + ':' + min.slice(-2) + ':' + sec.slice(-2);
 
     jQuery(input).val(formatTime);
     input.blur();
   },
 
-  fhpics: function(input){
-    console.log('reading pics');
-    $fh.cam({
-      act: "picture",
-      source: "photo",
-      uri: true
-    }, function(res) {
-      console.log(res);
-      if (res.uri) {
-        file_path = res.uri;
-        console.log(file_path);
-        jQuery(input).val(file_path);
-        var img = new Image();
-        img.src = file_path;
-        $("#photo").css("width", "100%").css("height", "100%").append(img);
-      }
-    }, function(err){
-      console.log(err);
+  fhpics: function(input) {
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
   }
 };
