@@ -1,3 +1,10 @@
+// 06/09/12
+//-------------------------------------------------------------
+// Bindings available are, fhgeo, fhcam, fhpics, fhdata, fhtime 
+// fhgeo will return lat/lon unless an additional class 'fhgeoEN'
+// is defined, in which case easting/northing will be returned
+//
+
 var WufooController = {
   config: null,
   all_forms: null,
@@ -56,6 +63,7 @@ var WufooController = {
 
   showHome: function() {
     this.hideAll();
+    jQuery('.ts').val("");
     jQuery('#fh_wufoo_form_list').show();
     this.makeActive('fh_wufoo_home');
   },
@@ -99,6 +107,7 @@ var WufooController = {
       var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
         self.getDraft(draft.id, draft.ts, function(data) {
           self.hideAll();
+          jQuery('.ts').val(draft.ts);
           self.getForm(draft.id, function() {
             self.deserializeForm(data);
           }, true);
@@ -156,6 +165,7 @@ var WufooController = {
       var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
         self.getPending(pending.id, pending.ts, function(data) {
           self.hideAll();
+          jQuery('.ts').val(pending.ts);
           self.getForm(pending.id, function() {
             self.deserializeForm(data);
           }, true);
@@ -294,6 +304,7 @@ var WufooController = {
     var serialized_form = this.serializeForm();
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
+    var form_ts   = jQuery('.ts').val();
 
     function saveFormData() {
       self.savePending(form_hash, form_name, serialized_form, function() {
@@ -316,8 +327,23 @@ var WufooController = {
           }
         }, function(res) {
           self.hideLoading();
+
+          self.deleteDraft(form_hash, form_ts, function(){
+            console.log('delete draft successful');
+          }, function(){
+            console.log('delete draft failed')
+          });
+
+          self.deletePending(form_hash, form_ts, function(){
+            console.log('delete pending successful');
+          }, function(){
+            console.log('delete pending failed')
+          });
+          jQuery('.ts').val("");
+
           self.renderFormHtml(res.html);
           self.initWufoo();
+
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -327,6 +353,7 @@ var WufooController = {
         self.hideLoading();
         alert("We couldn't submit your form at this time. We've saved it in your pending items.");
         saveFormData();
+        self.showHome();
       }
     })
 
@@ -340,6 +367,7 @@ var WufooController = {
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
       self.loadDrafts();
+      self.showHome();
     }, function() {
       console.log("Failed to save form as draft.");
     });
@@ -392,7 +420,7 @@ var WufooController = {
       $fh.data({
         key: "form-" + form_hash
       }, function(res) {
-        if(utils.isValid(res.val)){
+        if (utils.isValid(res.val)) {
           // got form html from cache, render it
           self.renderFormHtml(res.val, form_hash);
           self.initWufoo(target_location);
@@ -422,14 +450,18 @@ var WufooController = {
     var self = this;
     if (load) {
       self.showLoading();
-      utils.isOnline(function(online){
-        if(online){
+      utils.isOnline(function(online) {
+        if (online) {
           $fh.act({
             act: 'getForms',
           }, function(res) {
             if (res) {
               self.all_forms = res.data.Forms;
-              $fh.data({act: 'save', key: 'all_form_list', val: JSON.stringify(res.data.Forms)}, function(){
+              $fh.data({
+                act: 'save',
+                key: 'all_form_list',
+                val: JSON.stringify(res.data.Forms)
+              }, function() {
                 console.log("Form data saved");
               });
               self.renderFormList(self.all_forms);
@@ -439,21 +471,24 @@ var WufooController = {
             self.hideLoading();
             console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
           });
-       } else {
-        $fh.data({act:'load', key: 'all_form_list'}, function(cached){
-          if(utils.isValid(cached.val)){
-            self.all_forms = JSON.parse(cached.val);
-            self.renderFormList(self.all_forms);
+        } else {
+          $fh.data({
+            act: 'load',
+            key: 'all_form_list'
+          }, function(cached) {
+            if (utils.isValid(cached.val)) {
+              self.all_forms = JSON.parse(cached.val);
+              self.renderFormList(self.all_forms);
+              self.hideLoading();
+            } else {
+              self.hideLoading();
+              alert("Can not load form data from server or local cache.");
+            }
+          }, function() {
             self.hideLoading();
-          } else {
-            self.hideLoading();
-            alert("Can not load form data from server or local cache.");
-          }
-        }, function(){
-          self.hideLoading();
-          alert("Can not load form data from local cache.");
-        })
-       } 
+            alert("Can not load form data from local cache.");
+          })
+        }
       });
     } else {
       // Show existing form list
@@ -680,7 +715,7 @@ $fh.ready(function() {
 
 
 var apiController = {
-  bindings: ['fhgeo', 'fhcam'],
+  bindings: ['fhgeo', 'fhcam', 'fhdate', 'fhtime', 'fhpics'],
 
   // Get elements with class $fh and add needed api to click events
   addApiCalls: function() {
@@ -724,11 +759,81 @@ var apiController = {
 
   //Returns Lat and Long as sting
   fhgeo: function(input) {
+    var self = this;
+    var inputField = jQuery(input);
+    var location;
+    var classType;
     $fh.geoip(function(res) {
-      jQuery(input).val('(' + res.latitude + ', ' + res.longitude + ')');
-      input.blur();
+      classType = jQuery(input).parent().parent().attr('class');
+      location = res;
+
+
+      if (classType.indexOf('fhgeoEN') != -1) {
+        //convert from lat/lon to eastings/northings
+        location = self.convertLocation(location);
+        console.log('converted to EN');
+        inputField.val('(' + location.easting + ',' + location.northing + ')');
+      } else {
+        inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
+      } //end of handling output
     }, function(msg, err) {
       input.value = 'Location could not be determined';
+    });
+    input.blur();
+  },
+
+  convertLocation: function(location) {
+    var lat = location.latitude;
+    var lon = location.longitude;
+    var params = {
+      lat: function() {
+        return lat
+      },
+      lon: function() {
+        return lon
+      }
+    };
+    return OsGridRef.latLongToOsGrid(params);
+  },
+
+
+
+  fhdate: function(input) {
+    var d = new Date();
+
+    var curr_date = '0' + d.getDate();
+    var curr_month = '0' + (d.getMonth() + 1); //Months are zero based
+    var curr_year = d.getFullYear();
+    var formatDate = curr_date.slice(-2) + '-' + curr_month.slice(-2) + '-' + curr_year;
+
+    jQuery(input).val(formatDate);
+    input.blur();
+  },
+
+
+  fhtime: function(input) {
+    var d = new Date();
+
+    var sec = '0' + d.getSeconds();
+    var min = '0' + d.getMinutes();
+    var hour = '0' + d.getHours();
+    var formatTime = hour.slice(-2) + ':' + min.slice(-2) + ':' + sec.slice(-2);
+
+    jQuery(input).val(formatTime);
+    input.blur();
+  },
+
+  fhpics: function(input) {
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
   }
 };
