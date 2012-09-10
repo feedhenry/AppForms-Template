@@ -63,6 +63,7 @@ var WufooController = {
 
   showHome: function() {
     this.hideAll();
+    jQuery('.ts').val("");
     jQuery('#fh_wufoo_form_list').show();
     this.makeActive('fh_wufoo_home');
   },
@@ -106,10 +107,12 @@ var WufooController = {
       var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
         self.getDraft(draft.id, draft.ts, function(data) {
           self.hideAll();
+          jQuery('.ts').val(draft.ts);
           self.getForm(draft.id, function() {
             self.deserializeForm(data);
           }, true);
         });
+
         // self.deleteDraft(draft.id, draft.ts, function() {
         //   console.log('deleted, reloading drafts');
         //   self.loadDrafts();
@@ -307,6 +310,7 @@ var WufooController = {
     var serialized_form = this.serializeForm();
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
+    var form_ts   = jQuery('.ts').val();
 
     function saveFormData() {
       self.savePending(form_hash, form_name, serialized_form, function() {
@@ -329,9 +333,22 @@ var WufooController = {
           }
         }, function(res) {
           self.hideLoading();
+
+          self.deleteDraft(form_hash, form_ts, function(){
+            console.log('delete draft successful');
+          }, function(){
+            console.log('delete draft failed')
+          });
+
+          self.deletePending(form_hash, form_ts, function(){
+            console.log('delete pending successful');
+          }, function(){
+            console.log('delete pending failed')
+          });
+          jQuery('.ts').val("");
+
           self.renderFormHtml(res.html);
           self.initWufoo();
-          console.log(res);
 
         }, function(msg, err) {
           self.hideLoading();
