@@ -327,7 +327,7 @@ exports.submitForm = function(params, callback) {
     updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
       return callback(null, {
         "html": processed_html + '<button onclick="WufooController.showHome()">Back to Forms</button>',
-        "data": multipart_data
+        "data": params
       });
     });
   });
