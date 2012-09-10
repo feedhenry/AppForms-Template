@@ -79,13 +79,14 @@ exports = module.exports = function(opts, cb) {
           img.attr('src', './img/' + bindings[i] + '.png');
           button.append(img);
           $(field).find('div').first().append(button);
-          
-          if(bindings[i] == 'fhcam'){//add button to select pics from gallery
+
+          if(bindings[i] == 'fhcam'){
+            // add button to select pics from gallery
             var button = $('<button>')
             button.attr('class', 'apibtn ' + 'fhpics');
             var img = $('<img>');
             img.attr('style', 'min-height:20px;');
-            img.attr('src', './img/' + bindings[i] + '.png');
+            img.attr('src', './img/fhcam_lib.png');
             button.append(img);
             $(field).find('div').first().append(button);
           }
