@@ -112,13 +112,6 @@ var WufooController = {
             self.deserializeForm(data);
           }, true);
         });
-
-        // self.deleteDraft(draft.id, draft.ts, function() {
-        //   console.log('deleted, reloading drafts');
-        //   self.loadDrafts();
-        // }, function(err) {
-        //   console.log('draft delete failed');
-        // });
       });
 
       var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
@@ -172,6 +165,7 @@ var WufooController = {
       var view_button = jQuery('<button>').text('View').addClass('view').unbind().click(function() {
         self.getPending(pending.id, pending.ts, function(data) {
           self.hideAll();
+          jQuery('.ts').val(pending.ts);
           self.getForm(pending.id, function() {
             self.deserializeForm(data);
           }, true);
