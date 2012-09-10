@@ -110,6 +110,12 @@ var WufooController = {
             self.deserializeForm(data);
           }, true);
         });
+        // self.deleteDraft(draft.id, draft.ts, function() {
+        //   console.log('deleted, reloading drafts');
+        //   self.loadDrafts();
+        // }, function(err) {
+        //   console.log('draft delete failed');
+        // });
       });
 
       var delete_button = jQuery('<button>').text('Delete').addClass('delete').unbind().click(function() {
@@ -325,6 +331,7 @@ var WufooController = {
           self.hideLoading();
           self.renderFormHtml(res.html);
           self.initWufoo();
+          console.log(res);
 
         }, function(msg, err) {
           self.hideLoading();
