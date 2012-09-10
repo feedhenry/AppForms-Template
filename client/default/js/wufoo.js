@@ -353,6 +353,7 @@ var WufooController = {
         self.hideLoading();
         alert("We couldn't submit your form at this time. We've saved it in your pending items.");
         saveFormData();
+        self.showHome();
       }
     })
 
@@ -366,6 +367,7 @@ var WufooController = {
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
       self.loadDrafts();
+      self.showHome();
     }, function() {
       console.log("Failed to save form as draft.");
     });
