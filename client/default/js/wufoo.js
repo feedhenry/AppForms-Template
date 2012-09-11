@@ -197,7 +197,7 @@ var WufooController = {
 
   initWufoo: function(target_location) {
     var self = this;
-    jQuery('li.fhcam').first().removeAttr('style');
+    // jQuery('li.fhcam').first().removeAttr('style');
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
         // Wufoo's Array prototype alteration breaks 
@@ -329,7 +329,7 @@ var WufooController = {
           }, function(){
             console.log('delete draft failed')
           });
-      
+
       self.deletePending(form_hash, form_ts, function(){
             console.log('delete pending successful');
           }, function(){
@@ -787,17 +787,19 @@ var apiController = {
 
   // Open camera and return base64 data
   fhcam: function(input) {
+    var self = this;
     navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
+        // self.addPicField();
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
       quality: 10
     });
-    // this.addPicField();
+    
   },
 
   //Returns Lat and Long as sting
@@ -867,10 +869,12 @@ var apiController = {
   },
 
   fhpics: function(input) {
+    var self = this;
     navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
+        // self.addPicField();
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
@@ -878,16 +882,19 @@ var apiController = {
       quality: 10,
       sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
-    // this.addPicField();
   },
 
   addPicField: function(){
     var picFields = jQuery('li.fhcam');
     var i;
     for(i = 0; i < picFields.length; i++){
-      if(picFields[i].attr('style') == 'display:none'){
-        picFields[i].removeAttr('style');
+      if(picFields.eq(i).attr('style') == 'display:none'){
+        picFields.eq(i).removeAttr('style');
+        picFields.eq(i-1).addClass('completePic');
         return;
+      }
+      else {
+        picFields.eq(i).addClass('completePic');
       }
     }
   }
