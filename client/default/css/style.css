@@ -148,13 +148,13 @@ html, body {
 }
 
 .completePic {
-  background-color: lightgreen;
-  border-radius: 10px;
+  /*background-color: lightgreen;*/
+  /*border-radius: 10px;*/
 }
 .completePic button {
-  display:none;
+  /*display:none;*/
 }
 
 .fh.fhcam {
-  border-bottom: 1px dotted #000;
+  /*border-bottom: 1px dotted #000;*/
 }
