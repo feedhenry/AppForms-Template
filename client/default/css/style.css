@@ -145,3 +145,15 @@ html, body {
   box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 -1px 1px rgba(153, 153, 153, .2);
   border-radius: 5px;
 }
+
+.completePic {
+  background-color: lightgreen;
+  border-radius: 10px;
+}
+.completePic button {
+  display:none;
+}
+
+.fh.fhcam {
+  border-bottom: 1px dotted #000;
+}
