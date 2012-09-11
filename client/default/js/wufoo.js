@@ -771,6 +771,7 @@ var apiController = {
     }, {
       quality: 10
     });
+    this.addPicField();
   },
 
   //Returns Lat and Long as sting
@@ -851,5 +852,10 @@ var apiController = {
       quality: 10,
       sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
+    this.addPicField();
+  },
+
+  addPicField: function(){
+    
   }
 };
