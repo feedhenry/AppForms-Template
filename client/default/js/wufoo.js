@@ -197,7 +197,7 @@ var WufooController = {
 
   initWufoo: function(target_location) {
     var self = this;
-    jQuery('li.fhcam').first().removeAttr('style');
+    // jQuery('li.fhcam').first().removeAttr('style');
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
         // Wufoo's Array prototype alteration breaks 
@@ -792,7 +792,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        self.addPicField();
+        // self.addPicField();
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
@@ -874,7 +874,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        self.addPicField();
+        // self.addPicField();
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
