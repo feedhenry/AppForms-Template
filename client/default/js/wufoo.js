@@ -197,6 +197,7 @@ var WufooController = {
 
   initWufoo: function(target_location) {
     var self = this;
+    jQuery('li.fhcam').first().removeAttr('style');
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
         // Wufoo's Array prototype alteration breaks 
@@ -322,6 +323,20 @@ var WufooController = {
     var form_ts   = jQuery('.ts').val();
 
     function saveFormData() {
+      //remove original instance of draft/pending form
+      self.deleteDraft(form_hash, form_ts, function(){
+            console.log('delete draft successful');
+          }, function(){
+            console.log('delete draft failed')
+          });
+      
+      self.deletePending(form_hash, form_ts, function(){
+            console.log('delete pending successful');
+          }, function(){
+            console.log('delete pending failed')
+          });
+          jQuery('.ts').val("");
+
       self.savePending(form_hash, form_name, serialized_form, function() {
         console.log("Form data saved");
         self.loadDrafts();
@@ -380,6 +395,17 @@ var WufooController = {
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
+    var form_ts   = jQuery('.ts').val();
+
+    //remove original instance of draft
+    self.deleteDraft(form_hash, form_ts, function(){
+            console.log('delete draft successful');
+          }, function(){
+            console.log('delete draft failed')
+          });
+
+    jQuery('.ts').val('');
+
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
       self.loadDrafts();
@@ -771,7 +797,7 @@ var apiController = {
     }, {
       quality: 10
     });
-    this.addPicField();
+    // this.addPicField();
   },
 
   //Returns Lat and Long as sting
@@ -852,10 +878,17 @@ var apiController = {
       quality: 10,
       sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
-    this.addPicField();
+    // this.addPicField();
   },
 
   addPicField: function(){
-    
+    var picFields = jQuery('li.fhcam');
+    var i;
+    for(i = 0; i < picFields.length; i++){
+      if(picFields[i].attr('style') == 'display:none'){
+        picFields[i].removeAttr('style');
+        return;
+      }
+    }
   }
 };
