@@ -147,3 +147,6 @@ html, body {
   border-radius: 5px;
 }
 
+#container .confirm{
+  padding-top: 40px;
+}
