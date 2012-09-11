@@ -150,3 +150,15 @@ html, body {
 #container .confirm{
   padding-top: 40px;
 }
+
+.completePic {
+  background-color: lightgreen;
+  border-radius: 10px;
+}
+.completePic button {
+  display:none;
+}
+
+.fh.fhcam {
+  border-bottom: 1px dotted #000;
+}
