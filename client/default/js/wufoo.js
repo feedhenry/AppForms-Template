@@ -331,7 +331,6 @@ var WufooController = {
       });
     };
 
-    console.log(serialized_form);
 
     utils.isOnline(function(online) {
       if (online) {
