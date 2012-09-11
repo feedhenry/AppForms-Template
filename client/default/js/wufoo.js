@@ -329,7 +329,7 @@ var WufooController = {
           }, function(){
             console.log('delete draft failed')
           });
-      
+
       self.deletePending(form_hash, form_ts, function(){
             console.log('delete pending successful');
           }, function(){
@@ -878,15 +878,15 @@ var apiController = {
       quality: 10,
       sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
-    // this.addPicField();
+    this.addPicField();
   },
 
   addPicField: function(){
     var picFields = jQuery('li.fhcam');
     var i;
     for(i = 0; i < picFields.length; i++){
-      if(picFields[i].attr('style') == 'display:none'){
-        picFields[i].removeAttr('style');
+      if(picFields.eq(i).attr('style') == 'display:none'){
+        picFields.eq(i).removeAttr('style');
         return;
       }
     }
