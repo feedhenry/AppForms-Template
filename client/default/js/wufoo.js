@@ -245,6 +245,7 @@ var WufooController = {
 
     // Add metadata
     jQuery.each(fields, function(i, field) {
+      
       var el = jQuery('input[name=' + field.name + ']');
       if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
@@ -253,7 +254,14 @@ var WufooController = {
         field['type'] = "file";
         field['filename'] = "picture";
         field['extension'] = "jpg";
-      } else {
+
+      } else if(el.siblings(0).children().attr('type') == 'radio'){
+        //Radio button field
+        field['type'] = 'radio';
+      } else if(el.attr('type') == 'checkbox'){
+        //Checkbox field
+        field['type'] = 'checkbox';
+      }else {
         // Regular text field
         field['type'] = "text";
       }
@@ -264,6 +272,7 @@ var WufooController = {
 
   deserializeForm: function(form) {
     var formObj = jQuery('form');
+    // console.log(form);
     jQuery.each(form, function(i, field) {
       if (field.value != null && field.value !== "") {
         var fieldObj = formObj.find('[name=' + field.name + ']');
@@ -289,7 +298,13 @@ var WufooController = {
             }
           });
 
-        } else {
+        } else if('radio' == field.type){
+          jQuery('input:radio[value="' + field.value + '"]').attr('checked', true);
+          
+        } else if('checkbox' == field.type){
+          jQuery('input:checkbox[value="' + field.value + '"]').attr('checked', true);
+
+        }else {
           // repopulate as a text field
           fieldObj.attr('value', field.value);
         }
@@ -315,6 +330,7 @@ var WufooController = {
         console.log("Failed to save form data for form : " + form_hash);
       });
     };
+
 
     utils.isOnline(function(online) {
       if (online) {
