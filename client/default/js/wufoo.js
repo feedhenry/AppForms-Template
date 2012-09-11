@@ -797,7 +797,7 @@ var apiController = {
     }, {
       quality: 10
     });
-    // this.addPicField();
+    this.addPicField();
   },
 
   //Returns Lat and Long as sting
@@ -887,7 +887,11 @@ var apiController = {
     for(i = 0; i < picFields.length; i++){
       if(picFields.eq(i).attr('style') == 'display:none'){
         picFields.eq(i).removeAttr('style');
+        picFields.eq(i-1).addClass('completePic');
         return;
+      }
+      else {
+        picFields.eq(i).addClass('completePic');
       }
     }
   }
