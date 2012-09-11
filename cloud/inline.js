@@ -89,7 +89,7 @@ exports = module.exports = function(opts, cb) {
             img.attr('src', './img/fhcam_lib.png');
             button.append(img);
             $(field).find('div').first().append(button);
-            $(field).find('div').first().attr('style', 'display:none');
+            $(field).attr('style', 'display:none');
           }
         }
       }
