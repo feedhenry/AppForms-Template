@@ -247,7 +247,6 @@ var WufooController = {
     jQuery.each(fields, function(i, field) {
       
       var el = jQuery('input[name=' + field.name + ']');
-      // console.log(el.siblings(0).first-child().attr('type'));
       if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
       } else if (el.parents().hasClass('fhcam')) {
@@ -256,7 +255,7 @@ var WufooController = {
         field['filename'] = "picture";
         field['extension'] = "jpg";
 
-      } else if(el.siblings(0).children(0).attr('type') == 'radio'){
+      } else if(el.siblings(0).children().attr('type') == 'radio'){
         //Radio button field
         field['type'] = 'radio';
       } else if(el.attr('type') == 'checkbox'){
@@ -331,6 +330,8 @@ var WufooController = {
         console.log("Failed to save form data for form : " + form_hash);
       });
     };
+
+    console.log(serialized_form);
 
     utils.isOnline(function(online) {
       if (online) {
