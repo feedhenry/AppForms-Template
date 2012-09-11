@@ -870,18 +870,18 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    navigator.camera.getPicture(function(imageData) {
-      setTimeout(function() {
-        jQuery(input).parent().find("p").text("Picture saved.");
-        jQuery(input).val(imageData);
+    // navigator.camera.getPicture(function(imageData) {
+    //   setTimeout(function() {
+    //     jQuery(input).parent().find("p").text("Picture saved.");
+    //     jQuery(input).val(imageData);
         self.addPicField();
-      }, 2000);
-    }, function(err) {
-      alert('Camera Error: ' + err);
-    }, {
-      quality: 10,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    });
+    //   }, 2000);
+    // }, function(err) {
+    //   alert('Camera Error: ' + err);
+    // }, {
+    //   quality: 10,
+    //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    // });
   },
 
   addPicField: function(){
@@ -890,7 +890,7 @@ var apiController = {
     for(i = 0; i < picFields.length; i++){
       if(picFields.eq(i).attr('style') == 'display:none'){
         picFields.eq(i).removeAttr('style');
-        picFields.eq(0).children().eq(1).children
+        picFields.eq(i).children().eq(1).children().eq(0).html('Click to upload another picture');
         picFields.eq(i-1).addClass('completePic');
         return;
       }

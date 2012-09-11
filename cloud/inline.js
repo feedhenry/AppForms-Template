@@ -30,11 +30,11 @@ exports = module.exports = function(opts, cb) {
     if (sigFields.length > 0) {
       $.each(sigFields, function(i, field) {
         var originInput = $(field).find('div').find('input');
-        var sigValue = $('<input>');
+        var sigValue = $('<input />');
         sigValue.attr("class", 'sigValue').attr('type', 'hidden').attr('name', originInput.attr('name')).attr('id', originInput.attr('id'));
         var sigField = $('<div>');
         sigField.attr('class', 'sigField');
-        var sigImg = $('<img>');
+        var sigImg = $('<img />');
         sigImg.attr('class', 'sigImage');
         var sigButton = $('<button>');
         sigButton.attr('class', 'cap_sig_btn');

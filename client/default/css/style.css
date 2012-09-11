@@ -9,6 +9,20 @@ html, body {
   width: 100% !important;
 }
 
+.sigField {
+  height: 40px;
+}
+
+.sigField-content { 
+  position: absolute; 
+  bottom: 0; 
+  left: 0;
+} 
+
+.cap_sig_btn {
+  top: -20px;
+}
+
 #fh_wufoo_content {
   padding-top: 20px;
 }
@@ -153,6 +167,7 @@ html, body {
 
 .completePic {
   background-color: lightgreen;
+  padding-left: 10px;
   border-radius: 10px;
 }
 .completePic button {
