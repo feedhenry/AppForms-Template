@@ -204,7 +204,7 @@ var WufooController = {
     camFields.first().removeAttr('style');
     //Check if multiple photos have been taken already i.e. Drafts/pending forms
     for(i = 0; i < camFields.length; i++){
-      if(camFields.eq(i).find('input').val() != null){
+      if(camFields.eq(i).find('input').val() != ""){
         camFields.eq(i).removeAttr('style');
       }
     }
