@@ -283,7 +283,7 @@ var WufooController = {
   },
 
   deserializeForm: function(form) {
-    var self = this;
+    var self = apiController;
     var formObj = jQuery('form');
     // console.log(form);
     jQuery.each(form, function(i, field) {
@@ -407,6 +407,7 @@ var WufooController = {
   saveDraftForm: function() {
     var serialized_form = this.serializeForm();
     var self = this;
+    console.log(self);
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var form_ts   = jQuery('.ts').val();
