@@ -189,7 +189,7 @@ input[type=text] {
 }
 
 .apibtn {
-  min-height: 40px;
+  min-height: 30px;
   bottom: -5px;
   position: relative;
 }
