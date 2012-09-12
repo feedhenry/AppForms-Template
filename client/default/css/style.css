@@ -187,3 +187,13 @@ html, body {
 input[type=text] {
   height: 25px;
 }
+
+.apibtn {
+  min-height: 40px;
+  bottom: -5px;
+  position: relative;
+}
+.apibtn img {
+  max-height: 15px;
+  min-height: 15px;
+}
