@@ -870,18 +870,18 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    // navigator.camera.getPicture(function(imageData) {
-    //   setTimeout(function() {
-    //     jQuery(input).parent().find("p").text("Picture saved.");
-    //     jQuery(input).val(imageData);
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
         self.addPicField();
-    //   }, 2000);
-    // }, function(err) {
-    //   alert('Camera Error: ' + err);
-    // }, {
-    //   quality: 10,
-    //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    // });
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 10,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    });
   },
 
   addPicField: function(){

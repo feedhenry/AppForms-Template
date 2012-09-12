@@ -190,8 +190,8 @@ input[type=text] {
 
 .apibtn {
 	min-height: 25px;
-	bottom: -5px;
 	position: relative;
+  top: 5px;
 }
 .apibtn img {
 	max-height: 15px;
