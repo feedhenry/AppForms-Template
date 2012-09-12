@@ -172,6 +172,7 @@ html, body {
 }
 
 .completePic {
+  display: inline-block;
   background-color: lightgreen;
   padding-left: 10px;
   border-radius: 10px;

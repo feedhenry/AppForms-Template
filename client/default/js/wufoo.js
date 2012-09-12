@@ -272,6 +272,7 @@ var WufooController = {
   },
 
   deserializeForm: function(form) {
+    var self = this;
     var formObj = jQuery('form');
     // console.log(form);
     jQuery.each(form, function(i, field) {
@@ -282,6 +283,8 @@ var WufooController = {
             // repopulate hidden input field value
             fieldObj.attr('value', field.value);
             fieldObj.parent().find("p").text("Picture saved.");
+            fieldObj.parent().parent().addClass('completePic');
+            self.addPicField();
           } else {
             // repopulate signature hidden input field and set image source
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
