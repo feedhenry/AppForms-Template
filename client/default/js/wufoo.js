@@ -197,7 +197,18 @@ var WufooController = {
 
   initWufoo: function(target_location) {
     var self = this;
-    jQuery('li.fhcam').first().removeAttr('style');
+    var i;
+    var camFields = jQuery('li.fhcam');
+
+    //make first photoInput visible
+    camFields.first().removeAttr('style');
+    //Check if multiple photos have been taken already i.e. Drafts/pending forms
+    for(i = 0; i < camFields.length; i++){
+      if(camFields.eq(i).find('input').val() != null){
+        camFields.eq(i).removeAttr('style');
+      }
+    }
+
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
         // Wufoo's Array prototype alteration breaks 
