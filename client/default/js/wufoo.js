@@ -379,7 +379,7 @@ var WufooController = {
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          alert("We couldn't submit your form at this time. We've saved it in your pending items.");  
+          alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");  
           saveFormData();
         });
       } else {
