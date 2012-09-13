@@ -391,7 +391,7 @@ var WufooController = {
 
         }, function(msg, err) {
           self.hideLoading();
-          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          alert('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           saveFormData();
         });
       } else {
