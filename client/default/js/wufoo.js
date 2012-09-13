@@ -13,6 +13,7 @@ var WufooController = {
     this.config = config;
     this.bind();
     this.getFormList(true);
+    $fh.fh_timeout = 120000;
   },
 
   bind: function() {
