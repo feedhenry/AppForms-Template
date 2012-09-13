@@ -13,6 +13,7 @@ var WufooController = {
     this.config = config;
     this.bind();
     this.getFormList(true);
+    $fh.fh_timeout = 120000;
   },
 
   bind: function() {
@@ -378,6 +379,7 @@ var WufooController = {
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          alert("We couldn't submit your form at this time. We've saved it in your pending items.");  
           saveFormData();
         });
       } else {
