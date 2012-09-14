@@ -176,6 +176,7 @@ html, body {
   background-color: lightgreen;
   padding-left: 10px;
   border-radius: 10px;
+  height: 60px;
 }
 .completePic button {
   display:none;
@@ -183,12 +184,11 @@ html, body {
 
 .completePic .imageThumb{
   position: relative;
-  bottom: 50px;
+  bottom: 55px;
   right: 50px;
-  display: inline;
   float: right;
   height: 50px;
-  width: 20px;
+  width: 37.5px;
 }
 
 .fh.fhcam {

@@ -60,10 +60,14 @@ exports = module.exports = function(opts, cb) {
         var imgField = $('<div>');
         var imgFieldDesc = $('<p>').text('Click to upload a picture');
         var imgThumb = $('<img>');
+        var removeThumb = $('<button>');
+        removeThumb.attr('class', 'removeThumb');
+        removeThumb.html('Remove Image');
         imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
         imgField.append(imgData);
         imgField.append(imgThumb);
+        imgField.append(removeThumb);
         $(field).find('div').remove();
         $(field).append(imgField);
       }
