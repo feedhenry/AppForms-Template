@@ -17,7 +17,12 @@ html, body {
   position: absolute; 
   bottom: 0; 
   left: 0;
-} 
+}
+
+.removeThumb{
+  float:right;
+  right: 100px;
+}
 
 .cap_sig_btn {
   position: relative;
@@ -178,7 +183,7 @@ html, body {
   border-radius: 10px;
   height: 60px;
 }
-.completePic button {
+.completePic .apibtn {
   display:none;
 }
 

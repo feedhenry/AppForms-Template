@@ -20,6 +20,7 @@ var WufooController = {
   bind: function() {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible');
+    var removeBtns= jQuery('.removeThumb');
     var saveDraftBtn = jQuery(".saveDraftForm");
     if (saveDraftBtn.length == 0) {
       saveDraftBtn = jQuery("<button>", {
@@ -820,7 +821,7 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 10
+      quality: 8
     });
     
   },
@@ -903,19 +904,21 @@ var apiController = {
     // }, function(err) {
     //   alert('Camera Error: ' + err);
     // }, {
-    //   quality: 10,
+    //   quality: 8,
     //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     // });
+  },
+
+  removeImage:function(item){
+    console.log(item);
   },
 
   addPicField: function(input){
     var picFields = jQuery('li.fhcam');
     var li = input.parent().parent();
-    console.log(li);
     var i;
 
     for(i = 0; i < picFields.length; i++){
-      console.log(picFields.eq(i));
       if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
         picFields.eq(i+1).removeAttr('style');
@@ -926,6 +929,7 @@ var apiController = {
           picFields.eq(i).removeAttr('style');
 
         }
+        picFields.eq(i).children().eq(1).children().eq(3).attr('onclick', 'removeImage('+picFields.eq(i)+')');
       }
     }
 
