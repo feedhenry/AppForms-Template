@@ -188,3 +188,8 @@ html, body {
 input[type=text] {
   height: 25px;
 }
+
+#versionNum {
+  font-size: 10px;
+  font-family: Verdana;
+}

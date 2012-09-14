@@ -14,6 +14,7 @@ var WufooController = {
     this.bind();
     this.getFormList(true);
     $fh.fh_timeout = 120000;
+    jQuery('#versionNum').html('Version: ' );//+ fh_app_version);
   },
 
   bind: function() {
@@ -66,6 +67,7 @@ var WufooController = {
     this.hideAll();
     jQuery('.ts').val("");
     jQuery('#fh_wufoo_form_list').show();
+    jQuery('#versionNum').show();
     this.makeActive('fh_wufoo_home');
   },
 
@@ -188,7 +190,7 @@ var WufooController = {
   },
 
   hideAll: function() {
-    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list').hide();
+    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list, #versionNum').hide();
   },
 
   makeActive: function(active_item) {
@@ -296,7 +298,8 @@ var WufooController = {
             fieldObj.attr('value', field.value);
             fieldObj.parent().find("p").text("Picture saved.");
             fieldObj.parent().parent().addClass('completePic');
-            self.addPicField();
+            fieldObj.parent().parent().removeClass('error');
+            // self.addPicField();
           } else {
             // repopulate signature hidden input field and set image source
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
@@ -388,6 +391,7 @@ var WufooController = {
           jQuery('.ts').val("");
 
           self.renderFormHtml(res.html);
+          self.deserializeForm(serialized_form);
           self.initWufoo();
 
         }, function(msg, err) {
@@ -585,6 +589,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
+    jQuery('#versionNum').show();
     window.scrollTo(0, 0);
   },
 
@@ -891,7 +896,7 @@ var apiController = {
     //   setTimeout(function() {
     //     jQuery(input).parent().find("p").text("Picture saved.");
     //     jQuery(input).val(imageData);
-        self.addPicField();
+        self.addPicField(jQuery(input));
     //   }, 2000);
     // }, function(err) {
     //   alert('Camera Error: ' + err);
@@ -901,20 +906,50 @@ var apiController = {
     // });
   },
 
-  addPicField: function(){
+  addPicField: function(input){
     var picFields = jQuery('li.fhcam');
+    var li = input.parent().parent();
+    console.log(li);
     var i;
+
     for(i = 0; i < picFields.length; i++){
-      if(picFields.eq(i).attr('style') == 'display:none'){
-        picFields.eq(i).removeAttr('style');
-        picFields.eq(i).children().eq(1).children().eq(0).html('Click to upload another picture');
-        picFields.eq(i-1).removeClass('serg4');
-        picFields.eq(i-1).addClass('completePic');
-        return;
-      }
-      else {
+      console.log(picFields.eq(i));
+      if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
+        picFields.eq(i+1).removeAttr('style');
+        picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
+
+        if(picFields.eq(i).hasClass('error')){
+          picFields.eq(i).removeClass('error');
+          picFields.eq(i).removeAttr('style');
+
+        }
       }
     }
+
+
+    // for(i = 0; i < picFields.length; i++){
+    //   if(picFields.eq(i).attr('style') == 'display:none'){
+    //     if(picFields.eq(i).hasClass('error')){
+    //       //Do this is pic input is a required field
+    //       picFields.eq(i+1).removeAttr('style');
+    //       picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
+    //       picFields.eq(i).removeAttr('style');
+    //       picFields.eq(i).removeClass('error');
+    //       picFields.eq(i).addClass('completePic');          
+    //     }else {
+    //       //Do this is pic input is NOT a required field
+    //       picFields.eq(i).removeAttr('style');
+    //       picFields.eq(i).children().eq(1).children().eq(0).html('Click to upload another picture');
+    //       picFields.eq(i-1).removeClass('error');
+    //       picFields.eq(i-1).addClass('completePic');          
+    //     }
+    //   }
+    //   else {
+    //     picFields.eq(i).removeClass('error');
+    //     picFields.eq(i).addClass('completePic');
+    //   }
+    //   return;
+    // }
   }
 };

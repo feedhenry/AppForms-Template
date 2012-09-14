@@ -59,10 +59,12 @@ exports = module.exports = function(opts, cb) {
         imgData.attr('id', originInput.attr('id'));
         var imgField = $('<div>');
         var imgFieldDesc = $('<p>').text('Click to upload a picture');
+        var imgThumb = $('<img>');
+        imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
         imgField.append(imgData);
         $(field).find('div').remove();
-        $(field).append(imgField);
+        $(field).append(imgField).append(imgThumb);
       }
     }
     // Modify the HTML inputs to have buttons etc
