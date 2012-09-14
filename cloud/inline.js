@@ -63,8 +63,9 @@ exports = module.exports = function(opts, cb) {
         imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
         imgField.append(imgData);
+        imgField.append(imgThumb);
         $(field).find('div').remove();
-        $(field).append(imgField).append(imgThumb);
+        $(field).append(imgField);
       }
     }
     // Modify the HTML inputs to have buttons etc
