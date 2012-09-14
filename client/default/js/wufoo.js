@@ -814,7 +814,8 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        self.addPicField();
+        jQuery(input).parent().eq(2).attr('src', imageData);
+        self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
