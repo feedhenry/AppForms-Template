@@ -287,6 +287,10 @@ function getRemoteResource(path, cb, isBinary) {
       console.log("can not find cached data for resource: " + options.uri);
       request(options, function(err, res, body) {
         //console.log('got response for link:' + options.uri + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
+        if (err) {
+          console.log('No response for: ' + options.uri);
+          cb(err, res, body);
+        }
         if (res.statusCode == 200) {
           var val = body;
           if (isBinary) {
