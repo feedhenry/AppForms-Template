@@ -181,6 +181,16 @@ html, body {
   display:none;
 }
 
+.completePic .imageThumb{
+  position: relative;
+  bottom: 50px;
+  right: 50px;
+  display: inline;
+  float: right;
+  height: 50px;
+  width: 20px;
+}
+
 .fh.fhcam {
   border-bottom: 1px dotted #000;
 }
