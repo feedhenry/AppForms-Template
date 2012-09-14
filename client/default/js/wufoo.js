@@ -911,9 +911,14 @@ var apiController = {
 
   removeImage:function(item){
     console.log(item);
+    item.removeClass('completePic');
+    item.children().eq(1).children().eq(2).attr('src', '');
+    item.children().eq(1).children().eq(3).attr('style', 'display:none');
+    item.children().eq(1).children().eq(0).html('Click to upload a picture');
   },
 
   addPicField: function(input){
+    var self = this;
     var picFields = jQuery('li.fhcam');
     var li = input.parent().parent();
     var i;
@@ -921,6 +926,7 @@ var apiController = {
     for(i = 0; i < picFields.length; i++){
       if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
+        picFields.eq(i).children().eq(1).children().eq(3).attr('style', '');
         picFields.eq(i+1).removeAttr('style');
         picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
 
@@ -929,7 +935,7 @@ var apiController = {
           picFields.eq(i).removeAttr('style');
 
         }
-        picFields.eq(i).children().eq(1).children().eq(3).attr('onclick', 'removeImage('+picFields.eq(i)+')');
+        picFields.eq(i).children().eq(1).children().eq(3).click(function(){self.removeImage(li); return false;});
       }
     }
 
