@@ -901,7 +901,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'img/fhgeo.png');
+        jQuery(input).parent().children().eq(2).attr('src', imageData);
         self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
