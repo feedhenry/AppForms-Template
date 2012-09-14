@@ -300,7 +300,10 @@ var WufooController = {
             fieldObj.parent().find("p").text("Picture saved.");
             fieldObj.parent().parent().addClass('completePic');
             fieldObj.parent().parent().removeClass('error');
-            // self.addPicField();
+            fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,'+field.value);
+            fieldObj.siblings().eq(2).attr('style', '');
+            apiController.addPicField(fieldObj.closest('li'));
+            
           } else {
             // repopulate signature hidden input field and set image source
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
@@ -894,25 +897,24 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    // navigator.camera.getPicture(function(imageData) {
-    //   setTimeout(function() {
-    //     jQuery(input).parent().find("p").text("Picture saved.");
-    //     jQuery(input).val(imageData);
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
         jQuery(input).parent().children().eq(2).attr('src', 'img/fhgeo.png');
         self.addPicField(jQuery(input));
-    //   }, 2000);
-    // }, function(err) {
-    //   alert('Camera Error: ' + err);
-    // }, {
-    //   quality: 8,
-    //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    // });
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 8,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    });
   },
 
   removeImage:function(item){
-    console.log(item);
     item.removeClass('completePic');
-    item.children().eq(1).children().eq(2).attr('src', '');
+    item.children().eq(1).children().eq(2).removeAttr('src');
     item.children().eq(1).children().eq(3).attr('style', 'display:none');
     item.children().eq(1).children().eq(0).html('Click to upload a picture');
   },
@@ -926,16 +928,20 @@ var apiController = {
     for(i = 0; i < picFields.length; i++){
       if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
-        picFields.eq(i).children().eq(1).children().eq(3).attr('style', '');
+        picFields.eq(i).children().eq(1).children().eq(3).removeAttr('style');
         picFields.eq(i+1).removeAttr('style');
         picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
 
         if(picFields.eq(i).hasClass('error')){
+          picFields.eq(i).children().eq(2).children().eq(3).removeAttr('style');
           picFields.eq(i).removeClass('error');
           picFields.eq(i).removeAttr('style');
 
         }
-        picFields.eq(i).children().eq(1).children().eq(3).click(function(){self.removeImage(li); return false;});
+        picFields.eq(i).children().eq(1).children().eq(3).click(function(e){
+          e.preventDefault();
+          self.removeImage(li); 
+          return false;});
       }
     }
 
