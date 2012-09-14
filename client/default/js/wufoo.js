@@ -417,7 +417,6 @@ var WufooController = {
   saveDraftForm: function() {
     var serialized_form = this.serializeForm();
     var self = this;
-    console.log(self);
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var form_ts   = jQuery('.ts').val();
@@ -897,23 +896,24 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    // navigator.camera.getPicture(function(imageData) {
-    //   setTimeout(function() {
-    //     jQuery(input).parent().find("p").text("Picture saved.");
-    //     jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'img/fhgeo.png');//'data:image/jpg;base64,'+imageData);
+    navigator.camera.getPicture(function(imageData) {
+      setTimeout(function() {
+        jQuery(input).parent().find("p").text("Picture saved.");
+        jQuery(input).val(imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
         self.addPicField(jQuery(input));
-    //   }, 2000);
-    // }, function(err) {
-    //   alert('Camera Error: ' + err);
-    // }, {
-    //   quality: 8,
-    //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    // });
+      }, 2000);
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 8,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    });
   },
 
   removeImage:function(item){
     item.removeClass('completePic');
+    item.children().eq(1).children().eq(1).removeAttr('value');
     item.children().eq(1).children().eq(2).removeAttr('src');
     item.children().eq(1).children().eq(3).attr('style', 'display:none');
     item.children().eq(1).children().eq(0).html('Click to upload a picture');
@@ -924,7 +924,7 @@ var apiController = {
     var picFields = jQuery('li.fhcam');
     var li = input.parent().parent();
     var i;
-
+    
     for(i = 0; i < picFields.length; i++){
       if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
@@ -938,36 +938,16 @@ var apiController = {
           picFields.eq(i).removeAttr('style');
 
         }
+        if(picFields.eq(i).children().eq(1).hasClass('error')){
+          picFields.eq(i).children().eq(1).remove();
+        }
+
         picFields.eq(i).children().eq(1).children().eq(3).click(function(e){
           e.preventDefault();
-          self.removeImage(li); 
-          return false;});
+          self.removeImage(li);
+          return false;
+        });
       }
     }
-
-
-    // for(i = 0; i < picFields.length; i++){
-    //   if(picFields.eq(i).attr('style') == 'display:none'){
-    //     if(picFields.eq(i).hasClass('error')){
-    //       //Do this is pic input is a required field
-    //       picFields.eq(i+1).removeAttr('style');
-    //       picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
-    //       picFields.eq(i).removeAttr('style');
-    //       picFields.eq(i).removeClass('error');
-    //       picFields.eq(i).addClass('completePic');          
-    //     }else {
-    //       //Do this is pic input is NOT a required field
-    //       picFields.eq(i).removeAttr('style');
-    //       picFields.eq(i).children().eq(1).children().eq(0).html('Click to upload another picture');
-    //       picFields.eq(i-1).removeClass('error');
-    //       picFields.eq(i-1).addClass('completePic');          
-    //     }
-    //   }
-    //   else {
-    //     picFields.eq(i).removeClass('error');
-    //     picFields.eq(i).addClass('completePic');
-    //   }
-    //   return;
-    // }
   }
 };

@@ -185,7 +185,7 @@ html, body {
 .completePic .imageThumb{
   position: relative;
   bottom: 55px;
-  right: 50px;
+  right: 30px;
   float: right;
   height: 50px;
   width: 37.5px;
@@ -196,7 +196,7 @@ html, body {
   top: -50px;
   bottom: 40px;
   float:right;
-  right: 80px;
+  right: 60px;
 }
 
 .fh.fhcam {
