@@ -301,8 +301,8 @@ var WufooController = {
             fieldObj.parent().parent().addClass('completePic');
             fieldObj.parent().parent().removeClass('error');
             fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,'+field.value);
-            fieldObj.siblings().eq(2).attr('style', '');
-            apiController.addPicField(fieldObj.closest('li'));
+            fieldObj.siblings().eq(2).removeAttr('style');
+            self.addPicField(fieldObj);
             
           } else {
             // repopulate signature hidden input field and set image source
@@ -897,19 +897,19 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    navigator.camera.getPicture(function(imageData) {
-      setTimeout(function() {
-        jQuery(input).parent().find("p").text("Picture saved.");
-        jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', imageData);
+    // navigator.camera.getPicture(function(imageData) {
+    //   setTimeout(function() {
+    //     jQuery(input).parent().find("p").text("Picture saved.");
+    //     jQuery(input).val(imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'img/fhgeo.png');//'data:image/jpg;base64,'+imageData);
         self.addPicField(jQuery(input));
-      }, 2000);
-    }, function(err) {
-      alert('Camera Error: ' + err);
-    }, {
-      quality: 8,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
-    });
+    //   }, 2000);
+    // }, function(err) {
+    //   alert('Camera Error: ' + err);
+    // }, {
+    //   quality: 8,
+    //   sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+    // });
   },
 
   removeImage:function(item){

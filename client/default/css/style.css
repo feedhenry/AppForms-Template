@@ -193,10 +193,10 @@ html, body {
 
 .completePic .removeThumb {
   position: relative;
-  top: -40px;
+  top: -50px;
   bottom: 40px;
   float:right;
-  right: 100px;
+  right: 80px;
 }
 
 .fh.fhcam {
