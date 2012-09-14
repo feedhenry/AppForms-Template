@@ -814,7 +814,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
         self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
