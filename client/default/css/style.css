@@ -9,6 +9,26 @@ html, body {
   width: 100% !important;
 }
 
+.sigField {
+  height: 40px;
+}
+
+.sigField-content { 
+  position: absolute; 
+  bottom: 0; 
+  left: 0;
+}
+
+.cap_sig_btn {
+  position: relative;
+  bottom: 6px;
+}
+
+.apibtn {
+  position: relative;
+  top: 3px;
+}
+
 #fh_wufoo_content {
   padding-top: 20px;
 }
@@ -149,4 +169,45 @@ html, body {
 
 #container .confirm{
   padding-top: 40px;
+}
+
+.completePic {
+  display: inline-block;
+  background-color: lightgreen;
+  padding-left: 10px;
+  border-radius: 10px;
+  height: 60px;
+}
+.completePic .fhcam, .completePic .fhpics {
+  display:none;
+}
+
+.completePic .imageThumb{
+  position: relative;
+  bottom: 55px;
+  right: 30px;
+  float: right;
+  height: 50px;
+  width: 37.5px;
+}
+
+.completePic .removeThumb {
+  position: relative;
+  top: -50px;
+  bottom: 40px;
+  float:right;
+  right: 60px;
+}
+
+.fh.fhcam {
+  border-bottom: 1px dotted #000;
+}
+
+input[type=text] {
+  height: 25px;
+}
+
+#versionNum {
+  font-size: 10px;
+  font-family: Verdana;
 }

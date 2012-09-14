@@ -59,8 +59,16 @@ exports = module.exports = function(opts, cb) {
         imgData.attr('id', originInput.attr('id'));
         var imgField = $('<div>');
         var imgFieldDesc = $('<p>').text('Click to upload a picture');
+        var imgThumb = $('<img>');
+        var removeThumb = $('<button>');
+        removeThumb.attr('class', 'apibtn removeThumb');
+        removeThumb.attr('style', 'display:none')
+        removeThumb.html('Remove Image');
+        imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
         imgField.append(imgData);
+        imgField.append(imgThumb);
+        imgField.append(removeThumb);
         $(field).find('div').remove();
         $(field).append(imgField);
       }
@@ -89,7 +97,7 @@ exports = module.exports = function(opts, cb) {
             img.attr('src', './img/fhcam_lib.png');
             button.append(img);
             $(field).find('div').first().append(button);
-            // $(field).attr('style', 'display:none');
+            $(field).attr('style', 'display:none');
           }
         }
       }
