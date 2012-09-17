@@ -13,11 +13,15 @@ var WufooController = {
     this.config = config;
     this.bind();
     this.getFormList(true);
+    $fh.fh_timeout = 120000;
+    jQuery('#versionNum').html('Version: ' + fh_app_version);
+
   },
 
   bind: function() {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible');
+    var removeBtns= jQuery('.removeThumb');
     var saveDraftBtn = jQuery(".saveDraftForm");
     if (saveDraftBtn.length == 0) {
       saveDraftBtn = jQuery("<button>", {
@@ -65,6 +69,7 @@ var WufooController = {
     this.hideAll();
     jQuery('.ts').val("");
     jQuery('#fh_wufoo_form_list').show();
+    jQuery('#versionNum').show();
     this.makeActive('fh_wufoo_home');
   },
 
@@ -187,7 +192,7 @@ var WufooController = {
   },
 
   hideAll: function() {
-    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list').hide();
+    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list, #versionNum').hide();
   },
 
   makeActive: function(active_item) {
@@ -197,7 +202,18 @@ var WufooController = {
 
   initWufoo: function(target_location) {
     var self = this;
-    jQuery('li.fhcam').first().removeAttr('style');
+    var i;
+    var camFields = jQuery('li.fhcam');
+
+    //make first photoInput visible
+    camFields.first().removeAttr('style');
+    //Check if multiple photos have been taken already i.e. Drafts/pending forms
+    for(i = 0; i < camFields.length; i++){
+      if(camFields.eq(i).find('input').val() != ""){
+        camFields.eq(i).removeAttr('style');
+      }
+    }
+
     var interval = setInterval(function() {
       if (typeof init !== 'undefined') {
         // Wufoo's Array prototype alteration breaks 
@@ -272,6 +288,7 @@ var WufooController = {
   },
 
   deserializeForm: function(form) {
+    var self = apiController;
     var formObj = jQuery('form');
     // console.log(form);
     jQuery.each(form, function(i, field) {
@@ -282,6 +299,12 @@ var WufooController = {
             // repopulate hidden input field value
             fieldObj.attr('value', field.value);
             fieldObj.parent().find("p").text("Picture saved.");
+            fieldObj.parent().parent().addClass('completePic');
+            fieldObj.parent().parent().removeClass('error');
+            fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,'+field.value);
+            fieldObj.siblings().eq(2).removeAttr('style');
+            self.addPicField(fieldObj);
+            
           } else {
             // repopulate signature hidden input field and set image source
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
@@ -329,7 +352,7 @@ var WufooController = {
           }, function(){
             console.log('delete draft failed')
           });
-      
+
       self.deletePending(form_hash, form_ts, function(){
             console.log('delete pending successful');
           }, function(){
@@ -373,11 +396,13 @@ var WufooController = {
           jQuery('.ts').val("");
 
           self.renderFormHtml(res.html);
+          self.deserializeForm(serialized_form);
           self.initWufoo();
 
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");  
           saveFormData();
         });
       } else {
@@ -568,6 +593,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
+    jQuery('#versionNum').show();
     window.scrollTo(0, 0);
   },
 
@@ -787,17 +813,20 @@ var apiController = {
 
   // Open camera and return base64 data
   fhcam: function(input) {
+    var self = this;
     navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
+        self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 10
+      quality: 8
     });
-    // this.addPicField();
+    
   },
 
   //Returns Lat and Long as sting
@@ -867,27 +896,58 @@ var apiController = {
   },
 
   fhpics: function(input) {
+    var self = this;
     navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
+        self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 10,
+      quality: 8,
       sourceType: Camera.PictureSourceType.PHOTOLIBRARY
     });
-    // this.addPicField();
   },
 
-  addPicField: function(){
+  removeImage:function(item){
+    item.removeClass('completePic');
+    item.children().eq(1).children().eq(1).removeAttr('value');
+    item.children().eq(1).children().eq(2).removeAttr('src');
+    item.children().eq(1).children().eq(3).attr('style', 'display:none');
+    item.children().eq(1).children().eq(0).html('Click to upload a picture');
+  },
+
+  addPicField: function(input){
+    var self = this;
     var picFields = jQuery('li.fhcam');
+    var li = input.parent().parent();
     var i;
+    
     for(i = 0; i < picFields.length; i++){
-      if(picFields[i].attr('style') == 'display:none'){
-        picFields[i].removeAttr('style');
-        return;
+      if(picFields.eq(i).attr('id') == li.attr('id')){
+        picFields.eq(i).addClass('completePic');
+        picFields.eq(i).children().eq(1).children().eq(3).removeAttr('style');
+        picFields.eq(i+1).removeAttr('style');
+        picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
+
+        if(picFields.eq(i).hasClass('error')){
+          picFields.eq(i).children().eq(2).children().eq(3).removeAttr('style');
+          picFields.eq(i).removeClass('error');
+          picFields.eq(i).removeAttr('style');
+
+        }
+        if(picFields.eq(i).children().eq(1).hasClass('error')){
+          picFields.eq(i).children().eq(1).remove();
+        }
+
+        picFields.eq(i).children().eq(1).children().eq(3).click(function(e){
+          e.preventDefault();
+          self.removeImage(li);
+          return false;
+        });
       }
     }
   }
