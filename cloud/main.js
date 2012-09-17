@@ -74,7 +74,6 @@ formDataToMultipart = function(form_data, cb) {
   //   multipart_data.push(multipart_part);
   // }
   form_data.forEach(function(field) {
-    //console.log(field)
     if (field.name != 'output' && typeof field.value != 'undefined') {
       if (field.name == 'clickOrEnter') {
         // clickOrEnter needs to be set to blank or 
@@ -110,7 +109,6 @@ formDataToMultipart = function(form_data, cb) {
 
 getFormData = function(form_hash, callback) {
   getConfig(function(err, wufoo_config) {
-    //console.log('after getConfig');
     if (err != null) {
       return callback(null, err);
     }
@@ -146,17 +144,13 @@ getConfig = function(callback) {
  * Here we get a Wufoo form's HTML, process it, and send it back to the client
  */
 exports.getForm = function(params, callback) {
-  console.log(new Date() + ' :: exports.getForm - START');
   getConfig(function(err, wufoo_config) {
-    //console.log('after getConfig');
     if (err != null) {
       return callback(null, err);
     }
 
     var form_hash = params.form_hash;
-    //console.log('getFormData');
     getFormData(form_hash, function(error, res, body) {
-      //console.log('post getFormData:' + typeof body);
       var body_json = null;
       var updated = null;
       try {
@@ -208,7 +202,6 @@ exports.getForm = function(params, callback) {
                 }
               }, function(error, res, body) {
                 updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                  console.log(new Date() + ' :: exports.getForm - updateWufooHTML 1');
                   return callback(null, {
                     "html": processed_html
                   });
@@ -217,7 +210,6 @@ exports.getForm = function(params, callback) {
             } else {
               request(url, function(error, res, body) {
                 updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                  console.log(new Date() + ' :: exports.getForm - updateWufooHTML 2');
                   return callback(null, {
                     "html": processed_html
                   });
@@ -225,7 +217,6 @@ exports.getForm = function(params, callback) {
               });
             }
           } else {
-            console.log(new Date() + ' :: else');
             return callback(null, {
               "cached": true,
               "html": res_json.html
@@ -251,7 +242,6 @@ exports.getForm = function(params, callback) {
             }
           }, function(error, res, body) {
             updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-              console.log(new Date() + ' :: exports.getForm - updateWufooHTML 3');
               return callback(null, {
                 "html": processed_html
               });
@@ -260,7 +250,6 @@ exports.getForm = function(params, callback) {
         } else {
           request(url, function(error, res, body) {
             updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-              console.log(new Date() + ' :: exports.getForm - updateWufooHTML 4');
               return callback(null, {
                 "html": processed_html
               });
@@ -278,7 +267,6 @@ exports.getForm = function(params, callback) {
  * Here we get a list of available Wufoo forms
  */
 exports.getForms = function(params, callback) {
-  console.log(new Date() + ' :: exports.getForms - START');
   getConfig(function(err, wufoo_config) {
     if (err != null) {
       return callback(null, err);
@@ -291,7 +279,6 @@ exports.getForms = function(params, callback) {
     if (app_type == 'single_form') {
       var form_hash = wufoo_config.wufoo_config.form_hash;
       getFormData(form_hash, function(error, res, body) {
-        console.log(new Date() + ' :: getFormData 1');
         return callback(null, {
           data: JSON.parse(body)
         });
@@ -308,7 +295,6 @@ exports.getForms = function(params, callback) {
         url: forms_url,
         headers: auth_header
       }, function(error, res, body) {
-        console.log(new Date() + ' ::  exports.getForms - request.get');
         return callback(null, {
           data: JSON.parse(body)
         });
@@ -322,7 +308,6 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  console.log(new Date() + ' :: exports.submitForm - START');
   var multipart_data = formDataToMultipart(params.form_data);
   var req = request({
     method: 'POST',
@@ -333,9 +318,7 @@ exports.submitForm = function(params, callback) {
     },
     multipart: multipart_data
   }, function(e, r, b) {
-    console.log(new Date() + ' :: exports.submitForm - FINISHED SENDING DATA');
     updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
-      console.log(new Date() + ' :: exports.submitForm - RETURN 1');
       return callback(null, {
         "html": processed_html + '<button onclick="WufooController.showHome()">Back to Forms</button>'
       });
