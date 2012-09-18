@@ -88,7 +88,7 @@ exports = module.exports = function(opts, cb) {
           button.append(img);
           $(field).find('div').first().append(button);
 
-          if(bindings[i] == 'fhcam'){
+          if (bindings[i] == 'fhcam') {
             // add button to select pics from gallery
             var button = $('<button>')
             button.attr('class', 'apibtn ' + 'fhpics');
@@ -295,9 +295,9 @@ function getRemoteResource(path, cb, isBinary) {
       console.log("can not find cached data for resource: " + options.uri);
       request(options, function(err, res, body) {
         //console.log('got response for link:' + options.uri + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
-        if (err) {
+        if (err || typeof res === 'undefined') {
           console.log('No response for: ' + options.uri);
-          cb(err, res, body);
+          return cb(err, res, body);
         }
         if (res.statusCode == 200) {
           var val = body;
