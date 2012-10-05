@@ -835,7 +835,7 @@ var apiController = {
     var inputField = jQuery(input);
     var location;
     var classType;
-    $fh.geoip(function(res) {
+    $fh.geo(function(res) {
       classType = jQuery(input).parent().parent().attr('class');
       location = res;
 
