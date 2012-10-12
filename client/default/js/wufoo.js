@@ -1,8 +1,9 @@
 // 06/09/12
 //-------------------------------------------------------------
-// Bindings available are, fhgeo, fhcam, fhpics, fhdata, fhtime 
+// Bindings available are, fhgeo, fhcam, fhdate, fhtime 
 // fhgeo will return lat/lon unless an additional class 'fhgeoEN'
 // is defined, in which case easting/northing will be returned
+// NOTE: do not use $ for jquery as this will cause errors, use instead jQuery()
 //
 
 var WufooController = {
@@ -404,6 +405,7 @@ var WufooController = {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");  
           saveFormData();
+          self.showHome();
         });
       } else {
         self.hideLoading();
@@ -429,11 +431,17 @@ var WufooController = {
             console.log('delete draft failed')
           });
 
+    self.deletePending(form_hash, form_ts, function(){
+      console.log('delete pending successful');
+    }, function(){
+      console.log('delete pending failed')
+    });
     jQuery('.ts').val('');
 
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
       self.loadDrafts();
+      self.loadPending();
       self.showHome();
     }, function() {
       console.log("Failed to save form as draft.");
@@ -913,11 +921,101 @@ var apiController = {
   },
 
   removeImage:function(item){
+    var self = this;
     item.removeClass('completePic');
-    item.children().eq(1).children().eq(1).removeAttr('value');
-    item.children().eq(1).children().eq(2).removeAttr('src');
-    item.children().eq(1).children().eq(3).attr('style', 'display:none');
     item.children().eq(1).children().eq(0).html('Click to upload a picture');
+    var imageThumb = item.find('img[class="imageThumb"]').first();
+    if (imageThumb.length > 0) {
+      imageThumb.removeAttr("src");
+    }
+    var inputField = self.getInputField(item);
+    if(inputField) inputField.removeAttr('value');
+    // when an image is removed we need to do the following:
+    /**
+     1 check if it is a required field. if it is don't hide it just empty the source element
+     2 if it is a required field and there are other images added (lower down in the chain) move the images up to fill in the required images.
+
+     */
+    if(self.isRequiredField(item)){
+      adjustPics();
+    }else {
+      item.attr('style', 'display:none');
+    }
+
+    function adjustPics() {
+      var emptyRequiredFields = [];
+      var filledNonRequiredFields = [];
+      var picFields = jQuery('li.fhcam');
+      var picField;
+      var numFilledFields = 0;
+      var numRequired = 0;
+      var numVisible = 0;
+
+      for(var p=0; p < picFields.length; p++){
+        picField = picFields[p];
+        if(jQuery(picField).is(':visible')){
+            numVisible++;
+        }
+        if(self.isRequiredField(picField) && self.isEmptyField(picField)){
+            emptyRequiredFields.push(picField);
+        }else if(false === self.isRequiredField(picField) && false === self.isEmptyField(picField)){
+            filledNonRequiredFields.push(picField);
+        }
+        if(self.isRequiredField(picField)){
+            numRequired++;
+        }
+        if(false === self.isEmptyField(picField)){
+            numFilledFields+=1;
+        }
+      }
+
+      for(var k=0; k < numFilledFields; k++){
+        //if there is a non required pic field with an image move it up.
+        if(emptyRequiredFields[k] && filledNonRequiredFields[k]){
+          var emptyRequiredField = jQuery(emptyRequiredFields[k]);
+          var filledNonRequired  = jQuery(filledNonRequiredFields[k]);
+          var imageData =  self.getInputField(filledNonRequired).val();
+          //console.log(emptyRequiredField);
+          var emptyInput = self.getInputField(emptyRequiredField);
+          var imageThumb = jQuery(emptyRequiredField).find('img[class="imageThumb"]').first();
+
+          imageThumb.attr('src', 'data:image/jpg;base64,' + imageData);
+
+          self.getInputField(emptyRequiredField).val(imageData);
+          self.getInputField(filledNonRequired).removeAttr("value");
+
+          var filledImage =  filledNonRequired.find('img[class="imageThumb"]').first();
+
+          filledImage.attr("src","");
+          filledNonRequired.removeClass("completePic");
+          emptyRequiredField.addClass("completePic");
+
+          console.log("src of filled not required thumbnail " + filledImage.attr("src").length);
+          emptyRequiredField.find('div').find('p').first().text("Picture Saved");
+          filledNonRequired.find('div').find('p').first().text("Click to upload a picture");
+          jQuery('button[classs="removeThumb"]',filledNonRequired).hide();
+        }
+      }
+
+      //check there are more picture fields than the number of filled fields
+      if(picFields.length > numFilledFields ){
+        //show the next empty field and hide any other empty fields
+        for(var pf = 0; pf < picFields.length; pf++){
+          picField = jQuery(picFields[pf]);
+          console.log("looking at pic field at index " + pf);
+          if(numVisible < numFilledFields +1){
+           //not enough visible fields
+            if(! picField.is(':visible')){
+                console.log("showing picfield " + pf);
+                picField.show();
+                numVisible++;
+            }
+
+          }
+        }
+      }
+      console.log("empty fields"+ emptyRequiredFields.length);
+    }
   },
 
   addPicField: function(input){
@@ -927,9 +1025,11 @@ var apiController = {
     var i;
     
     for(i = 0; i < picFields.length; i++){
+      //if the picfield is has the same id as the passed li element
       if(picFields.eq(i).attr('id') == li.attr('id')){
         picFields.eq(i).addClass('completePic');
         picFields.eq(i).children().eq(1).children().eq(3).removeAttr('style');
+        //instead of just looking for the next picfield we need to find if there is one available and show that
         picFields.eq(i+1).removeAttr('style');
         picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
 
@@ -950,5 +1050,31 @@ var apiController = {
         });
       }
     }
+  },
+
+  isRequiredField: function(field){
+    var spans = jQuery(field).find('span');
+    var required = spans.first('.req');
+    return (required && required.length > 0);
+  },
+
+  isEmptyField: function(formItem){
+    console.log("called is empty field");
+    var self = this;
+    var inputField = self.getInputField(formItem);
+    return (inputField && jQuery(inputField).val() === "");
+  },
+
+  getInputField: function(formItem){
+    var labelField = jQuery(formItem).find("label");
+    var inputField;
+
+    if (labelField && labelField.length > 0) {
+      var inputName = labelField.attr("for");
+      inputField = jQuery(formItem).find('input[name="' + inputName + '"]').first();
+    }else{
+      console.log("did not find any label in the formItem");
+    }
+    return inputField;
   }
 };
