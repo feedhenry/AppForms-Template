@@ -96,8 +96,19 @@ exports = module.exports = function(opts, cb) {
             img.attr('style', 'min-height:20px;');
             img.attr('src', './img/fhcam_lib.png');
             button.append(img);
+            
+            var spans = $(field).find('span');
+            var required = false;
+            for(var j=0; j< spans.length; j++){
+              var span = $(spans[j]);
+              if(span && span.hasClass("req")){
+                required = true;
+              }
+            }
             $(field).find('div').first().append(button);
-            $(field).attr('style', 'display:none');
+            if(! required){
+                $(field).attr('style', 'display:none');
+              }
           }
         }
       }
