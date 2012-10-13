@@ -62,7 +62,6 @@ exports = module.exports = function(opts, cb) {
         var imgThumb = $('<img>');
         var removeThumb = $('<button>');
         removeThumb.attr('class', 'apibtn removeThumb');
-        removeThumb.attr('style', 'display:none')
         removeThumb.html('Remove Image');
         imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
