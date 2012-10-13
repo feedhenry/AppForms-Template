@@ -922,159 +922,76 @@ var apiController = {
 
   removeImage:function(item){
     var self = this;
-    item.removeClass('completePic');
-    item.children().eq(1).children().eq(0).html('Click to upload a picture');
-    var imageThumb = item.find('img[class="imageThumb"]').first();
-    if (imageThumb.length > 0) {
-      imageThumb.removeAttr("src");
-    }
-    var inputField = self.getInputField(item);
-    if(inputField) inputField.removeAttr('value');
-    // when an image is removed we need to do the following:
-    /**
-     1 check if it is a required field. if it is don't hide it just empty the source element
-     2 if it is a required field and there are other images added (lower down in the chain) move the images up to fill in the required images.
 
-     */
-    if(self.isRequiredField(item)){
-      adjustPics();
-    }else {
-      item.attr('style', 'display:none');
+    // clean up the item for possible reuse later
+    item.removeClass('completePic')
+      .find('div p:eq(0)').html('Click to upload a picture')
+      .end().find('.imageThumb').removeAttr('src')
+      .end().find('input').removeAttr('value');
+
+    // only hide the field if it's not required
+    if(item.find('span.req').length === 0){
+      item.hide();
     }
 
-    function adjustPics() {
-      var emptyRequiredFields = [];
-      var filledNonRequiredFields = [];
-      var picFields = jQuery('li.fhcam');
-      var picField;
-      var numFilledFields = 0;
-      var numRequired = 0;
-      var numVisible = 0;
+    // Must maintain consecutive order on input fields
+    // so if there's any empty image fields, move images up^^ to remove gaps
+    jQuery('li.fhcam.completePic').each(function () {
+      var el = jQuery(this);
+      // see if there's an empty slot above us anywhere
+      var emptyElAbove = el.prev('li.fhcam:not(.completePic)');
+      if (emptyElAbove.length > 0) {
+        var imageData = el.find('input').val();
 
-      for(var p=0; p < picFields.length; p++){
-        picField = picFields[p];
-        if(jQuery(picField).is(':visible')){
-            numVisible++;
-        }
-        if(self.isRequiredField(picField) && self.isEmptyField(picField)){
-            emptyRequiredFields.push(picField);
-        }else if(false === self.isRequiredField(picField) && false === self.isEmptyField(picField)){
-            filledNonRequiredFields.push(picField);
-        }
-        if(self.isRequiredField(picField)){
-            numRequired++;
-        }
-        if(false === self.isEmptyField(picField)){
-            numFilledFields+=1;
-        }
+        // copy image data to empty input above it
+        emptyElAbove.addClass("completePic")
+          .find('input').val(imageData)
+          .end().find('img.imageThumb').attr('src', 'data:image/jpg;base64,' + imageData)
+          .end().find('div p').text("Picture Saved");
+
+        // clean up input below for possible reuse later
+        el.removeClass("completePic")
+          .find('input').removeAttr("value")
+          .end().find('img.imageThumb').removeAttr("src")
+          .end().find('div p').text("Click to upload a picture");
       }
+    });
 
-      for(var k=0; k < numFilledFields; k++){
-        //if there is a non required pic field with an image move it up.
-        if(emptyRequiredFields[k] && filledNonRequiredFields[k]){
-          var emptyRequiredField = jQuery(emptyRequiredFields[k]);
-          var filledNonRequired  = jQuery(filledNonRequiredFields[k]);
-          var imageData =  self.getInputField(filledNonRequired).val();
-          //console.log(emptyRequiredField);
-          var emptyInput = self.getInputField(emptyRequiredField);
-          var imageThumb = jQuery(emptyRequiredField).find('img[class="imageThumb"]').first();
-
-          imageThumb.attr('src', 'data:image/jpg;base64,' + imageData);
-
-          self.getInputField(emptyRequiredField).val(imageData);
-          self.getInputField(filledNonRequired).removeAttr("value");
-
-          var filledImage =  filledNonRequired.find('img[class="imageThumb"]').first();
-
-          filledImage.attr("src","");
-          filledNonRequired.removeClass("completePic");
-          emptyRequiredField.addClass("completePic");
-
-          console.log("src of filled not required thumbnail " + filledImage.attr("src").length);
-          emptyRequiredField.find('div').find('p').first().text("Picture Saved");
-          filledNonRequired.find('div').find('p').first().text("Click to upload a picture");
-          jQuery('button[classs="removeThumb"]',filledNonRequired).hide();
-        }
-      }
-
-      //check there are more picture fields than the number of filled fields
-      if(picFields.length > numFilledFields ){
-        //show the next empty field and hide any other empty fields
-        for(var pf = 0; pf < picFields.length; pf++){
-          picField = jQuery(picFields[pf]);
-          console.log("looking at pic field at index " + pf);
-          if(numVisible < numFilledFields +1){
-           //not enough visible fields
-            if(! picField.is(':visible')){
-                console.log("showing picfield " + pf);
-                picField.show();
-                numVisible++;
-            }
-
-          }
-        }
-      }
-      console.log("empty fields"+ emptyRequiredFields.length);
+    // and only show 1 empty image field at the bottom, unless there are more required fields
+    jQuery('li.fhcam:not(.completePic)').hide();
+    var requiredEmptyEls = jQuery('li.fhcam span.req').closest('li.fhcam:not(.completePic)');
+    if (requiredEmptyEls.length > 0) {
+      // show all empty els that are required
+      requiredEmptyEls.show();
+    } else {
+      // show the first empty el, which we know is not required
+      jQuery('li.fhcam:not(.completePic):eq(0)').show();
     }
   },
 
   addPicField: function(input){
     var self = this;
-    var picFields = jQuery('li.fhcam');
-    var li = input.parent().parent();
-    var i;
-    
-    for(i = 0; i < picFields.length; i++){
-      //if the picfield is has the same id as the passed li element
-      if(picFields.eq(i).attr('id') == li.attr('id')){
-        picFields.eq(i).addClass('completePic');
-        picFields.eq(i).children().eq(1).children().eq(3).removeAttr('style');
-        //instead of just looking for the next picfield we need to find if there is one available and show that
-        picFields.eq(i+1).removeAttr('style');
-        picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
+    var li = input.closest('li');
 
-        if(picFields.eq(i).hasClass('error')){
-          picFields.eq(i).children().eq(2).children().eq(3).removeAttr('style');
-          picFields.eq(i).removeClass('error');
-          picFields.eq(i).removeAttr('style');
+    // mark passed in input as complete
+    li.addClass('completePic');
 
-        }
-        if(picFields.eq(i).children().eq(1).hasClass('error')){
-          picFields.eq(i).children().eq(1).remove();
-        }
-
-        picFields.eq(i).children().eq(1).children().eq(3).click(function(e){
-          e.preventDefault();
-          self.removeImage(li);
-          return false;
-        });
-      }
+    // tidy up error status on elements, if any
+    if (li.hasClass('error')) {
+      li.removeClass('error').removeAttr('style')
+        .children().eq(2).children().eq(3).removeAttr('style'); // TODO: what's this for?
+      li.find('.error').remove();
     }
-  },
 
-  isRequiredField: function(field){
-    var spans = jQuery(field).find('span');
-    var required = spans.first('.req');
-    return (required && required.length > 0);
-  },
+    // enable remove image button
+    li.find('.removeThumb').unbind().bind('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var imageLi = jQuery(this).closest('li');
+      self.removeImage(imageLi);
+    });
 
-  isEmptyField: function(formItem){
-    console.log("called is empty field");
-    var self = this;
-    var inputField = self.getInputField(formItem);
-    return (inputField && jQuery(inputField).val() === "");
-  },
-
-  getInputField: function(formItem){
-    var labelField = jQuery(formItem).find("label");
-    var inputField;
-
-    if (labelField && labelField.length > 0) {
-      var inputName = labelField.attr("for");
-      inputField = jQuery(formItem).find('input[name="' + inputName + '"]').first();
-    }else{
-      console.log("did not find any label in the formItem");
-    }
-    return inputField;
+    // shown next available pic field, if there is one
+    li.next('.fhcam').show().find('p:eq(0)').text('Click to upload a picture');
   }
 };
