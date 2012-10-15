@@ -939,7 +939,7 @@ var apiController = {
     jQuery('li.fhcam.completePic').each(function () {
       var el = jQuery(this);
       // see if there's an empty slot above us anywhere
-      var emptyElAbove = el.prev('li.fhcam:not(.completePic)');
+      var emptyElAbove = el.prevAll('li.fhcam:not(.completePic)').first();
       if (emptyElAbove.length > 0) {
         var imageData = el.find('input').val();
 
@@ -947,13 +947,15 @@ var apiController = {
         emptyElAbove.addClass("completePic")
           .find('input').val(imageData)
           .end().find('img.imageThumb').attr('src', 'data:image/jpg;base64,' + imageData)
-          .end().find('div p').text("Picture Saved");
+          .end().find('div p').text("Picture Saved")
+          .end().css('display', 'inline-block');
 
         // clean up input below for possible reuse later
         el.removeClass("completePic")
           .find('input').removeAttr("value")
           .end().find('img.imageThumb').removeAttr("src")
-          .end().find('div p').text("Click to upload a picture");
+          .end().find('div p').text("Click to upload a picture")
+          .end().hide();
       }
     });
 
@@ -962,10 +964,10 @@ var apiController = {
     var requiredEmptyEls = jQuery('li.fhcam span.req').closest('li.fhcam:not(.completePic)');
     if (requiredEmptyEls.length > 0) {
       // show all empty els that are required
-      requiredEmptyEls.show();
+      requiredEmptyEls.css('display', 'inline-block');
     } else {
       // show the first empty el, which we know is not required
-      jQuery('li.fhcam:not(.completePic):eq(0)').show();
+      jQuery('li.fhcam:not(.completePic):eq(0)').css('display', 'inline-block');
     }
   },
 
@@ -991,7 +993,9 @@ var apiController = {
       self.removeImage(imageLi);
     });
 
-    // shown next available pic field, if there is one
-    li.next('.fhcam').show().find('p:eq(0)').text('Click to upload a picture');
+    // shown next available pic field, if there is one, and there isn't already an empty required field above
+    if (li.prevAll('.fhcam:not(.completePic)').length === 0) {
+      li.nextAll('.fhcam:not(.completePic)').first().css('display', 'inline-block').find('p:eq(0)').text('Click to upload a picture');
+    }
   }
 };
