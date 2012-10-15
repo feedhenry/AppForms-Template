@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget id="com.feedhenry.wufoo.integration" version="" width="320" height="480" start="index.html">
+<title>WuFoo App</title>
+<description>Wufoo App</description>
+<author name="" email="" url=""></author>
+<license></license>
+</widget>
