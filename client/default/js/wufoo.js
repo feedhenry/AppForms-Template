@@ -854,7 +854,7 @@ var apiController = {
         console.log('converted to EN');
         inputField.val('(' + location.easting + ',' + location.northing + ')');
       } else {
-        inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
+        inputField.val('(' + res.lat + ', ' + res.lon + ')');
       } //end of handling output
     }, function(msg, err) {
       input.value = 'Location could not be determined';
@@ -863,8 +863,8 @@ var apiController = {
   },
 
   convertLocation: function(location) {
-    var lat = location.latitude;
-    var lon = location.longitude;
+    var lat = location.lat;
+    var lon = location.lon;
     var params = {
       lat: function() {
         return lat
