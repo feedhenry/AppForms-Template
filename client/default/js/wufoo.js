@@ -1,8 +1,9 @@
 // 06/09/12
 //-------------------------------------------------------------
-// Bindings available are, fhgeo, fhcam, fhpics, fhdata, fhtime 
+// Bindings available are, fhgeo, fhcam, fhdate, fhtime 
 // fhgeo will return lat/lon unless an additional class 'fhgeoEN'
 // is defined, in which case easting/northing will be returned
+// NOTE: do not use $ for jquery as this will cause errors, use instead jQuery()
 //
 
 var WufooController = {
@@ -404,6 +405,7 @@ var WufooController = {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");  
           saveFormData();
+          self.showHome();
         });
       } else {
         self.hideLoading();
@@ -429,11 +431,17 @@ var WufooController = {
             console.log('delete draft failed')
           });
 
+    self.deletePending(form_hash, form_ts, function(){
+      console.log('delete pending successful');
+    }, function(){
+      console.log('delete pending failed')
+    });
     jQuery('.ts').val('');
 
     self.saveDraft(form_hash, form_name, serialized_form, function() {
       alert('Draft saved.');
       self.loadDrafts();
+      self.loadPending();
       self.showHome();
     }, function() {
       console.log("Failed to save form as draft.");
@@ -846,7 +854,7 @@ var apiController = {
         console.log('converted to EN');
         inputField.val('(' + location.easting + ',' + location.northing + ')');
       } else {
-        inputField.val('(' + res.latitude + ', ' + res.longitude + ')');
+        inputField.val('(' + res.lat + ', ' + res.lon + ')');
       } //end of handling output
     }, function(msg, err) {
       input.value = 'Location could not be determined';
@@ -855,8 +863,8 @@ var apiController = {
   },
 
   convertLocation: function(location) {
-    var lat = location.latitude;
-    var lon = location.longitude;
+    var lat = location.lat;
+    var lon = location.lon;
     var params = {
       lat: function() {
         return lat
@@ -913,42 +921,81 @@ var apiController = {
   },
 
   removeImage:function(item){
-    item.removeClass('completePic');
-    item.children().eq(1).children().eq(1).removeAttr('value');
-    item.children().eq(1).children().eq(2).removeAttr('src');
-    item.children().eq(1).children().eq(3).attr('style', 'display:none');
-    item.children().eq(1).children().eq(0).html('Click to upload a picture');
+    var self = this;
+
+    // clean up the item for possible reuse later
+    item.removeClass('completePic')
+      .find('div p:eq(0)').html('Click to upload a picture')
+      .end().find('.imageThumb').removeAttr('src')
+      .end().find('input').removeAttr('value');
+
+    // only hide the field if it's not required
+    if(item.find('span.req').length === 0){
+      item.hide();
+    }
+
+    // Must maintain consecutive order on input fields
+    // so if there's any empty image fields, move images up^^ to remove gaps
+    jQuery('li.fhcam.completePic').each(function () {
+      var el = jQuery(this);
+      // see if there's an empty slot above us anywhere
+      var emptyElAbove = el.prevAll('li.fhcam:not(.completePic)').first();
+      if (emptyElAbove.length > 0) {
+        var imageData = el.find('input').val();
+
+        // copy image data to empty input above it
+        emptyElAbove.addClass("completePic")
+          .find('input').val(imageData)
+          .end().find('img.imageThumb').attr('src', 'data:image/jpg;base64,' + imageData)
+          .end().find('div p').text("Picture Saved")
+          .end().css('display', 'inline-block');
+
+        // clean up input below for possible reuse later
+        el.removeClass("completePic")
+          .find('input').removeAttr("value")
+          .end().find('img.imageThumb').removeAttr("src")
+          .end().find('div p').text("Click to upload a picture")
+          .end().hide();
+      }
+    });
+
+    // and only show 1 empty image field at the bottom, unless there are more required fields
+    jQuery('li.fhcam:not(.completePic)').hide();
+    var requiredEmptyEls = jQuery('li.fhcam span.req').closest('li.fhcam:not(.completePic)');
+    if (requiredEmptyEls.length > 0) {
+      // show all empty els that are required
+      requiredEmptyEls.css('display', 'inline-block');
+    } else {
+      // show the first empty el, which we know is not required
+      jQuery('li.fhcam:not(.completePic):eq(0)').css('display', 'inline-block');
+    }
   },
 
   addPicField: function(input){
     var self = this;
-    var picFields = jQuery('li.fhcam');
-    var li = input.parent().parent();
-    var i;
-    
-    for(i = 0; i < picFields.length; i++){
-      if(picFields.eq(i).attr('id') == li.attr('id')){
-        picFields.eq(i).addClass('completePic');
-        picFields.eq(i).children().eq(1).children().eq(3).removeAttr('style');
-        picFields.eq(i+1).removeAttr('style');
-        picFields.eq(i+1).children().eq(1).children().eq(0).html('Click to upload another picture');
+    var li = input.closest('li');
 
-        if(picFields.eq(i).hasClass('error')){
-          picFields.eq(i).children().eq(2).children().eq(3).removeAttr('style');
-          picFields.eq(i).removeClass('error');
-          picFields.eq(i).removeAttr('style');
+    // mark passed in input as complete
+    li.addClass('completePic');
 
-        }
-        if(picFields.eq(i).children().eq(1).hasClass('error')){
-          picFields.eq(i).children().eq(1).remove();
-        }
+    // tidy up error status on elements, if any
+    if (li.hasClass('error')) {
+      li.removeClass('error').removeAttr('style')
+        .children().eq(2).children().eq(3).removeAttr('style'); // TODO: what's this for?
+      li.find('.error').remove();
+    }
 
-        picFields.eq(i).children().eq(1).children().eq(3).click(function(e){
-          e.preventDefault();
-          self.removeImage(li);
-          return false;
-        });
-      }
+    // enable remove image button
+    li.find('.removeThumb').unbind().bind('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var imageLi = jQuery(this).closest('li');
+      self.removeImage(imageLi);
+    });
+
+    // shown next available pic field, if there is one, and there isn't already an empty required field above
+    if (li.prevAll('.fhcam:not(.completePic)').length === 0) {
+      li.nextAll('.fhcam:not(.completePic)').first().css('display', 'inline-block').find('p:eq(0)').text('Click to upload a picture');
     }
   }
 };
