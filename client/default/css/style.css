@@ -211,7 +211,8 @@ input[type=text] {
   height: 25px;
 }
 
-#versionNum {
+#fh_app_version {
+  text-align: center;
   font-size: 10px;
   font-family: Verdana;
 }

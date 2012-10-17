@@ -15,8 +15,7 @@ var WufooController = {
     this.bind();
     this.getFormList(true);
     $fh.fh_timeout = 120000;
-    jQuery('#versionNum').html('Version: ' + fh_app_version);
-
+    jQuery('#fh_app_version').html('Version: ' + fh_app_version);
   },
 
   bind: function() {
@@ -70,7 +69,7 @@ var WufooController = {
     this.hideAll();
     jQuery('.ts').val("");
     jQuery('#fh_wufoo_form_list').show();
-    jQuery('#versionNum').show();
+    jQuery('#fh_app_version').show();
     this.makeActive('fh_wufoo_home');
   },
 
@@ -193,7 +192,7 @@ var WufooController = {
   },
 
   hideAll: function() {
-    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list, #versionNum').hide();
+    jQuery('#fh_wufoo_content, #fh_wufoo_drafts_list, #fh_wufoo_form_list, #fh_wufoo_pending_list, #fh_app_version').hide();
   },
 
   makeActive: function(active_item) {
@@ -601,7 +600,7 @@ var WufooController = {
 
   showFormList: function() {
     jQuery('#fh_wufoo_form_list').show();
-    jQuery('#versionNum').show();
+    jQuery('#fh_app_version').show();
     window.scrollTo(0, 0);
   },
 
