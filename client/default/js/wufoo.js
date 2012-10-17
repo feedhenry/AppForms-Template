@@ -30,9 +30,9 @@ var WufooController = {
 
     jQuery('#fh_wufoo_alerts_area').append(alertTpl);
 
-    setTimeout(function(){
-      alertTpl.slideUp();
-    }, timeout || 10000);
+    // setTimeout(function(){
+    //   alertTpl.slideUp();
+    // }, timeout || 10000);
   },
 
   bind: function() {
@@ -407,7 +407,7 @@ var WufooController = {
 
           if (submitResponseType === 'confirmation') {
             console.log('Form submission: confirmation received.');
-            self.showAlert('A pending form was submitted in the background.', 'success');
+            self.showAlert('A pending form was submitted in the background.', 'success', 3000);
 
             self.deleteDraft(form_hash, form_ts, function() {
               console.log('delete draft successful');
