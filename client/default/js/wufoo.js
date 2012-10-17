@@ -30,7 +30,7 @@ var WufooController = {
 
     jQuery('#fh_wufoo_alerts_area').append(alertTpl);
 
-    setTimeout(function(){
+    setTimeout(function() {
       alertTpl.slideUp();
     }, timeout || 10000);
   },
@@ -189,9 +189,21 @@ var WufooController = {
         self.getPending(pending.id, pending.ts, function(data) {
           self.hideAll();
           jQuery('.ts').val(pending.ts);
-          self.getForm(pending.id, function() {
-            self.deserializeForm(data);
-          }, true);
+
+          // Validation HTML available
+          if (data.validation_html) {
+            console.log('Validation HTML available, rendering.');
+            // Render HTML with validation errors
+            self.renderFormHtml(data.validation_html, pending.id);
+            self.deserializeForm(data.data);
+            self.initWufoo();
+          } else {
+            // Fetch form, and deserialize
+            console.log('Validation HTML unavailable. Getting form.');
+            self.getForm(pending.id, function() {
+              self.deserializeForm(data.data);
+            }, true);
+          }
         });
       });
 
@@ -367,7 +379,7 @@ var WufooController = {
 
     self.showAlert('Submitting your form in the background.', 'success', 3000);
 
-    function saveFormData() {
+    function saveFormData(validation_html) {
       //remove original instance of draft/pending form
       self.deleteDraft(form_hash, form_ts, function() {
         console.log('delete draft successful');
@@ -388,7 +400,7 @@ var WufooController = {
         self.loadPending();
       }, function() {
         console.log("Failed to save form data for form : " + form_hash);
-      });
+      }, validation_html);
     };
 
 
@@ -431,13 +443,9 @@ var WufooController = {
           if (submitResponseType === 'validation_error') {
             console.log('Form submission: validation error in background.');
             self.showAlert('A validation error occured on a form submission. Please review your Pending forms.', 'error');
-            saveFormData();
+            saveFormData(res.html);
             return;
           }
-
-          // self.renderFormHtml(res.html, form_hash);
-          // self.deserializeForm(serialized_form);
-          // self.initWufoo();
         }, function(msg, err) {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
@@ -699,8 +707,8 @@ var WufooController = {
     this.deleteData("draft", form_hash, ts, success, error);
   },
 
-  savePending: function(form_id, form_name, form_data, success, error) {
-    this.saveData('pending', form_id, form_name, form_data, success, error);
+  savePending: function(form_id, form_name, form_data, success, error, validation_html) {
+    this.saveData('pending', form_id, form_name, form_data, success, error, validation_html);
   },
 
   getPending: function(form_hash, ts, success, error) {
@@ -715,13 +723,14 @@ var WufooController = {
     this.deleteData("pending", form_hash, ts, success, error);
   },
 
-  saveData: function(type, form_hash, form_name, form_data, success, error) {
+  saveData: function(type, form_hash, form_name, form_data, success, error, validation_html) {
     var self = this;
     var entryListId = type + "_" + "forms_list";
     var updatedTime = new Date().getTime();
     var entryId = type + "_" + form_hash + "_" + updatedTime;
     var entryData = {
-      data: form_data
+      data: form_data,
+      validation_html: validation_html
     };
     var entryIndexData = {
       ts: updatedTime,
@@ -787,7 +796,8 @@ var WufooController = {
       var form = {};
       if (utils.isValid(data.val)) {
         var formData = JSON.parse(data.val);
-        form = formData.data;
+        form.data = formData.data;
+        form.validation_html = formData.validation_html;
       }
       success(form);
     }, error);
