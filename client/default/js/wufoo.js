@@ -538,7 +538,7 @@ var WufooController = {
         self.hideLoading();
       } else {
         self.hideLoading();
-        console.log("Can not load form data from server or local cache.");
+        console.log("Can not load form data from server or local cache. If online, will try to fetch anyway.");
       }
     }, function() {
       self.hideLoading();
