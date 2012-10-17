@@ -577,6 +577,7 @@ var WufooController = {
     self.hideContentArea();
 
     var form_list = jQuery('#fh_wufoo_form_list');
+    form_list.find('.fh_wufoo_form_li').empty();
     // Render buttons for each form
     for (var i = 0; i < forms.length; i++) {
       var form_item = forms[i];
