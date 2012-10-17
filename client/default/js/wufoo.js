@@ -526,10 +526,29 @@ var WufooController = {
   getFormList: function(load) {
     this.clearFormList();
     var self = this;
+
+    // Load from cache immediately. If there are new forms, refresh and append them later!
+    $fh.data({
+      act: 'load',
+      key: 'all_form_list'
+    }, function(cached) {
+      if (utils.isValid(cached.val)) {
+        self.all_forms = JSON.parse(cached.val);
+        self.renderFormList(self.all_forms);
+        self.hideLoading();
+      } else {
+        self.hideLoading();
+        console.log("Can not load form data from server or local cache.");
+      }
+    }, function() {
+      self.hideLoading();
+      console.log("Can not load form data from local cache.");
+    });
+
     if (load) {
-      self.showLoading();
       utils.isOnline(function(online) {
         if (online) {
+          self.showLoading();
           $fh.act({
             act: 'getForms',
           }, function(res) {
@@ -549,23 +568,6 @@ var WufooController = {
             self.hideLoading();
             console.log('Cloud call failed with error: Error properties:' + JSON.stringify(err));
           });
-        } else {
-          $fh.data({
-            act: 'load',
-            key: 'all_form_list'
-          }, function(cached) {
-            if (utils.isValid(cached.val)) {
-              self.all_forms = JSON.parse(cached.val);
-              self.renderFormList(self.all_forms);
-              self.hideLoading();
-            } else {
-              self.hideLoading();
-              alert("Can not load form data from server or local cache.");
-            }
-          }, function() {
-            self.hideLoading();
-            alert("Can not load form data from local cache.");
-          })
         }
       });
     } else {
