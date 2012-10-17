@@ -5,7 +5,6 @@
 // is defined, in which case easting/northing will be returned
 // NOTE: do not use $ for jquery as this will cause errors, use instead jQuery()
 //
-
 var WufooController = {
   config: null,
   all_forms: null,
@@ -13,6 +12,8 @@ var WufooController = {
   init: function(config) {
     this.config = config;
     this.bind();
+    this.showFormList();
+    this.hideContentArea();
     this.getFormList(true);
     $fh.fh_timeout = 120000;
     jQuery('#fh_app_version').html('Version: ' + fh_app_version);
@@ -21,7 +22,7 @@ var WufooController = {
   bind: function() {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible');
-    var removeBtns= jQuery('.removeThumb');
+    var removeBtns = jQuery('.removeThumb');
     var saveDraftBtn = jQuery(".saveDraftForm");
     if (saveDraftBtn.length == 0) {
       saveDraftBtn = jQuery("<button>", {
@@ -208,8 +209,8 @@ var WufooController = {
     //make first photoInput visible
     camFields.first().removeAttr('style');
     //Check if multiple photos have been taken already i.e. Drafts/pending forms
-    for(i = 0; i < camFields.length; i++){
-      if(camFields.eq(i).find('input').val() != ""){
+    for (i = 0; i < camFields.length; i++) {
+      if (camFields.eq(i).find('input').val() != "") {
         camFields.eq(i).removeAttr('style');
       }
     }
@@ -262,7 +263,7 @@ var WufooController = {
 
     // Add metadata
     jQuery.each(fields, function(i, field) {
-      
+
       var el = jQuery('input[name=' + field.name + ']');
       if ((typeof self.specialFields[field.name] != "undefined") && (typeof self.specialFields[field.name].toJSON == "function")) {
         fields[i] = self.specialFields[field.name].toJSON();
@@ -272,13 +273,13 @@ var WufooController = {
         field['filename'] = "picture";
         field['extension'] = "jpg";
 
-      } else if(el.siblings(0).children().attr('type') == 'radio'){
+      } else if (el.siblings(0).children().attr('type') == 'radio') {
         //Radio button field
         field['type'] = 'radio';
-      } else if(el.attr('type') == 'checkbox'){
+      } else if (el.attr('type') == 'checkbox') {
         //Checkbox field
         field['type'] = 'checkbox';
-      }else {
+      } else {
         // Regular text field
         field['type'] = "text";
       }
@@ -301,10 +302,10 @@ var WufooController = {
             fieldObj.parent().find("p").text("Picture saved.");
             fieldObj.parent().parent().addClass('completePic');
             fieldObj.parent().parent().removeClass('error');
-            fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,'+field.value);
+            fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,' + field.value);
             fieldObj.siblings().eq(2).removeAttr('style');
             self.addPicField(fieldObj);
-            
+
           } else {
             // repopulate signature hidden input field and set image source
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
@@ -322,13 +323,13 @@ var WufooController = {
             }
           });
 
-        } else if('radio' == field.type){
+        } else if ('radio' == field.type) {
           jQuery('input:radio[value="' + field.value + '"]').attr('checked', true);
-          
-        } else if('checkbox' == field.type){
+
+        } else if ('checkbox' == field.type) {
           jQuery('input:checkbox[value="' + field.value + '"]').attr('checked', true);
 
-        }else {
+        } else {
           // repopulate as a text field
           fieldObj.attr('value', field.value);
         }
@@ -343,22 +344,22 @@ var WufooController = {
     var serialized_form = this.serializeForm();
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    var form_ts   = jQuery('.ts').val();
+    var form_ts = jQuery('.ts').val();
 
     function saveFormData() {
       //remove original instance of draft/pending form
-      self.deleteDraft(form_hash, form_ts, function(){
-            console.log('delete draft successful');
-          }, function(){
-            console.log('delete draft failed')
-          });
+      self.deleteDraft(form_hash, form_ts, function() {
+        console.log('delete draft successful');
+      }, function() {
+        console.log('delete draft failed')
+      });
 
-      self.deletePending(form_hash, form_ts, function(){
-            console.log('delete pending successful');
-          }, function(){
-            console.log('delete pending failed')
-          });
-          jQuery('.ts').val("");
+      self.deletePending(form_hash, form_ts, function() {
+        console.log('delete pending successful');
+      }, function() {
+        console.log('delete pending failed')
+      });
+      jQuery('.ts').val("");
 
       self.savePending(form_hash, form_name, serialized_form, function() {
         console.log("Form data saved");
@@ -382,15 +383,15 @@ var WufooController = {
         }, function(res) {
           self.hideLoading();
 
-          self.deleteDraft(form_hash, form_ts, function(){
+          self.deleteDraft(form_hash, form_ts, function() {
             console.log('delete draft successful');
-          }, function(){
+          }, function() {
             console.log('delete draft failed')
           });
 
-          self.deletePending(form_hash, form_ts, function(){
+          self.deletePending(form_hash, form_ts, function() {
             console.log('delete pending successful');
-          }, function(){
+          }, function() {
             console.log('delete pending failed')
           });
           jQuery('.ts').val("");
@@ -402,7 +403,7 @@ var WufooController = {
         }, function(msg, err) {
           self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");  
+          alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
           saveFormData();
           self.showHome();
         });
@@ -421,18 +422,18 @@ var WufooController = {
     var self = this;
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
-    var form_ts   = jQuery('.ts').val();
+    var form_ts = jQuery('.ts').val();
 
     //remove original instance of draft
-    self.deleteDraft(form_hash, form_ts, function(){
-            console.log('delete draft successful');
-          }, function(){
-            console.log('delete draft failed')
-          });
+    self.deleteDraft(form_hash, form_ts, function() {
+      console.log('delete draft successful');
+    }, function() {
+      console.log('delete draft failed')
+    });
 
-    self.deletePending(form_hash, form_ts, function(){
+    self.deletePending(form_hash, form_ts, function() {
       console.log('delete pending successful');
-    }, function(){
+    }, function() {
       console.log('delete pending failed')
     });
     jQuery('.ts').val('');
@@ -573,21 +574,24 @@ var WufooController = {
 
   renderFormList: function(forms) {
     var self = this;
-    self.showFormList();
-    self.hideContentArea();
 
     var form_list = jQuery('#fh_wufoo_form_list');
-    form_list.find('.fh_wufoo_form_li').empty();
-    // Render buttons for each form
-    for (var i = 0; i < forms.length; i++) {
-      var form_item = forms[i];
-      var list_item = jQuery('<li>').addClass('fh_wufoo_form_li');
-      var item_button = jQuery('<button>').addClass('fh_wufoo_form').text(form_item.Name).data('form', form_item).click(function() {
-        var form_data = jQuery(this).data('form');
-        self.getForm(form_data.Hash);
-      });
-      list_item.append(item_button);
-      form_list.append(list_item);
+
+    // Only render form list if currently visible (user could have switched views)
+    if (form_list.is(':visible')) {
+      self.hideContentArea();
+      form_list.find('.fh_wufoo_form_li').empty();
+      // Render buttons for each form
+      for (var i = 0; i < forms.length; i++) {
+        var form_item = forms[i];
+        var list_item = jQuery('<li>').addClass('fh_wufoo_form_li');
+        var item_button = jQuery('<button>').addClass('fh_wufoo_form').text(form_item.Name).data('form', form_item).click(function() {
+          var form_data = jQuery(this).data('form');
+          self.getForm(form_data.Hash);
+        });
+        list_item.append(item_button);
+        form_list.append(list_item);
+      }
     }
   },
 
@@ -826,7 +830,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
         self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
@@ -834,7 +838,7 @@ var apiController = {
     }, {
       quality: 8
     });
-    
+
   },
 
   //Returns Lat and Long as sting
@@ -909,7 +913,7 @@ var apiController = {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,'+imageData);
+        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
         self.addPicField(jQuery(input));
       }, 2000);
     }, function(err) {
@@ -920,23 +924,20 @@ var apiController = {
     });
   },
 
-  removeImage:function(item){
+  removeImage: function(item) {
     var self = this;
 
     // clean up the item for possible reuse later
-    item.removeClass('completePic')
-      .find('div p:eq(0)').html('Click to upload a picture')
-      .end().find('.imageThumb').removeAttr('src')
-      .end().find('input').removeAttr('value');
+    item.removeClass('completePic').find('div p:eq(0)').html('Click to upload a picture').end().find('.imageThumb').removeAttr('src').end().find('input').removeAttr('value');
 
     // only hide the field if it's not required
-    if(item.find('span.req').length === 0){
+    if (item.find('span.req').length === 0) {
       item.hide();
     }
 
     // Must maintain consecutive order on input fields
     // so if there's any empty image fields, move images up^^ to remove gaps
-    jQuery('li.fhcam.completePic').each(function () {
+    jQuery('li.fhcam.completePic').each(function() {
       var el = jQuery(this);
       // see if there's an empty slot above us anywhere
       var emptyElAbove = el.prevAll('li.fhcam:not(.completePic)').first();
@@ -944,18 +945,10 @@ var apiController = {
         var imageData = el.find('input').val();
 
         // copy image data to empty input above it
-        emptyElAbove.addClass("completePic")
-          .find('input').val(imageData)
-          .end().find('img.imageThumb').attr('src', 'data:image/jpg;base64,' + imageData)
-          .end().find('div p').text("Picture Saved")
-          .end().css('display', 'inline-block');
+        emptyElAbove.addClass("completePic").find('input').val(imageData).end().find('img.imageThumb').attr('src', 'data:image/jpg;base64,' + imageData).end().find('div p').text("Picture Saved").end().css('display', 'inline-block');
 
         // clean up input below for possible reuse later
-        el.removeClass("completePic")
-          .find('input').removeAttr("value")
-          .end().find('img.imageThumb').removeAttr("src")
-          .end().find('div p').text("Click to upload a picture")
-          .end().hide();
+        el.removeClass("completePic").find('input').removeAttr("value").end().find('img.imageThumb').removeAttr("src").end().find('div p').text("Click to upload a picture").end().hide();
       }
     });
 
@@ -971,7 +964,7 @@ var apiController = {
     }
   },
 
-  addPicField: function(input){
+  addPicField: function(input) {
     var self = this;
     var li = input.closest('li');
 
@@ -980,13 +973,12 @@ var apiController = {
 
     // tidy up error status on elements, if any
     if (li.hasClass('error')) {
-      li.removeClass('error').removeAttr('style')
-        .children().eq(2).children().eq(3).removeAttr('style'); // TODO: what's this for?
+      li.removeClass('error').removeAttr('style').children().eq(2).children().eq(3).removeAttr('style'); // TODO: what's this for?
       li.find('.error').remove();
     }
 
     // enable remove image button
-    li.find('.removeThumb').unbind().bind('click', function (e) {
+    li.find('.removeThumb').unbind().bind('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
       var imageLi = jQuery(this).closest('li');
