@@ -30,9 +30,9 @@ var WufooController = {
 
     jQuery('#fh_wufoo_alerts_area').append(alertTpl);
 
-    // setTimeout(function(){
-    //   alertTpl.slideUp();
-    // }, timeout || 10000);
+    setTimeout(function(){
+      alertTpl.slideUp();
+    }, timeout || 10000);
   },
 
   bind: function() {
