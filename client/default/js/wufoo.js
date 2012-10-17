@@ -22,6 +22,19 @@ var WufooController = {
     jQuery('#app_version').html('Version: ' + fh_app_version);
   },
 
+  showAlert: function(message, type, timeout) {
+    var alertTpl = jQuery('<div>').addClass('fh_wufoo_alert');
+
+    alertTpl.addClass(type);
+    alertTpl.text(message);
+
+    jQuery('#fh_wufoo_alerts_area').append(alertTpl);
+
+    setTimeout(function(){
+      alertTpl.slideUp();
+    }, timeout || 10000);
+  },
+
   bind: function() {
     var self = this;
     var submitBtn = jQuery('input[type=submit]:visible');
@@ -75,6 +88,7 @@ var WufooController = {
     jQuery('#fh_wufoo_form_list').show();
     jQuery('#app_version').show();
     this.makeActive('fh_wufoo_home');
+    this.showFormList();
   },
 
   showDrafts: function() {
@@ -351,6 +365,8 @@ var WufooController = {
     // Immediately switch to Home page, send form in background.
     self.showHome();
 
+    self.showAlert('Submitting your form in the background.', 'success', 3000);
+
     function saveFormData() {
       //remove original instance of draft/pending form
       self.deleteDraft(form_hash, form_ts, function() {
@@ -386,23 +402,42 @@ var WufooController = {
             "form_submission_url": jQuery('form').attr('action')
           }
         }, function(res) {
-          self.deleteDraft(form_hash, form_ts, function() {
-            console.log('delete draft successful');
-          }, function() {
-            console.log('delete draft failed')
-          });
+          var submitResponseType = self._responseType(res.html);
+          console.log('submitResponseType: ' + submitResponseType);
 
-          self.deletePending(form_hash, form_ts, function() {
-            console.log('delete pending successful');
-          }, function() {
-            console.log('delete pending failed')
-          });
-          jQuery('.ts').val("");
+          if (submitResponseType === 'confirmation') {
+            console.log('Form submission: confirmation received.');
+            self.showAlert('A pending form was submitted in the background.', 'success');
 
-          self.renderFormHtml(res.html);
-          self.deserializeForm(serialized_form);
-          self.initWufoo();
+            self.deleteDraft(form_hash, form_ts, function() {
+              console.log('delete draft successful');
+            }, function() {
+              console.log('delete draft failed')
+            });
 
+            self.deletePending(form_hash, form_ts, function() {
+              console.log('delete pending successful');
+            }, function() {
+              console.log('delete pending failed')
+            });
+            jQuery('.ts').val("");
+
+            self.loadPending();
+            self.loadDrafts();
+
+            return;
+          }
+
+          if (submitResponseType === 'validation_error') {
+            console.log('Form submission: validation error in background.');
+            self.showAlert('A validation error occured on a form submission. Please review your Pending forms.', 'error');
+            saveFormData();
+            return;
+          }
+
+          // self.renderFormHtml(res.html, form_hash);
+          // self.deserializeForm(serialized_form);
+          // self.initWufoo();
         }, function(msg, err) {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
@@ -414,7 +449,6 @@ var WufooController = {
         saveFormData();
       }
     })
-
   },
 
   saveDraftForm: function() {
@@ -470,8 +504,6 @@ var WufooController = {
   },
 
   renderFormHtml: function(html, form_hash) {
-    console.log('formSubmitResponseType: ' + this._responseType(html));
-
     var self = this;
     this.hideFormList();
     this.showContentArea();
@@ -486,56 +518,50 @@ var WufooController = {
 
     self.showLoading();
 
-    $fh.act({
-      "act": "getForm",
-      "req": {
-        "form_hash": form_hash
-      }
+    // Immediately load form from cache if available
+    $fh.data({
+      key: "form-" + form_hash
     }, function(res) {
-      // cache html in local storage (asynchronous)
-      var html = res.html;
-      $fh.data({
-        "act": "save",
-        "key": "form-" + form_hash,
-        "val": html
-      }, function() {
-        console.log('Form html save ok');
-      }, function(msg, err) {
-        console.log('Form html save failed:' + msg);
-      });
+      if (utils.isValid(res.val)) {
+        // got form html from cache, render it
+        self.renderFormHtml(res.val, form_hash);
+        self.initWufoo(target_location);
+        self.hideLoading();
+        if (typeof cb !== 'undefined') {
+          return cb();
+        }
+      } else {
+        console.log('Local cache load of form failed, fetching.')
+        $fh.act({
+          "act": "getForm",
+          "req": {
+            "form_hash": form_hash
+          }
+        }, function(res) {
+          // cache html in local storage (asynchronous)
+          var html = res.html;
+          $fh.data({
+            "act": "save",
+            "key": "form-" + form_hash,
+            "val": html
+          }, function() {
+            console.log('Form html save ok');
+          }, function(msg, err) {
+            console.log('Form html save failed:' + msg);
+          });
 
-      // ok to leave this happen straight away ($fh.data above is asynchronous)
-      // as it doesn't depend on the save having completed
-      self.renderFormHtml(html, form_hash);
-      self.initWufoo(target_location);
-      self.hideLoading();
-      if (typeof cb !== 'undefined') {
-        return cb();
-      }
-    }, function(msg, err) {
-      console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-      // falling back to cached form, if available
-      $fh.data({
-        key: "form-" + form_hash
-      }, function(res) {
-        if (utils.isValid(res.val)) {
-          // got form html from cache, render it
-          self.renderFormHtml(res.val, form_hash);
+          // ok to leave this happen straight away ($fh.data above is asynchronous)
+          // as it doesn't depend on the save having completed
+          self.renderFormHtml(html, form_hash);
           self.initWufoo(target_location);
           self.hideLoading();
           if (typeof cb !== 'undefined') {
             return cb();
           }
-        } else {
-          self.hideLoading();
-          alert('Can not load form data from server or cached.');
-        }
-      }, function(msg, err) {
-        //load failed
-        console.log('Form html load from cache failed');
-        self.hideLoading();
-        // TODO: alert user?
-      });
+        }, function(msg, err) {
+          console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+        });
+      }
     });
   },
 
