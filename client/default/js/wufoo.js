@@ -448,12 +448,12 @@ var WufooController = {
           }
         }, function(msg, err) {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
+          self.showAlert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.", 'error');
           saveFormData();
           self.showHome();
         });
       } else {
-        alert("We couldn't submit your form at this time. We've saved it in your pending items.");
+        self.showAlert("We couldn't submit your form at this time. We've saved it in your pending items.", 'error');
         saveFormData();
       }
     })
@@ -481,7 +481,7 @@ var WufooController = {
     jQuery('.ts').val('');
 
     self.saveDraft(form_hash, form_name, serialized_form, function() {
-      alert('Draft saved.');
+      self.showAlert("Draft saved.", "success");
       self.loadDrafts();
       self.loadPending();
       self.showHome();
