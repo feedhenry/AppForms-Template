@@ -1,14 +1,31 @@
 html, body {
   background: #eee;
   min-height: 101%;
-<<<<<<< HEAD
-=======
   padding-top: 40px;
->>>>>>> m2
 }
 
 .wufoo li {
   width: 100% !important;
+}
+
+.sigField {
+  height: 40px;
+}
+
+.sigField-content { 
+  position: absolute; 
+  bottom: 0; 
+  left: 0;
+}
+
+.cap_sig_btn {
+  position: relative;
+  bottom: 6px;
+}
+
+.apibtn {
+  position: relative;
+  top: 3px;
 }
 
 #fh_wufoo_content {
@@ -53,13 +70,11 @@ html, body {
 }
 
 #fh_wufoo_header {
-<<<<<<< HEAD
-=======
   position: fixed;
+  z-index: 1000000;
   top: 0;
   right: 0;
   left: 0;
->>>>>>> m2
   border-bottom: 3px solid #000;
   border-top: 3px solid #000;
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
@@ -149,4 +164,54 @@ html, body {
   background: #fff;
   box-shadow: 0 1px 2px rgba(0, 0, 0, .25), 0 -1px 1px rgba(153, 153, 153, .2);
   border-radius: 5px;
+}
+
+#container .confirm{
+  padding-top: 40px;
+}
+
+.removeThumb {
+  display:none;
+}
+
+.completePic {
+  display: inline-block;
+  background-color: lightgreen;
+  padding-left: 10px;
+  border-radius: 10px;
+  height: 60px;
+}
+.completePic .fhcam, .completePic .fhpics {
+  display:none;
+}
+
+.completePic .imageThumb{
+  position: relative;
+  bottom: 55px;
+  right: 30px;
+  float: right;
+  height: 50px;
+  width: 37.5px;
+}
+
+.completePic .removeThumb {
+  position: relative;
+  top: -50px;
+  bottom: 40px;
+  float:right;
+  right: 60px;
+  display:block;
+}
+
+.fh.fhcam {
+  border-bottom: 1px dotted #000;
+}
+
+input[type=text] {
+  height: 25px;
+}
+
+#versionNum {
+  font-size: 10px;
+  font-family: Verdana;
 }

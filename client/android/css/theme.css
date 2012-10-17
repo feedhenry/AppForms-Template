@@ -1,3 +1,8 @@
+.cap_sig_btn {
+  position: relative;
+  bottom: 10px;
+}
+
 .apibtn {
 	min-height: 25px;
 	position: relative;

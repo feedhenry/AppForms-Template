@@ -74,7 +74,6 @@ formDataToMultipart = function(form_data, cb) {
   //   multipart_data.push(multipart_part);
   // }
   form_data.forEach(function(field) {
-    //console.log(field)
     if (field.name != 'output' && typeof field.value != 'undefined') {
       if (field.name == 'clickOrEnter') {
         // clickOrEnter needs to be set to blank or 
@@ -82,7 +81,7 @@ formDataToMultipart = function(form_data, cb) {
         field.value = '';
       }
 
-      if (field.type == 'text' || field.type == 'map') {
+      if (field.type == 'text' || field.type == 'map' || field.type == 'radio' || field.type == 'checkbox') {
         if (field.value != '') {
           var multipart_part = {
             'Content-Disposition': 'form-data; name="' + field.name + '"',
@@ -110,7 +109,6 @@ formDataToMultipart = function(form_data, cb) {
 
 getFormData = function(form_hash, callback) {
   getConfig(function(err, wufoo_config) {
-    //console.log('after getConfig');
     if (err != null) {
       return callback(null, err);
     }
@@ -146,17 +144,13 @@ getConfig = function(callback) {
  * Here we get a Wufoo form's HTML, process it, and send it back to the client
  */
 exports.getForm = function(params, callback) {
-  //console.log('getConfig');
   getConfig(function(err, wufoo_config) {
-    //console.log('after getConfig');
     if (err != null) {
       return callback(null, err);
     }
 
     var form_hash = params.form_hash;
-    //console.log('getFormData');
     getFormData(form_hash, function(error, res, body) {
-      //console.log('post getFormData:' + typeof body);
       var body_json = null;
       var updated = null;
       try {

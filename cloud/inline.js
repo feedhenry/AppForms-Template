@@ -59,8 +59,15 @@ exports = module.exports = function(opts, cb) {
         imgData.attr('id', originInput.attr('id'));
         var imgField = $('<div>');
         var imgFieldDesc = $('<p>').text('Click to upload a picture');
+        var imgThumb = $('<img>');
+        var removeThumb = $('<button>');
+        removeThumb.attr('class', 'apibtn removeThumb');
+        removeThumb.html('Remove Image');
+        imgThumb.attr('class', 'imageThumb');
         imgField.append(imgFieldDesc);
         imgField.append(imgData);
+        imgField.append(imgThumb);
+        imgField.append(removeThumb);
         $(field).find('div').remove();
         $(field).append(imgField);
       }
@@ -80,7 +87,7 @@ exports = module.exports = function(opts, cb) {
           button.append(img);
           $(field).find('div').first().append(button);
 
-          if(bindings[i] == 'fhcam'){
+          if (bindings[i] == 'fhcam') {
             // add button to select pics from gallery
             var button = $('<button>')
             button.attr('class', 'apibtn ' + 'fhpics');
@@ -88,7 +95,19 @@ exports = module.exports = function(opts, cb) {
             img.attr('style', 'min-height:20px;');
             img.attr('src', './img/fhcam_lib.png');
             button.append(img);
+            
+            var spans = $(field).find('span');
+            var required = false;
+            for(var j=0; j< spans.length; j++){
+              var span = $(spans[j]);
+              if(span && span.hasClass("req")){
+                required = true;
+              }
+            }
             $(field).find('div').first().append(button);
+            if(! required){
+                $(field).attr('style', 'display:none');
+              }
           }
         }
       }
@@ -286,6 +305,10 @@ function getRemoteResource(path, cb, isBinary) {
       console.log("can not find cached data for resource: " + options.uri);
       request(options, function(err, res, body) {
         //console.log('got response for link:' + options.uri + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
+        if (err || typeof res === 'undefined') {
+          console.log('No response for: ' + options.uri);
+          return cb(err, res, body);
+        }
         if (res.statusCode == 200) {
           var val = body;
           if (isBinary) {
