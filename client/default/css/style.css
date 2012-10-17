@@ -212,6 +212,7 @@ input[type=text] {
 }
 
 #fh_app_version {
+  padding-top: 10px;
   text-align: center;
   font-size: 10px;
   font-family: Verdana;
