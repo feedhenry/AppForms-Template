@@ -343,11 +343,13 @@ var WufooController = {
 
   submitForm: function() {
     var self = this;
-    self.showLoading();
     var serialized_form = this.serializeForm();
     var form_hash = jQuery('form').data('form_hash');
     var form_name = jQuery('#header').find('h2').text();
     var form_ts = jQuery('.ts').val();
+
+    // Immediately switch to Home page, send form in background.
+    self.showHome();
 
     function saveFormData() {
       //remove original instance of draft/pending form
@@ -384,8 +386,6 @@ var WufooController = {
             "form_submission_url": jQuery('form').attr('action')
           }
         }, function(res) {
-          self.hideLoading();
-
           self.deleteDraft(form_hash, form_ts, function() {
             console.log('delete draft successful');
           }, function() {
@@ -404,17 +404,14 @@ var WufooController = {
           self.initWufoo();
 
         }, function(msg, err) {
-          self.hideLoading();
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           alert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
           saveFormData();
           self.showHome();
         });
       } else {
-        self.hideLoading();
         alert("We couldn't submit your form at this time. We've saved it in your pending items.");
         saveFormData();
-        self.showHome();
       }
     })
 
@@ -451,7 +448,30 @@ var WufooController = {
     });
   },
 
+  // Categorise a HTML form submission response as "confirmation", "validation_error" or "form"
+  _responseType: function(html) {
+    var container_html = null;
+
+    jQuery(html).each(function() {
+      if (jQuery(this).find('h1#logo').length > 0) {
+        container_html = jQuery(this);
+      }
+    });
+
+    if (container_html.hasClass('confirm')) {
+      return "confirmation";
+    } else if (container_html.find('#errorLi').length > 0) {
+      return "validation_error";
+    } else if (container_html.find('form').length > 0) {
+      return "form";
+    } else {
+      return null;
+    }
+  },
+
   renderFormHtml: function(html, form_hash) {
+    console.log('formSubmitResponseType: ' + this._responseType(html));
+
     var self = this;
     this.hideFormList();
     this.showContentArea();
