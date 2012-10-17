@@ -220,6 +220,7 @@ input[type=text] {
 
 #fh_wufoo_alerts_area {
   position: fixed;
+  z-index: 1000000;
   top: 46px;
   right: 0;
   left: 0;
@@ -227,7 +228,6 @@ input[type=text] {
 
 .fh_wufoo_alert {
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  z-index: 1000000;
   font-size: 13px;
   color: #fff;
   padding: 7px 10px 7px 10px;
