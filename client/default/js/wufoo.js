@@ -535,6 +535,29 @@ var WufooController = {
         self.renderFormHtml(res.val, form_hash);
         self.initWufoo(target_location);
         self.hideLoading();
+
+        // Fetch in background too.
+        $fh.act({
+          "act": "getForm",
+          "req": {
+            "form_hash": form_hash
+          }
+        }, function(res) {
+          // cache html in local storage (asynchronous)
+          var html = res.html;
+          $fh.data({
+            "act": "save",
+            "key": "form-" + form_hash,
+            "val": html
+          }, function() {
+            console.log('Form html save ok');
+          }, function(msg, err) {
+            console.log('Form html save failed:' + msg);
+          });
+        }, function(msg, err) {
+          console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+        });
+
         if (typeof cb !== 'undefined') {
           return cb();
         }
@@ -589,9 +612,7 @@ var WufooController = {
       if (utils.isValid(cached.val)) {
         self.all_forms = JSON.parse(cached.val);
         self.renderFormList(self.all_forms);
-        self.hideLoading();
       } else {
-        self.hideLoading();
         console.log("Can not load form data from server or local cache. If online, will try to fetch anyway.");
       }
     }, function() {
@@ -897,7 +918,10 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 8
+      quality: 100,
+      encodingType: Camera.EncodingType.JPEG,
+      targetWidth: 100,
+      targetHeight: 100
     });
 
   },
