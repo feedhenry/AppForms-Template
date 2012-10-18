@@ -17,7 +17,7 @@ var WufooController = {
     this.getFormList(true);
     $fh.fh_timeout = 120000;
     if (typeof fh_app_version === 'undefined') {
-      var fh_app_version = 0;
+      fh_app_version = 0;
     }
     jQuery('#app_version').html('Version: ' + fh_app_version);
   },
