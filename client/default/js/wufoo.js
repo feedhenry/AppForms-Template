@@ -132,7 +132,7 @@ var WufooController = {
           self.hideAll();
           jQuery('.ts').val(draft.ts);
           self.getForm(draft.id, function() {
-            self.deserializeForm(data);
+            self.deserializeForm(data.data);
           }, true);
         });
       });
@@ -194,9 +194,9 @@ var WufooController = {
           if (data.validation_html) {
             console.log('Validation HTML available, rendering.');
             // Render HTML with validation errors
-            self.renderFormHtml(data.validation_html, pending.id);
-            self.deserializeForm(data.data);
-            self.initWufoo();
+            self.getForm(pending.id, function() {
+              self.deserializeForm(data.data);
+            }, true, data.validation_html);
           } else {
             // Fetch form, and deserialize
             console.log('Validation HTML unavailable. Getting form.');
@@ -333,6 +333,7 @@ var WufooController = {
             fieldObj.parent().parent().removeClass('error');
             fieldObj.siblings().eq(1).attr('src', 'data:image/jpg;base64,' + field.value);
             fieldObj.siblings().eq(2).removeAttr('style');
+            fieldObj.closest('li').css('display', 'inline-block');
             self.addPicField(fieldObj);
 
           } else {
@@ -340,6 +341,10 @@ var WufooController = {
             var data = 'data:image/' + field.extension + ';base64,' + field.value;
             fieldObj.attr('value', data);
             fieldObj.parent().find('.sigField img').attr('src', data);
+            // Remove the "please reattach this file" error
+            var container = fieldObj.parent();
+            container.removeAttr('style').removeClass('error');
+            container.find('p.error').remove();
           }
         } else if ('map' === field.type) {
           fieldObj.attr('value', field.value);
@@ -520,7 +525,7 @@ var WufooController = {
     apiController.addApiCalls();
   },
 
-  getForm: function(form_hash, cb, target_location) {
+  getForm: function(form_hash, cb, target_location, validation_html) {
     form_hash = form_hash || wufoo_config.form_hash;
     var self = this;
 
@@ -532,7 +537,13 @@ var WufooController = {
     }, function(res) {
       if (utils.isValid(res.val)) {
         // got form html from cache, render it
-        self.renderFormHtml(res.val, form_hash);
+        
+        if (validation_html) {
+          self.renderFormHtml(validation_html, form_hash);
+        } else {
+          self.renderFormHtml(res.val, form_hash);
+        }
+
         self.initWufoo(target_location);
         self.hideLoading();
 
@@ -908,21 +919,21 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     var self = this;
-    navigator.camera.getPicture(function(imageData) {
+    //navigator.camera.getPicture(function(imageData) {
+    var imageData = "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";
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
         jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
         self.addPicField(jQuery(input));
       }, 2000);
-    }, function(err) {
-      alert('Camera Error: ' + err);
-    }, {
-      quality: 100,
-      encodingType: Camera.EncodingType.JPEG,
-      targetWidth: 100,
-      targetHeight: 100
-    });
+    // }, function(err) {
+    //   alert('Camera Error: ' + err);
+    // }, {
+    //   quality: 8
+    //   // targetWidth: 100,
+    //   // targetHeight: 100
+    // });
 
   },
 
