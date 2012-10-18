@@ -2,6 +2,7 @@ var util = require('util');
 var request = require('request');
 var url = require("url");
 var inline = require('./inline.js');
+var wufoo_config = require('./wufoo_config.js');
 
 function cacheable() {
   // Should page fragments be cached?
@@ -14,7 +15,6 @@ function cacheable() {
  * from the HTML, as this JavaScript will already be loaded client side as this point.
  */
 updateWufooHTML = function(form_hash, updated, html, remove_script, cb) {
-  var wufoo_config = require('wufoo_config.js');
   inline({
     "html": html,
     "baseUrl": "https://" + wufoo_config.wufoo_config.api_domain,
@@ -56,7 +56,6 @@ updateWufooHTML = function(form_hash, updated, html, remove_script, cb) {
 formDataToMultipart = function(form_data, cb) {
   var data = form_data;
   var multipart_data = [];
-  var wufoo_config = require('wufoo_config.js');
 
   if (typeof wufoo_config == 'undefined') {
     return callback(null, {
@@ -131,7 +130,6 @@ getFormData = function(form_hash, callback) {
 };
 
 getConfig = function(callback) {
-  var wufoo_config = require('wufoo_config.js');
   if (typeof wufoo_config == 'undefined') {
     return callback({
       "error": "No config."
