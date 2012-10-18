@@ -31,7 +31,7 @@ var WufooController = {
     jQuery('#fh_wufoo_alerts_area').append(alertTpl);
 
     setTimeout(function() {
-      alertTpl.slideUp(function(){
+      alertTpl.slideUp(function() {
         jQuery(this).remove();
       });
     }, timeout || 10000);
@@ -539,7 +539,6 @@ var WufooController = {
     }, function(res) {
       if (utils.isValid(res.val)) {
         // got form html from cache, render it
-        
         if (validation_html) {
           self.renderFormHtml(validation_html, form_hash);
         } else {
@@ -922,12 +921,10 @@ var apiController = {
   fhcam: function(input) {
     var self = this;
     navigator.camera.getPicture(function(imageData) {
-      setTimeout(function() {
-        jQuery(input).parent().find("p").text("Picture saved.");
-        jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
-        self.addPicField(jQuery(input));
-      }, 2000);
+      jQuery(input).parent().find("p").text("Picture saved.");
+      jQuery(input).val(imageData);
+      jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
+      self.addPicField(jQuery(input));
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
@@ -1005,12 +1002,10 @@ var apiController = {
   fhpics: function(input) {
     var self = this;
     navigator.camera.getPicture(function(imageData) {
-      setTimeout(function() {
-        jQuery(input).parent().find("p").text("Picture saved.");
-        jQuery(input).val(imageData);
-        jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
-        self.addPicField(jQuery(input));
-      }, 2000);
+      jQuery(input).parent().find("p").text("Picture saved.");
+      jQuery(input).val(imageData);
+      jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
+      self.addPicField(jQuery(input));
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
