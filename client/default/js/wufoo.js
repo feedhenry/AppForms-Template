@@ -31,7 +31,9 @@ var WufooController = {
     jQuery('#fh_wufoo_alerts_area').append(alertTpl);
 
     setTimeout(function() {
-      alertTpl.slideUp();
+      alertTpl.slideUp(function(){
+        jQuery(this).remove();
+      });
     }, timeout || 10000);
   },
 
@@ -601,6 +603,7 @@ var WufooController = {
             return cb();
           }
         }, function(msg, err) {
+          self.showAlert('There was a problem loading the form from the server. Please try again.', 'error');
           console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
         });
       }
@@ -627,7 +630,6 @@ var WufooController = {
         console.log("Can not load form data from server or local cache. If online, will try to fetch anyway.");
       }
     }, function() {
-      self.hideLoading();
       console.log("Can not load form data from local cache.");
     });
 
@@ -919,21 +921,18 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     var self = this;
-    //navigator.camera.getPicture(function(imageData) {
-    var imageData = "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";
+    navigator.camera.getPicture(function(imageData) {
       setTimeout(function() {
         jQuery(input).parent().find("p").text("Picture saved.");
         jQuery(input).val(imageData);
         jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
         self.addPicField(jQuery(input));
       }, 2000);
-    // }, function(err) {
-    //   alert('Camera Error: ' + err);
-    // }, {
-    //   quality: 8
-    //   // targetWidth: 100,
-    //   // targetHeight: 100
-    // });
+    }, function(err) {
+      alert('Camera Error: ' + err);
+    }, {
+      quality: 8
+    });
 
   },
 
