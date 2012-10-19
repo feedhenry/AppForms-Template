@@ -928,7 +928,9 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 8
+      quality: 50,
+      targetWidth: 2048,
+      targetHeight: 1536
     });
 
   },
@@ -1009,8 +1011,10 @@ var apiController = {
     }, function(err) {
       alert('Camera Error: ' + err);
     }, {
-      quality: 8,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY
+      quality: 50,
+      sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+      targetWidth: 2048,
+      targetHeight: 1536
     });
   },
 
