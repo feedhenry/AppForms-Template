@@ -69,12 +69,15 @@ html, body {
   margin: 10px 0 10px 0;
 }
 
-#fh_wufoo_header {
+#fh_wufoo_header_wrapper {
   position: fixed;
   z-index: 1000000;
   top: 0;
   right: 0;
   left: 0;
+}
+
+#fh_wufoo_header {
   border-bottom: 3px solid #000;
   border-top: 3px solid #000;
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
@@ -218,14 +221,6 @@ input[type=text] {
   text-align: center;
   font-size: 10px;
   font-family: Verdana;
-}
-
-#fh_wufoo_alerts_area {
-  position: fixed;
-  z-index: 1000000;
-  top: 46px;
-  right: 0;
-  left: 0;
 }
 
 .fh_wufoo_alert {
