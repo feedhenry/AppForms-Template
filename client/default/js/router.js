@@ -9,6 +9,7 @@ $fh.ready(function() {
 
     form_list: function() {
       console.log('route: form_list');
+      App.views.header = new HeaderView();
       App.views.form_list = new FormListView();
     },
 

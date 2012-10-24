@@ -21,9 +21,9 @@ $fh.ready(function() {
 
     render: function() {
       var self = this;
-      console.log('render FormListView');
+      console.log('render DraftListView');
 
-      this.header = new HeaderView();
+      App.views.header.markActive('.fh_wufoo_drafts');
 
       // Empty our existing view
       $(this.el).empty();

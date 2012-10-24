@@ -23,7 +23,7 @@ $fh.ready(function() {
       var self = this;
       console.log('render FormListView');
 
-      this.header = new HeaderView();
+      App.views.header.markActive('.fh_wufoo_home');
 
       // Empty our existing view
       $(this.el).empty();
