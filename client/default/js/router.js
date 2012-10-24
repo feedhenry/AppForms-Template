@@ -9,7 +9,7 @@ $fh.ready(function() {
 
     form_list: function() {
       console.log('route: form_list');
-      App.form_list = new FormListView();
+      App.views.form_list = new FormListView();
     },
 
     pending: function() {

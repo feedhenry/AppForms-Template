@@ -4,7 +4,8 @@ $fh.ready(function() {
     el: $('#fh_wufoo_header_wrapper'),
 
     events: {
-      'click li.fh_wufoo_home': 'showHome'
+      'click li.fh_wufoo_home': 'showHome',
+      'click li.fh_wufoo_drafts': 'showDrafts'
     },
 
     template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home active">Home</li>', '<li class="fh_wufoo_drafts">Drafts<span class="count hidden">0</span></li>', '<li class="fh_wufoo_pending">Pending<span class="count hidden">0</span></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
@@ -25,7 +26,13 @@ $fh.ready(function() {
     },
 
     showHome: function() {
-      App.form_list = new FormListView();
+      $(App.views.drafts_list.el).hide();
+      App.views.form_list = new FormListView();
+    },
+
+    showDrafts: function() {
+      $(App.views.form_list.el).hide();
+      App.views.drafts_list = new DraftListView();
     }
   });
 

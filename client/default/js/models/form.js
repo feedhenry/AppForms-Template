@@ -9,10 +9,10 @@ $fh.ready(function() {
 
   // Initialize with mock
   var form = new FormModel(App.MockForm);
-  App.forms_collection = new FormsCollection();
-  // App.forms_collection.create(form);
-  // App.forms_collection.create(form);
+  App.collections.forms = new FormsCollection();
+  // App.collections.forms.create(form);
+  // App.collections.forms.create(form);
   
   // Kick things off by fetching
-  App.forms_collection.fetch();
+  App.collections.forms.fetch();
 });

@@ -1,10 +1,10 @@
 $fh.ready(function() {
 
-  FormListView = Backbone.View.extend({
-    el: $('#fh_wufoo_form_list'),
+  DraftListView = Backbone.View.extend({
+    el: $('#fh_wufoo_drafts_list'),
 
     templates: {
-      header: ['<h2>Your Forms</h2>', '<h4>Choose a form from the list below</h4>']
+      header: ['<h2>Drafts</h2>', '<h4>Choose a Draft form from the list below</h4>']  
     },
 
     initialize: function() {

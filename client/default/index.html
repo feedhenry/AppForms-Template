@@ -7,15 +7,9 @@
 <div id="fh_wufoo_header_wrapper" class="hidden">
 </div>
 
-<ul id="fh_wufoo_form_list" class="hidden">
-  <h2>Your Forms</h2>
-  <h4>Choose a form from the list below</h4>
-</ul>
+<ul id="fh_wufoo_form_list" class="hidden"></ul>
 
-<ul id="fh_wufoo_drafts_list" class="hidden">
-  <h2>Drafts</h2>
-  <h4>Choose a Draft form from the list below</h4>
-</ul>
+<ul id="fh_wufoo_drafts_list" class="hidden"></ul>
 
 <ul id="fh_wufoo_pending_list" class="hidden">
   <h2>Pending Submissions</h2>
@@ -37,6 +31,8 @@
 <script>
 // Namespace
 var App = App || {};
+App.views = App.views || {};
+App.collections = App.collections || {};
 </script>
 
 <script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
@@ -50,6 +46,7 @@ var App = App || {};
 <script src="js/models/form.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
 
 <script src="js/router.js" type="text/javascript" charset="utf-8"></script>
