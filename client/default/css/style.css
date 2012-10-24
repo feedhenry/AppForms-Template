@@ -63,7 +63,7 @@ html, body {
   margin-bottom: 5px;
 }
 
-#fh_wufoo_form_list ul {
+#fh_wufoo_form_list ul, #fh_wufoo_drafts_list ul {
   list-style: none;
 }
 
