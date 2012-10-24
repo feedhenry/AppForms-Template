@@ -3,12 +3,12 @@ $fh.ready(function() {
   FormListView = Backbone.View.extend({
     el: $('#fh_wufoo_form_list'),
 
-    events: {
-      'click button#add': 'addItem'
-    },
+    // events: {
+    //   'click button.show': 'show'
+    // },
 
     templates: {
-      header: ['<h2>Your Forms</h2>', '<h4>Choose a form from the list below</h4>']  
+      header: ['<h2>Your Forms</h2>', '<h4>Choose a form from the list below</h4>']
     },
 
     initialize: function() {
@@ -44,9 +44,21 @@ $fh.ready(function() {
 
     appendForm: function(form) {
       console.log('appendForm called!')
-      // Todo: Move into new view
-      var html = _.template('<li><button><%= name %></button></li>', { name: form.get("Name") });
-      $('ul', this.el).append(html);
+      // // Todo: Move into new view
+      // var html = _.template('<li><button class="show"><%= name %></button></li>', {
+      //   name: form.get("Name")
+      // });
+      // $('ul', this.el).append(html);
+      
+      var view = new ShowFormButtonView({
+        model: form
+      });
+      $('ul', this.el).append(view.render().el);
+    },
+
+    show: function() {
+      alert('show!')
+      console.log(this.model)
     }
   });
 
