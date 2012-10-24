@@ -3,7 +3,8 @@
   FormModel = Backbone.Model.extend({});
 
   FormsCollection = Backbone.Collection.extend({
-    model: FormModel
+    model: FormModel,
+    fhStorage: new Store("forms"),
   });
 
   // Initialize with mock

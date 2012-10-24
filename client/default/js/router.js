@@ -7,6 +7,7 @@ App.Router = Backbone.Router.extend({
 
   form_list: function() {
     console.log('route: form_list');
+    App.form_list = new FormListView();
   },
 
   pending: function() {
@@ -14,8 +15,8 @@ App.Router = Backbone.Router.extend({
   }
 });
 
-App.router = new App.Router();
-Backbone.history.start();
+$fh.ready(function() {
+  App.router = new App.Router();
+  Backbone.history.start();
+});
 
-App.main = new MainView();
-App.main.render();

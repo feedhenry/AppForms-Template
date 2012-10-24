@@ -2,6 +2,7 @@
 
   FormListView = Backbone.View.extend({
     el: $('#fh_wufoo_form_list'),
+
     events: {
       'click button#add': 'addItem'
     },
@@ -16,6 +17,9 @@
 
     render: function() {
       console.log('render FormListView');
+
+      this.header = new HeaderView();
+
       var self = this;
       $(this.el).show();
       $(this.el).append("<button id='add'>Add list item</button>");

@@ -147,7 +147,7 @@ html, body {
   -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#72b0d4', EndColorStr='#4b88b6')";
 }
 
-.hidden {
+.hidden, #fh_wufoo_header .count.hidden {
   display: none;
 }
 
