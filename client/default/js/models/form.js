@@ -1,14 +1,16 @@
 (function($) {
 
-  var Form = Backbone.Model.extend({
-    defaults: {
-      part1: 'hello',
-      part2: 'world'
-    }
+  FormModel = Backbone.Model.extend({});
+
+  FormsCollection = Backbone.Collection.extend({
+    model: FormModel
   });
 
-  var Forms = Backbone.Collection.extend({
-    model: Form
-  });
+  // Initialize with mock
   
+  var form = new FormModel(App.MockForm);
+  App.forms_collection = new FormsCollection([form, form]);
+
 })(jQuery);
+
+console.log(App.forms_collection)

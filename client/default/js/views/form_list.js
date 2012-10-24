@@ -1,6 +1,6 @@
 (function($) {
 
-  var FormListView = Backbone.View.extend({
+  FormListView = Backbone.View.extend({
     el: $('body'),
 
     events: {
@@ -9,7 +9,7 @@
 
     initialize: function() {
       _.bindAll(this, 'render', 'addItem', 'appendItem');
-      this.collection = new List();
+      this.collection = new FormsCollection();
       this.collection.bind('add', this.appendItem);
       this.counter = 0;
       this.render();
@@ -19,14 +19,14 @@
       var self = this;
       $(this.el).append("<button id='add'>Add list item</button>");
       $(this.el).append("<ul></ul>");
-      _(this.collection.models).each(function(item) { // in case collection is not empty
+      _(this.collection.models).each(function(item) {
         self.appendItem(item);
       }, this);
     },
 
     addItem: function() {
       this.counter++;
-      var item = new Item();
+      var item = new FormModel();
       item.set({
         part2: item.get('part2') + this.counter
       });
@@ -37,7 +37,5 @@
       $('ul', this.el).append("<li>" + item.get('part1') + " " + item.get('part2') + "</li>");
     }
   });
-
-  var formListView = new FormListView();
 
 })(jQuery);
