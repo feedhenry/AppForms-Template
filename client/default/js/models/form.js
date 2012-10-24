@@ -1,4 +1,4 @@
-(function($) {
+$fh.ready(function() {
 
   FormModel = Backbone.Model.extend({});
 
@@ -8,8 +8,7 @@
   });
 
   // Initialize with mock
-  
   var form = new FormModel(App.MockForm);
   App.forms_collection = new FormsCollection([form, form]);
 
-})(jQuery);
+});

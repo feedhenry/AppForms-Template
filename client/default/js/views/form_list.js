@@ -1,4 +1,4 @@
-(function($) {
+$fh.ready(function() {
 
   FormListView = Backbone.View.extend({
     el: $('#fh_wufoo_form_list'),
@@ -43,4 +43,4 @@
     }
   });
 
-})(jQuery);
+});
