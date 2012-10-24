@@ -11,7 +11,7 @@ $fh.ready(function() {
       _.bindAll(this, 'render', 'appendForm');
 
       this.collection = App.collections.forms;
-      this.collection.bind('add', this.appendForm);
+      this.collection.bind('add', this.render, this);
       this.collection.bind("remove", this.render, this);
 
       App.collections.forms.fetch();
