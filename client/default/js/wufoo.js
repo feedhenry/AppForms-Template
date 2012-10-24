@@ -878,7 +878,7 @@ var WufooController = {
 
 
 var wufoo_controller = WufooController;
-var appforms_controller = AppFormsController;
+//var appforms_controller = AppFormsController;
 
 $fh.ready(function() {
   if (typeof wufoo_config !== 'undefined') {
