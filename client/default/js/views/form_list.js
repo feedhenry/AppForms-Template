@@ -43,22 +43,11 @@ $fh.ready(function() {
     },
 
     appendForm: function(form) {
-      console.log('appendForm called!')
-      // // Todo: Move into new view
-      // var html = _.template('<li><button class="show"><%= name %></button></li>', {
-      //   name: form.get("Name")
-      // });
-      // $('ul', this.el).append(html);
-      
+      console.log('appendForm called!');      
       var view = new ShowFormButtonView({
         model: form
       });
       $('ul', this.el).append(view.render().el);
-    },
-
-    show: function() {
-      alert('show!')
-      console.log(this.model)
     }
   });
 
