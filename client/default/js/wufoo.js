@@ -878,10 +878,11 @@ var WufooController = {
 
 
 var wufoo_controller = WufooController;
+var appforms_controller = AppFormsController;
 
 $fh.ready(function() {
   if (typeof wufoo_config !== 'undefined') {
-    wufoo_controller.init(wufoo_config);
+    //wufoo_controller.init(wufoo_config);
   } else {
     alert('No Wufoo config available, aborting.');
   }
