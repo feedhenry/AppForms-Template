@@ -12,9 +12,10 @@ $fh.ready(function() {
 
     render: function() {
       var html = this.template;
-      $(this.el).show();
       console.log('render headerView');
+      $(this.el).empty();
       $(this.el).append(html);
+      $(this.el).show();
 
       // Update counts
     },
