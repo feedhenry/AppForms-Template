@@ -3,10 +3,14 @@ $fh.ready(function() {
   HeaderView = Backbone.View.extend({
     el: $('#fh_wufoo_header_wrapper'),
 
+    events: {
+      'click li.fh_wufoo_home': 'showHome'
+    },
+
     template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home active">Home</li>', '<li class="fh_wufoo_drafts">Drafts<span class="count hidden">0</span></li>', '<li class="fh_wufoo_pending">Pending<span class="count hidden">0</span></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
 
     initialize: function() {
-      _.bindAll(this, 'render');
+      _.bindAll(this, 'render', 'showHome');
       this.render();
     },
 
@@ -19,6 +23,10 @@ $fh.ready(function() {
 
       // Update counts
     },
+
+    showHome: function() {
+      App.form_list = new FormListView();
+    }
   });
 
 });

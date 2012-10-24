@@ -17,7 +17,6 @@ $fh.ready(function() {
     }
   });
 
-  console.log('*** fh ready!')
   App.router = new App.Router();
   Backbone.history.start();
 });

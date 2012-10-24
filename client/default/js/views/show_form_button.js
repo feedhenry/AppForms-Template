@@ -1,8 +1,6 @@
 $fh.ready(function() {
 
   ShowFormButtonView = Backbone.View.extend({
-    //tagName: 'button',
-
     events: {
       'click button.show': 'show'
     },
