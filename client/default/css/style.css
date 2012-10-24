@@ -63,10 +63,8 @@ html, body {
   margin-bottom: 5px;
 }
 
-.fh_wufoo_formlist_btn {
-  color: blue;
-  display: block;
-  margin: 10px 0 10px 0;
+#fh_wufoo_form_list ul {
+  list-style: none;
 }
 
 #fh_wufoo_header_wrapper {
