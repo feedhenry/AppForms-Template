@@ -1,8 +1,7 @@
 (function($) {
 
   FormListView = Backbone.View.extend({
-    el: $('body'),
-
+    el: $('#fh_wufoo_form_list'),
     events: {
       'click button#add': 'addItem'
     },
@@ -16,7 +15,9 @@
     },
 
     render: function() {
+      console.log('render FormListView');
       var self = this;
+      $(this.el).show();
       $(this.el).append("<button id='add'>Add list item</button>");
       $(this.el).append("<ul></ul>");
       _(this.collection.models).each(function(item) {

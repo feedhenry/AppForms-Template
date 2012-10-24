@@ -2,20 +2,20 @@ App.Router = Backbone.Router.extend({
 
   routes: {
     "form_list": "form_list",
-    "search/:query": "search",
-    "search/:query/p:page": "search",
     "*path": "form_list" // Default route
   },
 
   form_list: function() {
-    AppController.showView(App.views.main);
+    console.log('route: form_list');
   },
 
   pending: function() {
-    alert('pending');
+    console.log('route: pending');
   }
 });
 
 App.router = new App.Router();
-
 Backbone.history.start();
+
+App.main = new MainView();
+App.main.render();

@@ -12,5 +12,3 @@
   App.forms_collection = new FormsCollection([form, form]);
 
 })(jQuery);
-
-console.log(App.forms_collection)
