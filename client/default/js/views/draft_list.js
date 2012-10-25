@@ -25,23 +25,19 @@ $fh.ready(function() {
 
       App.views.header.markActive('.fh_wufoo_drafts');
 
-      // Empty our existing view
-      $(this.el).empty();
+      this.changed();
 
       // Add header
-      $(this.el).append(this.templates.header.join(''));
+      $(this.el).prepend(this.templates.header.join(''));
 
-      $(this.el).append("<ul></ul>");
-      _(this.collection.models).each(function(form) {
-        self.appendForm(form);
-      }, this);
       $(this.el).show();
     },
 
     changed: function() {
+      var self = this;
       // Empty our existing view
       $(this.el).empty();
-      
+
       $(this.el).append("<ul></ul>");
       _(this.collection.models).each(function(form) {
         self.appendForm(form);
