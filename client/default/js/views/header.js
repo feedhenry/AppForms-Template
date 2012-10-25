@@ -8,7 +8,7 @@ $fh.ready(function() {
       'click li.fh_wufoo_drafts': 'showDrafts'
     },
 
-    template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home">Home</li>', '<li class="fh_wufoo_drafts">Drafts<span class="count hidden">0</span></li>', '<li class="fh_wufoo_pending">Pending<span class="count hidden">0</span></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
+    template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home">Home</li>', '<li class="fh_wufoo_drafts">Drafts<div class="count hidden">0</div></li>', '<li class="fh_wufoo_pending">Pending<div class="count hidden">0</div></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
 
     initialize: function() {
       this.undelegateEvents();
@@ -50,7 +50,7 @@ $fh.ready(function() {
     updateCounts: function() {
       var drafts_count = App.collections.drafts.length;
       if (drafts_count > 0) {
-        $('.fh_wufoo_drafts .count', this.el).text(drafts_count).show();
+        $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
       } else {
         $('.fh_wufoo_drafts .count', this.el).hide();
       }
