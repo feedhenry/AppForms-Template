@@ -8,11 +8,11 @@ $fh.ready(function() {
     },
 
     initialize: function() {
-      _.bindAll(this, 'render', 'appendForm');
+      _.bindAll(this, 'render', 'appendForm', 'changed');
 
       this.collection = App.collections.drafts;
-      this.collection.bind('add', this.render, this);
-      this.collection.bind("remove", this.render, this);
+      this.collection.bind('add', this.changed, this);
+      this.collection.bind("remove", this.changed, this);
 
       App.collections.drafts.fetch();
 
@@ -36,6 +36,16 @@ $fh.ready(function() {
         self.appendForm(form);
       }, this);
       $(this.el).show();
+    },
+
+    changed: function() {
+      // Empty our existing view
+      $(this.el).empty();
+      
+      $(this.el).append("<ul></ul>");
+      _(this.collection.models).each(function(form) {
+        self.appendForm(form);
+      }, this);
     },
 
     appendForm: function(form) {
