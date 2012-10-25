@@ -17,7 +17,9 @@ FormView = Backbone.View.extend({
     "address": FieldAddressView,
     "url": FieldUrlView,
     "money": FieldMoneyView,
-    "likert": FieldLikertView
+    "likert": FieldLikertView,
+    "fhgeo": FieldGeoView,
+    "fhgeoEN": FieldGeoENView
   },
 
   initialize: function() {
