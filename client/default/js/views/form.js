@@ -19,7 +19,12 @@ FormView = Backbone.View.extend({
     "money": FieldMoneyView,
     "likert": FieldLikertView,
     "fhgeo": FieldGeoView,
-    "fhgeoEN": FieldGeoENView
+    "fhgeoEN": FieldGeoENView,
+    "fhcam": FieldCameraView,
+    "fhsig": FieldSignatureView,
+    "fhmap": FieldMapView,
+    "fhtime": FieldCustomTimeView,
+    "fhdate": FieldCustomDateView
   },
 
   initialize: function() {
