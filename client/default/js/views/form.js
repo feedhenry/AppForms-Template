@@ -20,6 +20,24 @@ FormView = Backbone.View.extend({
     this.$el.empty().append(form);
     form.validate();
 
+// look at special rules & update field models accordingly
+/*      var specialRules = this.model.get('Rules');
+      var FieldRules = specialRules ? specialRules.FieldRules : null;
+      if (FieldRules !== null) {
+        _(FieldRules).each(function (fRule) {
+          if ('Hide' === fRule.Type) {
+            _(fRule.Conditions).each(function (condition) {
+              var filter = condition.Filter;
+              var value = condition.Value;
+              var field = "Field" + condition.FieldName;
+              
+            });
+
+
+          }
+        });
+      }*/
+
     _(this.model.get('Fields')).each(function (field) {
       var fieldType = self.model.getFieldType(field);
 

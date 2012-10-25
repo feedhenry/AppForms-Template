@@ -1,3 +1,11 @@
 FieldNumberView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="number">']
+  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="number">'],
+
+  render: function () {
+    FieldView.prototype.render.call(this);
+
+    this.$el.find('#' + this.options.field.ID).rules("add", {
+      "number": true
+    });
+  }
 });
