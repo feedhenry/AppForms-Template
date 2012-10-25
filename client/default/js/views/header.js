@@ -42,6 +42,8 @@ $fh.ready(function() {
         $(App.views.pending_list.el).hide();
       }
 
+      this.hideForm();
+
       App.views.form_list = new FormListView();
     },
 
@@ -53,6 +55,8 @@ $fh.ready(function() {
         $(App.views.pending_list.el).hide();
       }
 
+      this.hideForm();
+
       App.views.drafts_list = new DraftListView();
     },
 
@@ -63,6 +67,8 @@ $fh.ready(function() {
       if (!_.isUndefined(App.views.drafts_list)) {
         $(App.views.drafts_list.el).hide();
       }
+
+      this.hideForm();
 
       App.views.pending_list = new PendingListView();
     },
@@ -76,6 +82,12 @@ $fh.ready(function() {
       }
       if (!_.isUndefined(App.views.pending_list)) {
         $(App.views.pending_list.el).hide();
+      }
+    },
+
+    hideForm: function() {
+      if (!_.isUndefined(App.views.form)) {
+        $(App.views.form.el).hide();
       }
     },
 

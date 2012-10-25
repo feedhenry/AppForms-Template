@@ -26,7 +26,7 @@ $fh.ready(function() {
 
     show: function() {
       console.log('show: ' + this.model.get('Name'));
-      var form_view = new FormView({
+      App.views.form = new FormView({
         model: this.model
       });
     }
