@@ -10,7 +10,14 @@ FormView = Backbone.View.extend({
     "checkbox": FieldCheckboxView,
     "select": FieldSelectView,
     "file": FieldFileView,
-    "email": FieldEmailView
+    "email": FieldEmailView,
+    "time": FieldTimeView,
+    "phone": FieldPhoneView,
+    "shortname": FieldShortnameView,
+    "address": FieldAddressView,
+    "url": FieldUrlView,
+    "money": FieldMoneyView,
+    "likert": FieldLikertView
   },
 
   initialize: function() {
