@@ -67,6 +67,18 @@ $fh.ready(function() {
       App.views.pending_list = new PendingListView();
     },
 
+    hideAll: function() {
+      if (!_.isUndefined(App.views.form_list)) {
+        $(App.views.form_list.el).hide();
+      }
+      if (!_.isUndefined(App.views.drafts_list)) {
+        $(App.views.drafts_list.el).hide();
+      }
+      if (!_.isUndefined(App.views.pending_list)) {
+        $(App.views.pending_list.el).hide();
+      }
+    },
+
     markActive: function(tab_class) {
       $('li', this.el).removeClass('active');
       $(tab_class, this.el).addClass('active');
