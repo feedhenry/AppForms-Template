@@ -58,15 +58,15 @@ FormView = Backbone.View.extend({
         });
       }*/
 
-    _(this.model.get('Fields')).each(function (field) {
-      var fieldType = self.model.getFieldType(field);
+    this.model.fields.each(function (field, index) {
+      var fieldType = field.getType();
 
       if (self.viewMap[fieldType]) {
         new self.viewMap[fieldType]({
           el: form[0],
-          field: field
+          model: field
         });
-        $(form).append('<br/>');
+        form.append('<br/>');
       } else {
         console.log('FIELD NOT SUPPORTED:' + fieldType);
       }

@@ -4,7 +4,7 @@ $fh.ready(function() {
 
   DraftsCollection = Backbone.Collection.extend({
     model: DraftModel,
-    fhStorage: new Store("drafts"),
+    fhStorage: new Store("drafts")
   });
 
   // Initialize with mock

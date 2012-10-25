@@ -65,9 +65,13 @@ function guid() {
 // Our Store is represented by a single JS object in FeedHenry's data store.
 // Create it with a meaningful name, like the name you'd give a table.
 var Store = function(name) {
+  var self = this;
   this.name = name;
-  var store = fhGet(this.name).val;
-  this.data = (store && JSON.parse(store)) || {};
+
+  $fh.ready(function () {
+    var store = fhGet(self.name).val;
+    self.data = (store && JSON.parse(store)) || {};
+  });
 };
 
 _.extend(Store.prototype, {
@@ -119,24 +123,28 @@ Backbone.sync = function(method, model, options) {
   var resp;
   var store = model.fhStorage || model.collection.fhStorage;
 
-  switch(method) {
-    case "read":
-      resp = model.id ? store.find(model) : store.findAll();
-      break;
-    case "create":
-      resp = store.create(model);
-      break;
-    case "update":
-      resp = store.update(model);
-      break;
-    case "delete":
-      resp = store.destroy(model);
-      break;
-  }
+  if (store != null) { // only try load if a store is defined
+    switch(method) {
+      case "read":
+        resp = model.id ? store.find(model) : store.findAll();
+        break;
+      case "create":
+        resp = store.create(model);
+        break;
+      case "update":
+        resp = store.update(model);
+        break;
+      case "delete":
+        resp = store.destroy(model);
+        break;
+    }
 
-  if (resp) {
-    options.success(resp);
+    if (resp) {
+      options.success(resp);
+    } else {
+      options.error("Record not found");
+    }
   } else {
-    options.error("Record not found");
+    options.error("Store is null!");
   }
 };

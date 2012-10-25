@@ -4,7 +4,7 @@ FieldNumberView = FieldView.extend({
   render: function () {
     FieldView.prototype.render.call(this);
 
-    this.$el.find('#' + this.options.field.ID).rules("add", {
+    this.$el.find('#' + this.model.get('ID')).rules("add", {
       "number": true
     });
   }
