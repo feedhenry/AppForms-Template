@@ -23,7 +23,7 @@ FormView = Backbone.View.extend({
     _(this.model.get('Fields')).each(function (field) {
       if (self.viewMap[field.Type] != null) {
         new self.viewMap[field.Type]({
-          form: form,
+          el: form[0],
           field: field
         });
       } else {
