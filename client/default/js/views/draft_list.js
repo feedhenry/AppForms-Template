@@ -10,11 +10,11 @@ $fh.ready(function() {
     initialize: function() {
       _.bindAll(this, 'render', 'appendForm');
 
-      this.collection = App.collections.forms;
+      this.collection = App.collections.drafts;
       this.collection.bind('add', this.render, this);
       this.collection.bind("remove", this.render, this);
 
-      App.collections.forms.fetch();
+      App.collections.drafts.fetch();
 
       this.render();
     },
