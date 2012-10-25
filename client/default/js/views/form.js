@@ -4,8 +4,7 @@ FormView = Backbone.View.extend({
   viewMap: {
     "text": FieldTextView,
     "number": FieldNumberView,
-    "date": FieldDateView,
-    "file": FieldDateView
+    "date": FieldDateView
   },
 
   initialize: function() {
@@ -22,15 +21,16 @@ FormView = Backbone.View.extend({
     form.validate();
 
     _(this.model.get('Fields')).each(function (field) {
-      if (self.viewMap[field.Type] != null) {
-        var fieldType = self.model.getFieldType(field);
-        new self.viewMap[field.Type]({
+      var fieldType = self.model.getFieldType(field);
+
+      if (self.viewMap[fieldType]) {
+        new self.viewMap[fieldType]({
           el: form[0],
           field: field
         });
         $(form).append('<br/>');
       } else {
-        console.log('FIELD NOT SUPPORTED:' + field.Type);
+        console.log('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
 
