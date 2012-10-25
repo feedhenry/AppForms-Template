@@ -104,7 +104,7 @@ exports.getRules = function (options, cb) {
 
     var req = https.request({
       "host": options.host,
-      "port": api_config.rules_port,
+      "port": 443,
       "path": api_config.rules_path,
       "method": 'GET',
       "headers": {
