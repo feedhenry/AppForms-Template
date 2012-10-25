@@ -1,15 +1,3 @@
-FieldTextView = Backbone.View.extend({
-
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="text">'],
-
-  initialize: function() {
-    this.render();
-  },
-
-  render: function() {
-    this.$el.append(_.template(this.template.join(''), {
-      "id": this.options.field.ID,
-      "title": this.options.field.Title
-    }));
-  }
+FieldTextView = FieldView.extend({
+  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="text">']
 });

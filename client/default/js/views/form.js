@@ -18,7 +18,7 @@ FormView = Backbone.View.extend({
     App.views.header.hideAll();
     
     var form = $('<form>');
-    $(this.el).empty().append(form);
+    this.$el.empty().append(form);
     form.validate();
 
     _(this.model.get('Fields')).each(function (field) {
@@ -34,7 +34,15 @@ FormView = Backbone.View.extend({
       }
     });
 
-    $(this.el).show();
+    // temp butan to validate
+    this.$el.append($('<button>', {
+      "text": "Validate"
+    }).bind('click', function (e) {
+      e.preventDefault();
+      form.valid();
+    }));
+
+    this.$el.show();
     console.log('***** Form View! *****');
   }
 
