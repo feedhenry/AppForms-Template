@@ -1,22 +1,38 @@
-$fh.ready(function() {
+FormView = Backbone.View.extend({
+  el: $('#fh_wufoo_content'),
 
-  FormView = Backbone.View.extend({
-    el: $('#fh_wufoo_content'),
+  viewMap: {
+    "text": FieldTextView,
+    "number": FieldNumberView
+  },
 
-    initialize: function() {
-      _.bindAll(this, 'render');
-      this.render();
-      console.log(this.model);
-    },
+  initialize: function() {
+    _.bindAll(this, 'render');
+    this.render();
+    console.log(this.model);
+  },
 
-    render: function() {
-      var self = this;
-      App.views.header.hideAll();
-      $(this.el).empty();
-      $(this.el).append('<h4>A form!</h4>');
-      $(this.el).show();
-      console.log('***** Form View! *****');
-    }
+  render: function() {
+    var self = this;
+    App.views.header.hideAll();
+    
+    var form = $('<form>');
+    $(this.el).empty().append(form);
+    form.validate();
 
-  });
+    _(this.model.get('Fields')).each(function (field) {
+      if (self.viewMap[field.Type] != null) {
+        new self.viewMap[field.Type]({
+          form: form,
+          field: field
+        });
+      } else {
+        console.log('FIELD NOT SUPPORTED:' + field.Type);
+      }
+    });
+
+    $(this.el).show();
+    console.log('***** Form View! *****');
+  }
+
 });
