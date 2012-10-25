@@ -345,5 +345,73 @@ App.MockForm = {
     "Title": "Updated By",
     "Type": "text",
     "ID": "UpdatedBy"
-  }]
+  }],
+  "Rules": {
+    "FieldRules": [
+      {
+        "RuleId": "61",
+        "Type": "Hide",
+        "Setting": {
+          "FieldName": "5",
+          "FieldTypes": {
+            "3": "number"
+          }
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [
+          {
+            "ConditionId": "61",
+            "FieldName": "3",
+            "Filter": "is equal to",
+            "Value": "7",
+            "ReportId": "57",
+            "RuleId": "61"
+          }
+        ]
+      }
+    ],
+    "PageRules": [
+      {
+        "RuleId": "60",
+        "Type": "SkipToPage",
+        "Setting": {
+          "Page": "3"
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [
+          {
+            "ConditionId": "60",
+            "FieldName": "2",
+            "Filter": "is",
+            "Value": "go",
+            "ReportId": "57",
+            "RuleId": "60"
+          }
+        ]
+      }
+    ],
+    "FormRules": [
+      {
+        "RuleId": "62",
+        "Type": "ShowMessage",
+        "Setting": {
+          "Message": "Success! Thanks for filling out my form!"
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [
+          {
+            "ConditionId": "62",
+            "FieldName": "1",
+            "Filter": "is",
+            "Value": "",
+            "ReportId": "57",
+            "RuleId": "62"
+          }
+        ]
+      }
+    ]
+  }
 };
