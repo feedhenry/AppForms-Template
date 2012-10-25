@@ -5,17 +5,20 @@ $fh.ready(function() {
 
     events: {
       'click li.fh_wufoo_home': 'showHome',
-      'click li.fh_wufoo_drafts': 'showDrafts'
+      'click li.fh_wufoo_drafts': 'showDrafts',
+      'click li.fh_wufoo_pending': 'showPending'
     },
 
     template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home">Home</li>', '<li class="fh_wufoo_drafts">Drafts<div class="count hidden">0</div></li>', '<li class="fh_wufoo_pending">Pending<div class="count hidden">0</div></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
 
     initialize: function() {
       this.undelegateEvents();
-      _.bindAll(this, 'render', 'showHome', 'updateCounts');
+      _.bindAll(this, 'render', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
       App.collections.drafts.bind('add', this.updateCounts, this);
       App.collections.drafts.bind("remove", this.updateCounts, this);
+      App.collections.pending.bind('add', this.updateCounts, this);
+      App.collections.pending.bind("remove", this.updateCounts, this);
 
       this.render();
     },
@@ -32,14 +35,36 @@ $fh.ready(function() {
     },
 
     showHome: function() {
-      $(App.views.drafts_list.el).hide();
+      if (!_.isUndefined(App.views.drafts_list)) {
+        $(App.views.drafts_list.el).hide();
+      }
+      if (!_.isUndefined(App.views.pending_list)) {
+        $(App.views.pending_list.el).hide();
+      }
+
       App.views.form_list = new FormListView();
     },
 
     showDrafts: function() {
-      console.log('showDrafts firing!')
-      $(App.views.form_list.el).hide();
+      if (!_.isUndefined(App.views.form_list)) {
+        $(App.views.form_list.el).hide();
+      }
+      if (!_.isUndefined(App.views.pending_list)) {
+        $(App.views.pending_list.el).hide();
+      }
+
       App.views.drafts_list = new DraftListView();
+    },
+
+    showPending: function() {
+      if (!_.isUndefined(App.views.form_list)) {
+        $(App.views.form_list.el).hide();
+      }
+      if (!_.isUndefined(App.views.drafts_list)) {
+        $(App.views.drafts_list.el).hide();
+      }
+
+      App.views.pending_list = new PendingListView();
     },
 
     markActive: function(tab_class) {
@@ -48,11 +73,19 @@ $fh.ready(function() {
     },
 
     updateCounts: function() {
+      // TODO: DRY
       var drafts_count = App.collections.drafts.length;
       if (drafts_count > 0) {
         $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
       } else {
         $('.fh_wufoo_drafts .count', this.el).hide();
+      }
+
+      var pending_count = App.collections.pending.length;
+      if (pending_count > 0) {
+        $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
+      } else {
+        $('.fh_wufoo_pending .count', this.el).hide();
       }
     }
   });

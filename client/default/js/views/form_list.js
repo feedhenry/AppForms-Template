@@ -8,12 +8,10 @@ $fh.ready(function() {
     },
 
     initialize: function() {
-      _.bindAll(this, 'render', 'appendForm');
+      _.bindAll(this, 'render', 'appendForm', 'changed');
 
-      this.collection = App.collections.forms;
-      this.collection.bind('add', this.render, this);
-      this.collection.bind("remove", this.render, this);
-
+      App.collections.forms.bind('add', this.changed, this);
+      App.collections.forms.bind("remove", this.changed, this);
       App.collections.forms.fetch();
 
       this.render();
@@ -21,9 +19,13 @@ $fh.ready(function() {
 
     render: function() {
       var self = this;
-      console.log('render FormListView');
-
       App.views.header.markActive('.fh_wufoo_home');
+      this.changed();
+      $(this.el).show();
+    },
+
+    changed: function() {
+      var self = this;
 
       // Empty our existing view
       $(this.el).empty();
@@ -32,14 +34,13 @@ $fh.ready(function() {
       $(this.el).append(this.templates.header.join(''));
 
       $(this.el).append("<ul></ul>");
-      _(this.collection.models).each(function(form) {
+      _(App.collections.forms.models).each(function(form) {
         self.appendForm(form);
       }, this);
-      $(this.el).show();
     },
 
     appendForm: function(form) {
-      console.log('appendForm called!');      
+      console.log('appendForm called!');
       var view = new ShowFormButtonView({
         model: form
       });
