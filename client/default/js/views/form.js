@@ -5,7 +5,9 @@ FormView = Backbone.View.extend({
     "text": FieldTextView,
     "number": FieldNumberView,
     "date": FieldDateView,
-    "textarea": FieldTextareaView
+    "textarea": FieldTextareaView,
+    "radio": FieldRadioView,
+    "checkbox": FieldCheckboxView
   },
 
   initialize: function() {
