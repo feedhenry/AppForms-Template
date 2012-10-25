@@ -2,6 +2,7 @@ var util = require('util');
 var request = require('request');
 var url = require("url");
 var inline = require('./inline.js');
+var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_config = require('./wufoo_config.js');
 
 function cacheable() {
@@ -106,198 +107,41 @@ formDataToMultipart = function(form_data, cb) {
   return multipart_data;
 };
 
-getFormData = function(form_hash, callback) {
-  getConfig(function(err, wufoo_config) {
+exports.getForm = function (params, callback) {
+  var form_hash = params.form_hash;
+  wufoo_api.getFormData(form_hash, function (err, body) {
     if (err != null) {
+      console.error('error getting form data: ' + err.error);
       return callback(null, err);
     }
-    var domain = wufoo_config.wufoo_config.api_domain;
-    var api_key = wufoo_config.wufoo_config.api_key;
-    var app_type = wufoo_config.wufoo_config.app_type;
+    var form_json = JSON.parse(body);
+    var form = form_json.Forms[0];
 
-    var forms_url = "https://" + domain + "/api/v3/forms/" + form_hash + ".json";
+    wufoo_api.getFormFieldsData(form_hash, function (err, body) {
+      if (err != null) {
+        console.error('error getting form field data: ' + err.error);
+        return callback(null, err);
+      }
+      var fields_json = JSON.parse(body);
+      form.Fields = fields_json['Fields'];
 
-    var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
-    var auth_header = {
-      'Authorization': auth
-    };
-
-    request.get({
-      url: forms_url,
-      headers: auth_header
-    }, callback);
-  });
-};
-
-getConfig = function(callback) {
-  if (typeof wufoo_config == 'undefined') {
-    return callback({
-      "error": "No config."
+      return callback(null, {data:form});
     });
-  }
-  return callback(null, wufoo_config);
+  });
 };
 
 /* 
  * Here we get a Wufoo form's HTML, process it, and send it back to the client
  */
-exports.getForm = function(params, callback) {
-  getConfig(function(err, wufoo_config) {
-    if (err != null) {
-      return callback(null, err);
-    }
-
-    var form_hash = params.form_hash;
-    getFormData(form_hash, function(error, res, body) {
-      var body_json = null;
-      var updated = null;
-      try {
-        body_json = JSON.parse(body);
-        var form = body_json.Forms[0];
-        updated = form.DateUpdated;
-      } catch (e) {
-        console.error('Error parsing form api res body, process as normal:' + e);
-        // ignore and process html as normal
-      }
-
-      if (cacheable()) {
-        $fh.cache({
-          act: "load",
-          key: form_hash
-        }, function(err, res) {
-          var res_updated = null;
-          var res_json = null;
-
-          if (err) {
-            console.error('cache val not found for key:' + form_hash + ' err=' + err);
-            // treat error like key not found, and fall back to parsing html anyways as we
-            // can't compare last updated date
-          } else {
-            try {
-              res_json = JSON.parse(res);
-              res_updated = res_json.updated;
-            } catch (e) {
-              console.error('Error parsing cache res, process as normal:' + e);
-            }
-          }
-
-          if (res_updated === null || updated !== res_updated) {
-            // need to get latest html as update date has changed, or can't get html from cache
-            var domain = wufoo_config.wufoo_config.api_domain;
-            var url = "https://" + domain + "/forms/" + form_hash + "/";
-
-            // Unlock password
-            if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
-              var req = request({
-                method: 'POST',
-                url: url,
-                followAllRedirects: true,
-                headers: {
-                  'content-type': 'multipart/form-data;'
-                },
-                form: {
-                  password: wufoo_config.wufoo_config.form_password
-                }
-              }, function(error, res, body) {
-                updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                  return callback(null, {
-                    "html": processed_html
-                  });
-                });
-              });
-            } else {
-              request(url, function(error, res, body) {
-                updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-                  return callback(null, {
-                    "html": processed_html
-                  });
-                });
-              });
-            }
-          } else {
-            return callback(null, {
-              "cached": true,
-              "html": res_json.html
-            });
-          }
-        });
-      } else {
-        // need to get latest html as update date has changed, or can't get html from cache
-        var domain = wufoo_config.wufoo_config.api_domain;
-        var url = "https://" + domain + "/forms/" + form_hash + "/";
-
-        // Unlock password
-        if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
-          var req = request({
-            method: 'POST',
-            url: url,
-            followAllRedirects: true,
-            headers: {
-              'content-type': 'multipart/form-data;'
-            },
-            form: {
-              password: wufoo_config.wufoo_config.form_password
-            }
-          }, function(error, res, body) {
-            updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-              return callback(null, {
-                "html": processed_html
-              });
-            });
-          });
-        } else {
-          request(url, function(error, res, body) {
-            updateWufooHTML(form_hash, updated, body, false, function(processed_html) {
-              return callback(null, {
-                "html": processed_html
-              });
-            });
-          });
-        }
-      }
-
-
-    });
-  });
-};
 
 /* 
  * Here we get a list of available Wufoo forms
  */
-exports.getForms = function(params, callback) {
-  getConfig(function(err, wufoo_config) {
-    if (err != null) {
-      return callback(null, err);
-    }
-
-    var app_type = wufoo_config.wufoo_config.app_type;
-    var domain = wufoo_config.wufoo_config.api_domain;
-    var api_key = wufoo_config.wufoo_config.api_key;
-
-    if (app_type == 'single_form') {
-      var form_hash = wufoo_config.wufoo_config.form_hash;
-      getFormData(form_hash, function(error, res, body) {
-        return callback(null, {
-          data: JSON.parse(body)
-        });
-      });
-    } else {
-      var forms_url = "https://" + domain + "/api/v3/forms.json";
-
-      var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
-      var auth_header = {
-        'Authorization': auth
-      };
-
-      request.get({
-        url: forms_url,
-        headers: auth_header
-      }, function(error, res, body) {
-        return callback(null, {
-          data: JSON.parse(body)
-        });
-      });
-    }
+exports.getForms = function (params, callback) {
+  wufoo_api.getForms(function (error, body) {
+    return callback(null, {
+      data:JSON.parse(body)
+    });
   });
 };
 
