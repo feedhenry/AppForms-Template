@@ -2,30 +2,14 @@
 <link rel="stylesheet" type="text/css" href="css/theme.css" />
 <link rel="stylesheet" type="text/css" href="css/jquery.signaturepad.css" />
 
-<script type="text/javascript">
-  var exports = {};
-</script>
-
 <title>Forms App</title>
 
-<div id="fh_wufoo_header_wrapper">
-  <ul id="fh_wufoo_header">
-    <li class="fh_wufoo_home active">Home</li>
-    <li class="fh_wufoo_drafts">Drafts<span class="count hidden">0</span></li>
-    <li class="fh_wufoo_pending">Pending<span class="count hidden">0</span></li>
-  </ul>
-  <div id="fh_wufoo_alerts_area"></div>
+<div id="fh_wufoo_header_wrapper" class="hidden">
 </div>
 
-<ul id="fh_wufoo_form_list" class="hidden">
-  <h2>Your Forms</h2>
-  <h4>Choose a form from the list below</h4>
-</ul>
+<ul id="fh_wufoo_form_list" class="hidden"></ul>
 
-<ul id="fh_wufoo_drafts_list" class="hidden">
-  <h2>Drafts</h2>
-  <h4>Choose a Draft form from the list below</h4>
-</ul>
+<ul id="fh_wufoo_drafts_list" class="hidden"></ul>
 
 <ul id="fh_wufoo_pending_list" class="hidden">
   <h2>Pending Submissions</h2>
@@ -44,16 +28,37 @@
 <div id="app_version"></div>
 <div class="ts" display="none"></div>
 
+<script>
+// Namespace
+var App = App || {};
+App.views = App.views || {};
+App.collections = App.collections || {};
+</script>
+
 <script src="js/jquery.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/underscore.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/backbone.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/backbone-fhstorage.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/moment.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/utils/utils.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="js/models/mock.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="js/models/form.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
+
+<script src="js/router.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- <script src="js/utils/utils.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/utils/converter.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/wufoo_config.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/wufoo.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/signaturepad/jquery.signaturepad.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/signaturepad/bitmapurl.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/formfields/sigfield.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/formfields/mapfield.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/formfields/mapfield.js" type="text/javascript" charset="utf-8"></script> -->
 
 <style>
 /* Overriding Wufoo media query */
