@@ -1,6 +1,13 @@
 $fh.ready(function() {
 
-  FormModel = Backbone.Model.extend({});
+  FormModel = Backbone.Model.extend({
+    // Determine field type from special classes
+    getFieldType: function(field) {
+      if (field.Type && field.) {
+        console.log(field.Type);
+      }
+    }
+  });
 
   FormsCollection = Backbone.Collection.extend({
     model: FormModel,
