@@ -24,7 +24,7 @@ FieldRadioView = FieldView.extend({
     });
 
     // add to form
-    this.options.form.append(this.$el);
+    this.options.formEl.append(this.$el);
 
     this.show();
   },
