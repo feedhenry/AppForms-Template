@@ -155,6 +155,8 @@ exports.getForm = function (params, callback) {
     });
   }, wufoo_admin.getRules
   ], function (err, results) {
+    if (err) return callback(null, err);
+    
     var form = results[0];
     form.Fields = results[1];
     form.Rules = results[2];
