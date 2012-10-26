@@ -474,11 +474,13 @@ html, body {
 
 label { display: block; margin-bottom: 10px; font-size: 18px; }
 label.error { display: inline; }
+label.choice { display: inline; }
+input[type="radio"] { width: inherit; }
 
 #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
   padding: 20px;
   background: #fff;
-  width: 80%;
+  width: 95%;
   margin: 0 auto;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
@@ -504,7 +506,7 @@ label.error { display: inline; }
 #fh_wufoo_content .field_container:last-child { border: none; }
 
 .fh_action_bar {
-  color: #555;
+  color: #444;
   background: #F4FCE8;
   border-top: 1px solid #EDEDED;
   -webkit-border-radius: 0 0 5px 5px;
@@ -517,5 +519,36 @@ label.error { display: inline; }
 
 .fh_action_bar button {
   -webkit-appearance: button;
-  font-size: 150%;
+  font-size: 125%;
+}
+
+input {
+  width: 100%;
+  font-size: 24px;
+  font-family: inherit;
+  line-height: 1.4em;
+  border: 0;
+  outline: none;
+  padding: 6px 0 6px 0;
+  border: 1px solid #999;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -o-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+}
+
+textarea {
+  width: 100%;
+  min-height: 100px;
+  font-size: 24px;
+  font-family: inherit;
+  border: 0;
+  outline: none;
+  border: 1px solid #999;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  -o-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
 }
