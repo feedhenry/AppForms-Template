@@ -3,7 +3,9 @@ var request = require('request');
 var url = require("url");
 var inline = require('./inline.js');
 var wufoo_api = require('./wufoo_client/api.js');
+var wufoo_admin = require('./wufoo_client/admin.js');
 var wufoo_config = require('./wufoo_config.js');
+var async = require('async');
 
 function cacheable() {
   // Should page fragments be cached?
@@ -109,24 +111,55 @@ formDataToMultipart = function(form_data, cb) {
 
 exports.getForm = function (params, callback) {
   var form_hash = params.form_hash;
-  wufoo_api.getFormData(form_hash, function (err, body) {
-    if (err != null) {
-      console.error('error getting form data: ' + err.error);
-      return callback(null, err);
-    }
-    var form_json = JSON.parse(body);
-    var form = form_json.Forms[0];
 
-    wufoo_api.getFormFieldsData(form_hash, function (err, body) {
-      if (err != null) {
-        console.error('error getting form field data: ' + err.error);
-        return callback(null, err);
+  // TODO: generic field validation?
+  // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
+  if (form_hash == null) return callback(null, {
+    "error": "form_hash is required"
+  });
+
+  // asynchronously get:
+  // - form data
+  // - fields data
+  // - rules data
+  // and merge together into single json object
+  async.parallel([function (cb) {
+    wufoo_api.getFormData(form_hash, function (err, body) {
+      if (err) return cb(err);
+
+      // TODO: should api client take care of parsing for us?
+      try {
+        var form_json = JSON.parse(body);
+        var form = form_json.Forms[0];
+        return cb(null, form);
+      } catch (e) {
+        return cb({
+          "error": e
+        });
       }
-      var fields_json = JSON.parse(body);
-      form.Fields = fields_json['Fields'];
-
-      return callback(null, {data:form});
     });
+  },function (cb) {
+    wufoo_api.getFormFieldsData(form_hash, function (err, body) {
+      if (err) return cb(err);
+
+      // TODO: should api client take care of parsing for us?
+      // TODO: should omit special fields on client or cloud? i.e. EntryId, DateCreated, CreatedBy, UpdatedBy, LastUpdated
+      try {
+        var fields_json = JSON.parse(body);
+        return cb(null, fields_json['Fields']);
+      } catch (e) {
+        return cb({
+          "error": e
+        });
+      }
+    });
+  }, wufoo_admin.getRules
+  ], function (err, results) {
+    var form = results[0];
+    form.Fields = results[1];
+    form.Rules = results[2];
+
+    return callback(null, {data:form});
   });
 };
 

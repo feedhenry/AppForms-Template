@@ -1,5 +1,6 @@
 var https = require('https');
 var querystring = require('querystring');
+var wufoo_config = require('../wufoo_config.js').wufoo_config;
 
 var api_config = {
   "login_host": "secure.wufoo.eu",
@@ -53,7 +54,7 @@ function login(email, password, cb) {
     "email": email,
     "password": password
   };
-  //console.log('https.request');
+  console.log('login request');
   var req = https.request({
     "host": api_config.login_host,
     "port": 443,
@@ -84,14 +85,15 @@ function login(email, password, cb) {
     return cb(e);
   });
 
+  //console.log('querystring.stringify(postData):', querystring.stringify(postData));
   req.write(querystring.stringify(postData));
 
   req.end();
 }
 
-exports.getRules = function (options, cb) {
+exports.getRules = function (cb) {
   console.log('getRules()');
-  login(options.email, options.password, function (err, cookies) {
+  login(wufoo_config.email, wufoo_config.password, function (err, cookies) {
     if (err) return cb(err);
 
     // create cookie string for sending along in this request
@@ -103,7 +105,7 @@ exports.getRules = function (options, cb) {
     console.log('cookieString:', cookieString);
 
     var req = https.request({
-      "host": options.host,
+      "host": wufoo_config.api_domain,
       "port": 443,
       "path": api_config.rules_path,
       "method": 'GET',
