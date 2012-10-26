@@ -503,6 +503,14 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
   border-bottom: 1px solid #e4e4e4;
 }
 
+#fh_wufoo_content .field_container:hover {
+  background: #e8f8fc;
+  -webkit-transition: background 0.3s linear;
+  -moz-transition: background 0.3s linear;
+  -o-transition: background 0.3s linear;
+  transition: background 0.3s linear;
+}
+
 #fh_wufoo_content input, #fh_wufoo_content select, #fh_wufoo_content textarea {
   font-size: 24px;
 }
