@@ -17,7 +17,6 @@ App.MockForm = {
   "LinkFields": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/fields.json",
   "LinkEntries": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/entries.json",
   "LinkEntriesCount": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/entries\/count.json",
-  // TODO: Strip EntryId cloud side
   "Fields": [{
     "Title": "Single Text Field - No Rules",
     "Instructions": "",

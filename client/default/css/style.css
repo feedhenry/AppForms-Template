@@ -260,3 +260,11 @@ input[type=text] {
   border-color: #57a957 #57a957 #3d773d;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
+
+
+
+
+/* Phase2 styles */
+/* TODO: Cleanup above */
+
+input, textarea, select { display: block; }
