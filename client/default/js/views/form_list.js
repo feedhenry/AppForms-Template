@@ -1,50 +1,47 @@
-$fh.ready(function() {
+FormListView = Backbone.View.extend({
+  el: $('#fh_wufoo_form_list'),
 
-  FormListView = Backbone.View.extend({
-    el: $('#fh_wufoo_form_list'),
+  templates: {
+    header: ['<h2>Your Forms</h2>', '<h4>Choose a form from the list below</h4>']
+  },
 
-    templates: {
-      header: ['<h2>Your Forms</h2>', '<h4>Choose a form from the list below</h4>']
-    },
+  initialize: function() {
+    _.bindAll(this, 'render', 'appendForm', 'changed');
 
-    initialize: function() {
-      _.bindAll(this, 'render', 'appendForm');
+    App.collections.forms.bind('add', this.changed, this);
+    App.collections.forms.bind("remove", this.changed, this);
+    App.collections.forms.fetch();
 
-      this.collection = App.collections.forms;
-      this.collection.bind('add', this.render, this);
-      this.collection.bind("remove", this.render, this);
+    this.render();
+  },
 
-      App.collections.forms.fetch();
+  render: function() {
+    var self = this;
+    App.views.header.markActive('.fh_wufoo_home');
+    this.changed();
+    $(this.el).show();
+  },
 
-      this.render();
-    },
+  changed: function() {
+    var self = this;
 
-    render: function() {
-      var self = this;
-      console.log('render FormListView');
+    // Empty our existing view
+    $(this.el).empty();
 
-      App.views.header.markActive('.fh_wufoo_home');
+    // Add header
+    $(this.el).append(this.templates.header.join(''));
 
-      // Empty our existing view
-      $(this.el).empty();
+    $(this.el).append("<ul></ul>");
+    _(App.collections.forms.models).each(function(form) {
+      self.appendForm(form);
+    }, this);
+  },
 
-      // Add header
-      $(this.el).append(this.templates.header.join(''));
-
-      $(this.el).append("<ul></ul>");
-      _(this.collection.models).each(function(form) {
-        self.appendForm(form);
-      }, this);
-      $(this.el).show();
-    },
-
-    appendForm: function(form) {
-      console.log('appendForm called!');      
-      var view = new ShowFormButtonView({
-        model: form
-      });
-      $('ul', this.el).append(view.render().el);
-    }
-  });
-
+  appendForm: function(form) {
+    console.log('appendForm called!');
+    var view = new ShowFormButtonView({
+      model: form
+    });
+    $('ul', this.el).append(view.render().el);
+  }
 });

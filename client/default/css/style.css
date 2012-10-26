@@ -1,7 +1,7 @@
 html, body {
   background: #eee;
   min-height: 101%;
-  padding-top: 70px;
+  padding-top: 46px;
 }
 
 .wufoo li {
@@ -63,7 +63,7 @@ html, body {
   margin-bottom: 5px;
 }
 
-#fh_wufoo_form_list ul, #fh_wufoo_drafts_list ul {
+#fh_wufoo_form_list ul, #fh_wufoo_drafts_list ul, #fh_wufoo_pending_list ul {
   list-style: none;
 }
 
