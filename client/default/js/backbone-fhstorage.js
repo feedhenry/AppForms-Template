@@ -145,6 +145,6 @@ Backbone.sync = function(method, model, options) {
       options.error("Record not found");
     }
   } else {
-    options.error("Store is null!");
+    options.error("Store is null. Using $fh.ready() before accessing store?");
   }
 };

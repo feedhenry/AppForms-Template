@@ -10,24 +10,34 @@ FieldView = Backbone.View.extend({
   },
 
   render: function() {
-    // add to dom
+    // construct field html
     this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
     }));
+    // add to dom
+    this.options.form.append(this.$el);
     this.show();
   },
 
   addRules: function () {
-    var self = this;
+    this.addRequiredRule();
+    this.addSpecialRules();
+  },
+
+  addRequiredRule: function () {
     if (this.model.get('IsRequired') === '1') {
       this.$el.find('#' + this.model.get('ID')).rules('add', {
         "required": true
       });
     }
+  },
 
+  addSpecialRules: function () {
+    var self = this;
     // also apply any special rules
     _(this.model.get('specialRules') || []).each(function (rule) {
+      // TODO: more events like keyup/keypress
       self.$el.find('#' + self.model.get('ID')).bind('change', function () {
         var input = $(this);
         // apply action
@@ -58,18 +68,16 @@ FieldView = Backbone.View.extend({
   },
 
   hide: function () {
-    var input = this.$el.find('#' + this.model.get('ID'));
-    if (input.is(':visible')) {
-      this.$el.find('#' + this.model.get('ID')).prev('label').andSelf().hide();
+    if (this.$el.is(':visible')) {
+      this.$el.hide();
       // remove rules too
       this.removeRules();
     }
   },
 
   show: function () {
-    var input = this.$el.find('#' + this.model.get('ID'));
-    if (input.not(':visible')) {
-      input.prev('label').andSelf().show();
+    if (this.$el.not(':visible')) {
+      this.$el.show();
       // add rules too
       this.addRules();
     }

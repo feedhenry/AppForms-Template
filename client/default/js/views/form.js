@@ -41,6 +41,7 @@ FormView = Backbone.View.extend({
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     form.validate();
 
+    // TODO: move to form model
     // look at special rules & update field models accordingly
     var specialRules = {};
     _(this.model.get('Rules').FieldRules || []).each(function (fRule) {
@@ -92,7 +93,7 @@ FormView = Backbone.View.extend({
 
       if (self.viewMap[fieldType]) {
         new self.viewMap[fieldType]({
-          el: form[0],
+          form: form,
           model: field,
           fieldsCollection: self.model.fields
         });
