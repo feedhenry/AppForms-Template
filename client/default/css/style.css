@@ -475,7 +475,7 @@ html, body {
 label { display: block; margin-bottom: 10px; font-size: 18px; }
 label.error { display: inline; }
 label.choice { display: inline; }
-input[type="radio"] { width: inherit; }
+input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
   padding: 20px;

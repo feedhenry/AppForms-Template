@@ -36,5 +36,5 @@ FieldRadioView = FieldView.extend({
     this.options.formEl.append(this.$el);
 
     this.show();
-  },
+  }
 });
