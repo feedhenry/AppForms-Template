@@ -39,6 +39,6 @@ FieldRadioView = FieldView.extend({
   },
 
   addValidationRules: function () {
-    // TODO: how should required rule be handled with a radio? id of which input should be required?
+    // first radio is always initially checked, so no need to do 'required' validation on this field
   }
 });
