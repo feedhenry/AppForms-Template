@@ -10,7 +10,7 @@ FieldCheckboxView = FieldView.extend({
   //   // TODO: implement rule based on # of checkboxes
   // }
 
-  addRequiredRule: function () {
+  addValidationRules: function () {
     // TODO:
     
   }

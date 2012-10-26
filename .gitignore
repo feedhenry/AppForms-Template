@@ -3,3 +3,5 @@ client/default/js/wufoo_config.js
 cloud/node_modules
 .DS_Store
 fhc-debug.log
+admin_endpoints.txt
+test_admin.js

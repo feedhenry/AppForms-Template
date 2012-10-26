@@ -23,11 +23,11 @@ FieldView = Backbone.View.extend({
   },
 
   addRules: function () {
-    this.addRequiredRule();
+    this.addValidationRules();
     this.addSpecialRules();
   },
 
-  addRequiredRule: function () {
+  addValidationRules: function () {
     if (this.model.get('IsRequired') === '1') {
       this.$el.find('#' + this.model.get('ID')).rules('add', {
         "required": true
