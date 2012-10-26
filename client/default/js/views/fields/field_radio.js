@@ -20,12 +20,15 @@ FieldRadioView = FieldView.extend({
 
     var choices = this.model.get('Choices');
     $.each(choices, function(i, choice) {
-      var choice_field = _.template(self.templates.choice, {
+      var choice_field = $(_.template(self.templates.choice, {
         "id": self.model.get('ID'),
         "iteration": i,
         "choice": choice.Label,
         "value": choice.Label
-      });
+      }));
+      if (i == 0) {
+        choice_field.attr('checked', 'checked');
+      }
       self.$el.append(choice_field);
     });
 
