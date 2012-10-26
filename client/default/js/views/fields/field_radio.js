@@ -36,5 +36,9 @@ FieldRadioView = FieldView.extend({
     this.options.formEl.append(this.$el);
 
     this.show();
+  },
+
+  addValidationRules: function () {
+    // TODO: how should required rule be handled with a radio? id of which input should be required?
   }
 });

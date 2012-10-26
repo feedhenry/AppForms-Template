@@ -1,4 +1,3 @@
-// TODO: modify/extend validate plugin to allow adding custom rule to top of chain i.e. allow these to fire before any actual validtion happens
 $.validator.addMethod("wufoo_hide", function(value, element, params) {
   // check condition
   // TODO: check filter type (params.filter)

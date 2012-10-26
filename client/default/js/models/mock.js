@@ -12,20 +12,51 @@ App.MockForm = {
   "EndDate": "2030-01-01 12:00:00",
   "EntryLimit": "0",
   "DateCreated": "2012-10-23 10:58:40",
-  "DateUpdated": "2012-10-24 04:16:34",
+  "DateUpdated": "2012-10-26 06:52:40",
   "Hash": "s7w7z7",
-  "LinkFields": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/fields.json",
-  "LinkEntries": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/entries.json",
-  "LinkEntriesCount": "https:\/\/feedhenry.wufoo.com\/api\/v3\/forms\/s7w7z7\/entries\/count.json",
+  "LinkFields": "https://feedhenry.wufoo.eu/api/v3/forms/s7w7z7/fields.json",
+  "LinkEntries": "https://feedhenry.wufoo.eu/api/v3/forms/s7w7z7/entries.json",
+  "LinkEntriesCount": "https://feedhenry.wufoo.eu/api/v3/forms/s7w7z7/entries/count.json",
   "Fields": [{
+    "Title": "Entry Id",
+    "Type": "text",
+    "ID": "EntryId"
+  }, {
     "Title": "Single Text Field - No Rules",
+    "Instructions": "",
+    "IsRequired": "0",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "text",
+    "ID": "Field1"
+  }, {
+    "Title": "Single Text Field - Required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "text",
+    "ID": "Field238"
+  }, {
+    "Title": "Single Text Field - Predefined value",
     "Instructions": "",
     "IsRequired": "0",
     "ClassNames": "",
     "DefaultVal": "predefined value",
     "Page": "1",
     "Type": "text",
-    "ID": "Field1"
+    "ID": "Field237"
+  }, {
+    "Title": "Single Text Field - Range 1 - 4 characters",
+    "Instructions": "",
+    "IsRequired": "0",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "text",
+    "ID": "Field240"
   }, {
     "Title": "Single Text Field - skip to pg 3 if val = go",
     "Instructions": "",
@@ -45,6 +76,15 @@ App.MockForm = {
     "Type": "textarea",
     "ID": "Field4"
   }, {
+    "Title": "Paragraph Field - Required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "textarea",
+    "ID": "Field239"
+  }, {
     "Title": "Multi Choice Field",
     "Instructions": "",
     "IsRequired": "0",
@@ -62,6 +102,23 @@ App.MockForm = {
     "ID": "Field105",
     "HasOtherField": false
   }, {
+    "Title": "Multi Choice Field - Required!!?!!",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Choices": [{
+      "Label": "First Choice"
+    }, {
+      "Label": "Second Choice"
+    }, {
+      "Label": "Third Choice"
+    }],
+    "Type": "radio",
+    "ID": "Field241",
+    "HasOtherField": false
+  }, {
     "Title": "Number field - required",
     "Instructions": "",
     "IsRequired": "1",
@@ -71,9 +128,27 @@ App.MockForm = {
     "Type": "number",
     "ID": "Field3"
   }, {
-    "Title": "Checkbox field - required",
+    "Title": "Number field - Range 2 - 8 Value",
     "Instructions": "",
-    "IsRequired": "1",
+    "IsRequired": "0",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "number",
+    "ID": "Field242"
+  }, {
+    "Title": "Number field - Range 1 - 3 Digits",
+    "Instructions": "",
+    "IsRequired": "0",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Type": "number",
+    "ID": "Field243"
+  }, {
+    "Title": "Checkbox field - No Rules",
+    "Instructions": "",
+    "IsRequired": "0",
     "ClassNames": "",
     "DefaultVal": "0",
     "Page": "1",
@@ -93,7 +168,29 @@ App.MockForm = {
     "Type": "checkbox",
     "ID": "Field5"
   }, {
-    "Title": "Dropdown Field",
+    "Title": "Checkbox field - required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "",
+    "DefaultVal": "0",
+    "Page": "1",
+    "SubFields": [{
+      "DefaultVal": "0",
+      "ID": "Field244",
+      "Label": "First Choice"
+    }, {
+      "DefaultVal": "0",
+      "ID": "Field245",
+      "Label": "Second Choice"
+    }, {
+      "DefaultVal": "0",
+      "ID": "Field246",
+      "Label": "Third Choice"
+    }],
+    "Type": "checkbox",
+    "ID": "Field244"
+  }, {
+    "Title": "Dropdown Field - first empty",
     "Instructions": "",
     "IsRequired": "0",
     "ClassNames": "",
@@ -102,6 +199,23 @@ App.MockForm = {
     "Choices": [{
       "Label": ""
     }, {
+      "Label": "First Choice"
+    }, {
+      "Label": "Second Choice"
+    }, {
+      "Label": "Third Choice"
+    }],
+    "Type": "select",
+    "ID": "Field344",
+    "HasOtherField": false
+  }, {
+    "Title": "Dropdown Field - Required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "1",
+    "Choices": [{
       "Label": "First Choice"
     }, {
       "Label": "Second Choice"
@@ -160,11 +274,11 @@ App.MockForm = {
     }, {
       "DefaultVal": "",
       "ID": "Field116",
-      "Label": "State \/ Province \/ Region"
+      "Label": "State / Province / Region"
     }, {
       "DefaultVal": "",
       "ID": "Field117",
-      "Label": "Postal \/ Zip Code"
+      "Label": "Postal / Zip Code"
     }, {
       "DefaultVal": "",
       "ID": "Field118",
@@ -218,7 +332,7 @@ App.MockForm = {
     "Type": "url",
     "ID": "Field123"
   }, {
-    "Title": "Price Field - Amount",
+    "Title": "Price Field - Amount Default",
     "Instructions": "",
     "IsRequired": "0",
     "ClassNames": "",
@@ -226,6 +340,15 @@ App.MockForm = {
     "Page": "2",
     "Type": "money",
     "ID": "Field124"
+  }, {
+    "Title": "Price Field - Amount Euro",
+    "Instructions": "",
+    "IsRequired": "0",
+    "ClassNames": "",
+    "DefaultVal": "",
+    "Page": "2",
+    "Type": "money",
+    "ID": "Field235"
   }, {
     "Title": "Likert - Evaluate the following statements.",
     "Instructions": "",
@@ -281,14 +404,32 @@ App.MockForm = {
     "Type": "text",
     "ID": "Field229"
   }, {
-    "Title": "fh fhcam",
+    "Title": "fh fhcam 1/3 - Required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "fh fhcam",
+    "DefaultVal": "",
+    "Page": "3",
+    "Type": "file",
+    "ID": "Field227"
+  }, {
+    "Title": "fh fhcam 2/3 - Required",
+    "Instructions": "",
+    "IsRequired": "1",
+    "ClassNames": "fh fhcam",
+    "DefaultVal": "",
+    "Page": "3",
+    "Type": "file",
+    "ID": "Field346"
+  }, {
+    "Title": "fh fhcam 3/3 - Optional",
     "Instructions": "",
     "IsRequired": "0",
     "ClassNames": "fh fhcam",
     "DefaultVal": "",
     "Page": "3",
     "Type": "file",
-    "ID": "Field227"
+    "ID": "Field345"
   }, {
     "Title": "fh fhsig",
     "Instructions": "",
@@ -343,71 +484,59 @@ App.MockForm = {
     "ID": "UpdatedBy"
   }],
   "Rules": {
-    "FieldRules": [
-      {
-        "RuleId": "61",
-        "Type": "Hide",
-        "Setting": {
-          "FieldName": "5",
-          "FieldTypes": {
-            "3": "number"
-          }
-        },
-        "FormId": "57",
-        "MatchType": "any",
-        "Conditions": [
-          {
-            "ConditionId": "61",
-            "FieldName": "3",
-            "Filter": "is equal to",
-            "Value": "7",
-            "ReportId": "57",
-            "RuleId": "61"
-          }
-        ]
-      }
-    ],
-    "PageRules": [
-      {
-        "RuleId": "60",
-        "Type": "SkipToPage",
-        "Setting": {
-          "Page": "3"
-        },
-        "FormId": "57",
-        "MatchType": "any",
-        "Conditions": [
-          {
-            "ConditionId": "60",
-            "FieldName": "2",
-            "Filter": "is",
-            "Value": "go",
-            "ReportId": "57",
-            "RuleId": "60"
-          }
-        ]
-      }
-    ],
-    "FormRules": [
-      {
-        "RuleId": "62",
-        "Type": "ShowMessage",
-        "Setting": {
-          "Message": "Success! Thanks for filling out my form!"
-        },
-        "FormId": "57",
-        "MatchType": "any",
-        "Conditions": [
-          {
-            "ConditionId": "62",
-            "FieldName": "1",
-            "Filter": "is",
-            "Value": "",
-            "ReportId": "57",
-            "RuleId": "62"
-          }
-        ]
-      }
-    ]
+    "FieldRules": [{
+      "RuleId": "61",
+      "Type": "Hide",
+      "Setting": {
+        "FieldName": "5",
+        "FieldTypes": {
+          "3": "number"
+        }
+      },
+      "FormId": "57",
+      "MatchType": "any",
+      "Conditions": [{
+        "ConditionId": "61",
+        "FieldName": "3",
+        "Filter": "is equal to",
+        "Value": "7",
+        "ReportId": "57",
+        "RuleId": "61"
+      }]
+    }],
+    "PageRules": [{
+      "RuleId": "60",
+      "Type": "SkipToPage",
+      "Setting": {
+        "Page": "3"
+      },
+      "FormId": "57",
+      "MatchType": "any",
+      "Conditions": [{
+        "ConditionId": "60",
+        "FieldName": "2",
+        "Filter": "is",
+        "Value": "go",
+        "ReportId": "57",
+        "RuleId": "60"
+      }]
+    }],
+    "FormRules": [{
+      "RuleId": "62",
+      "Type": "ShowMessage",
+      "Setting": {
+        "Message": "Success! Thanks for filling out my form!"
+      },
+      "FormId": "57",
+      "MatchType": "any",
+      "Conditions": [{
+        "ConditionId": "62",
+        "FieldName": "1",
+        "Filter": "is",
+        "Value": "",
+        "ReportId": "57",
+        "RuleId": "62"
+      }]
+    }]
   }
 };

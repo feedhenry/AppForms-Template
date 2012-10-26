@@ -1,13 +1,4 @@
 FieldCheckboxView = FieldView.extend({
-  // addRules: function () {
-  //   // don't call super fn as checkboxes either
-  //   // - must be checked if only 1 option
-  //   // - at least one checked if more than one option
-
-  //   // TODO: implement rule based on # of checkboxes
-  // }
-  // 
-
   templates: {
     hidden_field: '<input id="checkbox<%= id %>" name="<%= id %>" type="hidden" value="">',
     title: '<label><%= title %></label>',
@@ -43,8 +34,8 @@ FieldCheckboxView = FieldView.extend({
 
     this.show();
   },
-
+  
   addValidationRules: function () {
-    // TODO:
+    // TODO: how should a checkbox that is required be handled? implement rule based on # of checkboxes?
   }
 });

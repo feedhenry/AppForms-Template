@@ -6,7 +6,7 @@ var api_config = {
   "login_host": "secure.wufoo.eu",
   "login_path": "/login/",
   "login_cookies": ["PHPSESSID", "wuSecureCookie"],
-  "rules_path": "/rules/wufoo-phase-ii/"
+  "rules_path": "/rules/<form_hash>/"
 };
 
 function login(email, password, cb) {
@@ -91,7 +91,7 @@ function login(email, password, cb) {
   req.end();
 }
 
-exports.getRules = function (cb) {
+exports.getRules = function (form_hash, cb) {
   console.log('getRules()');
   login(wufoo_config.email, wufoo_config.password, function (err, cookies) {
     if (err) return cb(err);
@@ -107,7 +107,7 @@ exports.getRules = function (cb) {
     var req = https.request({
       "host": wufoo_config.api_domain,
       "port": 443,
-      "path": api_config.rules_path,
+      "path": api_config.rules_path.replace('<form_hash>', form_hash),
       "method": 'GET',
       "headers": {
         "Cookie": cookieString

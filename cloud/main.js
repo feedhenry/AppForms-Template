@@ -153,7 +153,9 @@ exports.getForm = function (params, callback) {
         });
       }
     });
-  }, wufoo_admin.getRules
+  }, function (cb) {
+    wufoo_admin.getRules(form_hash, cb);
+  }
   ], function (err, results) {
     if (err) return callback(null, err);
     
