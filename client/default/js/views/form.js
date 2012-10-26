@@ -1,6 +1,10 @@
 FormView = Backbone.View.extend({
   el: $('#fh_wufoo_content'),
 
+  templates: {
+    heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>'
+  },
+
   viewMap: {
     "text": FieldTextView,
     "number": FieldNumberView,
@@ -38,9 +42,17 @@ FormView = Backbone.View.extend({
   render: function() {
     var self = this;
     App.views.header.hideAll();
+
+    this.$el.empty();
     
-    var form = $('<form>');
-    this.$el.empty().append(form);
+    var form = $('<form>').addClass('wufoo');
+    // Add form heading
+    var heading = _.template(this.templates.heading, {
+      "form_title": this.model.get('Name')
+    });
+    form.append(heading);
+    this.$el.append(form);
+
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     form.validate();
 
@@ -71,7 +83,6 @@ FormView = Backbone.View.extend({
     this.$el.append(action_bar);
 
     this.$el.show();
-    console.log('***** Form View! *****');
   },
 
   showField: function (id) {
