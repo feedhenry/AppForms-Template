@@ -1,6 +1,7 @@
 FieldRadioView = FieldView.extend({
   templates: {
     hidden_field: '<input id="radio<%= id %>" name="<%= id %>" type="hidden" value="">',
+    title: '<label><%= title %></label>',
     choice: '<input id="<%= id %>_<%= iteration %>" name="<%= id %>" type="radio" class="field radio" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>_<%= iteration %>"><%= choice %></label><br/>'
   },
 
@@ -11,6 +12,11 @@ FieldRadioView = FieldView.extend({
       "id": this.model.get('ID')
     });
     this.$el.append(hidden_field);
+
+    var title = _.template(this.templates.title, {
+      "title": this.model.get('Title')
+    });
+    this.$el.append(title);
 
     var choices = this.model.get('Choices');
     $.each(choices, function(i, choice) {
