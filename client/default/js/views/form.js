@@ -27,6 +27,9 @@ FormView = Backbone.View.extend({
     "fhdate": FieldCustomDateView
   },
 
+  // keep ref to all field views
+  fieldViews: {},
+
   initialize: function() {
     _.bindAll(this, 'render');
     this.render();
@@ -44,10 +47,10 @@ FormView = Backbone.View.extend({
     this.model.fields.each(function (field, index) {
       var fieldType = field.getType();
       if (self.viewMap[fieldType]) {
-        new self.viewMap[fieldType]({
-          form: form,
-          model: field,
-          fieldsCollection: self.model.fields
+        self.fieldViews[field.get('ID')] = new self.viewMap[fieldType]({
+          formEl: form,
+          formView: self,
+          model: field
         });
       } else {
         console.log('FIELD NOT SUPPORTED:' + fieldType);
@@ -69,6 +72,14 @@ FormView = Backbone.View.extend({
 
     this.$el.show();
     console.log('***** Form View! *****');
+  },
+
+  showField: function (id) {
+    this.fieldViews[id].show();
+  },
+
+  hideField: function (id) {
+    this.fieldViews[id].hide();
   }
 
 });

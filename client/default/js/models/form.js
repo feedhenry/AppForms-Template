@@ -18,7 +18,7 @@ FormModel = Backbone.Model.extend({
               "filter": condition.Filter,
               "value": condition.Value,
               "match": fRule.MatchType,
-              "actionType": "hide",
+              "actionType": "wufoo_hide",
               "actionField": 'Field' + fRule.Setting.FieldName
             });
           }
