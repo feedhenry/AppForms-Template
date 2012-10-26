@@ -54,13 +54,18 @@ FormView = Backbone.View.extend({
       }
     });
 
+    // TODO: Move to tpl
+    var action_bar = $('<div>').addClass('fh_action_bar');
+
     // temp butan to validate
-    this.$el.append($('<button>', {
-      "text": "Validate"
+    action_bar.append($('<button>', {
+      "text": "Validate",
     }).bind('click', function (e) {
       e.preventDefault();
       form.valid();
     }));
+
+    this.$el.append(action_bar);
 
     this.$el.show();
     console.log('***** Form View! *****');

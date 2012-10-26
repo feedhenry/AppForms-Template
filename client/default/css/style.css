@@ -476,9 +476,8 @@ label { display: block; margin-bottom: 10px; font-size: 18px; }
 label.error { display: inline; }
 
 #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
-  padding-top: 20px;
-  background: #fff;
   padding: 20px;
+  background: #fff;
   width: 80%;
   margin: 0 auto;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
@@ -493,7 +492,30 @@ label.error { display: inline; }
   border-radius: 0 0 5px 5px;
 }
 
+#fh_wufoo_content {
+  padding: 0;
+}
+
 #fh_wufoo_content .field_container {
-  padding: 18px 20px 18px 0;
+  padding: 18px 20px 18px 20px;
   border-bottom: 1px solid #e4e4e4;
+}
+
+#fh_wufoo_content .field_container:last-child { border: none; }
+
+.fh_action_bar {
+  color: #555;
+  background: #F4FCE8;
+  border-top: 1px solid #EDEDED;
+  -webkit-border-radius: 0 0 5px 5px;
+  -moz-border-radius: 0 0 5px 5px;
+  -ms-border-radius: 0 0 5px 5px;
+  -o-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+  padding: 18px 20px 18px 20px;
+}
+
+.fh_action_bar button {
+  -webkit-appearance: button;
+  font-size: 150%;
 }
