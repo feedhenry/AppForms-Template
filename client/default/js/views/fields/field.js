@@ -1,12 +1,25 @@
+// TODO: modify/extend validate plugin to allow adding custom rule to top of chain i.e. allow these to fire before any actual validtion happens
+$.validator.addMethod("wufoo_hide", function(value, element, params) {
+  // check condition
+  // TODO: check filter type (params.filter)
+  // TODO: check match type & other conditions, if any (params.match, params.id)
+  if (value === params.value) {
+    params.formView.hideField(params.actionField);
+  } else {
+    params.formView.showField(params.actionField);
+  }
+
+  // always return true as this isn't really a validation check. We're piggybacking on validation plugin
+  // as it has some useful binding/events/api we can use
+  return true;
+});
+
 FieldView = Backbone.View.extend({
 
   className : 'field_container',
 
-  // TODO: cache the input element lookup
+  // TODO: cache the input element lookup?
   initialize: function() {
-    // TODO: right way to do this showing/hiding?
-    this.model.bind('hide', this.hide, this);
-    this.model.bind('show', this.show, this);
     // only call render once. model will never update
     this.render();
   },
@@ -18,7 +31,7 @@ FieldView = Backbone.View.extend({
       "title": this.model.get('Title')
     }));
     // add to dom
-    this.options.form.append(this.$el);
+    this.options.formEl.append(this.$el);
     this.show();
   },
 
@@ -39,34 +52,17 @@ FieldView = Backbone.View.extend({
     var self = this;
     // also apply any special rules
     _(this.model.get('specialRules') || []).each(function (rule) {
-      // TODO: more events like keyup/keypress
-      self.$el.find('#' + self.model.get('ID')).bind('change', function () {
-        var input = $(this);
-        // apply action
-        // TODO: check other action types
-        if ('hide' === rule.actionType) {
-          var fieldToHide = self.options.fieldsCollection.find(function (item) {
-            return rule.actionField === item.get('ID');
-          });
-
-          if (fieldToHide != null) {
-            // check condition
-            // TODO: check filter type
-            // TODO: check match type & other conditions, if any
-            // TODO: value to check may not always be an input value
-            if (input.val() === rule.value) {
-              fieldToHide.trigger('hide');
-            } else {
-              fieldToHide.trigger('show');
-            }
-          }
-        }
-      });
+      // piggyback on validation plugin as it takes care of binding events and triggering when values change
+      // and also allows use to remove them via validation api if we want
+      rule.formView = self.options.formView;
+      var ruleConfig = {};
+      ruleConfig[rule.actionType] = rule;
+      self.$el.find('#' + self.model.get('ID')).rules('add', ruleConfig);
     });
   },
 
   removeRules: function () {
-    this.$el.find('#' + this.model.get('ID')).unbind('change').rules('remove');
+    this.$el.find('#' + this.model.get('ID')).rules('remove');
   },
 
   hide: function () {

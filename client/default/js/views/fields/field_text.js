@@ -8,7 +8,7 @@ FieldTextView = FieldView.extend({
       "title": this.model.get('Title')
     }));
     // add to dom
-    this.options.form.append(this.$el);
+    this.options.formEl.append(this.$el);
     this.show();
   },
 
