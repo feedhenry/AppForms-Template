@@ -124,7 +124,7 @@ exports.getForm = function (params, callback) {
   // - rules data
   // and merge together into single json object
   async.parallel([function (cb) {
-    wufoo_api.getFormData(form_hash, function (err, body) {
+    wufoo_api.getForm(form_hash, function (err, body) {
       if (err) return cb(err);
 
       // TODO: should api client take care of parsing for us?
@@ -139,7 +139,7 @@ exports.getForm = function (params, callback) {
       }
     });
   },function (cb) {
-    wufoo_api.getFormFieldsData(form_hash, function (err, body) {
+    wufoo_api.getFormFields(form_hash, function (err, body) {
       if (err) return cb(err);
 
       // TODO: should api client take care of parsing for us?
@@ -164,6 +164,18 @@ exports.getForm = function (params, callback) {
     form.Rules = results[2];
 
     return callback(null, {data:form});
+  });
+};
+
+exports.postEntry = function (params, callback) {
+  var form_hash = params.form_hash;
+  var data = params.data;
+  wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
+    if (err != null) {
+      console.error('error posting form entry: ' + err.error);
+      return callback(null, err);
+    }
+    return callback(null, resp);
   });
 };
 
