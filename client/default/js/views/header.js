@@ -86,6 +86,7 @@ $fh.ready(function() {
     },
 
     hideForm: function() {
+      window.scrollTo(0, 0);
       if (!_.isUndefined(App.views.form)) {
         $(App.views.form.el).hide();
       }
