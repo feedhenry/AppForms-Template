@@ -15,7 +15,6 @@ FieldModel = Backbone.Model.extend({
 var Fields = Backbone.Collection.extend({
   model: FieldModel,
   sync: function (method, model, options) {
-    debugger;
     console.log('custom sync');
   }
 });
