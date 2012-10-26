@@ -1,9 +1,3 @@
-html, body {
-  background: #eee;
-  min-height: 101%;
-  padding-top: 46px;
-}
-
 .wufoo li {
   width: 100% !important;
 }
@@ -26,37 +20,6 @@ html, body {
 .apibtn {
   position: relative;
   top: 3px;
-}
-
-#fh_wufoo_content {
-  padding-top: 20px;
-}
-
-#fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
-  width: 80%;
-  max-width: 640px;
-  text-align: center;
-  font-family: "Lucida Grande", Tahoma, Arial, Verdana, sans-serif;
-  font-size: 13px;
-  display: none;
-  list-style: none;
-  margin: 0 auto;
-  margin-top: 20px;
-  padding: 0 0 20px 0;
-  background: white;
-  border: 1px solid #CCC;
-  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 5px;
-  -moz-box-shadow: rgba(0,0,0,0.2) 0px 0px 5px;
-  -o-box-shadow: rgba(0,0,0,0.2) 0px 0px 5px;
-  box-shadow: rgba(0, 0, 0, 0.2) 0px 0px 5px;
-}
-
-#fh_wufoo_form_list h2, #fh_wufoo_drafts_list h2, #fh_wufoo_pending_list h2 {
-  margin: 0;
-  padding: 0;
-  background: #dedede;
-  height: 40px;
-  line-height: 40px;
 }
 
 #fh_wufoo_form_list li, #fh_wufoo_drafts_list li, #fh_wufoo_pending_list li {
@@ -264,7 +227,273 @@ input[type=text] {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* `XHTML, HTML4, HTML5 Reset
+----------------------------------------------------------------------------------------------------*/
+
+a,
+abbr,
+acronym,
+address,
+applet,
+article,
+aside,
+audio,
+b,
+big,
+blockquote,
+body,
+canvas,
+caption,
+center,
+cite,
+code,
+dd,
+del,
+details,
+dfn,
+dialog,
+div,
+dl,
+dt,
+em,
+embed,
+fieldset,
+figcaption,
+figure,
+font,
+footer,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+header,
+hgroup,
+hr,
+html,
+i,
+iframe,
+img,
+ins,
+kbd,
+label,
+legend,
+li,
+mark,
+menu,
+meter,
+nav,
+object,
+ol,
+output,
+p,
+pre,
+progress,
+q,
+rp,
+rt,
+ruby,
+s,
+samp,
+section,
+small,
+span,
+strike,
+strong,
+sub,
+summary,
+sup,
+table,
+tbody,
+td,
+tfoot,
+th,
+thead,
+time,
+tr,
+tt,
+u,
+ul,
+var,
+video,
+xmp {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+/*
+  Override the default (display: inline) for
+  browsers that do not recognize HTML5 tags.
+
+  IE8 (and lower) requires a shiv:
+  http://ejohn.org/blog/html5-shiv
+*/
+  display: block;
+}
+
+b,
+strong {
+/*
+  Makes browsers agree.
+  IE + Opera = font-weight: bold.
+  Gecko + WebKit = font-weight: bolder.
+*/
+  font-weight: bold;
+}
+
+img {
+  color: transparent;
+  font-size: 0;
+  vertical-align: middle;
+/*
+  For IE.
+  http://css-tricks.com/ie-fix-bicubic-scaling-for-images
+*/
+  -ms-interpolation-mode: bicubic;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+li {
+/*
+  For IE6 + IE7:
+
+  "display: list-item" keeps bullets from
+  disappearing if hasLayout is triggered.
+*/
+  display: list-item;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th,
+td,
+caption {
+  font-weight: normal;
+  vertical-align: top;
+  text-align: left;
+}
+
+q {
+  quotes: none;
+}
+
+q:before,
+q:after {
+  content: '';
+  content: none;
+}
+
+sub,
+sup,
+small {
+  font-size: 75%;
+}
+
+sub,
+sup {
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+sub {
+  bottom: -0.25em;
+}
+
+sup {
+  top: -0.5em;
+}
+
+svg {
+/*
+  For IE9. Without, occasionally draws shapes
+  outside the boundaries of <svg> rectangle.
+*/
+  overflow: hidden;
+}
+
+
+
 /* Phase2 styles */
 /* TODO: Cleanup above */
+html, body {
+  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #EEE;
+  min-height: 101%;
+  padding-top: 46px;
+  color: #333;
+}
 
-input, textarea, select { display: block; }
+label { display: block; margin-bottom: 10px; font-size: 18px; }
+label.error { display: inline; }
+
+#fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
+  padding-top: 20px;
+  background: #fff;
+  padding: 20px;
+  width: 80%;
+  margin: 0 auto;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+  -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+  -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+  -o-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+  box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+  -webkit-border-radius: 0 0 5px 5px;
+  -moz-border-radius: 0 0 5px 5px;
+  -ms-border-radius: 0 0 5px 5px;
+  -o-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
+}
+
+#fh_wufoo_content .field_container {
+  padding: 18px 20px 18px 0;
+  border-bottom: 1px solid #e4e4e4;
+}

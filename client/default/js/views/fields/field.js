@@ -1,5 +1,7 @@
 FieldView = Backbone.View.extend({
 
+  className : 'field_container',
+
   // TODO: cache the input element lookup
   initialize: function() {
     // TODO: right way to do this showing/hiding?
