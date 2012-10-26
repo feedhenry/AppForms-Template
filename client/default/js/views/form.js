@@ -97,7 +97,6 @@ FormView = Backbone.View.extend({
           model: field,
           fieldsCollection: self.model.fields
         });
-        form.append('<br/>');
       } else {
         console.log('FIELD NOT SUPPORTED:' + fieldType);
       }
