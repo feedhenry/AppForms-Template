@@ -5,10 +5,9 @@ FormView = Backbone.View.extend({
     heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>'
   },
 
-  pages: [],
-
   initialize: function() {
     _.bindAll(this, 'render');
+    this.pages = [];
     this.render();
   },
 
@@ -56,12 +55,17 @@ FormView = Backbone.View.extend({
   },
 
   showField: function (id) {
-    // TODO: move to page view???
-    //this.fieldViews[id].show();
+    // call hideField on all pages as field should exist in one
+    _(this.pages).forEach(function (page, index) {
+      page.showField(id);
+    });
   },
 
   hideField: function (id) {
-    //this.fieldViews[id].hide();
+    // call hideField on all pages as field should exist in one
+    _(this.pages).forEach(function (page, index) {
+      page.hideField(id);
+    });
   }
 
 });
