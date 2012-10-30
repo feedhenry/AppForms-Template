@@ -16,7 +16,7 @@ FieldCustomTimeView = FieldView.extend({
     this.addButton(this.$el, this.extension_type, 'Capture Time');
 
     // add to dom
-    this.options.formEl.append(this.$el);
+    this.options.parentEl.append(this.$el);
     this.show();
   },
 
