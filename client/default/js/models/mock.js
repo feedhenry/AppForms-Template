@@ -439,8 +439,7 @@ App.MockForm = {
       "Type": "likert",
       "ID": "Field125",
       "HasOtherField": false
-    }],
-    "Rules": []
+    }]
   }, {
     "Title": "FeedHenry Fields",
     "Fields": [{
@@ -524,9 +523,9 @@ App.MockForm = {
       "Page": "3",
       "Type": "text",
       "ID": "Field233"
-    }],
-    "Rules": []
+    }]
   }],
+  "Theme": "/*Theme goes here!*/",
   "Rules": [{
     "RuleId": "62",
     "Type": "ShowMessage",

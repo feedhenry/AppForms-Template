@@ -156,25 +156,24 @@ exports.getForm = function (params, callback) {
     });
   }, function (cb) {
     wufoo_admin.getRules(form_hash, cb);
-  }
-  ], function (err, results) {
-    if (err) return callback(null, err);
-    
-    var form = results[0];
+  }, function (cb) {
     // TODO: wire up pages, if any
-    form.Pages = [{
-      "Title": "Standard Fields",
-      "Fields": [],
-      "Rules": []
+    return cb(null, [{
+      "Title": "Standard Fields"
     }, {
-      "Title": "Fancy Fields",
-      "Fields": [],
-      "Rules": []
+      "Title": "Fancy Fields"
     }, {
-      "Title": "FeedHenry Fields",
-      "Fields": [],
-      "Rules": []
-    }];
+      "Title": "FeedHenry Fields"
+    }]);
+  }, function (cb) {
+    return cb(null, "/*Theme goes here!*/");
+  }], function (err, results) {
+    // defer err and try construct form json
+    // may be able to work without some of the response
+    
+    var form = results[0] || {};
+    form.Pages = results[3] || [];
+    form.Theme = results[4] || "";
 
     function parseRules(rules) {
       var parsedRules = {};
@@ -194,17 +193,19 @@ exports.getForm = function (params, callback) {
     }
 
     // add form rules at top level
-    form.Rules = results[2].FormRules || [];
+    var rules = results[2] || {};
+    form.Rules = rules.FormRules || [];
 
     // parse page & field rules
-    var tempPageRules = parseRules(results[2].PageRules || []);
+    var tempPageRules = parseRules(rules.PageRules || []);
     console.log('tempPageRules:', tempPageRules);
-    var tempFieldRules = parseRules(results[2].FieldRules || []);
+    var tempFieldRules = parseRules(rules.FieldRules || []);
     console.log('tempFieldRules:', tempFieldRules);
 
-    var wufoo_default_fields = ['EntryId', 'DateCreated', 'CreatedBy', 'LastUpdated', 'UpdatedBy'];
     // iterate over fields, moving each into relevant page, or dropping if wufoo default fields
-    results[1].forEach(function (field, index) {
+    var fields = results[1] || [];
+    var wufoo_default_fields = ['EntryId', 'DateCreated', 'CreatedBy', 'LastUpdated', 'UpdatedBy'];
+    fields.forEach(function (field, index) {
       var pageNum = parseInt(field.Page || "1", 10) -1;
       if (wufoo_default_fields.indexOf(field.ID) === -1) {
         // if any field rules mathc this field id, add it to field Rules object
@@ -213,11 +214,13 @@ exports.getForm = function (params, callback) {
         }
 
         // add fields to matching page
-        var page = form.Pages[pageNum];
+        var page = form.Pages[pageNum] || {};
+        page.Fields = page.Fields || [];
         page.Fields.push(field);
 
         // also, if any page rules matches this field id, add it to the page to (page rules don't have a page id associated with them (why not?), instead have field id of affecting field)
         if (tempPageRules[field.ID] != null) {
+          page.Rules = page.Rules || [];
           page.Rules.push.apply(page.Rules, tempPageRules[field.ID]); // push array of rules onto end
         }
       }

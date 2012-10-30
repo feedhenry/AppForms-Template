@@ -1,4 +1,10 @@
 PageModel = Backbone.Model.extend({
+  defaults: {
+    "Title": "",
+    "Fields": [],
+    "Rules": []
+  },
+
   initialize: function () {
     var fields = this.get('Fields');
     this.fields = new Fields(fields);
