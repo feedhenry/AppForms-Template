@@ -6,7 +6,7 @@ var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_admin = require('./wufoo_client/admin.js');
 var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
-var _ = require('underscore')
+var _ = require('underscore');
 
 function cacheable() {
   // Should page fragments be cached?
@@ -62,7 +62,7 @@ formDataToMultipart = function(form_data, cb) {
   var multipart_data = [];
 
   if (typeof wufoo_config == 'undefined') {
-    return callback(null, {
+    return cb(null, {
       "html": "",
       "error": "No config."
     });
@@ -110,10 +110,37 @@ formDataToMultipart = function(form_data, cb) {
   return multipart_data;
 };
 
+exports.getFormTheme = function (params, callback) {
+  var form_hash = params.form_hash;
+
+  if (form_hash == null) return callback(null, {
+    "error": "form_hash is required"
+  });
+
+  wufoo_api.getFormTheme(form_hash, function (err, body) {
+    if (err) return callback(err);
+    console.log("Returning :: " + body);
+    return callback(null, {Theme: body});
+  });
+};
+
+exports.getFormPages = function (params, callback) {
+  var form_hash = params.form_hash;
+
+  if (form_hash == null) return callback(null, {
+    "error": "form_hash is required"
+  });
+
+  wufoo_api.getFormPages(form_hash, function (err, body) {
+    if (err) return callback(err);
+    console.log("Returning :: " + body);
+    return callback(null, {Pages: body});
+  });
+};
+
 exports.getForm = function (params, callback) {
   var form_hash = params.form_hash;
 
-  // TODO: generic field validation?
   // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
   if (form_hash == null) return callback(null, {
     "error": "form_hash is required"
@@ -125,48 +152,15 @@ exports.getForm = function (params, callback) {
   // - rules data
   // and merge together into single json object
   async.parallel([function (cb) {
-    wufoo_api.getForm(form_hash, function (err, body) {
-      if (err) return cb(err);
-
-      // TODO: should api client take care of parsing for us?
-      try {
-        var form_json = JSON.parse(body);
-        var form = form_json.Forms[0];
-        return cb(null, form);
-      } catch (e) {
-        return cb({
-          "error": e
-        });
-      }
-    });
+    wufoo_api.getForm(form_hash, cb);
   },function (cb) {
-    wufoo_api.getFormFields(form_hash, function (err, body) {
-      if (err) return cb(err);
-
-      // TODO: should api client take care of parsing for us?
-      // TODO: should omit special fields on client or cloud? i.e. EntryId, DateCreated, CreatedBy, UpdatedBy, LastUpdated
-      try {
-        var fields_json = JSON.parse(body);
-        return cb(null, fields_json['Fields']);
-      } catch (e) {
-        return cb({
-          "error": e
-        });
-      }
-    });
+    wufoo_api.getFormFields(form_hash, cb);
   }, function (cb) {
     wufoo_admin.getRules(form_hash, cb);
   }, function (cb) {
-    // TODO: wire up pages, if any
-    return cb(null, [{
-      "Title": "Standard Fields"
-    }, {
-      "Title": "Fancy Fields"
-    }, {
-      "Title": "FeedHenry Fields"
-    }]);
+    wufoo_api.getFormPages(form_hash, cb);
   }, function (cb) {
-    return cb(null, "/*Theme goes here!*/");
+    wufoo_api.getFormTheme(form_hash, cb);
   }], function (err, results) {
     // defer err and try construct form json
     // may be able to work without some of the response
@@ -233,8 +227,11 @@ exports.getForm = function (params, callback) {
 
 exports.postEntry = function (params, callback) {
   var form_hash = params.form_hash;
+  if (form_hash == null) return callback(null, {
+    "error": "form_hash is required"
+  });
   var data = params.data;
-  wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
+  return wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
     if (err != null) {
       console.error('error posting form entry: ' + err.error);
       return callback(null, err);
@@ -253,7 +250,7 @@ exports.postEntry = function (params, callback) {
 exports.getForms = function (params, callback) {
   wufoo_api.getForms(function (error, body) {
     return callback(null, {
-      data:JSON.parse(body)
+      data:body
     });
   });
 };
