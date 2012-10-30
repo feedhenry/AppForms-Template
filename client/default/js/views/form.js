@@ -25,7 +25,7 @@ FormView = Backbone.View.extend({
     form.append(heading);
 
     // Show steps view?
-    if (this.model.pages.length > 0) {
+    if (this.model.pages.length > 1) {
       self.steps = new StepsView({
         parentEl: this.$el,
         parentView: self,

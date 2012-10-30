@@ -581,3 +581,86 @@ textarea {
   font-size: 16px;
   width: 100%;
 }
+
+/* Steps */
+.wizard-progress {
+  list-style: none;
+  list-style-image: none;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+  float: left;
+  white-space: nowrap;
+}
+
+.wizard-progress li {
+  float: left;
+  margin-right: 50px;
+  text-align: center;
+  position: relative;
+  width: 100px;
+}
+
+.wizard-progress .step-name {
+  display: table-cell;
+  height: 32px;
+  vertical-align: bottom;
+  text-align: center;
+  width: 100px;
+}
+
+.wizard-progress .step-name-wrapper {
+  display: table-cell;
+  height: 100%;
+  vertical-align: bottom;
+}
+
+.wizard-progress .step-num {
+  font-size: 14px;
+  font-weight: bold;
+  border: 3px solid #000;
+  border-radius: 50%;
+  width: 18px;
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.wizard-progress .step-num:after {
+  content: "";
+  display: block;
+  background: #000;
+  height: 5px;
+  width: 130px;
+  position: absolute;
+  bottom: 10px;
+  left: 60px;
+}
+
+.wizard-progress li:last-of-type .step-num:after {
+  display: none;
+}
+
+.wizard-progress .active-step .step-num {
+  background-color: #ff0500;
+}​
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
+}
+ 
+.clearfix {
+  display: inline-block;
+}
+ 
+html[xmlns] .clearfix {
+  display: block;
+}
+ 
+* html .clearfix {
+  height: 1%;
+}
