@@ -2,7 +2,7 @@ FieldCustomDateView = FieldView.extend({
   extension_type: 'fhtime',
 
   templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text">'
+    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="date">'
   },
 
   render: function() {
@@ -21,7 +21,7 @@ FieldCustomDateView = FieldView.extend({
   },
 
   action: function(el) {
-    var ds = new moment().format('DD/MM/YYYY');
+    var ds = new moment().format('YYYY-MM-DD');
     $('input', this.$el).val(ds).blur();
   }
 });
