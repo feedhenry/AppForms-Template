@@ -1,4 +1,10 @@
 FormModel = Backbone.Model.extend({
+  defaults: {
+    "Theme": "",
+    "Pages": [],
+    "Rules": []
+  },
+
   initialize: function () {
     var pages = this.get('Pages');
     this.pages = new Pages(pages);
