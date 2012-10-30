@@ -72,6 +72,24 @@ FieldView = Backbone.View.extend({
     }
   },
 
+  addButton: function(input, extension_type, label) {
+    var self = this;
+    var button = $('<button>');
+    button.addClass('special_button');
+    button.addClass(extension_type);
+    button.text(' ' + label);
+    var img = $('<img>');
+    img.attr('src', './img/' + extension_type + '.png');
+    button.prepend(img);
+
+    button.click(function() {
+      self.action(this);
+      return false;
+    });
+
+    input.append(button);
+  },
+
   show: function () {
     if (this.$el.not(':visible')) {
       this.$el.show();

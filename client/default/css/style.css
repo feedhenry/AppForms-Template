@@ -571,3 +571,7 @@ textarea {
   -o-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
   box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;
 }
+
+.special_button img {
+  min-height: 20px;
+}
