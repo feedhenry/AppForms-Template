@@ -12,7 +12,7 @@ App.MockForm = {
   "EndDate": "2030-01-01 12:00:00",
   "EntryLimit": "0",
   "DateCreated": "2012-10-23 10:58:40",
-  "DateUpdated": "2012-10-26 06:52:40",
+  "DateUpdated": "2012-10-30 07:58:30",
   "Hash": "s7w7z7",
   "LinkFields": "https://feedhenry.wufoo.eu/api/v3/forms/s7w7z7/fields.json",
   "LinkEntries": "https://feedhenry.wufoo.eu/api/v3/forms/s7w7z7/entries.json",
@@ -64,6 +64,108 @@ App.MockForm = {
       "Page": "1",
       "Type": "text",
       "ID": "Field2"
+    }, {
+      "Title": "Checkbox - If checked, hide Check1Input below",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "0",
+      "Page": "1",
+      "SubFields": [{
+        "DefaultVal": "0",
+        "ID": "Field449",
+        "Label": "Hide Check1Input"
+      }],
+      "Type": "checkbox",
+      "ID": "Field449",
+      "Rules": [{
+        "RuleId": "64",
+        "Type": "Hide",
+        "Setting": {
+          "FieldName": "649",
+          "FieldTypes": {
+            "449": "checkbox"
+          }
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [{
+          "ConditionId": "64",
+          "FieldName": "449",
+          "Filter": "is",
+          "Value": "Hide Check1Input",
+          "ReportId": "57",
+          "RuleId": "64"
+        }],
+        "condition": {
+          "ConditionId": "64",
+          "FieldName": "449",
+          "Filter": "is",
+          "Value": "Hide Check1Input",
+          "ReportId": "57",
+          "RuleId": "64"
+        }
+      }]
+    }, {
+      "Title": "Checkbox - If checked, show Check2Input below",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "0",
+      "Page": "1",
+      "SubFields": [{
+        "DefaultVal": "0",
+        "ID": "Field349",
+        "Label": "Show Check2Input"
+      }],
+      "Type": "checkbox",
+      "ID": "Field349",
+      "Rules": [{
+        "RuleId": "65",
+        "Type": "Show",
+        "Setting": {
+          "FieldName": "650",
+          "FieldTypes": {
+            "349": "checkbox"
+          }
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [{
+          "ConditionId": "65",
+          "FieldName": "349",
+          "Filter": "is",
+          "Value": "Show Check2Input",
+          "ReportId": "57",
+          "RuleId": "65"
+        }],
+        "condition": {
+          "ConditionId": "65",
+          "FieldName": "349",
+          "Filter": "is",
+          "Value": "Show Check2Input",
+          "ReportId": "57",
+          "RuleId": "65"
+        }
+      }]
+    }, {
+      "Title": "Check1Input - Shown initially",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "1",
+      "Type": "text",
+      "ID": "Field649"
+    }, {
+      "Title": "Check2Input - Hidden initially",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "hide",
+      "DefaultVal": "",
+      "Page": "1",
+      "Type": "text",
+      "ID": "Field650"
     }, {
       "Title": "Paragraph Field",
       "Instructions": "",
@@ -117,43 +219,6 @@ App.MockForm = {
       "ID": "Field241",
       "HasOtherField": false
     }, {
-      "Title": "Number field - required",
-      "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "",
-      "DefaultVal": "",
-      "Page": "1",
-      "Type": "number",
-      "ID": "Field3",
-      "Rules": [{
-        "RuleId": "61",
-        "Type": "Hide",
-        "Setting": {
-          "FieldName": "5",
-          "FieldTypes": {
-            "3": "number"
-          }
-        },
-        "FormId": "57",
-        "MatchType": "any",
-        "Conditions": [{
-          "ConditionId": "61",
-          "FieldName": "3",
-          "Filter": "is equal to",
-          "Value": "7",
-          "ReportId": "57",
-          "RuleId": "61"
-        }],
-        "condition": {
-          "ConditionId": "61",
-          "FieldName": "3",
-          "Filter": "is equal to",
-          "Value": "7",
-          "ReportId": "57",
-          "RuleId": "61"
-        }
-      }]
-    }, {
       "Title": "Number field - Range 2 - 8 Value",
       "Instructions": "",
       "IsRequired": "0",
@@ -172,7 +237,44 @@ App.MockForm = {
       "Type": "number",
       "ID": "Field243"
     }, {
-      "Title": "Checkbox field - No Rules",
+      "Title": "Number field - required - Hide Checkbox field below if 7",
+      "Instructions": "",
+      "IsRequired": "1",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "1",
+      "Type": "number",
+      "ID": "Field3",
+      "Rules": [{
+        "RuleId": "63",
+        "Type": "Hide",
+        "Setting": {
+          "FieldName": "5",
+          "FieldTypes": {
+            "3": "number"
+          }
+        },
+        "FormId": "57",
+        "MatchType": "any",
+        "Conditions": [{
+          "ConditionId": "63",
+          "FieldName": "3",
+          "Filter": "is equal to",
+          "Value": "7",
+          "ReportId": "57",
+          "RuleId": "63"
+        }],
+        "condition": {
+          "ConditionId": "63",
+          "FieldName": "3",
+          "Filter": "is equal to",
+          "Value": "7",
+          "ReportId": "57",
+          "RuleId": "63"
+        }
+      }]
+    }, {
+      "Title": "Checkbox field - No Rules - Will hide if number field above is 7",
       "Instructions": "",
       "IsRequired": "0",
       "ClassNames": "",

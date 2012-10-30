@@ -6,12 +6,14 @@ FieldModel = Backbone.Model.extend({
   
   // Determine field type from special classes
   getType: function() {
-    if (this.attributes.Type && this.attributes.ClassNames) {
-      var special_type = this.attributes.ClassNames.split(" ")[1];
-      return special_type;
-    } else if (this.attributes.Type) {
-      return this.attributes.Type;
+    var type = this.attributes.Type;
+    if (this.attributes.ClassNames) {
+      var special_type = this.attributes.ClassNames.split(" ");
+      if (special_type.length > 1 && special_type[1].indexOf('fh') === 0) {
+        type = special_type[1];
+      }
     }
+    return type;
   }
 });
 

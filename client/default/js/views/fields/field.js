@@ -1,17 +1,26 @@
-$.validator.addMethod("wufoo_Hide", function(value, element, params) {
-  // check condition
-  // TODO: check filter type (params.filter)
-  // TODO: check match type & other conditions, if any (params.match, params.id)
+$.wufoo_rule_add('Hide', function (value, element, params) {
   var fieldId = 'Field' + params.Setting.FieldName;
-  if (value === params.condition.Value) {
+  var fieldValue = params.condition.Value;
+  if (params.Setting.FieldTypes[params.condition.FieldName] === 'checkbox') {
+    fieldValue = ('is' === params.condition.Filter);
+  }
+  if (value === fieldValue) {
     App.views.form.hideField(fieldId);
   } else {
     App.views.form.showField(fieldId);
   }
-
-  // always return true as this isn't really a validation check. We're piggybacking on validation plugin
-  // as it has some useful binding/events/api we can use
-  return true;
+});
+$.wufoo_rule_add('Show', function (value, element, params) {
+  var fieldId = 'Field' + params.Setting.FieldName;
+  var fieldValue = params.condition.Value;
+  if (params.Setting.FieldTypes[params.condition.FieldName] === 'checkbox') {
+    fieldValue = ('is' === params.condition.Filter);
+  }
+  if (value === fieldValue) {
+    App.views.form.showField(fieldId);
+  } else {
+    App.views.form.hideField(fieldId);
+  }
 });
 
 FieldView = Backbone.View.extend({
@@ -52,14 +61,13 @@ FieldView = Backbone.View.extend({
 
   addSpecialRules: function () {
     var self = this;
+
     // also apply any special rules
     _(this.model.get('Rules') || []).each(function (rule) {
-      // piggyback on validation plugin as it takes care of binding events and triggering when values change
-      // and also allows use to remove them via validation api if we want
       rule.pageView = self.options.parentView;
       var ruleConfig = {};
-      ruleConfig['wufoo_' + rule.Type] = rule;
-      self.$el.find('#' + self.model.get('ID')).rules('add', ruleConfig);
+      ruleConfig[rule.Type] = rule;
+      self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
     });
   },
 
