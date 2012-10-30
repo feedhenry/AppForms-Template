@@ -6,6 +6,7 @@ var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_admin = require('./wufoo_client/admin.js');
 var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
+var _ = require('underscore')
 
 function cacheable() {
   // Should page fragments be cached?
@@ -160,8 +161,68 @@ exports.getForm = function (params, callback) {
     if (err) return callback(null, err);
     
     var form = results[0];
-    form.Fields = results[1];
-    form.Rules = results[2];
+    // TODO: wire up pages, if any
+    form.Pages = [{
+      "Title": "Standard Fields",
+      "Fields": [],
+      "Rules": []
+    }, {
+      "Title": "Fancy Fields",
+      "Fields": [],
+      "Rules": []
+    }, {
+      "Title": "FeedHenry Fields",
+      "Fields": [],
+      "Rules": []
+    }];
+
+    function parseRules(rules) {
+      var parsedRules = {};
+      // iterate over rules
+      rules.forEach(function (rule, rIndex) {
+        // iterate over conditions, adding a temp entry for each
+        rule.Conditions.forEach(function (condition, cIndex) {
+          var tempRule = _.clone(rule); // clone rule as we're manipulating it multiple times potentially depending on # conditions
+          tempRule.condition = condition;
+          var fieldId = 'Field' + condition.FieldName;
+          parsedRules[fieldId] = parsedRules[fieldId] || [];
+          parsedRules[fieldId].push(tempRule);
+        });
+      });
+
+      return parsedRules;
+    }
+
+    // add form rules at top level
+    form.Rules = results[2].FormRules || [];
+
+    // parse page & field rules
+    var tempPageRules = parseRules(results[2].PageRules || []);
+    console.log('tempPageRules:', tempPageRules);
+    var tempFieldRules = parseRules(results[2].FieldRules || []);
+    console.log('tempFieldRules:', tempFieldRules);
+
+    var wufoo_default_fields = ['EntryId', 'DateCreated', 'CreatedBy', 'LastUpdated', 'UpdatedBy'];
+    // iterate over fields, moving each into relevant page, or dropping if wufoo default fields
+    results[1].forEach(function (field, index) {
+      var pageNum = parseInt(field.Page || "1", 10) -1;
+      if (wufoo_default_fields.indexOf(field.ID) === -1) {
+        // if any field rules mathc this field id, add it to field Rules object
+        if (tempFieldRules[field.ID] != null) {
+          field.Rules = tempFieldRules[field.ID];
+        }
+
+        // add fields to matching page
+        var page = form.Pages[pageNum];
+        page.Fields.push(field);
+
+        // also, if any page rules matches this field id, add it to the page to (page rules don't have a page id associated with them (why not?), instead have field id of affecting field)
+        if (tempPageRules[field.ID] != null) {
+          page.Rules.push.apply(page.Rules, tempPageRules[field.ID]); // push array of rules onto end
+        }
+      }
+    });
+    console.log('form:', form);
 
     return callback(null, {data:form});
   });
