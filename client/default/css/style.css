@@ -575,3 +575,9 @@ textarea {
 .special_button img {
   min-height: 20px;
 }
+
+.special_button {
+  padding: 4px;
+  font-size: 16px;
+  width: 100%;
+}
