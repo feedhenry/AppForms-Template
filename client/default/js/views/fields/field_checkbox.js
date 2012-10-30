@@ -1,3 +1,8 @@
+$.validator.addMethod("wufoo_checkbox_required", function(value, element, params) {
+  // TODO: implement
+  return true;
+});
+
 FieldCheckboxView = FieldView.extend({
   templates: {
     hidden_field: '<input id="checkbox<%= id %>" name="<%= id %>" type="hidden" value="">',
@@ -29,13 +34,18 @@ FieldCheckboxView = FieldView.extend({
       self.$el.append(choice_field);
     });
 
-    // add to form
-    this.options.formEl.append(this.$el);
+    // add to dom
+    this.options.parentEl.append(this.$el);
 
     this.show();
   },
   
   addValidationRules: function () {
-    // TODO: how should a checkbox that is required be handled? implement rule based on # of checkboxes?
+    if (this.model.get('IsRequired') === '1') {
+      // special required rule for checkbox fields
+      this.$el.find('input[type="checkbox"]').rules('add', {
+        "wufoo_checkbox_required": true
+      });
+    }
   }
 });

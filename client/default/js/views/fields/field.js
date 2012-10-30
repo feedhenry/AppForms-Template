@@ -3,9 +3,9 @@ $.validator.addMethod("wufoo_hide", function(value, element, params) {
   // TODO: check filter type (params.filter)
   // TODO: check match type & other conditions, if any (params.match, params.id)
   if (value === params.value) {
-    params.formView.hideField(params.actionField);
+    params.pageView.hideField(params.actionField);
   } else {
-    params.formView.showField(params.actionField);
+    params.pageView.showField(params.actionField);
   }
 
   // always return true as this isn't really a validation check. We're piggybacking on validation plugin
@@ -25,12 +25,14 @@ FieldView = Backbone.View.extend({
 
   render: function() {
     // construct field html
-    this.$el.append(_.template(this.template.join(''), {
+    this.$el.addClass('field_container').append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
     }));
+
     // add to dom
-    this.options.formEl.append(this.$el);
+    this.options.parentEl.append(this.$el);
+
     this.show();
   },
 
@@ -53,7 +55,7 @@ FieldView = Backbone.View.extend({
     _(this.model.get('specialRules') || []).each(function (rule) {
       // piggyback on validation plugin as it takes care of binding events and triggering when values change
       // and also allows use to remove them via validation api if we want
-      rule.formView = self.options.formView;
+      rule.pageView = self.options.parentView;
       var ruleConfig = {};
       ruleConfig[rule.actionType] = rule;
       self.$el.find('#' + self.model.get('ID')).rules('add', ruleConfig);

@@ -1,8 +1,8 @@
 // field model
 FieldModel = Backbone.Model.extend({
-  defaults: {
-    "specialRules":  []
-  },
+  // defaults: {
+  //   "specialRules":  []
+  // },
   
   // Determine field type from special classes
   getType: function() {

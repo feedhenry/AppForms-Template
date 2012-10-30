@@ -32,8 +32,8 @@ FieldRadioView = FieldView.extend({
       self.$el.append(choice_field);
     });
 
-    // add to form
-    this.options.formEl.append(this.$el);
+    // add to dom
+    this.options.parentEl.append(this.$el);
 
     this.show();
   },
