@@ -25,6 +25,15 @@ FormView = Backbone.View.extend({
     });
     form.append(heading);
 
+    // Show steps view?
+    if (this.model.pages.length > 0) {
+      self.steps = new StepsView({
+        parentEl: this.$el,
+        parentView: self,
+        model: this.model
+      });
+    }
+
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     this.$el.append(form);
     form.validate();
@@ -36,7 +45,6 @@ FormView = Backbone.View.extend({
         model: page
       }));
     });
-
 
     // TODO: Move to tpl
     var action_bar = $('<div>').addClass('fh_action_bar');
