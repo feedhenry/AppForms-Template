@@ -26,11 +26,9 @@ PageView = Backbone.View.extend({
     "fhdate": FieldCustomDateView
   },
 
-  // keep ref to all field views
-  fieldViews: {},
-
   initialize: function() {
     _.bindAll(this, 'render');
+    this.fieldViews = {};
     this.render();
   },
 
@@ -58,11 +56,17 @@ PageView = Backbone.View.extend({
   },
 
   showField: function (id) {
-    this.fieldViews[id].show();
+    // show field if it's on this page
+    if (this.fieldViews[id]) {
+      this.fieldViews[id].show();
+    }
   },
 
   hideField: function (id) {
-    this.fieldViews[id].hide();
+    // hide field if it's on this page
+    if (this.fieldViews[id]) {
+      this.fieldViews[id].hide();
+    }
   }
 
 });
