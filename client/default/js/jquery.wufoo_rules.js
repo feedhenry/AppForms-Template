@@ -14,7 +14,6 @@
   };
 
   function check(value, element, params) {
-    var fieldId = 'Field' + params.Setting.FieldName;
     var fieldValue = params.condition.Value;
     var filter = params.condition.Filter;
     var type = params.Setting.FieldTypes[params.condition.FieldName];
@@ -96,7 +95,7 @@
       }
     }
 
-    params.fn(retVal, fieldId);
+    params.fn(retVal, params);
   }
 
   // remove and bind all configured re
@@ -109,14 +108,18 @@
     }
     var elEvents = events[elType];
 
-    el.bind(elEvents, function () {
-      var jqEl = $(this);
-      var rules = jqEl.data('wufoo_rules') || [];
+    el.bind(elEvents, function (e) {
+      eventHandler();
+    });
+  }
 
-      var value = jqEl.is(typeSelector.text) ? jqEl.val() : jqEl.is(':checked');
-      $.each(rules, function (index, rule) {
-        check(value, jqEl, rule);
-      });
+  function eventHandler(rules) {
+    var jqEl = $(this);
+    rules = rules || (jqEl.data('wufoo_rules') || []);
+
+    var value = jqEl.is(typeSelector.text) ? jqEl.val() : jqEl.is(':checked');
+    $.each(rules, function (index, rule) {
+      check(value, jqEl, rule);
     });
   }
 
@@ -136,6 +139,10 @@
           $.data(element, 'wufoo_rules', null);
           bindRules(this);
           return rules;
+        case "exec": // exec rule right now
+          rules.push(argument);
+          eventHandler.call(this, rules);
+          break;
         }
       }
     }

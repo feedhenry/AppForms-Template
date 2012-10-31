@@ -38,14 +38,16 @@ FieldView = Backbone.View.extend({
     var self = this;
 
     var rules = {
-      'Show': function (rulePasses, fieldId) {
+      'Show': function (rulePasses, params) {
+        var fieldId = 'Field' + params.Setting.FieldName;
         if (rulePasses) {
           App.views.form.showField(fieldId);
         } else {
           App.views.form.hideField(fieldId);
         }
       },
-      'Hide': function (rulePasses, fieldId) {
+      'Hide': function (rulePasses, params) {
+        var fieldId = 'Field' + params.Setting.FieldName;
         if (rulePasses) {
           App.views.form.hideField(fieldId);
         } else {

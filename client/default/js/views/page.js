@@ -52,7 +52,14 @@ PageView = Backbone.View.extend({
       }
     });
 
-    this.$el.append('<br>---------PAGE BREAK --------<br>');
+    // temp butan to validate
+    this.$el.append($('<button>', {
+      "text": "Validate This Page"
+    }).bind('click', function (e) {
+      e.preventDefault();
+      var isValid = self.isValid.call(self) ? true : false; // 1 or 0
+      alert('page validation:' + isValid);
+    }));
   },
 
   showField: function (id) {
@@ -70,12 +77,56 @@ PageView = Backbone.View.extend({
   },
 
   isValid: function () {
-    // validate fields on this page
-
+    // only validate form inputs on this page
+    return this.$el.find('input,select,option,textarea').valid();
   },
 
   checkRules: function () {
+    var self = this;
 
+    /* "Rules": [{
+      "RuleId": "60",
+      "Type": "SkipToPage",
+      "Setting": {
+        "Page": "3"
+      },
+      "FormId": "57",
+      "MatchType": "any",
+      "Conditions": [{
+        "ConditionId": "60",
+        "FieldName": "2",
+        "Filter": "is",
+        "Value": "go",
+        "ReportId": "57",
+        "RuleId": "60"
+      }],
+      "condition": {
+        "ConditionId": "60",
+        "FieldName": "2",
+        "Filter": "is",
+        "Value": "go",
+        "ReportId": "57",
+        "RuleId": "60"
+      }
+    }]*/
+    var result = {};
+
+    var rules = {
+      SkipToPage: function (rulePasses, params) {
+        var pageToSkipTo = params.Setting.Page;
+        if (rulePasses) {
+          result.skipToPage = pageToSkipTo;
+        }
+      }
+    };
+
+    // iterate over page rules, if any, calling relevant rule function
+    _(this.model.get('Rules') || []).forEach(function (rule, index) {
+      // get element that rule condition is based on
+      var jqEl = self.$el.find('#Field' + rule.condition.FieldName);
+      rule.fn = rules[rule.Type];
+      jqEl.wufoo_rules('exec', rule);
+    });
   }
   
 });

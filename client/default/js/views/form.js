@@ -50,10 +50,11 @@ FormView = Backbone.View.extend({
 
     // temp butan to validate
     action_bar.append($('<button>', {
-      "text": "Validate"
+      "text": "Validate Entire Form"
     }).bind('click', function (e) {
       e.preventDefault();
-      form.valid();
+      var isValid = form.valid() ? true : false; // 1 or 0
+      alert('form validation:' + isValid);
     }));
 
     // add to DOM
