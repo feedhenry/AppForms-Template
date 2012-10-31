@@ -109,7 +109,7 @@
     var elEvents = events[elType];
 
     el.bind(elEvents, function (e) {
-      eventHandler();
+      eventHandler.call(this);
     });
   }
 
