@@ -419,7 +419,6 @@ var WufooController = {
 
 
     utils.isOnline(function(online) {
-      alert('Online: ' + online);
       if (online) {
         $fh.act({
           "act": "submitForm",
