@@ -6,7 +6,12 @@ StepsView = Backbone.View.extend({
   },
 
   initialize: function() {
+    var self = this;
+
     _.bindAll(this, 'render');
+    this.model.on('change:active_page', function (model, page) {
+      self.activePageChange.call(self, model, page);
+    });
     this.render();
   },
 
@@ -28,6 +33,10 @@ StepsView = Backbone.View.extend({
     });
 
     this.$el.append(list);
+  },
+
+  activePageChange: function (model, pageIndex) {
+    // TODO
   }
 
 });

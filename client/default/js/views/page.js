@@ -35,7 +35,8 @@ PageView = Backbone.View.extend({
   render: function() {
     var self = this;
 
-    this.$el.empty().addClass('page');
+    // all pages hidden initially
+    this.$el.empty().addClass('page hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 
@@ -51,15 +52,14 @@ PageView = Backbone.View.extend({
         console.log('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
+  },
 
-    // temp butan to validate
-    this.$el.append($('<button>', {
-      "text": "Validate This Page"
-    }).bind('click', function (e) {
-      e.preventDefault();
-      var isValid = self.isValid.call(self) ? true : false; // 1 or 0
-      alert('page validation:' + isValid);
-    }));
+  show: function () {
+    this.$el.removeClass('hidden');
+  },
+
+  hide: function () {
+    this.$el.addClass('hidden');
   },
 
   showField: function (id) {
@@ -78,7 +78,7 @@ PageView = Backbone.View.extend({
 
   isValid: function () {
     // only validate form inputs on this page
-    return this.$el.find('input,select,option,textarea').valid();
+    return this.$el.find('input,select,option,textarea').not('[type="hidden"]').valid();
   },
 
   checkRules: function () {

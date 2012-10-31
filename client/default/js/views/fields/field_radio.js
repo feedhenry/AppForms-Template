@@ -1,6 +1,6 @@
 FieldRadioView = FieldView.extend({
   templates: {
-    hidden_field: '<input id="radio<%= id %>" name="<%= id %>" type="hidden" value="">',
+    hidden_field: '<input id="radio<%= id %>" type="hidden" value="">',
     title: '<label><%= title %></label>',
     choice: '<input id="<%= id %>_<%= iteration %>" name="<%= id %>" type="radio" class="field radio" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>_<%= iteration %>"><%= choice %></label><br/>'
   },

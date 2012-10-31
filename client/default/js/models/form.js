@@ -2,7 +2,8 @@ FormModel = Backbone.Model.extend({
   defaults: {
     "Theme": "",
     "Pages": [],
-    "Rules": []
+    "Rules": [],
+    "active_page": null
   },
 
   initialize: function () {

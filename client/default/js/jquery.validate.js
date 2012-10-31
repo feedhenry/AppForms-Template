@@ -719,11 +719,17 @@ $.extend($.validator, {
 		},
 
 		validationTargetFor: function(element) {
-			// if radio/checkbox, validate first element in group instead
-			if (this.checkable(element)) {
-				element = this.findByName( element.name ).not(this.settings.ignore)[0];
-			}
-			return element;
+      var tempElement = '1';
+      // if radio/checkbox, validate first element in group instead
+      if (this.checkable(element)) {
+        tempElement = this.findByName( element.name ).not(this.settings.ignore)[0];
+        if (tempElement == null) {
+          debugger;
+        } else {
+          element = tempElement;
+        }
+      }
+      return element;
 		},
 
 		checkable: function( element ) {

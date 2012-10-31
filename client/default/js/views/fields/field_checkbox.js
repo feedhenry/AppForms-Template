@@ -5,18 +5,12 @@ $.validator.addMethod("wufoo_checkbox_required", function(value, element, params
 
 FieldCheckboxView = FieldView.extend({
   templates: {
-    hidden_field: '<input id="checkbox<%= id %>" name="<%= id %>" type="hidden" value="">',
     title: '<label><%= title %></label>',
     choice: '<input id="<%= id %>" name="<%= id %>" type="checkbox" class="field checkbox" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>"><%= choice %></label><br/>'
   },
 
   render: function() {
     var self = this;
-
-    var hidden_field = _.template(this.templates.hidden_field, {
-      "id": this.model.get('ID')
-    });
-    this.$el.append(hidden_field);
 
     var title = _.template(this.templates.title, {
       "title": this.model.get('Title')

@@ -2,11 +2,18 @@ FormView = Backbone.View.extend({
   el: $('#fh_wufoo_content'),
 
   templates: {
-    heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>'
+    heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>',
+    action_bar: '<div class="fh_action_bar"><button class="previous">Previous Page</button><button class="next">Next Page</button><button class="submit">Submit Form</button></div>'
   },
 
   initialize: function() {
+    var self = this;
+
     _.bindAll(this, 'render');
+    this.model.on('change:active_page', function (model, page) {
+      self.activePageChange.call(self, model, page);
+    });
+
     this.pages = [];
     this.render();
   },
@@ -55,22 +62,65 @@ FormView = Backbone.View.extend({
       }));
     });
 
-    // TODO: Move to tpl
-    var action_bar = $('<div>').addClass('fh_action_bar');
+    // add action bar view
+    self.action_bar = new ActionBarView({
+      parentEl: this.$el,
+      parentView: self,
+      model: this.model
+    });
 
-    // temp butan to validate
-    action_bar.append($('<button>', {
-      "text": "Validate Entire Form"
-    }).bind('click', function (e) {
-      e.preventDefault();
-      var isValid = form.valid() ? true : false; // 1 or 0
-      alert('form validation:' + isValid);
-    }));
-
-    // add to DOM
-    this.$el.append(action_bar);
+    // set active page to be the first one
+    this.model.set('active_page', 0);
 
     this.$el.show();
+  },
+
+  previousPage: function () {
+    var currentPage = this.model.get('active_page');
+    console.log('previous page:', currentPage);
+    currentPage = Math.max(0, currentPage - 1);
+    console.log('previous page:', currentPage);
+    this.model.set('active_page', currentPage);
+  },
+
+  nextPage: function () {
+    // validate current page first
+    var currentPage = this.model.get('active_page');
+    var currentPageView = this.pages[currentPage];
+    if (currentPageView.isValid()) {
+      console.log('previous page:', currentPage);
+      currentPage = Math.max(0, currentPage + 1);
+      console.log('previous page:', currentPage);
+      this.model.set('active_page', currentPage);
+    } else {
+      // validation errors
+      alert('validation errors');
+    }
+  },
+
+  submit: function () {
+    // validate last page before submitting
+    var currentPage = this.model.get('active_page');
+    var currentPageView = this.pages[currentPage];
+    if (currentPageView.isValid()) {
+      // submit form
+      alert('submit form');
+    } else {
+      // validation errors
+      alert('validation errors');
+    }
+  },
+
+  activePageChange: function (model, pageIndex) {
+    // active page changed, show/hide pages accordingly
+    _(this.pages).forEach(function (page, index) {
+      if (index === pageIndex) {
+        page.show();
+      } else {
+        page.hide();
+      }
+    });
+
   },
 
   showField: function (id) {
