@@ -419,6 +419,7 @@ var WufooController = {
 
 
     utils.isOnline(function(online) {
+      alert('Online: ' + online);
       if (online) {
         $fh.act({
           "act": "submitForm",
@@ -587,26 +588,33 @@ var WufooController = {
         }
       } else {
         console.log('Local cache load of form failed, fetching: ' + form_hash);
+
+        function renderForm(html, form_hash, target_location, cb) {
+          self.renderFormHtml(html, form_hash);
+          self.initWufoo(target_location);
+          self.hideLoading();
+          if (typeof cb !== 'undefined') {
+            cb();
+          }
+        }
+
         $fh.act({
           "act": "getForm",
           "req": {
             "form_hash": form_hash
           }
         }, function(res) {
-          // cache html in local storage (asynchronous)
           var html = res.html;
+          // Render immediately, while saving in background
+          renderForm(html, form_hash, target_location, cb);
+
+          // cache html in local storage (asynchronous)
           $fh.data({
             "act": "save",
             "key": "form-" + form_hash,
             "val": html
           }, function() {
             console.log('Form html save ok');
-            self.renderFormHtml(html, form_hash);
-            self.initWufoo(target_location);
-            self.hideLoading();
-            if (typeof cb !== 'undefined') {
-              cb();
-            }
           }, function(msg, err) {
             console.log('Form html save failed:' + msg);
           });
