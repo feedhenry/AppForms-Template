@@ -112,6 +112,7 @@ var WufooController = {
     this.listDrafts(function(data) {
       self.renderDrafts(data);
       self.renderDraftsCount(data.length);
+      console.log('Draft count re-rendered');
     }, function() {
       console.log('An error occured loading drafts');
     });
@@ -166,6 +167,7 @@ var WufooController = {
     this.listPending(function(data) {
       self.renderPending(data);
       self.renderPendingCount(data.length);
+      console.log('Pending count re-rendered');
     }, function() {
       console.log('An error occured loading pending');
     });
@@ -387,27 +389,32 @@ var WufooController = {
     self.showAlert('Submitting your form in the background.', 'success', 3000);
 
     function saveFormData(validation_html) {
+
+      function saveNewPending() {
+        self.savePending(form_hash, form_name, serialized_form, function() {
+          console.log("Form data saved");
+          self.loadDrafts();
+          self.loadPending();
+        }, function() {
+          console.log("Failed to save form data for form : " + form_hash);
+        }, validation_html);
+      }
+
       //remove original instance of draft/pending form
       self.deleteDraft(form_hash, form_ts, function() {
-        console.log('delete draft successful');
+        console.log('submitForm/saveFormData delete draft successful');
       }, function() {
-        console.log('delete draft failed')
+        console.log('submitForm/saveFormData delete draft failed')
       });
 
       self.deletePending(form_hash, form_ts, function() {
-        console.log('delete pending successful');
+        console.log('submitForm/saveFormData delete pending successful');
+        saveNewPending();
       }, function() {
-        console.log('delete pending failed')
+        console.log('submitForm/saveFormData delete pending failed');
+        saveNewPending();
       });
       jQuery('.ts').val("");
-
-      self.savePending(form_hash, form_name, serialized_form, function() {
-        console.log("Form data saved");
-        self.loadDrafts();
-        self.loadPending();
-      }, function() {
-        console.log("Failed to save form data for form : " + form_hash);
-      }, validation_html);
     };
 
 
@@ -430,28 +437,29 @@ var WufooController = {
 
             self.deleteDraft(form_hash, form_ts, function() {
               console.log('delete draft successful');
+              self.loadDrafts();
             }, function() {
-              console.log('delete draft failed')
+              console.log('delete draft failed');
+              self.loadDrafts();
             });
 
             self.deletePending(form_hash, form_ts, function() {
-              console.log('delete pending successful');
+              console.log('submitForm/saveFormData/utils delete pending successful');
+              self.loadPending();
             }, function() {
-              console.log('delete pending failed')
+              console.log('submitForm/saveFormData/utils delete pending failed');
+              self.loadPending();
             });
             jQuery('.ts').val("");
-
-            self.loadPending();
-            self.loadDrafts();
-
             return;
-          }
-
-          if (submitResponseType === 'validation_error') {
+          } else if (submitResponseType === 'validation_error') {
             console.log('Form submission: validation error in background.');
             self.showAlert('A validation error occured on a form submission. Please review your Pending forms.', 'error');
             saveFormData(res.html);
             return;
+          } else {
+            console.log('Unknown page submit response type: ' + submitResponseType);
+            self.showAlert('An unknown error has occurred. Please try submitting your form again.' + '[' + submitResponseType + ']', 'error');
           }
         }, function(msg, err) {
           console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -473,28 +481,32 @@ var WufooController = {
     var form_name = jQuery('#header').find('h2').text();
     var form_ts = jQuery('.ts').val();
 
-    //remove original instance of draft
-    self.deleteDraft(form_hash, form_ts, function() {
-      console.log('delete draft successful');
-    }, function() {
-      console.log('delete draft failed')
-    });
+    function saveNewDraft() {
+      self.saveDraft(form_hash, form_name, serialized_form, function() {
+        self.showAlert("Draft saved.", "success");
+        self.loadDrafts();
+        self.loadPending();
+        self.showHome();
+      }, function() {
+        console.log("Failed to save form as draft.");
+      });
+    }
 
     self.deletePending(form_hash, form_ts, function() {
       console.log('delete pending successful');
     }, function() {
       console.log('delete pending failed')
     });
-    jQuery('.ts').val('');
 
-    self.saveDraft(form_hash, form_name, serialized_form, function() {
-      self.showAlert("Draft saved.", "success");
-      self.loadDrafts();
-      self.loadPending();
-      self.showHome();
+    //remove original instance of draft
+    self.deleteDraft(form_hash, form_ts, function() {
+      console.log('delete draft successful');
+      // And save the new one
+      saveNewDraft();
     }, function() {
-      console.log("Failed to save form as draft.");
+      console.log('delete draft failed')
     });
+    jQuery('.ts').val('');
   },
 
   // Categorise a HTML form submission response as "confirmation", "validation_error" or "form"
@@ -574,33 +586,38 @@ var WufooController = {
           return cb();
         }
       } else {
-        console.log('Local cache load of form failed, fetching.')
+        console.log('Local cache load of form failed, fetching: ' + form_hash);
+
+        function renderForm(html, form_hash, target_location, cb) {
+          self.renderFormHtml(html, form_hash);
+          self.initWufoo(target_location);
+          self.hideLoading();
+          if (typeof cb !== 'undefined') {
+            cb();
+          }
+        }
+
         $fh.act({
           "act": "getForm",
           "req": {
             "form_hash": form_hash
           }
         }, function(res) {
-          // cache html in local storage (asynchronous)
           var html = res.html;
+          // cache html in local storage (asynchronous)
           $fh.data({
             "act": "save",
             "key": "form-" + form_hash,
             "val": html
           }, function() {
             console.log('Form html save ok');
+            // Render later, while saving in background
+            renderForm(html, form_hash, target_location, cb);
           }, function(msg, err) {
             console.log('Form html save failed:' + msg);
+            // Render later, while saving in background
+            renderForm(html, form_hash, target_location, cb);
           });
-
-          // ok to leave this happen straight away ($fh.data above is asynchronous)
-          // as it doesn't depend on the save having completed
-          self.renderFormHtml(html, form_hash);
-          self.initWufoo(target_location);
-          self.hideLoading();
-          if (typeof cb !== 'undefined') {
-            return cb();
-          }
         }, function(msg, err) {
           self.showAlert('There was a problem loading the form from the server. Please try again.', 'error');
           console.log('Form html load from server failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
@@ -880,6 +897,125 @@ var WufooController = {
 var wufoo_controller = WufooController;
 
 $fh.ready(function() {
+
+  // $fh.data - Use file based storage if available
+  if (typeof(window.requestFileSystem) !== 'undefined') {
+    console.log('Overriding $fh.data with file storage');
+
+    // Redefine $fh.data
+    $fh.data = function(options, success, failure) {
+      function fail(msg) {
+        if (typeof failure !== 'undefined') {
+          return failure(msg, {});
+        } else {
+          console.log('failure: ' + msg);
+        }
+      }
+
+      function filenameForKey(key, cb) {
+        console.log('filenameForKey: ' + key);
+        $fh.hash({
+          algorithm: "MD5",
+          text: key
+        }, function(result) {
+          var filename = result.hashvalue + '.txt';
+          return cb(filename);
+        });
+      }
+
+      function save(key, value) {
+        filenameForKey(key, function(hash) {
+          //console.log('saving: ' + key + ', ' + value + '. Filename: ' + hash);
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+            fileSystem.root.getFile(hash, {
+              create: true
+            }, function gotFileEntry(fileEntry) {
+              fileEntry.createWriter(function gotFileWriter(writer) {
+                writer.onwrite = function(evt) {
+                  return success({
+                    key: key,
+                    val: value
+                  });
+                };
+                writer.write(value);
+              }, function() {
+                fail('[save] Failed to create file writer');
+              });
+            }, function() {
+              fail('[save] Failed to getFile');
+            });
+          }, function() {
+            fail('[save] Failed to requestFileSystem');
+          });
+        });
+      }
+
+      function remove(key) {
+        filenameForKey(key, function(hash) {
+          console.log('remove: ' + key + '. Filename: ' + hash);
+
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+            fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+              fileEntry.remove(function() {
+                return success({
+                  key: key,
+                  val: null
+                });
+              }, function() {
+                fail('[remove] Failed to remove file');
+              });
+            }, function() {
+              fail('[remove] Failed to getFile');
+            });
+          }, function() {
+            fail('[remove] Failed to get fileSystem');
+          });
+        });
+      }
+
+      function load(key) {
+        filenameForKey(key, function(hash) {
+          window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+            fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+              fileEntry.file(function gotFile(file) {
+                var reader = new FileReader();
+                reader.onloadend = function(evt) {
+                  return success({
+                    key: key,
+                    val: evt.target.result
+                  });
+                };
+                reader.readAsText(file);
+              }, function() {
+                fail('[load] Failed to getFile');
+              });
+            }, function() {
+              // Success callback on key load failure
+              success({
+                key: key,
+                val: null
+              });
+            });
+          }, function() {
+            fail('[load] Failed to get fileSystem');
+          });
+        });
+      }
+      if (typeof options.act === 'undefined') {
+        return load(options.key);
+      } else if (options.act === 'save') {
+        return save(options.key, options.val);
+      } else if (options.act === 'remove') {
+        return remove(options.key);
+      } else if (options.act === 'load') {
+        return load(options.key);
+      } else {
+        if (typeof failure !== 'undefined') {
+          return failure("Action [" + options.act + "] is not defined", {});
+        }
+      }
+    };
+  }
   if (typeof wufoo_config !== 'undefined') {
     wufoo_controller.init(wufoo_config);
   } else {
@@ -920,19 +1056,25 @@ var apiController = {
   // Open camera and return base64 data
   fhcam: function(input) {
     var self = this;
-    navigator.camera.getPicture(function(imageData) {
+
+    function pictureSuccess(imageData) {
       jQuery(input).parent().find("p").text("Picture saved.");
       jQuery(input).val(imageData);
       jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
       self.addPicField(jQuery(input));
-    }, function(err) {
-      alert('Camera Error: ' + err);
-    }, {
-      quality: 50,
-      targetWidth: 2048,
-      targetHeight: 1536
-    });
+    }
 
+    if (typeof navigator.camera === 'undefined') {
+      pictureSuccess(self.sample_image);
+    } else {
+      navigator.camera.getPicture(pictureSuccess, function(err) {
+        console.log('Camera Error: ' + err);
+      }, {
+        quality: 50,
+        targetWidth: 2048,
+        targetHeight: 1536
+      });
+    }
   },
 
   //Returns Lat and Long as sting
@@ -1003,19 +1145,26 @@ var apiController = {
 
   fhpics: function(input) {
     var self = this;
-    navigator.camera.getPicture(function(imageData) {
+
+    function pictureSuccess(imageData) {
       jQuery(input).parent().find("p").text("Picture saved.");
       jQuery(input).val(imageData);
       jQuery(input).parent().children().eq(2).attr('src', 'data:image/jpg;base64,' + imageData);
       self.addPicField(jQuery(input));
-    }, function(err) {
-      alert('Camera Error: ' + err);
-    }, {
-      quality: 50,
-      sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
-      targetWidth: 2048,
-      targetHeight: 1536
-    });
+    }
+
+    if (typeof navigator.camera === 'undefined') {
+      pictureSuccess(self.sample_image);
+    } else {
+      navigator.camera.getPicture(pictureSuccess, function(err) {
+        console.log('Camera Error: ' + err);
+      }, {
+        quality: 50,
+        sourceType: Camera.PictureSourceType.PHOTOLIBRARY,
+        targetWidth: 2048,
+        targetHeight: 1536
+      });
+    }
   },
 
   removeImage: function(item) {
@@ -1083,5 +1232,7 @@ var apiController = {
     if (li.prevAll('.fhcam:not(.completePic)').length === 0) {
       li.nextAll('.fhcam:not(.completePic)').first().css('display', 'inline-block').find('p:eq(0)').text('Click to upload a picture');
     }
-  }
+  },
+
+  sample_image: '/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k='
 };
