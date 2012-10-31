@@ -604,9 +604,6 @@ var WufooController = {
           }
         }, function(res) {
           var html = res.html;
-          // Render immediately, while saving in background
-          renderForm(html, form_hash, target_location, cb);
-
           // cache html in local storage (asynchronous)
           $fh.data({
             "act": "save",
@@ -614,8 +611,12 @@ var WufooController = {
             "val": html
           }, function() {
             console.log('Form html save ok');
+            // Render later, while saving in background
+            renderForm(html, form_hash, target_location, cb);
           }, function(msg, err) {
             console.log('Form html save failed:' + msg);
+            // Render later, while saving in background
+            renderForm(html, form_hash, target_location, cb);
           });
         }, function(msg, err) {
           self.showAlert('There was a problem loading the form from the server. Please try again.', 'error');
