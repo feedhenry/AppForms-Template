@@ -141,6 +141,8 @@ function inlineImages(css, cb) {
     doGet(src, function (err, body) {
       if (err) {return aCallback(err);}
       var mimeType = src.match(/(.*)\.(.*?$)/); // get file extension from src
+      mimeType = mimeType[mimeType.length - 1];
+      //console.log('mimeType:', mimeType);
       css = css.replace(match[0], 'url("data:image/' + mimeType + ';base64,' + body + '")');
       return aCallback(null);
     }, true);
@@ -186,14 +188,21 @@ function doGet(end_point, callback, isBinary) {
       'Authorization':auth
     };
 
-    return request.get({url:url,
+    var options = {
+      url:url,
       headers:auth_header
-    }, function (err, res, body) {
+    };
+
+    if (isBinary) {
+      options.encoding = null; // return as buffer
+    }
+    return request.get(options, function (err, res, body) {
       if (err != null) {
         console.log("doGet: " + url + " :: error : " + err);
         return callback(err, err);
       }
-      console.log("doGet : " + url + " :: statusCode : " + res.statusCode);
+
+      console.log('got response for link:' + url + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
       if (res.statusCode != 200) {
         console.log("doGet : " + url + " :: error : " + body);
         var error = {error:body};
@@ -226,7 +235,7 @@ function doPost(end_point, data, callback) {
       'Authorization':auth
     };
 
-    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
+    //console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
 
     request.post({url:url,
       headers:auth_header,

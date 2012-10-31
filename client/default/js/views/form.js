@@ -16,6 +16,16 @@ FormView = Backbone.View.extend({
     App.views.header.hideAll();
 
     this.$el.empty();
+
+    // add custom theme, if any
+    var theme = this.model.get('Theme');
+    if (theme != null && theme !== '') {
+      $('head').append($('<style>', {
+        "type": "text/css",
+        "charset": "utf-8",
+        "text": theme
+      }));
+    }
     
     var form = $('<form>').addClass('wufoo');
     // Add form heading

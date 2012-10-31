@@ -137,6 +137,7 @@ exports.getFormPages = function (params, callback) {
 };
 
 exports.getForm = function (params, callback) {
+  console.log('getForm()');
   var form_hash = params.form_hash;
 
   // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
@@ -194,9 +195,9 @@ exports.getForm = function (params, callback) {
 
     // parse page & field rules
     var tempPageRules = parseRules(rules.PageRules || []);
-    console.log('tempPageRules:', tempPageRules);
+    //console.log('tempPageRules:', tempPageRules);
     var tempFieldRules = parseRules(rules.FieldRules || []);
-    console.log('tempFieldRules:', tempFieldRules);
+    //console.log('tempFieldRules:', tempFieldRules);
 
     // iterate over fields, moving each into relevant page, or dropping if wufoo default fields
     var fields = results[1] || [];
@@ -221,7 +222,7 @@ exports.getForm = function (params, callback) {
         }
       }
     });
-    console.log('form:', form);
+    //console.log('form:', form);
 
     return callback(null, {data:form});
   });

@@ -22,7 +22,7 @@
 
     if (['checkbox', 'radio'].indexOf(type) > -1) {
       switch (filter) {
-        // ignore fieldValue as value will either be true/value depending on checked status
+        // ignore fieldValue as value will either be true/false depending on checked status
         case 'is':
           retVal = value;
           break;
