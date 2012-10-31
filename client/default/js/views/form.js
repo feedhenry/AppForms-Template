@@ -20,7 +20,7 @@ FormView = Backbone.View.extend({
     // add custom theme, if any
     var theme = this.model.get('Theme');
     if (theme != null && theme !== '') {
-      $('head').append($('<style>', {
+      $('body link').last().after($('<style>', {
         "type": "text/css",
         "charset": "utf-8",
         "text": theme
