@@ -81,14 +81,22 @@ exports.getFormTheme = function (form_hash, cb) {
 };
 
 function getPages(html, cb) {
+  var pages = {PaginationType:'tab', Pages:[]};
   var $ = cheerio.load(html);
-  var tdFields = $('td[class=t]');
-  var pages = [];
+  var pagination = $('.paging-context');
+  pages.NoPageTitles = pagination.hasClass('nopagelabel');
+
+  if (pagination.find('table').hasClass('pgStyle2')) {
+    pages.PaginationType = "progress";
+  }
+  var tdFields = pagination.find('td[class=t]');
+  var pageTitles = [];
   if (tdFields.length > 0) {
     $.each(tdFields, function (i, el) {
-      pages.push({Title:$(this).text().trim()});
+      pageTitles.push({Title:$(this).text().trim()});
     });
   }
+  pages.Pages = pageTitles;
   return cb(null, pages);
 }
 

@@ -119,8 +119,7 @@ exports.getFormTheme = function (params, callback) {
 
   wufoo_api.getFormTheme(form_hash, function (err, body) {
     if (err) return callback(err);
-    console.log("Returning :: " + body);
-    return callback(null, {Theme: body});
+    return callback(null, {data: body});
   });
 };
 
@@ -133,8 +132,7 @@ exports.getFormPages = function (params, callback) {
 
   wufoo_api.getFormPages(form_hash, function (err, body) {
     if (err) return callback(err);
-    console.log("Returning :: " + body);
-    return callback(null, {Pages: body});
+    return callback(null, {data: body});
   });
 };
 
@@ -150,6 +148,8 @@ exports.getForm = function (params, callback) {
   // - form data
   // - fields data
   // - rules data
+  // - pagination data
+  // - theme data
   // and merge together into single json object
   async.parallel([function (cb) {
     wufoo_api.getForm(form_hash, cb);
@@ -167,6 +167,7 @@ exports.getForm = function (params, callback) {
     
     var form = results[0] || {};
     form.PaginationType = results[3].PaginationType || 'tab';
+    form.NoPageTitles = results[3].NoPageTitles || false;
     form.Pages = results[3].Pages || [];
     form.Theme = results[4] || "";
 
