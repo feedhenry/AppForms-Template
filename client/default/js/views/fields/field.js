@@ -1,28 +1,3 @@
-$.wufoo_rule_add('Hide', function (value, element, params) {
-  var fieldId = 'Field' + params.Setting.FieldName;
-  var fieldValue = params.condition.Value;
-  if (params.Setting.FieldTypes[params.condition.FieldName] === 'checkbox') {
-    fieldValue = ('is' === params.condition.Filter);
-  }
-  if (value === fieldValue) {
-    App.views.form.hideField(fieldId);
-  } else {
-    App.views.form.showField(fieldId);
-  }
-});
-$.wufoo_rule_add('Show', function (value, element, params) {
-  var fieldId = 'Field' + params.Setting.FieldName;
-  var fieldValue = params.condition.Value;
-  if (params.Setting.FieldTypes[params.condition.FieldName] === 'checkbox') {
-    fieldValue = ('is' === params.condition.Filter);
-  }
-  if (value === fieldValue) {
-    App.views.form.showField(fieldId);
-  } else {
-    App.views.form.hideField(fieldId);
-  }
-});
-
 FieldView = Backbone.View.extend({
 
   className : 'field_container',
