@@ -37,11 +37,28 @@ FieldView = Backbone.View.extend({
   addSpecialRules: function () {
     var self = this;
 
+    var rules = {
+      'Show': function (rulePasses, fieldId) {
+        if (rulePasses) {
+          App.views.form.showField(fieldId);
+        } else {
+          App.views.form.hideField(fieldId);
+        }
+      },
+      'Hide': function (rulePasses, fieldId) {
+        if (rulePasses) {
+          App.views.form.hideField(fieldId);
+        } else {
+          App.views.form.showField(fieldId);
+        }
+      }
+    };
+
     // also apply any special rules
     _(this.model.get('Rules') || []).each(function (rule) {
       rule.pageView = self.options.parentView;
-      var ruleConfig = {};
-      ruleConfig[rule.Type] = rule;
+      var ruleConfig = _.clone(rule);
+      ruleConfig.fn = rules[rule.Type];
       self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
     });
   },

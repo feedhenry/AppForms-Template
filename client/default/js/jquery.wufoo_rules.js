@@ -13,7 +13,91 @@
     "other": "[type='radio'], [type='checkbox'], select, option"
   };
 
-  var ruleFunctions = {};
+  function check(value, element, params) {
+    var fieldId = 'Field' + params.Setting.FieldName;
+    var fieldValue = params.condition.Value;
+    var filter = params.condition.Filter;
+    var type = params.Setting.FieldTypes[params.condition.FieldName];
+
+    var retVal = false;
+
+    if (['checkbox', 'radio'].indexOf(type) > -1) {
+      switch (filter) {
+        // ignore fieldValue as value will either be true/value depending on checked status
+        case 'is':
+          retVal = value;
+          break;
+        case 'is not':
+          retVal = value;
+          break;
+      }
+    } else if (['money', 'number'].indexOf(type) > -1) {
+      switch (filter) {
+        case 'is equal to':
+          retVal = fieldValue === value;
+          break;
+        case 'is greater than':
+          retVal = fieldValue < value;
+          break;
+        case 'is less than':
+          retVal = fieldValue > value;
+          break;
+      }
+    } else if (['date', 'time'].indexOf(type) > -1) {
+      // TODO:
+      // parse date/time from value
+      var valueDate = new Date(value);
+      var fieldValueDate = new Date(fieldValue);
+      if ('time' === type) {
+        // date doesn't matter
+        valueDate = new Date(0, 0, 0, valueDate.getUTCHours(), valueDate.getUTCMinutes(), valueDate.getUTCSeconds(), valueDate.getUTCMilliseconds());
+        fieldValueDate = new Date(0, 0, 0, fieldValueDate.getUTCHours(), fieldValueDate.getUTCMinutes(), fieldValueDate.getUTCSeconds(), fieldValueDate.getUTCMilliseconds());
+      } else {
+        // time doesn't matter
+        valueDate = new Date(valueDate.getFullYear(), valueDate.getUTCMonth(), valueDate.getUTCDate());
+        fieldValueDate = new Date(fieldValueDate.getFullYear(), fieldValueDate.getUTCMonth(), fieldValueDate.getUTCDate());
+      }
+      switch (filter) {
+        case 'is on': // date only
+          // year/month/date match
+          retVal = valueDate.getTime() === fieldValueDate.getTime();
+          break;
+        case 'is before':
+          retVal = valueDate.getTime() < fieldValueDate.getTime();
+          break;
+        case 'is after':
+          retVal = valueDate.getTime() > fieldValueDate.getTime();
+          break;
+        case 'is at': // time only
+          // hours/min/sec/ms match
+          retVal = valueDate.getTime() === fieldValueDate.getTime();
+          break;
+      }
+    } else { // assume some form of text field
+      switch (filter) {
+        case 'is':
+          retVal = fieldValue === value;
+          break;
+        case 'is not':
+          retVal = fieldValue !== value;
+          break;
+        case 'contains':
+          retVal = value.indexOf(fieldValue) > -1;
+          break;
+        case 'does not contain':
+          retVal = value.indexOf(fieldValue) === -1;
+          break;
+        case 'begins with':
+          retVal = value.indexOf(fieldValue) === 0;
+          break;
+        case 'ends with':
+          retVal = value.indexOf(fieldValue) === (value.length - fieldValue.length);
+          break;
+      }
+    }
+
+    params.fn(retVal, fieldId);
+  }
 
   // remove and bind all configured re
   function bindRules(el) {
@@ -27,13 +111,12 @@
 
     el.bind(elEvents, function () {
       var jqEl = $(this);
-      var rules = jqEl.data('wufoo_rules') || {};
+      var rules = jqEl.data('wufoo_rules') || [];
 
       var value = jqEl.is(typeSelector.text) ? jqEl.val() : jqEl.is(':checked');
-      for (var type in rules) {
-        var ruleFn = ruleFunctions[type];
-        ruleFn(value, jqEl, rules[type]);
-      }
+      $.each(rules, function (index, rule) {
+        check(value, jqEl, rule);
+      });
     });
   }
 
@@ -42,35 +125,19 @@
     wufoo_rules : function (command, argument) {
       var element = this[0];
       if (command) {
-        var rules = $.data(element, 'wufoo_rules') || {};
+        var rules = $.data(element, 'wufoo_rules') || [];
         switch(command) {
-        case "add":
-          for (var type in argument) {
-            rules[type] = argument[type];
-          }
+        case "add": // add 1 rule
+          rules.push(argument);
           $.data(element, 'wufoo_rules', rules);
           bindRules(this);
           break;
-        case "remove":
-          if (!argument) {
-            $.data(element, 'wufoo_rules', null);
-            bindRules(this, null);
-            return rules;
-          }
-          var filtered = {};
-          $.each(argument.split(/\s/), function(index, type) {
-            filtered[type] = rules[type];
-            delete rules[type];
-          });
-          $.data(element, 'wufoo_rules', rules);
+        case "remove": // remove all rules
+          $.data(element, 'wufoo_rules', null);
           bindRules(this);
-          return filtered;
+          return rules;
         }
       }
     }
   });
-
-  $.wufoo_rule_add = function (type, fn) {
-    ruleFunctions[type] = fn;
-  };
 })( jQuery );

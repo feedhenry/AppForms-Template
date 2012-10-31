@@ -166,7 +166,8 @@ exports.getForm = function (params, callback) {
     // may be able to work without some of the response
     
     var form = results[0] || {};
-    form.Pages = results[3] || [];
+    form.PaginationType = results[3].PaginationType || 'tab';
+    form.Pages = results[3].Pages || [];
     form.Theme = results[4] || "";
 
     function parseRules(rules) {

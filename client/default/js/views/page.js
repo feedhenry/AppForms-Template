@@ -67,6 +67,15 @@ PageView = Backbone.View.extend({
     if (this.fieldViews[id]) {
       this.fieldViews[id].hide();
     }
-  }
+  },
 
+  isValid: function () {
+    // validate fields on this page
+
+  },
+
+  checkRules: function () {
+
+  }
+  
 });
