@@ -2,7 +2,8 @@ DraftListView = Backbone.View.extend({
   el: $('#fh_wufoo_drafts_list'),
 
   templates: {
-    header: ['<h2>Drafts</h2>', '<h4>Choose a Draft form from the list below</h4>']
+    list: '<ul class="form_list"></ul>',
+    header: '<h2>Drafts</h2><h4>Choose a draft from the list below</h4>'
   },
 
   initialize: function() {
@@ -28,17 +29,18 @@ DraftListView = Backbone.View.extend({
     // Empty our existing view
     $(this.el).empty();
 
-    // Add header
-    $(this.el).append(this.templates.header.join(''));
+    // Add list
+    $(this.el).append(this.templates.list);
 
-    $(this.el).append("<ul></ul>");
+    // Add header
+    $('ul', this.el).append(this.templates.header);
+
     _(App.collections.drafts.models).each(function(form) {
       self.appendForm(form);
     }, this);
   },
 
   appendForm: function(form) {
-    console.log('appendForm called!');
     var view = new ShowFormButtonView({
       model: form
     });

@@ -2,7 +2,8 @@ PendingListView = Backbone.View.extend({
   el: $('#fh_wufoo_pending_list'),
 
   templates: {
-    header: ['<h2>Pending Submissions</h2>', '<h4>Below are your pending submissions</h4>']
+    list: '<ul class="form_list"></ul>',
+    header: '<h2>Pending Submissions</h2><h4>Below are your pending submissions</h4>'
   },
 
   initialize: function() {
@@ -28,17 +29,18 @@ PendingListView = Backbone.View.extend({
     // Empty our existing view
     $(this.el).empty();
 
-    // Add header
-    $(this.el).append(this.templates.header.join(''));
+    // Add list
+    $(this.el).append(this.templates.list);
 
-    $(this.el).append("<ul></ul>");
-    _( App.collections.pending.models).each(function(form) {
+    // Add header
+    $('ul', this.el).append(this.templates.header);
+
+    _(App.collections.pending.models).each(function(form) {
       self.appendForm(form);
     }, this);
   },
 
   appendForm: function(form) {
-    console.log('appendForm called!');      
     var view = new ShowFormButtonView({
       model: form
     });

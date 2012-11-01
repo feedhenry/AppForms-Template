@@ -620,3 +620,9 @@ textarea {
 .progress_steps .number {
   padding-top: 4px;
 }
+
+/* Form List */
+
+.form_list {
+  padding: 20px;
+}
