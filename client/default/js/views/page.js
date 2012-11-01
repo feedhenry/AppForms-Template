@@ -78,7 +78,7 @@ PageView = Backbone.View.extend({
 
   isValid: function () {
     // only validate form inputs on this page
-    return this.$el.find('input,select,option,textarea').not('[type="hidden"]').valid();
+    return this.$el.find('input,select,option,textarea').not('[type="hidden"],:hidden').valid();
   },
 
   checkRules: function () {
@@ -127,6 +127,8 @@ PageView = Backbone.View.extend({
       rule.fn = rules[rule.Type];
       jqEl.wufoo_rules('exec', rule);
     });
+
+    return result;
   }
   
 });

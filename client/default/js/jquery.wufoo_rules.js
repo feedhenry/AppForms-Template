@@ -16,7 +16,7 @@
   function check(value, element, params) {
     var fieldValue = params.condition.Value;
     var filter = params.condition.Filter;
-    var type = params.Setting.FieldTypes[params.condition.FieldName];
+    var type = element.attr('type');
 
     var retVal = false;
 

@@ -86,9 +86,9 @@ FormView = Backbone.View.extend({
 
   previousPage: function () {
     var currentPage = this.model.get('active_page');
-    console.log('previous page:', currentPage);
-    currentPage = Math.max(0, currentPage - 1);
-    console.log('previous page:', currentPage);
+    console.log('previous page bef:', currentPage);
+    currentPage = Math.max(0, currentPage - 1); // never go beyond the first page
+    console.log('previous page aft:', currentPage);
     this.model.set('active_page', currentPage);
   },
 
@@ -97,9 +97,16 @@ FormView = Backbone.View.extend({
     var currentPage = this.model.get('active_page');
     var currentPageView = this.pages[currentPage];
     if (currentPageView.isValid()) {
-      console.log('previous page:', currentPage);
-      currentPage = Math.max(0, currentPage + 1);
-      console.log('previous page:', currentPage);
+      // check page rules
+      var pageRules = currentPageView.checkRules();
+      console.log('next page bef:', currentPage);
+      if (pageRules.skipToPage != null) {
+        currentPage = parseInt(pageRules.skipToPage, 10) - 1;
+      } else {
+        currentPage = currentPage + 1;
+      }
+      currentPage = Math.min(this.pages.length - 1, currentPage); // make sure we don't go past the last page.
+      console.log('next page aft:', currentPage);
       this.model.set('active_page', currentPage);
     } else {
       // validation errors
