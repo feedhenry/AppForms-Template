@@ -609,7 +609,7 @@ textarea {
 .progress_steps .active .number_container {
   background: black;
   color: #fff;
-  border: none;
+  border: 1px solid #000;
 }
 
 .progress_steps .page_title {

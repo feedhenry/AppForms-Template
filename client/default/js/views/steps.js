@@ -26,10 +26,6 @@ StepsView = Backbone.View.extend({
         step_name: page.get('Title'),
         step_num: index + 1
       }));
-
-      if (index === 0) {
-        item.addClass('active');
-      }
       $('tr:first', table).append(item);
     });
 
@@ -37,7 +33,8 @@ StepsView = Backbone.View.extend({
   },
 
   activePageChange: function(model, pageIndex) {
-    // TODO
+    this.$el.find('td').removeClass('active');
+    this.$el.find('td:eq('+pageIndex+')').addClass('active');
   }
 
 });
