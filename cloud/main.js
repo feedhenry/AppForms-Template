@@ -165,24 +165,43 @@ exports.getForm = function (params, callback) {
   // - pagination data
   // - theme data
   // and merge together into single json object
+  function cbHandler(err, res, cb) {
+    // log errors but dont pass back to cb. we can still construct form json
+    if (err) {
+      console.error('ERROR:', err);
+    }
+    cb(null, res);
+  }
+
   async.parallel([function (cb) {
-    wufoo_api.getForm(form_hash, cb);
+    wufoo_api.getForm(form_hash, cb); // essential data, let async pass error to main callback
   },function (cb) {
-    wufoo_api.getFormFields(form_hash, cb);
+    wufoo_api.getFormFields(form_hash, cb); // essential data, let async pass error to main callback
   }, function (cb) {
-    wufoo_admin.getRules(form_hash, cb);
+    wufoo_admin.getRules(form_hash, function (err, res) {
+      // rules aren't essential, so delegate to cbHandler and log errors, if any
+      cbHandler(err, res, cb);
+    });
   }, function (cb) {
-    wufoo_api.getFormPages(form_hash, cb);
+    wufoo_api.getFormPages(form_hash, function (err, res) {
+      // pages aren't essential, so delegate to cbHandler and log errors, if any
+      cbHandler(err, res, cb);
+    });
   }, function (cb) {
-    wufoo_api.getFormTheme(form_hash, cb);
+    wufoo_api.getFormTheme(form_hash, function (err, res) {
+      // theme isn't essential, so delegate to cbHandler and log errors, if any
+      cbHandler(err, res, cb);
+    });
   }], function (err, results) {
-    // defer err and try construct form json
-    // may be able to work without some of the response
+    if (err) {
+      return cb(null, err);
+    }
     
     var form = results[0] || {};
-    form.PaginationType = results[3].PaginationType || 'tab';
-    form.NoPageTitles = results[3].NoPageTitles || false;
-    form.Pages = results[3].Pages || [];
+    var pages = results[3] || {};
+    form.PaginationType = pages.PaginationType || 'tab';
+    form.NoPageTitles = pages.NoPageTitles || false;
+    form.Pages = pages.Pages || [];
     form.Theme = results[4] || "";
 
     function parseRules(rules) {
@@ -235,7 +254,7 @@ exports.getForm = function (params, callback) {
         }
       }
     });
-    console.log('form:', form);
+    //console.log('form:', form);
     return callback(null, {data:form});
   });
 };
