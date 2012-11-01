@@ -121,8 +121,13 @@ FormView = Backbone.View.extend({
         this.model.pushPage(nextPage);
       }
     } else {
+      var offset = this.$el.find('.field_container.error:first').find('input,select,textarea').focus().end().offset().top - parseInt($('html').css('paddingTop'), 10);
+      $('body').animate({
+        scrollTop: offset
+      }, 1000);
+
       // validation errors
-      alert('validation errors');
+      //alert('validation errors');
     }
   },
 
