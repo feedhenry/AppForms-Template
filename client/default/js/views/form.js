@@ -53,7 +53,14 @@ FormView = Backbone.View.extend({
 
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     this.$el.append(form);
-    form.validate();
+    form.validate({
+      highlight: function(element, errorClass, validClass) {
+        $(element).closest('div').addClass(errorClass).removeClass(validClass);
+      },
+      unhighlight: function(element, errorClass, validClass) {
+        $(element).closest('div').removeClass(errorClass).addClass(validClass);
+      }
+    });
 
     this.model.pages.each(function (page, index) {
       self.pages.push(new PageView({
