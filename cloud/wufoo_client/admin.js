@@ -10,6 +10,12 @@ var api_config = {
 };
 
 function login(email, password, cb) {
+  if (email == null || password == null) {
+    return cb({
+      "error": "email/password must be defined in wufoo config",
+      "code": 1004
+    });
+  }
 
   function parseCookie(cookie) {
     var parsed = {};
