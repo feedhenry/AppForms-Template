@@ -1,11 +1,8 @@
-$fh.ready(function() {
+PendingModel = FormModel.extend({});
 
-  PendingModel = Backbone.Model.extend({});
-
-  PendingCollection = Backbone.Collection.extend({
-    model: PendingModel,
-    fhStorage: new Store("pending")
-  });
-
-  App.collections.pending = new PendingCollection();
+PendingCollection = Backbone.Collection.extend({
+  model: DraftModel,
+  fhStorage: new Store("drafts", "getForms")
 });
+
+App.collections.pending = new PendingCollection();
