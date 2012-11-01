@@ -622,7 +622,15 @@ textarea {
 }
 
 /* Form List */
-
 .form_list {
   padding: 20px;
+}
+
+/* Error highlighting */
+.field_container.error input {
+  border: 2px solid red;
+}
+
+.field_container.error .error {
+  color: red;
 }
