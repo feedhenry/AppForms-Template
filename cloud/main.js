@@ -136,6 +136,19 @@ exports.getFormPages = function (params, callback) {
   });
 };
 
+exports.getFormFields = function (params, callback) {
+  var form_hash = params.form_hash;
+
+  if (form_hash == null) return callback(null, {
+    "error": "form_hash is required"
+  });
+
+  wufoo_api.getFormFields(form_hash, function (err, body) {
+    if (err) return callback(err);
+    return callback(null, {data: body});
+  });
+};
+
 exports.getForm = function (params, callback) {
   console.log('getForm()');
   var form_hash = params.form_hash;
@@ -210,8 +223,8 @@ exports.getForm = function (params, callback) {
           field.Rules = tempFieldRules[field.ID];
         }
 
-        // add fields to matching page
-        var page = form.Pages[pageNum] || {};
+        // add fields to matching page, ensuring page exists on form object
+        var page = form.Pages[pageNum] = form.Pages[pageNum] || {};
         page.Fields = page.Fields || [];
         page.Fields.push(field);
 
@@ -222,8 +235,7 @@ exports.getForm = function (params, callback) {
         }
       }
     });
-    //console.log('form:', form);
-
+    console.log('form:', form);
     return callback(null, {data:form});
   });
 };
