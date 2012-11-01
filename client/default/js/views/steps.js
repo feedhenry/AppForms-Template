@@ -2,14 +2,15 @@ StepsView = Backbone.View.extend({
   className: 'fh_steps clearfix',
 
   templates: {
-    item: '<li><span class="step-name"><%= step_name %></span><span class="step-num"><%= step_num %></span></li>'
+    table: '<div class="progress_wrapper"><table class="progress_steps" cellspacing="0"><tr></tr></table></div>',
+    step: '<td><span class="number_container"><div class="number"><%= step_num %></div></span><span class="page_title"><%= step_name %></span></td>'
   },
 
   initialize: function() {
     var self = this;
 
     _.bindAll(this, 'render');
-    this.model.on('change:active_page', function (model, page) {
+    this.model.on('change:active_page', function(model, page) {
       self.activePageChange.call(self, model, page);
     });
     this.render();
@@ -18,24 +19,24 @@ StepsView = Backbone.View.extend({
   render: function() {
     var self = this;
     this.options.parentEl.append(this.$el);
-    var list = $('<ol>').addClass('wizard-progress clearfix');
+    var table = $(self.templates.table);
 
-    this.model.pages.each(function (page, index) {
-      var item = $(_.template(self.templates.item, {
+    this.model.pages.each(function(page, index) {
+      var item = $(_.template(self.templates.step, {
         step_name: page.get('Title'),
         step_num: index + 1
       }));
 
       if (index === 0) {
-        item.addClass('active-step');
+        item.addClass('active');
       }
-      list.append(item);
+      $('tr:first', table).append(item);
     });
 
-    this.$el.append(list);
+    this.$el.append(table);
   },
 
-  activePageChange: function (model, pageIndex) {
+  activePageChange: function(model, pageIndex) {
     // TODO
   }
 
