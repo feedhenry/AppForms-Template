@@ -78,7 +78,7 @@ FormView = Backbone.View.extend({
     });
 
     // set active page to be the first one
-    this.model.set('active_page', 0);
+    this.model.pushPage(0);
 
     this.$el.show();
   },
@@ -92,29 +92,29 @@ FormView = Backbone.View.extend({
   },
 
   previousPage: function () {
-    var currentPage = this.model.get('active_page');
-    console.log('previous page bef:', currentPage);
-    currentPage = Math.max(0, currentPage - 1); // never go beyond the first page
-    console.log('previous page aft:', currentPage);
-    this.model.set('active_page', currentPage);
+    // go to previous page in history
+    this.model.popPage();
   },
 
   nextPage: function () {
     // validate current page first
     var currentPage = this.model.get('active_page');
+    var nextPage = currentPage;
     var currentPageView = this.pages[currentPage];
     if (currentPageView.isValid()) {
       // check page rules
       var pageRules = currentPageView.checkRules();
-      console.log('next page bef:', currentPage);
       if (pageRules.skipToPage != null) {
-        currentPage = parseInt(pageRules.skipToPage, 10) - 1;
+        nextPage = parseInt(pageRules.skipToPage, 10) - 1;
       } else {
-        currentPage = currentPage + 1;
+        nextPage = currentPage + 1;
       }
-      currentPage = Math.min(this.pages.length - 1, currentPage); // make sure we don't go past the last page.
-      console.log('next page aft:', currentPage);
-      this.model.set('active_page', currentPage);
+      nextPage = Math.min(this.pages.length - 1, nextPage); // make sure we don't go past the last page.
+      console.log('next page ', currentPage, '=>', nextPage);
+      // only change page if page is different
+      if (nextPage !== currentPage) {
+        this.model.pushPage(nextPage);
+      }
     } else {
       // validation errors
       alert('validation errors');
