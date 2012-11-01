@@ -126,7 +126,7 @@ FormView = Backbone.View.extend({
       
       $('html, body').animate({
         scrollTop: offset
-      }, 1000, function(){
+      }, 500, function(){
         $('input,select,textarea', first_container).focus();
       });
 

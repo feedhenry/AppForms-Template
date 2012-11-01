@@ -628,7 +628,7 @@ textarea {
 
 /* Error highlighting */
 .field_container.error input, .field_container.error textarea, .field_container.error select {
-  border: 2px solid red;
+  border: 2px solid red !important;
 }
 
 .field_container.error .error {
