@@ -32,7 +32,7 @@ FormView = Backbone.View.extend({
         "charset": "utf-8",
         "text": theme
       });
-      $('body link').last().after(theme);
+      $('body link').last().after(self.theme);
     }
     
     var form = $('<form>').addClass('wufoo');
