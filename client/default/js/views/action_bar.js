@@ -15,9 +15,8 @@ ActionBarView = Backbone.View.extend({
   },
 
   render: function() {
-    this.options.parentEl.append(this.$el);
-
     this.$el.html('<button class="previous hidden">Previous</button><button class="next hidden">Next</button><button class="submit hidden">Submit</button>');
+    this.options.parentEl.append(this.$el);
   },
 
   activePageChange: function (model, pageIndex) {
@@ -25,17 +24,17 @@ ActionBarView = Backbone.View.extend({
     this.$el.find('button').addClass('hidden');
     var numPages = model.pages.length;
     if (numPages < 2) {
-      // show submit button
+      // single-page. show submit button
       this.$el.find('.submit').removeClass('hidden');
     } else if (pageIndex === 0) {
-      // show next button
+      // multi-page, first page. show next button
       this.$el.find('.next').removeClass('hidden');
     } else if (pageIndex === (numPages - 1)) {
-      // show submit button and previous
+      // multi-page, last page. show submit button and previous
       this.$el.find('.submit').removeClass('hidden');
       this.$el.find('.previous').removeClass('hidden');
     } else {
-      // show next & previous
+      // multi-page, in-between page. show next & previous
       this.$el.find('.next').removeClass('hidden');
       this.$el.find('.previous').removeClass('hidden');
     }

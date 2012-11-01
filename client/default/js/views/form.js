@@ -27,11 +27,12 @@ FormView = Backbone.View.extend({
     // add custom theme, if any
     var theme = this.model.get('Theme');
     if (theme != null && theme !== '') {
-      $('body link').last().after($('<style>', {
+      self.theme = $('<style>', {
         "type": "text/css",
         "charset": "utf-8",
         "text": theme
-      }));
+      });
+      $('body link').last().after(theme);
     }
     
     var form = $('<form>').addClass('wufoo');
@@ -73,6 +74,14 @@ FormView = Backbone.View.extend({
     this.model.set('active_page', 0);
 
     this.$el.show();
+  },
+
+  unrender: function () {
+    // remove custom css, if any
+    if (self.theme) {
+      self.theme.remove();
+    }
+    // TODO: clean up other shtuff?
   },
 
   previousPage: function () {
