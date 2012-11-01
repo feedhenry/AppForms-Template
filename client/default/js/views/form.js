@@ -121,10 +121,14 @@ FormView = Backbone.View.extend({
         this.model.pushPage(nextPage);
       }
     } else {
-      var offset = this.$el.find('.field_container.error:first').find('input,select,textarea').focus().end().offset().top - parseInt($('html').css('paddingTop'), 10);
-      $('body').animate({
+      var first_container = this.$el.find('.field_container.error:first');
+      var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
+      
+      $('html, body').animate({
         scrollTop: offset
-      }, 1000);
+      }, 1000, function(){
+        $('input,select,textarea', first_container).focus();
+      });
 
       // validation errors
       //alert('validation errors');

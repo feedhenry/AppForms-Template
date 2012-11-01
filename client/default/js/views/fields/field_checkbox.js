@@ -1,6 +1,6 @@
 $.validator.addMethod("wufoo_checkbox_required", function(value, element, params) {
   // TODO: implement
-  return true;
+  return false;
 });
 
 FieldCheckboxView = FieldView.extend({
