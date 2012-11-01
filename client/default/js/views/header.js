@@ -15,10 +15,8 @@ $fh.ready(function() {
       this.undelegateEvents();
       _.bindAll(this, 'render', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
-      App.collections.drafts.bind('add', this.updateCounts, this);
-      App.collections.drafts.bind("remove", this.updateCounts, this);
-      App.collections.pending.bind('add', this.updateCounts, this);
-      App.collections.pending.bind("remove", this.updateCounts, this);
+      App.collections.drafts.bind('add remove reset', this.updateCounts, this);
+      App.collections.pending.bind('add remove reset', this.updateCounts, this);
 
       this.render();
     },
@@ -29,66 +27,30 @@ $fh.ready(function() {
       $(this.el).empty();
       $(this.el).append(html);
       $(this.el).show();
-
-      // Update counts
-      this.updateCounts();
     },
 
     showHome: function() {
-      if (!_.isUndefined(App.views.drafts_list)) {
-        $(App.views.drafts_list.el).hide();
-      }
-      if (!_.isUndefined(App.views.pending_list)) {
-        $(App.views.pending_list.el).hide();
-      }
-
-      this.hideForm();
-
-      App.views.form_list = new FormListView();
+      this.hideAll();
+      App.views.form_list.show();
     },
 
     showDrafts: function() {
-      if (!_.isUndefined(App.views.form_list)) {
-        $(App.views.form_list.el).hide();
-      }
-      if (!_.isUndefined(App.views.pending_list)) {
-        $(App.views.pending_list.el).hide();
-      }
-
-      this.hideForm();
-
-      App.views.drafts_list = new DraftListView();
+      this.hideAll();
+      App.views.drafts_list.show();
     },
 
     showPending: function() {
-      if (!_.isUndefined(App.views.form_list)) {
-        $(App.views.form_list.el).hide();
-      }
-      if (!_.isUndefined(App.views.drafts_list)) {
-        $(App.views.drafts_list.el).hide();
-      }
-
-      this.hideForm();
-
-      App.views.pending_list = new PendingListView();
+      this.hideAll();
+      App.views.pending_list.show();
     },
 
     hideAll: function() {
-      if (!_.isUndefined(App.views.form_list)) {
-        $(App.views.form_list.el).hide();
-      }
-      if (!_.isUndefined(App.views.drafts_list)) {
-        $(App.views.drafts_list.el).hide();
-      }
-      if (!_.isUndefined(App.views.pending_list)) {
-        $(App.views.pending_list.el).hide();
-      }
-    },
-
-    hideForm: function() {
       window.scrollTo(0, 0);
-      if (!_.isUndefined(App.views.form)) {
-        $(App.views.form.el).hide();
+      App.views.form_list.hide();
+      App.views.drafts_list.hide();
+      App.views.pending_list.hide();
+      if (_.isObject(App.views.form)) {
+        App.views.form.hide();
       }
     },
 

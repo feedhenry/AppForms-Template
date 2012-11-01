@@ -85,10 +85,15 @@ FormView = Backbone.View.extend({
 
   unrender: function () {
     // remove custom css, if any
-    if (self.theme) {
-      self.theme.remove();
+    if (this.theme) {
+      this.theme.remove();
     }
-    // TODO: clean up other shtuff?
+    this.model.emptyPageHistory();
+    this.$el.hide();
+  },
+
+  hide: function () {
+    this.unrender();
   },
 
   previousPage: function () {

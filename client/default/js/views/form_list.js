@@ -8,18 +8,18 @@ FormListView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render', 'appendForm', 'changed');
 
-    App.collections.forms.bind('add', this.changed, this);
-    App.collections.forms.bind("remove", this.changed, this);
-    App.collections.forms.fetch();
+    App.collections.forms.bind('add remove reset', this.changed, this);
 
     this.render();
   },
 
-  render: function() {
-    var self = this;
+  show: function () {
     App.views.header.markActive('.fh_wufoo_home');
-    this.changed();
     $(this.el).show();
+  },
+
+  hide: function () {
+    $(this.el).hide();
   },
 
   changed: function() {

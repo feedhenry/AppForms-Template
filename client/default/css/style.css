@@ -346,10 +346,10 @@ xmp {
   padding: 0;
 }
 
-html,
+/*html,
 body {
   height: 100%;
-}
+}*/
 
 article,
 aside,
@@ -466,13 +466,15 @@ svg {
 /* TODO: Cleanup above */
 html, body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
-  min-height: 101%;
-  padding-top: 46px;
   color: #333;
 }
 
 html {
   background: #EEE;
+}
+
+body {
+  padding-top: 46px;
 }
 label { display: block; margin-bottom: 10px; font-size: 18px; }
 label.error { display: inline; }
