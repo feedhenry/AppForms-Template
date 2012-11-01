@@ -467,15 +467,13 @@ svg {
 html, body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
+  padding-top: 46px;
 }
 
 html {
   background: #EEE;
 }
 
-body {
-  padding-top: 46px;
-}
 label { display: block; margin-bottom: 10px; font-size: 18px; }
 label.error { display: inline; }
 label.choice { display: inline; }
