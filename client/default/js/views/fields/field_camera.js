@@ -6,11 +6,11 @@ FieldCameraView = FieldView.extend({
   },
 
   template: ['<label for="<%= id %>"><%= title %></label>',
+    '<input id="<%= id %>" name="<%= id %>" type="hidden">',
     '<div class="upload"><p>Please choose a picture</p>',
     '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>',
     '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>',
     '<div class="uploaded"><p>Picture chosen</p>',
-    '<input id="<%= id %>" name="<%= id %>" type="hidden">',
     '<img class="imageThumb">',
     '<button class="apibtn removeThumb">Remove Image</button></div>'],
 
@@ -63,6 +63,7 @@ FieldCameraView = FieldView.extend({
   },
 
   addImage: function (fromLibrary) {
+    // TODO: move this to cloud config, synced to client on startup
     var camOptions = {
       quality: 50,
       targetWidth: 2048,

@@ -87,38 +87,12 @@ PageView = Backbone.View.extend({
   },
 
   isValid: function () {
-    // only validate form inputs on this page
-    return this.$el.find('input,select,option,textarea').not('[type="hidden"],:hidden').valid();
+    // only validate form inputs on this page that are visible or type=hidden
+    return this.$el.find('input,select,option,textarea').not('[type!="hidden"]:hidden').valid();
   },
 
   checkRules: function () {
     var self = this;
-
-    /* "Rules": [{
-      "RuleId": "60",
-      "Type": "SkipToPage",
-      "Setting": {
-        "Page": "3"
-      },
-      "FormId": "57",
-      "MatchType": "any",
-      "Conditions": [{
-        "ConditionId": "60",
-        "FieldName": "2",
-        "Filter": "is",
-        "Value": "go",
-        "ReportId": "57",
-        "RuleId": "60"
-      }],
-      "condition": {
-        "ConditionId": "60",
-        "FieldName": "2",
-        "Filter": "is",
-        "Value": "go",
-        "ReportId": "57",
-        "RuleId": "60"
-      }
-    }]*/
     var result = {};
 
     var rules = {
