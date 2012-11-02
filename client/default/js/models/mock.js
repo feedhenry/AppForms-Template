@@ -667,7 +667,7 @@ App.MockSimplerMultiPageForm = {
   "PaginationType": "tab",
   "NoPageTitles": false,
   "Pages": [{
-    "Title": "Page 1",
+    "Title": "Page asdasdasdasdasdasdasdasdasdasdasdas 1",
     "Fields": [{
       "Title": "fh fhgeo",
       "Instructions": "",

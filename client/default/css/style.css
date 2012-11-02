@@ -682,3 +682,64 @@ textarea {
 .fancy_name label {
   padding-top: 5px;
 }
+
+table.likert {
+  width: 100%;
+}
+
+.likert table {
+  background: #fff;
+  border: 1px solid #dedede;
+  border-bottom: none;
+  margin: 0 0 .9em 0;
+  width: 100%;
+}
+
+.likert input {
+  margin: 2px 0;
+  padding: 0;
+}
+
+.likert tbody td label {
+  color: #565656;
+  display: block;
+  font-size: 85%;
+}
+
+.likert thead td,.likert thead th {
+  background-color: #e6e6e6;
+}
+
+.likert td {
+  border-left: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.likert thead td {
+  font-size: 85%;
+  padding: 10px 6px;
+}
+
+.likert th,.likert td {
+  border-bottom: 1px solid #dedede;
+}
+
+.likert tbody th {
+  padding: 8px 8px;
+  text-align: left;
+}
+
+.likert tbody th label {
+  color: #222;
+  font-size: 95%;
+  font-weight: bold;
+}
+
+.likert tbody tr.alt td,.likert tbody tr.alt th {
+  background-color: #f5f5f5;
+}
+
+.likert tbody tr:hover td,.likert tbody tr:hover th {
+  background-color: #FFFFCF;
+}
