@@ -529,11 +529,13 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
   -o-border-radius: 0 0 5px 5px;
   border-radius: 0 0 5px 5px;
   padding: 18px 20px 18px 20px;
+  text-align: right;
 }
 
 .fh_action_bar button {
   -webkit-appearance: button;
   font-size: 125%;
+  width: 50%;
 }
 
 input {
