@@ -19,7 +19,7 @@ FieldView = Backbone.View.extend({
 
   render: function() {
     // construct field html
-    this.$el.addClass('field_container').append(_.template(this.template.join(''), {
+    this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
     }));

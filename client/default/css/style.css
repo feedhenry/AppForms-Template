@@ -136,10 +136,6 @@
   padding-top: 40px;
 }
 
-.removeThumb {
-  display:none;
-}
-
 .completePic {
   display: inline-block;
   background-color: lightgreen;
