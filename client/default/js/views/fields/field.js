@@ -2,14 +2,23 @@ FieldView = Backbone.View.extend({
 
   className : 'field_container',
 
+  events: {
+    "change": "contentChanged"
+  },
+
   // TODO: cache the input element lookup?
   initialize: function() {
+    _.bindAll(this, 'getValue');
     // only call render once. model will never update
     this.render();
   },
 
+  getValue: function() {
+    return $('#' + this.model.get('ID')).val();
+  },
+
   serialize: function() {
-    var value = $('#' + this.model.get('ID')).val();
+    var value = this.getValue();
     var serialized_field = {};
     if(value !== "") {
       serialized_field[this.model.get('ID')] = value;
@@ -17,11 +26,17 @@ FieldView = Backbone.View.extend({
     return serialized_field;
   },
 
+  contentChanged: function(e) {
+    console.log("Value changed :: " + this.getValue());
+    this.model.set({Value: this.getValue()});
+  },
+
   render: function() {
     // construct field html
     this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
-      "title": this.model.get('Title')
+      "title": this.model.get('Title'),
+      "value": this.model.get('Value')
     }));
 
     // add to dom

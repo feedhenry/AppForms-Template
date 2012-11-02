@@ -166,93 +166,60 @@ FormView = Backbone.View.extend({
     var serialized_form = self.serialize();
     var form_hash = this.model.get('Hash');
     var form_name = this.model.get('Name');
-    console.log("serialized_form :: " + JSON.stringify(serialized_form) +
-      " :: form_hash :: " + form_hash + " :: form_name :: " + form_name);
 
     // Immediately switch to Home page, send form in background.
-//    self.showHome();
+    App.views.header.showHome();
+    self.showAlert('Submitting your form in the background.', 'success', 3000);
 
-//    self.showAlert('Submitting your form in the background.', 'success', 3000);
+    utils.isOnline(function(online) {
+      if (online) {
+        $fh.act({
+          "act": "postEntry",
+          "req": {
+            "form_hash": form_hash,
+            "data": serialized_form
+          }
+        }, function(res) {
+          console.log("submit resp :: " + JSON.stringify(res));
+          if(res.Success && res.Success === 1) {
+            console.log('Form submission: success.');
+            self.submitSuccess('A pending form was submitted in the background');
+          } else {
+            console.log('Form submission: error.');
+            //ToDO Parse error response properly
+            self.submitFailure('A validation error occured on a form submission. Please review your Pending forms.');
+          }
+        }, function(msg, err) {
+          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          self.submitFailure("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
+        });
+      } else {
+        self.submitFailure("We couldn't submit your form at this time. We've saved it in your pending items.");
+      }
+    });
+  },
 
-//    function saveFormData(validation_html) {
-//      //remove original instance of draft/pending form
-//      self.deleteDraft(form_hash, form_ts, function() {
-//        console.log('delete draft successful');
-//      }, function() {
-//        console.log('delete draft failed')
-//      });
-//
-//      self.deletePending(form_hash, form_ts, function() {
-//        console.log('delete pending successful');
-//      }, function() {
-//        console.log('delete pending failed')
-//      });
-//      jQuery('.ts').val("");
-//
-//      self.savePending(form_hash, form_name, serialized_form, function() {
-//        console.log("Form data saved");
-//        self.loadDrafts();
-//        self.loadPending();
-//      }, function() {
-//        console.log("Failed to save form data for form : " + form_hash);
-//      }, validation_html);
-//    }
+  submitFailure: function(msg) {
+    this.showAlert(msg);
+    this.savePending();
+  },
 
+  submitSuccess: function(msg) {
+    this.showAlert(msg);
+  },
 
-//    utils.isOnline(function(online) {
-//      if (online) {
-//        $fh.act({
-//          "act": "postEntry",
-//          "req": {
-//            "form_hash": form_hash,
-//            "data": serialized_form
-//          }
-//        }, function(res) {
-//          alert("res :: " + JSON.stringify(res));
-//          var submitResponseType = self._responseType(res.html);
-//          console.log('submitResponseType: ' + submitResponseType);
-//
-//          if (submitResponseType === 'confirmation') {
-//            console.log('Form submission: confirmation received.');
-//            self.showAlert('A pending form was submitted in the background.', 'success', 3000);
-//
-//            self.deleteDraft(form_hash, form_ts, function() {
-//              console.log('delete draft successful');
-//            }, function() {
-//              console.log('delete draft failed')
-//            });
-//
-//            self.deletePending(form_hash, form_ts, function() {
-//              console.log('delete pending successful');
-//            }, function() {
-//              console.log('delete pending failed')
-//            });
-//            jQuery('.ts').val("");
-//
-//            self.loadPending();
-//            self.loadDrafts();
-//
-//            return;
-//          }
-//
-//          if (submitResponseType === 'validation_error') {
-//            console.log('Form submission: validation error in background.');
-//            self.showAlert('A validation error occured on a form submission. Please review your Pending forms.', 'error');
-//            saveFormData(res.html);
-//            return;
-//          }
-//        }, function(msg, err) {
-//          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-//          self.showAlert("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.", 'error');
-//          saveFormData();
-//          self.showHome();
-//        });
-//      } else {
-////        self.showAlert("We couldn't submit your form at this time. We've saved it in your pending items.", 'error');
-//        alert("offline");
-////        saveFormData();
-//      }
-//    });
+  saveDraft: function() {
+    App.collections.drafts.create(this.model.toJSON());
+    App.views.header.showDrafts();
+  },
+
+  savePending: function() {
+    App.collections.pending.create(this.model.toJSON());
+    App.views.header.showPending();
+  },
+
+  showAlert:function (message, type, timeout) {
+    alert("type ::" + type + " :: message :: " + message);
   },
 
   activePageChange: function (model, pageIndex) {

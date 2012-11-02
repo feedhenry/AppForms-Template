@@ -1,3 +1,3 @@
 FieldTextareaView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<textarea id="<%= id %>" name="<%= id %>">']
+  template: ['<label for="<%= id %>"><%= title %></label>','<textarea id="<%= id %>" name="<%= id %>" ><%= value %></textarea>']
 });

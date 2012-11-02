@@ -15,7 +15,7 @@ ActionBarView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.html('<button class="previous hidden">Previous</button><button class="next hidden">Next</button><button class="submit hidden">Submit</button>');
+    this.$el.html('<button class="previous hidden">Previous</button><button class="next hidden">Next</button><button class="submit hidden">Submit</button><button class="saveDraft hidden">Save Draft</button>');
     this.options.parentEl.append(this.$el);
   },
 
@@ -26,6 +26,7 @@ ActionBarView = Backbone.View.extend({
     if (numPages < 2) {
       // single-page. show submit button
       this.$el.find('.submit').removeClass('hidden');
+      this.$el.find('.saveDraft').removeClass('hidden');
     } else if (pageIndex === 0) {
       // multi-page, first page. show next button
       this.$el.find('.next').removeClass('hidden');
@@ -33,6 +34,7 @@ ActionBarView = Backbone.View.extend({
       // multi-page, last page. show submit button and previous
       this.$el.find('.submit').removeClass('hidden');
       this.$el.find('.previous').removeClass('hidden');
+      this.$el.find('.saveDraft').removeClass('hidden');
     } else {
       // multi-page, in-between page. show next & previous
       this.$el.find('.next').removeClass('hidden');
@@ -47,6 +49,8 @@ ActionBarView = Backbone.View.extend({
       this.options.parentView.previousPage();
     } else if (el.hasClass('next')) {
       this.options.parentView.nextPage();
+    } else if (el.hasClass('saveDraft')) {
+      this.options.parentView.saveDraft();
     } else {
       this.options.parentView.submit();
     }

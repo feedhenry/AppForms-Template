@@ -247,12 +247,6 @@ function doPost(end_point, data, callback) {
         return callback(err, err);
       }
       console.log("doPost : " + url + " :: statusCode : " + res.statusCode);
-      if (res.statusCode != 201) {
-        console.log("doPost : " + url + " :: error : " + body);
-        var error = {error:body};
-        return callback(error, error);
-      }
-
       return callback(null, body);
     });
 

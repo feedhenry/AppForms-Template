@@ -22,10 +22,19 @@ ShowFormButtonView = Backbone.View.extend({
     $(this.el).remove();
   },
 
-  show: function() {
-    console.log('show: ' + this.model.get('Name'));
-    App.views.form = new FormView({
-      model: this.model
-    });
+  show:function () {
+    if (this.model instanceof PendingModel) {
+      App.views.form = new PendingView({
+        model:this.model
+      });
+    } else if (this.model instanceof DraftModel) {
+      App.views.form = new DraftView({
+        model:this.model
+      });
+    } else {
+      App.views.form = new FormView({
+        model:this.model
+      });
+    }
   }
 });

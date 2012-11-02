@@ -259,6 +259,10 @@ exports.getForm = function (params, callback) {
   });
 };
 
+//res :: {"Success":1,"EntryId":10,"EntryLink":"https://mnairn.wufoo.com/api/v3/forms/m7x3q1/entries.json?Filter1=EntryId+Is_equal_to+10"}
+
+//{"error":"{"Success":0,"ErrorText":"Errors have been highlighted below.","FieldErrors":[{\"ID\":\"Field116\",\"ErrorText\":\"This field is required. Please enter a value.\"}]}"}
+
 exports.postEntry = function (params, callback) {
   var form_hash = params.form_hash;
   if (form_hash == null) return callback(null, {

@@ -31,6 +31,13 @@ FormModel = Backbone.Model.extend({
   emptyPageHistory: function () {
     this.attributes.page_history = [];
     this.attributes.active_page = null;
+  },
+
+  toJSON: function () {
+    var self = this;
+    var form = Backbone.Model.prototype.toJSON.apply(this, arguments);
+    form.Pages = self.pages.toJSON();
+    return form;
   }
 });
 
