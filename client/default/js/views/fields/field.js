@@ -96,8 +96,9 @@ FieldView = Backbone.View.extend({
     img.attr('src', './img/' + extension_type + '.png');
     button.prepend(img);
 
-    button.click(function() {
+    button.click(function(e) {
       self.action(this);
+      e.preventDefault();
       return false;
     });
 

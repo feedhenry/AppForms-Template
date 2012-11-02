@@ -22,7 +22,7 @@ FieldSignatureView = FieldView.extend({
     this.show();
   },
 
-  action: function(el) {
+  action: function(el, e) {
     $('input', this.$el);
     this.showSignatureCapture();
   },
@@ -67,6 +67,7 @@ FieldSignatureView = FieldView.extend({
 
     // Bind capture
     $('.cap_sig_done_btn', this.$el).unbind('click').bind('click', function(e) {
+      e.preventDefault();
       var sigData = sigPad.getSignatureImage();
       if(sigData == "data:,"){ 
         sigData = toBitmapURL($('.sigPad', self.$el).find('canvas')[0]);
