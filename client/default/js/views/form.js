@@ -68,6 +68,10 @@ FormView = Backbone.View.extend({
       },
       unhighlight: function(element, errorClass, validClass) {
         $(element).closest('div').removeClass(errorClass).addClass(validClass);
+      },
+      errorPlacement: function(error, element) {
+        // place error label as last element in containing div
+        error.appendTo(element.parent());
       }
     });
 

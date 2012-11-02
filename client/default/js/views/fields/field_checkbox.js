@@ -1,12 +1,7 @@
-$.validator.addMethod("wufoo_checkbox_required", function(value, element, params) {
-  // TODO: implement
-  return false;
-});
-
 FieldCheckboxView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
-    choice: '<input id="<%= id %>" name="<%= id %>" type="checkbox" class="field checkbox" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>"><%= choice %></label><br/>'
+    choice: '<input id="<%= id %>" name="<%= mainId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>"><%= choice %></label><br/>'
   },
 
   render: function() {
@@ -21,6 +16,7 @@ FieldCheckboxView = FieldView.extend({
     $.each(subfields, function(i, subfield) {
       var choice_field = $(_.template(self.templates.choice, {
         "id": subfield.ID,
+        "mainId": self.model.get('ID'),
         "iteration": i,
         "choice": subfield.Label,
         "value": subfield.Label
@@ -45,8 +41,12 @@ FieldCheckboxView = FieldView.extend({
   addValidationRules: function () {
     if (this.model.get('IsRequired') === '1') {
       // special required rule for checkbox fields
-      this.$el.find('input[type="checkbox"]').rules('add', {
-        "wufoo_checkbox_required": true
+      this.$el.find('[name="' + this.model.get('ID') + '[]"]').first().rules('add', {
+        "required": true,
+        "minlength": 1,
+        messages: {
+          required: "Please choose at least 1"
+         }
       });
     }
   }
