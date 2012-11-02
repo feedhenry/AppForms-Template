@@ -619,6 +619,14 @@ textarea {
   padding-top: 4px;
 }
 
+td .page_title {
+  display: none;
+}
+
+td.active .page_title {
+  display: inline;
+}
+
 /* Form List */
 .form_list {
   padding: 20px;

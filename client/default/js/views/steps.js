@@ -21,11 +21,14 @@ StepsView = Backbone.View.extend({
     this.options.parentEl.append(this.$el);
     var table = $(self.templates.table);
 
+    var width = 100 / this.model.pages.length;
+
     this.model.pages.each(function(page, index) {
       var item = $(_.template(self.templates.step, {
         step_name: page.get('Title'),
         step_num: index + 1
       }));
+      item.css('width', width + '%')
       $('tr:first', table).append(item);
     });
 
@@ -34,7 +37,7 @@ StepsView = Backbone.View.extend({
 
   activePageChange: function(model, pageIndex) {
     this.$el.find('td').removeClass('active');
-    this.$el.find('td:eq('+pageIndex+')').addClass('active');
+    this.$el.find('td:eq(' + pageIndex + ')').addClass('active');
   }
 
 });

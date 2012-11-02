@@ -12,6 +12,7 @@ PageView = Backbone.View.extend({
     "email": FieldEmailView,
     "time": FieldTimeView,
     "phone": FieldPhoneView,
+    "europhone": FieldPhoneView,
     "shortname": FieldShortnameView,
     "address": FieldAddressView,
     "url": FieldUrlView,

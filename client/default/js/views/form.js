@@ -166,7 +166,7 @@ FormView = Backbone.View.extend({
     var serialized_form = self.serialize();
     var form_hash = this.model.get('Hash');
     var form_name = this.model.get('Name');
-    alert("serialized_form :: " + JSON.stringify(serialized_form) +
+    console.log("serialized_form :: " + JSON.stringify(serialized_form) +
       " :: form_hash :: " + form_hash + " :: form_name :: " + form_name);
 
     // Immediately switch to Home page, send form in background.
