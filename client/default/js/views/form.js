@@ -64,14 +64,14 @@ FormView = Backbone.View.extend({
     this.$el.append(form);
     form.validate({
       highlight: function(element, errorClass, validClass) {
-        $(element).closest('div').addClass(errorClass).removeClass(validClass);
+        $(element).closest('.field_container').addClass(errorClass).removeClass(validClass);
       },
       unhighlight: function(element, errorClass, validClass) {
-        $(element).closest('div').removeClass(errorClass).addClass(validClass);
+        $(element).closest('.field_container').removeClass(errorClass).addClass(validClass);
       },
       errorPlacement: function(error, element) {
         // place error label as last element in containing div
-        error.appendTo(element.parent());
+        error.appendTo(element.closest('.field_container'));
       }
     });
 
