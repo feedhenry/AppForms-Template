@@ -894,18 +894,160 @@ App.MockSimpleSinglePageForm = {
       "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
-      "Page": "1",
-      "Type": "text",
-      "ID": "Field3"
+      "Page": "2",
+      "SubFields": [{
+        "DefaultVal": "",
+        "ID": "Field110",
+        "Label": "First"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field111",
+        "Label": "Last"
+      }],
+      "Type": "shortname",
+      "ID": "Field110"
     }, {
-      "Title": "DOB",
+      "Title": "Attach a File",
       "Instructions": "",
       "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
-      "Page": "1",
+      "Page": "2",
+      "Type": "file",
+      "ID": "Field112"
+    }, {
+      "Title": "Address",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "SubFields": [{
+        "DefaultVal": "",
+        "ID": "Field113",
+        "Label": "Street Address"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field114",
+        "Label": "Address Line 2"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field115",
+        "Label": "City"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field116",
+        "Label": "State / Province / Region"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field117",
+        "Label": "Postal / Zip Code"
+      }, {
+        "DefaultVal": "",
+        "ID": "Field118",
+        "Label": "Country"
+      }],
+      "Type": "address",
+      "ID": "Field113"
+    }, {
+      "Title": "Date",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
       "Type": "date",
-      "ID": "Field5"
+      "ID": "Field119"
+    }, {
+      "Title": "Email",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "email",
+      "ID": "Field120"
+    }, {
+      "Title": "Time",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "time",
+      "ID": "Field121"
+    }, {
+      "Title": "Phone Number",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "phone",
+      "ID": "Field122"
+    }, {
+      "Title": "Website",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "url",
+      "ID": "Field123"
+    }, {
+      "Title": "Price Field - Amount Default",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "money",
+      "ID": "Field124"
+    }, {
+      "Title": "Price Field - Amount Euro",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "",
+      "Page": "2",
+      "Type": "money",
+      "ID": "Field235"
+    }, {
+      "Title": "Likert - Evaluate the following statements.",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "0",
+      "Page": "2",
+      "SubFields": [{
+        "DefaultVal": "0",
+        "ID": "Field125",
+        "Label": "Statement One"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field126",
+        "Label": "Statement Two"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field127",
+        "Label": "Statement Three"
+      }],
+      "Choices": [{
+        "Score": 1,
+        "Label": "Strongly Disagree"
+      }, {
+        "Score": 2,
+        "Label": "Disagree"
+      }, {
+        "Score": 3,
+        "Label": "Agree"
+      }, {
+        "Score": 4,
+        "Label": "Strongly Agree"
+      }],
+      "Type": "likert",
+      "ID": "Field125",
+      "HasOtherField": false
     }]
   }],
   "Theme": "",

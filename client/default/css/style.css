@@ -664,3 +664,16 @@ textarea {
   font-size: 0.75em;
   line-height: 1.375;
 }
+
+.fancy_name input {
+  width: inherit;
+  display: inline-block;
+}
+
+.fancy_name {
+  float: left;
+}
+
+.fancy_name label {
+  padding-top: 5px;
+}
