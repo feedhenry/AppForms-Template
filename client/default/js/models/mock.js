@@ -907,15 +907,6 @@ App.MockSimpleSinglePageForm = {
       "Type": "shortname",
       "ID": "Field110"
     }, {
-      "Title": "Attach a File",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "",
-      "DefaultVal": "",
-      "Page": "2",
-      "Type": "file",
-      "ID": "Field112"
-    }, {
       "Title": "Address",
       "Instructions": "",
       "IsRequired": "0",

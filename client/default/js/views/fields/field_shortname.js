@@ -14,7 +14,6 @@ FieldShortnameView = FieldView.extend({
 
     var subfields = this.model.get('SubFields');
     $.each(subfields, function(i, subfield) {
-      console.log(subfield)
       var choice_field = $(_.template(self.templates.input, {
         "id": subfield.ID,
         "label": subfield.Label,

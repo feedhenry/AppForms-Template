@@ -636,6 +636,11 @@ textarea {
 }
 
 /* Custom field styling */
+.field_container label:first-child {
+  font-weight: bold;
+}
+
+
 .sigImage {
   width: 100%;
   height: 100%;
