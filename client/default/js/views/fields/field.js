@@ -8,6 +8,15 @@ FieldView = Backbone.View.extend({
     this.render();
   },
 
+  serialize: function() {
+    var value = $('#' + this.model.get('ID')).val();
+    var serialized_field = {};
+    if(value !== "") {
+      serialized_field[this.model.get('ID')] = value;
+    }
+    return serialized_field;
+  },
+
   render: function() {
     // construct field html
     this.$el.addClass('field_container').append(_.template(this.template.join(''), {

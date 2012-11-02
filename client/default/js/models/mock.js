@@ -869,45 +869,23 @@ App.MockSimplerMultiPageForm = {
 };
 
 App.MockSimpleSinglePageForm = {
-  "Name": "Single Page Form",
-  "Description": "Simple single page form",
-  "RedirectMessage": "Great! Thanks for filling out my form!",
-  "Url": "single-page-form",
-  "Email": "",
-  "IsPublic": "1",
-  "Language": "english",
-  "StartDate": "2000-01-01 12:00:00",
-  "EndDate": "2030-01-01 12:00:00",
-  "EntryLimit": "0",
-  "DateCreated": "2012-11-01 02:54:19",
-  "DateUpdated": "2012-11-01 02:54:19",
-  "Hash": "m7x3q1",
-  "LinkFields": "https://mnairn.wufoo.com/api/v3/forms/m7x3q1/fields.json",
-  "LinkEntries": "https://mnairn.wufoo.com/api/v3/forms/m7x3q1/entries.json",
-  "LinkEntriesCount": "https://mnairn.wufoo.com/api/v3/forms/m7x3q1/entries/count.json",
-  "PaginationType": "tab",
-  "NoPageTitles": false,
-  "Pages": [{
-    "Fields": [{
-      "Title": "Name",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "",
-      "DefaultVal": "",
-      "Page": "1",
-      "Type": "text",
-      "ID": "Field3"
-    }, {
-      "Title": "DOB",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "",
-      "DefaultVal": "",
-      "Page": "1",
-      "Type": "date",
-      "ID": "Field5"
-    }]
-  }],
-  "Theme": "",
-  "Rules": []
-};
+  "Name":"Single Page Form",
+  "Description":"Simple single page form",
+  "RedirectMessage":"Great! Thanks for filling out my form!",
+  "Url":"single-page-form",
+  "Email":"",
+  "IsPublic":"1",
+  "Language":"english",
+  "StartDate":"2000-01-01 12:00:00",
+  "EndDate":"2030-01-01 12:00:00",
+  "EntryLimit":"0",
+  "DateCreated":"2012-11-01 02:54:19",
+  "DateUpdated":"2012-11-02 03:43:34",
+  "Hash":"m7x3q1","LinkFields":"https://mnairn.wufoo.com/api/v3/forms/m7x3q1/fields.json",
+  "LinkEntries":"https://mnairn.wufoo.com/api/v3/forms/m7x3q1/entries.json",
+  "LinkEntriesCount":"https://mnairn.wufoo.com/api/v3/forms/m7x3q1/entries/count.json",
+  "PaginationType":"tab",
+  "NoPageTitles":false,
+  "Pages":[{"Fields":[{"Title":"Name","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Type":"text","ID":"Field3"},{"Title":"DOB","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Type":"date","ID":"Field5"},{"Title":"Check All That Apply","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"0","Page":"1","SubFields":[{"DefaultVal":"0","ID":"Field13","Label":"First Choice"},{"DefaultVal":"0","ID":"Field14","Label":"Second Choice"},{"DefaultVal":"0","ID":"Field15","Label":"Third Choice"}],"Type":"checkbox","ID":"Field13"},{"Title":"Select a Choice","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Choices":[{"Label":"First Choice"},{"Label":"Second Choice"},{"Label":"Third Choice"}],"Type":"radio","ID":"Field113","HasOtherField":false},{"Title":"Select a Choice","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Choices":[{"Label":""},{"Label":"Under 18"},{"Label":"18-24"},{"Label":"25-34"},{"Label":"35-44"},{"Label":"45-54"},{"Label":"55-64"},{"Label":"65 or Above"},{"Label":"Prefer Not to Answer"}],"Type":"select","ID":"Field114","HasOtherField":false},{"Title":"Phone Number 1","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Type":"phone","ID":"Field7"},{"Title":"Name","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","SubFields":[{"DefaultVal":"","ID":"Field11","Label":"First"},{"DefaultVal":"","ID":"Field12","Label":"Last"}],"Type":"shortname","ID":"Field11"},{"Title":"Phone Number 2","Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Type":"europhone","ID":"Field8"},{"Title":"Amount"
+  ,"Instructions":"","IsRequired":"0","ClassNames":"","DefaultVal":"","Page":"1","Type":"money","ID":"Field115"}]}],"Theme":"","Rules"
+:[]}

@@ -38,6 +38,15 @@ FieldRadioView = FieldView.extend({
     this.show();
   },
 
+  serialize: function() {
+    var self = this;
+    var serialized_field = {};
+    this.$el.find('input[type="radio"]:checked').each(function() {
+      serialized_field[self.model.get('ID')] = $(this).val();
+    });
+    return serialized_field;
+  },
+
   addValidationRules: function () {
     // first radio is always initially checked, so no need to do 'required' validation on this field
   }
