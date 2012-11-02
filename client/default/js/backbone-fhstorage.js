@@ -21,6 +21,7 @@ function guid() {
 // Create it with a meaningful name, like the name you'd give a table.
 var FHBackboneSyncStore = function(name, act) {
   var self = this;
+  this.localStoreVersion = '0.2'; // versioning to force a nuke of local store DANGER!!!
   this.name = name;
   this.act = act || null;
   this.data = {};
@@ -28,7 +29,7 @@ var FHBackboneSyncStore = function(name, act) {
 
   $fh.ready(function () {
     $fh.data({
-      key: self.name
+      key: self.name + self.localStoreVersion
     }, function(res) {
       try {
         if (res.val && res.val !== '') {
@@ -106,7 +107,7 @@ _.extend(FHBackboneSyncStore.prototype, {
     var self = this;
     $fh.data({
       act:'save',
-      key: this.name,
+      key: this.name + this.localStoreVersion,
       val: JSON.stringify(this.data)
     }, function () {
       cb(null);
