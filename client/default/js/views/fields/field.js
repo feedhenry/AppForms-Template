@@ -101,5 +101,10 @@ FieldView = Backbone.View.extend({
       // add rules too
       this.addRules();
     }
+  },
+
+  // Return the value of this particular field
+  value: function() {
+    $('input',  this.$el).val();
   }
 });

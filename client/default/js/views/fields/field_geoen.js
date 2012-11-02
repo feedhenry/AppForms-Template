@@ -47,5 +47,5 @@ FieldGeoENView = FieldView.extend({
       }
     };
     return OsGridRef.latLongToOsGrid(params);
-  },
+  }
 });
