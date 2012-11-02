@@ -13,7 +13,7 @@ FieldGeoView = FieldView.extend({
     }));
 
     // Add button
-    this.addButton(this.$el, this.extension_type, 'Capture Location');
+    this.addButton(this.$el, this.extension_type, 'Capture Location (Lat/Lon)');
 
     // add to dom
     this.options.parentEl.append(this.$el);
@@ -32,5 +32,4 @@ FieldGeoView = FieldView.extend({
     });
     input.blur();
   }
-
 });
