@@ -36,7 +36,7 @@ FormModel = Backbone.Model.extend({
 
 FormsCollection = Backbone.Collection.extend({
   model: FormModel,
-  fhStorage: new Store("forms", "getForms")
+  fhStorage: new FHBackboneSyncStore("forms", "getForms")
 });
 
 App.collections.forms = new FormsCollection();
