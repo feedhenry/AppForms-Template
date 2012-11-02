@@ -32,7 +32,7 @@
 
 #fh_wufoo_header_wrapper {
   position: fixed;
-  z-index: 1000000;
+  z-index: 100;
   top: 0;
   width: 95%;
   margin-left: 2.5%;
@@ -633,4 +633,34 @@ textarea {
 
 .field_container.error .error {
   color: red;
+}
+
+/* Custom field styling */
+.sigImage {
+  width: 100%;
+  height: 100%;
+}
+
+.sigNav {
+  border-bottom: 1px solid #ccc;
+}
+
+.sigWrapper.current {
+  border: none;
+}
+
+.sigNav .clearButton {
+  bottom: 0.2em;
+  position: absolute;
+  font-size: 0.75em;
+  line-height: 1.375;
+  right: 86px;
+}
+
+.sigNav .cap_sig_done_btn {
+  bottom: 0.2em;
+  position: absolute;
+  right: 10px;
+  font-size: 0.75em;
+  line-height: 1.375;
 }

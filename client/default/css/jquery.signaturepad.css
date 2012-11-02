@@ -136,16 +136,6 @@
   color: #555;
 }
 
-.sigNav .clearButton {
-  bottom: 0.2em;
-  display: none;
-  position: absolute;
-  right: 0;
-
-  font-size: 0.75em;
-  line-height: 1.375;
-}
-
 .sigWrapper {
   clear: both;
   height: 100px;

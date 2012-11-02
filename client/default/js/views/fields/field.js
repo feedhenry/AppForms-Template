@@ -93,6 +93,7 @@ FieldView = Backbone.View.extend({
     });
 
     input.append(button);
+    return button;
   },
 
   show: function () {
