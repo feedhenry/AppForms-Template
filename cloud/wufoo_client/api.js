@@ -5,6 +5,7 @@ var wufoo_config = require('../wufoo_config.js');
 var cheerio = require('cheerio');
 var async = require('async');
 
+// DEPRECATED
 //http://www.wufoo.com/docs/api/v3/forms/
 exports.getForms = function (cb) {
   var end_point = "forms";

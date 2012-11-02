@@ -282,9 +282,20 @@ exports.postEntry = function (params, callback) {
  * Here we get a list of available Wufoo forms
  */
 exports.getForms = function (params, callback) {
-  wufoo_api.getForms(function (error, body) {
+  var hashes = wufoo_config.wufoo_config.form_hashes || [wufoo_config.wufoo_config.form_hash];
+  async.map(hashes, function (hash, aCallback) {
+    exports.getForm({
+      form_hash: hash
+    }, function (err, res) {
+      if (err) return aCallback(err);
+
+      return aCallback(null, res.data);
+    });
+  }, function (err, results) {
+    if (err) return callback(null, err);
+
     return callback(null, {
-      data:body
+      data: results
     });
   });
 };

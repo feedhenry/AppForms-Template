@@ -1,56 +1,11 @@
 /**
  * @fileOverview This is an adaptation of Backbone.localStorage, edited to work
  *     with the asynchronous FeedHenry local data storage API.
- * @version 0.1
- * @author gareth.cpm@gmail.com (Gareth Murphy)
+ * A cloud action can be linked with the store to allow syncing to cloud
+ * @version 0.2
+ * @author gareth.cpm@gmail.com (Gareth Murphy), david.martin@feedhenry.com
  */
 
-
-// HELPER FUNCTIONS
-
-/**
- * A convenience wrapper around the 'load' variation of the $fh.data function,
- * designed to be forcibly synchronous.
- *
- * @param {String} theKey The key of the data you want to retrieve from storage.
- * @return {String} The value you requested.
- */
-function fhGet(theKey) {
-  var response;
-
-  // We effectively force this function into being synchronous, by creating an
-  // inner function which only runs after being called twice.
-  var returnResponse = _.after(2, function() {
-    return response;
-  });
-
-  $fh.data({
-    key:theKey
-  }, function(res) {
-    response = res;
-    returnResponse(); // Once...
-  }, function(msg, err) {
-    $fh.log('ERROR: ' + msg);
-  });
-  return returnResponse(); // And twice.
-}
-
-/**
- * A convenience wrapper around the 'save' variation of the $fh.data function.
- *
- * @param {String} theKey The key you'll be storing your data under.
- * @param {String} theVal The data itself, in String form.
- * @param {Function} callback A function you wish to call upon save success.
- */
-function fhPut(theKey, theVal, callback) {
-  $fh.data({
-    act:'save',
-    key:theKey,
-    val:theVal
-  }, callback, function(msg, err) {
-    $fh.log('ERROR: ' + msg);
-  });
-}
 
 // Generate four random hex digits (for GUIDs).
 function S4() {
@@ -64,54 +19,140 @@ function guid() {
 
 // Our Store is represented by a single JS object in FeedHenry's data store.
 // Create it with a meaningful name, like the name you'd give a table.
-var Store = function(name) {
+var FHBackboneSyncStore = function(name, act) {
   var self = this;
+  this.localStoreVersion = '0.2'; // versioning to force a nuke of local store DANGER!!!
   this.name = name;
+  this.act = act || null;
+  this.data = {};
+  this.collection = null;
 
   $fh.ready(function () {
-    var store = fhGet(self.name).val;
-    self.data = (store && JSON.parse(store)) || {};
+    $fh.data({
+      key: self.name + self.localStoreVersion
+    }, function(res) {
+      try {
+        if (res.val && res.val !== '') {
+          self.data = JSON.parse(res.val);
+        }
+      } catch(e) {
+        // leave data as default
+      }
+
+      var dataEmpty = _.isEmpty(self.data);
+
+      // if theres an act defined, call it
+      if (self.act !== null) {
+        // setTimeout(function () {
+        //   var res = {
+        //     data: []
+        //   };
+        //   res.data.push(App.MockForm);
+        //   res.data.push(App.MockSimplerMultiPageForm);
+        //   res.data.push(App.MockSimpleSinglePageForm);
+
+
+        
+        $fh.act({
+          act: self.act
+        }, function (res) {
+          if (res && res.data) {
+            self.data = res.data;
+          }
+
+          // initialise data and save it
+          self.save(function () {
+            if (dataEmpty) {
+              self.isLoaded = true;
+              self.trigger('loaded');
+            } else {
+
+              self.collection.fetch();
+//              self.trigger('actUpdate');
+            }
+          });
+
+          // if data was previously empty, trigger loaded event
+          
+        }, function (msg, err) {
+          // if there's no data yet, trigger loadFaild
+          if (dataEmpty) {
+            self.trigger('loadFailed');
+          }
+          console.error('ERROR: act call :: msg:', msg, ' err:', err);
+        });
+        // }, 5000);
+      }
+
+      // should we trigger loaded message now, or leave it to be triggered in act callback?
+      // depends on whether there is an act and if we have data from local store already
+      if (self.act === null || !dataEmpty) {
+        self.isLoaded = true;
+        self.trigger('loaded');
+      }
+      // data loaded, trigger ready
+    }, function(msg, err) {
+      // if a cloud act is defined, call it to populate data
+      self.trigger('loadFailed');
+    });
   });
 };
 
-_.extend(Store.prototype, {
+_.extend(FHBackboneSyncStore.prototype, Backbone.Events);
+
+_.extend(FHBackboneSyncStore.prototype, {
 
   // Save the current state of the Store to the FeedHenry local this.data store.
-  save: function() {
-    fhPut(this.name, JSON.stringify(this.data));
+  save: function(cb) {
+    var self = this;
+    $fh.data({
+      act:'save',
+      key: this.name + this.localStoreVersion,
+      val: JSON.stringify(this.data)
+    }, function () {
+      cb(null);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      console.error(errMsg);
+      cb(err);
+    });
   },
 
   /* Add a model, giving it a (hopefully) unique GUID, if it doesn't already
    have an id of it's own. */
-  create: function(model) {
+  create: function(model, cb) {
     if (!model.id) model.set(model.idAttribute, guid());
     this.data[model.id] = model;
-    this.save();
-    return model;
+    this.save(function (err) {
+      return cb(err, model);
+    });
   },
 
   // Update a model by replacing its copy in`this.data`.
-  update: function(model) {
+  update: function(model, cb) {
     this.data[model.id] = model;
-    this.save();
-    return model;
+    this.save(function (err) {
+      return cb(err, model);
+    });
   },
 
   // Retrieve a model from `this.this.this.data` by id.
-  find: function(model) {
-    return this.data[model.id];
+  find: function(model, cb) {
+    return cb(null, this.data[model.id]);
   },
 
   // Return the array of all models currently in storage.
-  findAll: function() {
-    return _.values(this.data);
+  findAll: function(cb) {
+    return cb(null, _.values(this.data));
   },
 
   // Delete a model from `this.data`, returning it.
-  destroy: function(model) {
+  destroy: function(model, cb) {
     delete this.data[model.id];
-    this.save();
-    return model;
+    this.save(function (err) {
+      return cb(err, model);
+    });
   }
 
 });
@@ -120,31 +161,29 @@ _.extend(Store.prototype, {
  FeedHenry this.data store property, which should be an instance of Store. */
 Backbone.sync = function(method, model, options) {
 
-  var resp;
   var store = model.fhStorage || model.collection.fhStorage;
+  // set collection on fhstorage
+  if (store.collection === null) {
+    store.collection = model.collection || model;
+  }
+
+  function storeCb(err, resp) {
+    if (err || resp == null) return options.error("Record not found");
+    return options.success(resp);
+  }
 
   if (store != null) { // only try load if a store is defined
-    switch(method) {
-      case "read":
-        resp = model.id ? store.find(model) : store.findAll();
-        break;
-      case "create":
-        resp = store.create(model);
-        break;
-      case "update":
-        resp = store.update(model);
-        break;
-      case "delete":
-        resp = store.destroy(model);
-        break;
-    }
-
-    if (resp) {
-      options.success(resp);
+    if (store.isLoaded) {
+      switch(method) {
+        case "read": return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
+        case "create": return store.create(model, storeCb);
+        case "update": return store.update(model, storeCb);
+        case "delete": return store.destroy(model, storeCb);
+      }
     } else {
-      options.error("Record not found");
+      options.error("Store is not loaded yet. Listening for 'loaded' event?");
     }
   } else {
-    options.error("Store is null. Using $fh.ready() before accessing store?");
+    options.error("Store is null. Is it assigned to model/collection as 'fhStorage'?");
   }
 };
