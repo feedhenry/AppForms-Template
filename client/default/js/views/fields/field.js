@@ -1,6 +1,9 @@
 FieldView = Backbone.View.extend({
 
   className : 'field_container',
+  templates: {
+    instructions: '<p class="instruct"><%= instructions %></p>'
+  },
 
   events: {
     "change": "contentChanged"
@@ -39,6 +42,10 @@ FieldView = Backbone.View.extend({
       "value": this.model.get('Value')
     }));
 
+    $('label:first', this.el).after(_.template(this.templates.instructions, {
+      instructions: this.model.get('Instructions')
+    }));
+
     // add to dom
     this.options.parentEl.append(this.$el);
 
@@ -48,6 +55,10 @@ FieldView = Backbone.View.extend({
   addRules: function () {
     this.addValidationRules();
     this.addSpecialRules();
+  },
+
+  isRequired: function () {
+    return this.model.get('IsRequired') === '1';
   },
 
   addValidationRules: function () {
@@ -82,8 +93,8 @@ FieldView = Backbone.View.extend({
 
     // also apply any special rules
     _(this.model.get('Rules') || []).each(function (rule) {
-      rule.pageView = self.options.parentView;
       var ruleConfig = _.clone(rule);
+      rule.pageView = self.options.parentView;
       ruleConfig.fn = rules[rule.Type];
       self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
     });

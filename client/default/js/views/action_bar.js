@@ -54,5 +54,10 @@ ActionBarView = Backbone.View.extend({
     } else {
       this.options.parentView.submit();
     }
+    this.scrollToTop();
+  },
+
+  scrollToTop: function() {
+    window.scrollTo(0, 0);
   }
 });

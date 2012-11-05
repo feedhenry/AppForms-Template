@@ -31,7 +31,7 @@ App.MockForm = {
     }, {
       "Title": "Single Text Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -178,7 +178,7 @@ App.MockForm = {
     }, {
       "Title": "Paragraph Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -204,7 +204,7 @@ App.MockForm = {
     }, {
       "Title": "Multi Choice Field - Required!!?!!",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -239,7 +239,7 @@ App.MockForm = {
     }, {
       "Title": "Number field - required - Hide Checkbox field below if 7",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -298,7 +298,7 @@ App.MockForm = {
     }, {
       "Title": "Checkbox field - required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "0",
       "Page": "1",
@@ -339,7 +339,7 @@ App.MockForm = {
     }, {
       "Title": "Dropdown Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -565,30 +565,31 @@ App.MockForm = {
     }, {
       "Title": "fh fhcam 1/3 - Required",
       "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field227"
-    }, {
-      "Title": "fh fhcam 2/3 - Required",
-      "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field346"
-    }, {
-      "Title": "fh fhcam 3/3 - Optional",
-      "Instructions": "",
       "IsRequired": "0",
       "ClassNames": "fh fhcam",
       "DefaultVal": "",
       "Page": "3",
       "Type": "file",
-      "ID": "Field345"
+      "ID": "Field227",
+      "SubFields": [{
+        "Title": "fh fhcam 2/3 - Required",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field346"
+      }, {
+        "Title": "fh fhcam 3/3 - Optional",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field345"
+      }]
     }, {
       "Title": "fh fhsig",
       "Instructions": "",
@@ -689,30 +690,31 @@ App.MockSimplerMultiPageForm = {
     }, {
       "Title": "fh fhcam 1/3 - Required",
       "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field227"
-    }, {
-      "Title": "fh fhcam 2/3 - Required",
-      "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field346"
-    }, {
-      "Title": "fh fhcam 3/3 - Optional",
-      "Instructions": "",
       "IsRequired": "0",
       "ClassNames": "fh fhcam",
       "DefaultVal": "",
       "Page": "3",
       "Type": "file",
-      "ID": "Field345"
+      "ID": "Field227",
+      "SubFields": [{
+        "Title": "fh fhcam 2/3 - Required",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field346"
+      }, {
+        "Title": "fh fhcam 3/3 - Optional",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field345"
+      }]
     }, {
       "Title": "fh fhsig",
       "Instructions": "",
@@ -752,7 +754,7 @@ App.MockSimplerMultiPageForm = {
     }, {
       "Title": "Test Field 1",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -889,6 +891,42 @@ App.MockSimpleSinglePageForm = {
   "NoPageTitles": false,
   "Pages": [{
     "Fields": [{
+      "Title": "Likert - Evaluate the following statements.",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "0",
+      "Page": "2",
+      "SubFields": [{
+        "DefaultVal": "0",
+        "ID": "Field125",
+        "Label": "Statement One"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field126",
+        "Label": "Statement Two"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field127",
+        "Label": "Statement Three"
+      }],
+      "Choices": [{
+        "Score": 1,
+        "Label": "Strongly Disagree"
+      }, {
+        "Score": 2,
+        "Label": "Disagree"
+      }, {
+        "Score": 3,
+        "Label": "Agree"
+      }, {
+        "Score": 4,
+        "Label": "Strongly Agree"
+      }],
+      "Type": "likert",
+      "ID": "Field125",
+      "HasOtherField": false
+    }, {
       "Title": "Name",
       "Instructions": "",
       "IsRequired": "0",
@@ -1003,42 +1041,6 @@ App.MockSimpleSinglePageForm = {
       "Page": "2",
       "Type": "money",
       "ID": "Field235"
-    }, {
-      "Title": "Likert - Evaluate the following statements.",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "",
-      "DefaultVal": "0",
-      "Page": "2",
-      "SubFields": [{
-        "DefaultVal": "0",
-        "ID": "Field125",
-        "Label": "Statement One"
-      }, {
-        "DefaultVal": "0",
-        "ID": "Field126",
-        "Label": "Statement Two"
-      }, {
-        "DefaultVal": "0",
-        "ID": "Field127",
-        "Label": "Statement Three"
-      }],
-      "Choices": [{
-        "Score": 1,
-        "Label": "Strongly Disagree"
-      }, {
-        "Score": 2,
-        "Label": "Disagree"
-      }, {
-        "Score": 3,
-        "Label": "Agree"
-      }, {
-        "Score": 4,
-        "Label": "Strongly Agree"
-      }],
-      "Type": "likert",
-      "ID": "Field125",
-      "HasOtherField": false
     }]
   }],
   "Theme": "",

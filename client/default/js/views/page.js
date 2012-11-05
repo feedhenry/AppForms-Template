@@ -22,6 +22,7 @@ PageView = Backbone.View.extend({
     "fhgeoEN": FieldGeoENView,
     "fhgeoen": FieldGeoENView,
     "fhcam": FieldCameraView,
+    "fhcamGroup": FieldCameraGroupView,
     "fhsig": FieldSignatureView,
     "fhmap": FieldMapView,
     "fhtime": FieldCustomTimeView,
@@ -88,8 +89,8 @@ PageView = Backbone.View.extend({
   },
 
   isValid: function () {
-    // only validate form inputs on this page that are visible or type=hidden
-    return this.$el.find('input,select,option,textarea').not('[type!="hidden"]:hidden').valid();
+    // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
+    return this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="hidden"]:hidden').valid();
   },
 
   checkRules: function () {

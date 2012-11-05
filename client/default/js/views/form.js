@@ -3,6 +3,7 @@ FormView = Backbone.View.extend({
 
   templates: {
     heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>',
+    logo: '<h1 id="logo"><a href="#">App Form</a></h1>',
     action_bar: '<div class="fh_action_bar"><button class="previous">Previous Page</button><button class="next">Next Page</button><button class="submit">Submit Form</button></div>'
   },
 
@@ -10,7 +11,7 @@ FormView = Backbone.View.extend({
     var self = this;
 
     _.bindAll(this, 'render');
-    this.model.on('change:active_page', function (model, page) {
+    this.model.on('change:active_page', function(model, page) {
       self.activePageChange.call(self, model, page);
     });
 
@@ -43,22 +44,18 @@ FormView = Backbone.View.extend({
       });
       $('body link').last().after(self.theme);
     }
-    
+
     var form = $('<form>').addClass('wufoo');
+
+    // Add form logo
+    var logo = _.template(this.templates.logo, {});
+    form.append(logo);
+
     // Add form heading
     var heading = _.template(this.templates.heading, {
       "form_title": this.model.get('Name')
     });
     form.append(heading);
-
-    // Show steps view?
-    if (this.model.pages.length > 1) {
-      self.steps = new StepsView({
-        parentEl: this.$el,
-        parentView: self,
-        model: this.model
-      });
-    }
 
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     this.$el.append(form);
@@ -75,9 +72,10 @@ FormView = Backbone.View.extend({
       }
     });
 
-    this.model.pages.each(function (page, index) {
+    this.model.pages.each(function(page, index) {
       self.pages.push(new PageView({
-        parentEl: form, // pass in form for adding sub views
+        parentEl: form,
+        // pass in form for adding sub views
         parentView: self,
         model: page
       }));
@@ -90,13 +88,22 @@ FormView = Backbone.View.extend({
       model: this.model
     });
 
+    // Show steps view?
+    if (this.model.pages.length > 1) {
+      self.steps = new StepsView({
+        parentEl: this.$el,
+        parentView: self,
+        model: this.model
+      });
+    }
+
     // set active page to be the first one
     this.model.pushPage(0);
 
     this.$el.show();
   },
 
-  unrender: function () {
+  unrender: function() {
     // remove custom css, if any
     if (this.theme) {
       this.theme.remove();
@@ -105,16 +112,16 @@ FormView = Backbone.View.extend({
     this.$el.hide();
   },
 
-  hide: function () {
+  hide: function() {
     this.unrender();
   },
 
-  previousPage: function () {
+  previousPage: function() {
     // go to previous page in history
     this.model.popPage();
   },
 
-  nextPage: function () {
+  nextPage: function() {
     // validate current page first
     var currentPage = this.model.get('active_page');
     var nextPage = currentPage;
@@ -134,21 +141,11 @@ FormView = Backbone.View.extend({
         this.model.pushPage(nextPage);
       }
     } else {
-      var first_container = this.$el.find('.field_container.error:first');
-      var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
-      
-      $('html, body').animate({
-        scrollTop: offset
-      }, 500, function(){
-        $('input,select,textarea', first_container).focus();
-      });
-
-      // validation errors
-      //alert('validation errors');
+      this.focusValidation();
     }
   },
 
-  submit: function () {
+  submit: function() {
     // validate last page before submitting
     var currentPage = this.model.get('active_page');
     var currentPageView = this.pages[currentPage];
@@ -156,9 +153,19 @@ FormView = Backbone.View.extend({
       // submit form
       this.submitForm();
     } else {
-      // validation errors
-      alert('validation errors');
+      this.focusValidation();
     }
+  },
+
+  focusValidation: function () {
+    var first_container = this.$el.find('.field_container.error:first');
+    var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
+
+    $('html, body').animate({
+      scrollTop: offset
+    }, 500, function() {
+      $('input,select,textarea', first_container).focus();
+    });
   },
 
   submitForm: function() {
@@ -222,9 +229,9 @@ FormView = Backbone.View.extend({
     alert("type ::" + type + " :: message :: " + message);
   },
 
-  activePageChange: function (model, pageIndex) {
+  activePageChange: function(model, pageIndex) {
     // active page changed, show/hide pages accordingly
-    _(this.pages).forEach(function (page, index) {
+    _(this.pages).forEach(function(page, index) {
       if (index === pageIndex) {
         page.show();
       } else {
@@ -234,16 +241,16 @@ FormView = Backbone.View.extend({
 
   },
 
-  showField: function (id) {
+  showField: function(id) {
     // call hideField on all pages as field should exist in one
-    _(this.pages).forEach(function (page, index) {
+    _(this.pages).forEach(function(page, index) {
       page.showField(id);
     });
   },
 
-  hideField: function (id) {
+  hideField: function(id) {
     // call hideField on all pages as field should exist in one
-    _(this.pages).forEach(function (page, index) {
+    _(this.pages).forEach(function(page, index) {
       page.hideField(id);
     });
   }

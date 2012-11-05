@@ -43,21 +43,15 @@ var FHBackboneSyncStore = function(name, act) {
 
       // if theres an act defined, call it
       if (self.act !== null) {
-        // setTimeout(function () {
-        //   var res = {
-        //     data: []
-        //   };
-        //   res.data.push(App.MockForm);
-        //   res.data.push(App.MockSimplerMultiPageForm);
-        //   res.data.push(App.MockSimpleSinglePageForm);
-
-
-        
         $fh.act({
           act: self.act
         }, function (res) {
           if (res && res.data) {
-            self.data = res.data;
+            var dataObj = {};
+            _(res.data).forEach(function (item, index) {
+              dataObj[item.id] = item;
+            });
+            self.data = dataObj;
           }
 
           // initialise data and save it
@@ -66,14 +60,10 @@ var FHBackboneSyncStore = function(name, act) {
               self.isLoaded = true;
               self.trigger('loaded');
             } else {
-
               self.collection.fetch();
-//              self.trigger('actUpdate');
+              console.log('auto fetch/update');
             }
           });
-
-          // if data was previously empty, trigger loaded event
-          
         }, function (msg, err) {
           // if there's no data yet, trigger loadFaild
           if (dataEmpty) {
