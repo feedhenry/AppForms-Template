@@ -58,11 +58,18 @@
   background: -ms-linear-gradient(top, #252525 0%,#181818 50%,#000000 50%); /* IE10+ */
   background: linear-gradient(top, #252525 0%,#181818 50%,#000000 50%); /* W3C */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#252525', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  padding: 0 5px 0 5px;
 }
 
 #fh_wufoo_header li {
   float: left;
-  width: 33%;
+  width: 33.3333%;
   text-align: center;
 }
 
@@ -764,4 +771,9 @@ table.likert {
   display: block;
   background: url(/img/wflogo.png) no-repeat left top;
   overflow: hidden;
+}
+
+/* Disable Android "Orange" selection */
+* {
+  -webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
 }
