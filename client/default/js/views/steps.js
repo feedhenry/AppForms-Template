@@ -18,7 +18,6 @@ StepsView = Backbone.View.extend({
 
   render: function() {
     var self = this;
-    this.options.parentEl.append(this.$el);
     var table = $(self.templates.table);
 
     var width = 100 / this.model.pages.length;
@@ -33,6 +32,7 @@ StepsView = Backbone.View.extend({
     });
 
     this.$el.append(table);
+    $('#logo', this.options.parentEl).after(self.$el);
   },
 
   activePageChange: function(model, pageIndex) {

@@ -757,3 +757,11 @@ table.likert {
 .likert tbody tr:hover td,.likert tbody tr:hover th {
   background-color: #FFFFCF;
 }
+
+#logo {
+  min-height: 40px;
+  height: 40px;
+  display: block;
+  background: url(/img/wflogo.png) no-repeat left top;
+  overflow: hidden;
+}
