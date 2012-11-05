@@ -1,6 +1,8 @@
 FieldDateView = FieldView.extend({
   template:['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="date">'],
 
+  // TODO: do we need validation? how is this inputted by user?
+
   serialize: function () {
     var value = $('#' + this.model.get('ID')).val();
     var serialized_field = {};
