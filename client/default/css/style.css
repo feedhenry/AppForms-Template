@@ -425,6 +425,13 @@ table.likert {
   overflow: hidden;
 }
 
+.form_list li button {
+  width: 100%;
+  font-size: 125%;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
 /* Disable Android "Orange" selection */
 * {
   -webkit-tap-highlight-color: rgba(255, 255, 255, 0); 
