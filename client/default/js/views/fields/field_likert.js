@@ -58,12 +58,11 @@ FieldLikertView = FieldView.extend({
   },
 
   addValidationRules: function () {
-    var self = this;
-    //_(this.model.get('SubFields')).forEach(function (subfield, index) {
-      self.$el.find('#' + this.model.get('ID')).rules('add', {
+    if (this.isRequired()) {
+      this.$el.find('#' + this.model.get('ID')).rules('add', {
         "likert_group_required": true
       });
-    //});
+    }
   },
 
   serialize: function() {

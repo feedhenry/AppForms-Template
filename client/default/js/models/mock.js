@@ -31,7 +31,7 @@ App.MockForm = {
     }, {
       "Title": "Single Text Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -178,7 +178,7 @@ App.MockForm = {
     }, {
       "Title": "Paragraph Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -204,7 +204,7 @@ App.MockForm = {
     }, {
       "Title": "Multi Choice Field - Required!!?!!",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -239,7 +239,7 @@ App.MockForm = {
     }, {
       "Title": "Number field - required - Hide Checkbox field below if 7",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -298,7 +298,7 @@ App.MockForm = {
     }, {
       "Title": "Checkbox field - required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "0",
       "Page": "1",
@@ -339,7 +339,7 @@ App.MockForm = {
     }, {
       "Title": "Dropdown Field - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -565,7 +565,7 @@ App.MockForm = {
     }, {
       "Title": "fh fhcam 1/3 - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "fh fhcam",
       "DefaultVal": "",
       "Page": "3",
@@ -574,7 +574,7 @@ App.MockForm = {
       "SubFields": [{
         "Title": "fh fhcam 2/3 - Required",
         "Instructions": "",
-        "IsRequired": "1",
+        "IsRequired": "0",
         "ClassNames": "fh fhcam",
         "DefaultVal": "",
         "Page": "3",
@@ -690,7 +690,7 @@ App.MockSimplerMultiPageForm = {
     }, {
       "Title": "fh fhcam 1/3 - Required",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "fh fhcam",
       "DefaultVal": "",
       "Page": "3",
@@ -699,7 +699,7 @@ App.MockSimplerMultiPageForm = {
       "SubFields": [{
         "Title": "fh fhcam 2/3 - Required",
         "Instructions": "",
-        "IsRequired": "1",
+        "IsRequired": "0",
         "ClassNames": "fh fhcam",
         "DefaultVal": "",
         "Page": "3",
@@ -754,7 +754,7 @@ App.MockSimplerMultiPageForm = {
     }, {
       "Title": "Test Field 1",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "1",
@@ -893,7 +893,7 @@ App.MockSimpleSinglePageForm = {
     "Fields": [{
       "Title": "Likert - Evaluate the following statements.",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "0",
       "Page": "2",
@@ -1017,7 +1017,7 @@ App.MockSimpleSinglePageForm = {
     }, {
       "Title": "Website",
       "Instructions": "",
-      "IsRequired": "0",
+      "IsRequired": "1",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "2",

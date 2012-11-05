@@ -141,17 +141,7 @@ FormView = Backbone.View.extend({
         this.model.pushPage(nextPage);
       }
     } else {
-      var first_container = this.$el.find('.field_container.error:first');
-      var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
-
-      $('html, body').animate({
-        scrollTop: offset
-      }, 500, function() {
-        $('input,select,textarea', first_container).focus();
-      });
-
-      // validation errors
-      //alert('validation errors');
+      this.focusValidation();
     }
   },
 
@@ -163,9 +153,19 @@ FormView = Backbone.View.extend({
       // submit form
       this.submitForm();
     } else {
-      // validation errors
-      alert('validation errors');
+      this.focusValidation();
     }
+  },
+
+  focusValidation: function () {
+    var first_container = this.$el.find('.field_container.error:first');
+    var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
+
+    $('html, body').animate({
+      scrollTop: offset
+    }, 500, function() {
+      $('input,select,textarea', first_container).focus();
+    });
   },
 
   submitForm: function() {
