@@ -26,6 +26,14 @@ FieldLikertView = FieldView.extend({
 
       // Add options
       $.each(choices, function(i, choice) {
+        // Default blank
+        if (i === 0) {
+          var option = $(_.template(self.templates.option, {
+            label: '',
+            value: ''
+          }));
+          select.append(option);
+        }
         var option = $(_.template(self.templates.option, {
           label: choice.Label,
           value: choice.Score
