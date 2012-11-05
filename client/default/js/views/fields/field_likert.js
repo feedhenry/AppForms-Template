@@ -50,5 +50,13 @@ FieldLikertView = FieldView.extend({
     this.options.parentEl.append(this.$el);
 
     this.show();
-  }
+  },
+
+  serialize: function() {
+    var serialized_field = {};
+    this.$el.find('select').each(function() {
+      serialized_field[$(this).attr('id')] = $(this).val();
+    });
+    return serialized_field;
+  },
 });
