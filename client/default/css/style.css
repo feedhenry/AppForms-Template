@@ -766,6 +766,15 @@ table.likert {
 }
 
 #logo {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  background-color: #DEDEDE;
+  text-indent: -9000px;
+  text-decoration: none;
+}
+
+#logo a {
   min-height: 40px;
   height: 40px;
   display: block;

@@ -3,7 +3,7 @@ FormView = Backbone.View.extend({
 
   templates: {
     heading: '<header class="info"><h2 class="form_title"><%= form_title %></h2></header>',
-    logo: '<h1 id="logo"></h1>',
+    logo: '<h1 id="logo"><a href="#">App Form</a></h1>',
     action_bar: '<div class="fh_action_bar"><button class="previous">Previous Page</button><button class="next">Next Page</button><button class="submit">Submit Form</button></div>'
   },
 
