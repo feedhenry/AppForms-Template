@@ -1017,7 +1017,7 @@ App.MockSimpleSinglePageForm = {
     }, {
       "Title": "Website",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "2",
