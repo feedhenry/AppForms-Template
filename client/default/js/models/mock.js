@@ -889,6 +889,42 @@ App.MockSimpleSinglePageForm = {
   "NoPageTitles": false,
   "Pages": [{
     "Fields": [{
+      "Title": "Likert - Evaluate the following statements.",
+      "Instructions": "",
+      "IsRequired": "0",
+      "ClassNames": "",
+      "DefaultVal": "0",
+      "Page": "2",
+      "SubFields": [{
+        "DefaultVal": "0",
+        "ID": "Field125",
+        "Label": "Statement One"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field126",
+        "Label": "Statement Two"
+      }, {
+        "DefaultVal": "0",
+        "ID": "Field127",
+        "Label": "Statement Three"
+      }],
+      "Choices": [{
+        "Score": 1,
+        "Label": "Strongly Disagree"
+      }, {
+        "Score": 2,
+        "Label": "Disagree"
+      }, {
+        "Score": 3,
+        "Label": "Agree"
+      }, {
+        "Score": 4,
+        "Label": "Strongly Agree"
+      }],
+      "Type": "likert",
+      "ID": "Field125",
+      "HasOtherField": false
+    }, {
       "Title": "Name",
       "Instructions": "",
       "IsRequired": "0",
@@ -1003,42 +1039,6 @@ App.MockSimpleSinglePageForm = {
       "Page": "2",
       "Type": "money",
       "ID": "Field235"
-    }, {
-      "Title": "Likert - Evaluate the following statements.",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "",
-      "DefaultVal": "0",
-      "Page": "2",
-      "SubFields": [{
-        "DefaultVal": "0",
-        "ID": "Field125",
-        "Label": "Statement One"
-      }, {
-        "DefaultVal": "0",
-        "ID": "Field126",
-        "Label": "Statement Two"
-      }, {
-        "DefaultVal": "0",
-        "ID": "Field127",
-        "Label": "Statement Three"
-      }],
-      "Choices": [{
-        "Score": 1,
-        "Label": "Strongly Disagree"
-      }, {
-        "Score": 2,
-        "Label": "Disagree"
-      }, {
-        "Score": 3,
-        "Label": "Agree"
-      }, {
-        "Score": 4,
-        "Label": "Strongly Agree"
-      }],
-      "Type": "likert",
-      "ID": "Field125",
-      "HasOtherField": false
     }]
   }],
   "Theme": "",

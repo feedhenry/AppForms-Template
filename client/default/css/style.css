@@ -646,6 +646,14 @@ td.active .page_title {
   font-weight: bold;
 }
 
+.likert_subfield label.font-normal {
+  font-weight: normal;
+  margin-bottom: 0px;
+}
+
+.likert_subfield {
+  margin-bottom: 10px;
+}
 
 .sigImage {
   width: 100%;
