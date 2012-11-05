@@ -767,7 +767,7 @@ table.likert {
 
 #logo {
   margin: 0;
-  padding: 0;
+  padding: 10px 0 10px 20px;
   min-height: 0;
   background-color: #DEDEDE;
   text-indent: -9000px;
