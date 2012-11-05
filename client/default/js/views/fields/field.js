@@ -1,6 +1,9 @@
 FieldView = Backbone.View.extend({
 
   className : 'field_container',
+  templates: {
+    instructions: '<p class="instruct"><%= instructions %></p>'
+  },
 
   // TODO: cache the input element lookup?
   initialize: function() {
@@ -22,6 +25,10 @@ FieldView = Backbone.View.extend({
     this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
+    }));
+
+    $('label:first', this.el).after(_.template(this.templates.instructions, {
+      instructions: this.model.get('Instructions')
     }));
 
     // add to dom
