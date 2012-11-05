@@ -12,6 +12,10 @@ FieldModel = Backbone.Model.extend({
       if (special_type.length > 1 && special_type[1].indexOf('fh') === 0) {
         type = special_type[1];
       }
+      // special case for fhcam with subfields
+      if ('fhcam' === type && this.attributes.SubFields && this.attributes.SubFields.length) {
+        type = 'fhcamGroup';
+      }
     }
     return type;
   }

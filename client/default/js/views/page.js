@@ -22,6 +22,7 @@ PageView = Backbone.View.extend({
     "fhgeoEN": FieldGeoENView,
     "fhgeoen": FieldGeoENView,
     "fhcam": FieldCameraView,
+    "fhcamGroup": FieldCameraGroupView,
     "fhsig": FieldSignatureView,
     "fhmap": FieldMapView,
     "fhtime": FieldCustomTimeView,

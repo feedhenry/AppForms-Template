@@ -570,25 +570,26 @@ App.MockForm = {
       "DefaultVal": "",
       "Page": "3",
       "Type": "file",
-      "ID": "Field227"
-    }, {
-      "Title": "fh fhcam 2/3 - Required",
-      "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field346"
-    }, {
-      "Title": "fh fhcam 3/3 - Optional",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field345"
+      "ID": "Field227",
+      "SubFields": [{
+        "Title": "fh fhcam 2/3 - Required",
+        "Instructions": "",
+        "IsRequired": "1",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field346"
+      }, {
+        "Title": "fh fhcam 3/3 - Optional",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field345"
+      }]
     }, {
       "Title": "fh fhsig",
       "Instructions": "",
@@ -694,25 +695,26 @@ App.MockSimplerMultiPageForm = {
       "DefaultVal": "",
       "Page": "3",
       "Type": "file",
-      "ID": "Field227"
-    }, {
-      "Title": "fh fhcam 2/3 - Required",
-      "Instructions": "",
-      "IsRequired": "1",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field346"
-    }, {
-      "Title": "fh fhcam 3/3 - Optional",
-      "Instructions": "",
-      "IsRequired": "0",
-      "ClassNames": "fh fhcam",
-      "DefaultVal": "",
-      "Page": "3",
-      "Type": "file",
-      "ID": "Field345"
+      "ID": "Field227",
+      "SubFields": [{
+        "Title": "fh fhcam 2/3 - Required",
+        "Instructions": "",
+        "IsRequired": "1",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field346"
+      }, {
+        "Title": "fh fhcam 3/3 - Optional",
+        "Instructions": "",
+        "IsRequired": "0",
+        "ClassNames": "fh fhcam",
+        "DefaultVal": "",
+        "Page": "3",
+        "Type": "file",
+        "ID": "Field345"
+      }]
     }, {
       "Title": "fh fhsig",
       "Instructions": "",

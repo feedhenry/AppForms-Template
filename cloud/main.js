@@ -245,7 +245,20 @@ exports.getForm = function (params, callback) {
         // add fields to matching page, ensuring page exists on form object
         var page = form.Pages[pageNum] = form.Pages[pageNum] || {};
         page.Fields = page.Fields || [];
-        page.Fields.push(field);
+
+        // allow for grouping of fhcam fields
+        var addField = true;
+        if (field.Type === 'file' && field.ClassNames.indexOf('fhcam') > -1) { // field is fhcam
+          var fieldBefore = page.Fields[page.Fields.length - 1];
+          if (fieldBefore.ClassNames.indexOf('fhcam') > -1) { // field before is also fhcam, group it
+            addField = false;
+            fieldBefore.SubFields = fieldBefore.SubFields || [];
+            fieldBefore.SubFields.push(field);
+          }
+        }
+        if (addField) {
+          page.Fields.push(field);
+        }
 
         // also, if any page rules matches this field id, add it to the page to (page rules don't have a page id associated with them (why not?), instead have field id of affecting field)
         if (tempPageRules[field.ID] != null) {
