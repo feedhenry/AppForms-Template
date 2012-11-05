@@ -78,8 +78,8 @@ FieldView = Backbone.View.extend({
 
     // also apply any special rules
     _(this.model.get('Rules') || []).each(function (rule) {
-      rule.pageView = self.options.parentView;
       var ruleConfig = _.clone(rule);
+      rule.pageView = self.options.parentView;
       ruleConfig.fn = rules[rule.Type];
       self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
     });
