@@ -52,4 +52,12 @@ FieldAddressView = FieldView.extend({
 
     this.show();
   },
+
+  serialize: function() {
+    var serialized_field = {};
+    this.$el.find('input, select').each(function() {
+      serialized_field[$(this).attr('id')] = $(this).val();
+    });
+    return serialized_field;
+  }
 });
