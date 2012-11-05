@@ -1,8 +1,12 @@
+$.validator.addMethod('likert_group_required', function (value, element, params) {
+  return $(element).closest('.field_container').find('select option:selected:empty').length < 1;
+}, 'Please select an option for all questions.');
+
 FieldLikertView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
     subfield_container: '<div class="likert_subfield"></div>',
-    select: '<label for="<%= id %>" class="font-normal"><%= label %></label><select id="<%= id %>" name="<%= id %>"></select>',
+    select: '<label for="<%= id %>" class="font-normal"><%= label %></label><select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select>',
     option: '<option value="<%= value %>"><%= label %></option>'
   },
 
@@ -21,7 +25,8 @@ FieldLikertView = FieldView.extend({
       var subfield_container = $(_.template(self.templates.subfield_container, {}));
       var select = $(_.template(self.templates.select, {
         id: subfield.ID,
-        label: subfield.Label
+        label: subfield.Label,
+        classes: i > 0 ? 'validate_ignore': ''
       }));
 
       // Add options
@@ -52,11 +57,20 @@ FieldLikertView = FieldView.extend({
     this.show();
   },
 
+  addValidationRules: function () {
+    var self = this;
+    //_(this.model.get('SubFields')).forEach(function (subfield, index) {
+      self.$el.find('#' + this.model.get('ID')).rules('add', {
+        "likert_group_required": true
+      });
+    //});
+  },
+
   serialize: function() {
     var serialized_field = {};
     this.$el.find('select').each(function() {
       serialized_field[$(this).attr('id')] = $(this).val();
     });
     return serialized_field;
-  },
+  }
 });

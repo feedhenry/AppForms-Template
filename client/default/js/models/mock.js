@@ -893,7 +893,7 @@ App.MockSimpleSinglePageForm = {
     "Fields": [{
       "Title": "Likert - Evaluate the following statements.",
       "Instructions": "",
-      "IsRequired": "0",
+      "IsRequired": "1",
       "ClassNames": "",
       "DefaultVal": "0",
       "Page": "2",
