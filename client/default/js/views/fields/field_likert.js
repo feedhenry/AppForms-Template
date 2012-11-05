@@ -46,49 +46,9 @@ FieldLikertView = FieldView.extend({
       self.$el.append(subfield_container);
     });
 
-
-    // // Build table
-    // var table = $(_.template(this.templates.table, {}));
-    // // Create header
-    // var thead = $('<thead>').append('<tr>');
-    // var thead_row = $('tr', thead);
-    // // Add headers/choices
-    // $.each(choices, function(i, choice) {
-    //   if (i === 0) {
-    //     // Spacer
-    //     thead_row.append('&nbsp;');
-    //   }
-    //   var th = $('<th>').text(choice.Label);
-    //   thead_row.append(th);
-    // });
-    // table.append(thead);
-    // $.each(subfields, function(i, subfield) {
-    //   var row = $('<tr>');
-    //   $.each(choices, function(j, choice) {
-    //     if (j === 0) {
-    //       var th = $('<th>').text(subfield.Label);
-    //       row.append(th);
-    //     }
-    //     var td = $(_.template(self.templates.input, {
-    //       id: subfield.ID,
-    //       iter: j +1,
-    //       value: subfield.Label
-    //     }));
-    //     row.append(td);
-    //   });
-    //   table.append(row);
-    // });
-    // this.$el.append(table);
     // add to dom
     this.options.parentEl.append(this.$el);
 
     this.show();
   }
 });
-
-// For mobile, change to:
-// 
-// Statement One
-// <select>
-// Statement Two
-// <select>
