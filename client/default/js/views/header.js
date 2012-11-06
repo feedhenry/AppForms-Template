@@ -42,16 +42,19 @@ HeaderView = Backbone.View.extend({
   showHome: function() {
     this.hideAll();
     App.views.form_list.show();
+    return false;
   },
 
   showDrafts: function() {
     this.hideAll();
     App.views.drafts_list.show();
+    return false;
   },
 
   showPending: function() {
     this.hideAll();
     App.views.pending_list.show();
+    return false;
   },
 
   hideAll: function() {
