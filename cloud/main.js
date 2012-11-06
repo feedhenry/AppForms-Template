@@ -198,7 +198,6 @@ exports.getForm = function (params, callback) {
     }
     
     var form = results[0] || {};
-    form.id = form.Hash || null;
     var pages = results[3] || {};
     form.PaginationType = pages.PaginationType || 'tab';
     form.NoPageTitles = pages.NoPageTitles || false;

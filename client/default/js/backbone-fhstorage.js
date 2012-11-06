@@ -49,7 +49,7 @@ var FHBackboneSyncStore = function(name, act) {
           if (res && res.data) {
             var dataObj = {};
             _(res.data).forEach(function (item, index) {
-              dataObj[item.id] = item;
+              dataObj[item.Hash] = item;
             });
             self.data = dataObj;
           }

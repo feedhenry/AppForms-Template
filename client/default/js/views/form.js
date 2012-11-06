@@ -216,12 +216,14 @@ FormView = Backbone.View.extend({
   },
 
   saveDraft: function() {
-    App.collections.drafts.create(this.model.toJSON());
+    var draft = this.model.toJSON();
+    App.collections.drafts.create(draft);
     App.views.header.showDrafts();
   },
 
   savePending: function() {
-    App.collections.pending.create(this.model.toJSON());
+    var pending = this.model.toJSON();
+    App.collections.pending.create(pending);
     App.views.header.showPending();
   },
 
