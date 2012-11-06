@@ -61,14 +61,30 @@ FormView = Backbone.View.extend({
     this.$el.append(form);
     form.validate({
       highlight: function(element, errorClass, validClass) {
-        $(element).closest('.field_container').addClass(errorClass).removeClass(validClass);
+        var el = $(element);
+        el.addClass(errorClass).removeClass(validClass);
+
+        var container = el.closest('.field_container');
+        container.addClass(errorClass).removeClass(validClass);
       },
       unhighlight: function(element, errorClass, validClass) {
-        $(element).closest('.field_container').removeClass(errorClass).addClass(validClass);
+        var el = $(element);
+        el.addClass(validClass).removeClass(errorClass);
+        
+        var container = el.closest('.field_container');
+        // for address group of fields, only remove error class if there are no other error elements inside
+        if (!container.hasClass('address') || container.find('input.error,select.error').length === 0) {
+          container.addClass(validClass).removeClass(errorClass);
+        }
       },
       errorPlacement: function(error, element) {
-        // place error label as last element in containing div
-        error.appendTo(element.closest('.field_container'));
+        var el = $(element);
+        var container = el.closest('.field_container');
+        if (container.hasClass('address')) { // append after element
+          element.after(error);
+        } else {
+          error.appendTo(container);
+        }
       }
     });
 
