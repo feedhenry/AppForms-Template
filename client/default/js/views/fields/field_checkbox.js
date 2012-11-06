@@ -26,7 +26,7 @@ FieldCheckboxView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-
+    this.value(this.model.get('Value'));
     this.show();
   },
 
@@ -49,5 +49,18 @@ FieldCheckboxView = FieldView.extend({
          }
       });
     }
+  },
+
+  value:function (value) {
+    if (value) {
+      $.each(value, function (i, val) {
+        $("input[value='" + val + "']").attr("checked", "checked");
+      });
+    }
+    var val = [];
+    this.$el.find('input[type="checkbox"]:checked').each(function () {
+      val.push($(this).val());
+    });
+    return val;
   }
 });
