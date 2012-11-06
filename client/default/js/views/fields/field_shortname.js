@@ -30,6 +30,7 @@ FieldShortnameView = FieldView.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
 
+    this.value(this.model.get('Value'));
     this.show();
   },
 
@@ -40,7 +41,7 @@ FieldShortnameView = FieldView.extend({
     });
     return serialized_field;
   },
-  
+
   addValidationRules: function () {
     if (this.model.get('IsRequired') === '1') {
       this.$el.find('input').each(function () {
@@ -49,5 +50,14 @@ FieldShortnameView = FieldView.extend({
         });
       });
     }
+  },
+
+  value:function (value) {
+    if (value) {
+      $.each(value, function (id, val) {
+        $("#" + id).val(val);
+      });
+    }
+    return this.serialize();
   }
 });
