@@ -6,18 +6,6 @@ HeaderView = Backbone.View.extend({
     'click li.fh_wufoo_drafts': 'showDrafts',
     'click li.fh_wufoo_pending': 'showPending'
   },
-
-  // <ul class="segmented-controller">
-  //   <li class="active">
-  //     <a href="#">Forms</a>
-  //   </li>
-  //   <li>
-  //     <a href="#">Drafts <span class="count">5</span></a>
-  //   </li>
-  //   <li>
-  //     <a href="#">Pending <span class="count">10</span></a>
-  //   </li>
-  // </ul>
   
   templates: {
     list: '<ul class="segmented-controller"></ul>',
