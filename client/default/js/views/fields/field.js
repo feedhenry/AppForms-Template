@@ -16,7 +16,7 @@ FieldView = Backbone.View.extend({
   },
 
   serialize: function() {
-    var value = this.value();
+    var value = $('#' + this.model.get('ID'),  this.$el).val();
     var serialized_field = {};
     if(value !== "") {
       serialized_field[this.model.get('ID')] = value;
@@ -44,7 +44,6 @@ FieldView = Backbone.View.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-    this.value(this.model.get('Value'));
     this.show();
   },
 
@@ -133,15 +132,19 @@ FieldView = Backbone.View.extend({
       this.$el.show();
       // add rules too
       this.addRules();
+      //set the form value from model
+      this.value(this.model.get('Value'));
     }
   },
 
   // Return the value of this particular field
-  value: function(value) {
-    if(value) {
-      $('#' + this.model.get('ID'),  this.$el).val(value);
+  value:function (value) {
+    if (value) {
+      $.each(value, function (id, val) {
+        $("#" + id).val(val);
+      });
     }
-    return $('#' + this.model.get('ID'),  this.$el).val();
+    return this.serialize();
   }
 
 });

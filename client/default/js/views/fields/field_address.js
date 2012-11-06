@@ -54,7 +54,6 @@ FieldAddressView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-
     this.show();
   },
 
@@ -77,4 +76,5 @@ FieldAddressView = FieldView.extend({
     });
     return serialized_field;
   }
+
 });
