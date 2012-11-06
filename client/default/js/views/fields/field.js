@@ -11,7 +11,7 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
-    _.bindAll(this, 'value');
+    //_.bindAll(this, 'value');
     // only call render once. model will never update
     this.render();
   },

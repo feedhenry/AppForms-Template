@@ -88,5 +88,11 @@ FieldMapView = FieldView.extend({
     }, function(err) {
       console.log(err);
     });
+  },
+
+  serialize: function() {
+    var serialized_field = {};
+    serialized_field[this.model.get('ID')] = this.value;
+    return serialized_field;
   }
 });
