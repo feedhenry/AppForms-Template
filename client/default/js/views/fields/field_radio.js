@@ -34,7 +34,7 @@ FieldRadioView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-
+    this.value(this.model.get('Value'));
     this.show();
   },
 
@@ -49,5 +49,18 @@ FieldRadioView = FieldView.extend({
 
   addValidationRules: function () {
     // first radio is always initially checked, so no need to do 'required' validation on this field
+  },
+
+  value:function (value) {
+    if (value) {
+      $.each(value, function (i, val) {
+        $("input[value='" + val + "']").attr("checked", "checked");
+      });
+    }
+    var val = [];
+    this.$el.find('input[type="radio"]:checked').each(function () {
+      val.push($(this).val());
+    });
+    return val;
   }
 });
