@@ -7,6 +7,7 @@ FieldShortnameView = FieldView.extend({
   render: function() {
     var self = this;
 
+    this.$el.addClass('shortname');
     var title = _.template(this.templates.title, {
       "title": this.model.get('Title')
     });
@@ -42,9 +43,10 @@ FieldShortnameView = FieldView.extend({
   
   addValidationRules: function () {
     if (this.model.get('IsRequired') === '1') {
-      // special required rule for checkbox fields
-      this.$el.find('input[type="checkbox"]').rules('add', {
-        "wufoo_checkbox_required": true
+      this.$el.find('input').each(function () {
+        $(this).rules('add', {
+          "required": true
+        });
       });
     }
   }

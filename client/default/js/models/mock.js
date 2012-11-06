@@ -929,7 +929,7 @@ App.MockSimpleSinglePageForm = {
     }, {
       "Title": "Name",
       "Instructions": "",
-      "IsRequired": "0",
+      "IsRequired": "1",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "2",
@@ -947,7 +947,7 @@ App.MockSimpleSinglePageForm = {
     }, {
       "Title": "Address",
       "Instructions": "",
-      "IsRequired": "1",
+      "IsRequired": "0",
       "ClassNames": "",
       "DefaultVal": "",
       "Page": "2",

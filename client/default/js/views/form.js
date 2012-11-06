@@ -59,6 +59,7 @@ FormView = Backbone.View.extend({
 
     // need to call validate before adding rules one by one. Alternative to adding all rules at once
     this.$el.append(form);
+    var specialFieldsClassRegex = new RegExp('\\s(address|shortname)\\s');
     form.validate({
       highlight: function(element, errorClass, validClass) {
         var el = $(element);
@@ -73,14 +74,14 @@ FormView = Backbone.View.extend({
         
         var container = el.closest('.field_container');
         // for address group of fields, only remove error class if there are no other error elements inside
-        if (!container.hasClass('address') || container.find('input.error,select.error').length === 0) {
+        if (!(' ' + container.attr('class') + ' ').match(specialFieldsClassRegex) || container.find('input.error,select.error').length === 0) {
           container.addClass(validClass).removeClass(errorClass);
         }
       },
       errorPlacement: function(error, element) {
         var el = $(element);
         var container = el.closest('.field_container');
-        if (container.hasClass('address')) { // append after element
+        if (!!(' ' + container.attr('class') + ' ').match(specialFieldsClassRegex)) { // append after element
           element.after(error);
         } else {
           error.appendTo(container);
