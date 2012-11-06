@@ -18,7 +18,7 @@ FieldMapView = FieldView.extend({
     }
   },
 
-  value: null,
+  currentLocation: null,
 
   render: function() {
     var self = this;
@@ -80,10 +80,10 @@ FieldMapView = FieldView.extend({
       });
 
       // Set initial location
-      self.value = marker.getPosition().toString();
+      self.currentLocation = marker.getPosition().toString();
 
       google.maps.event.addListener(marker, "dragend", function() {
-        self.value = marker.getPosition().toString();
+        self.currentLocation = marker.getPosition().toString();
       })
     }, function(err) {
       console.log(err);
@@ -92,7 +92,7 @@ FieldMapView = FieldView.extend({
 
   serialize: function() {
     var serialized_field = {};
-    serialized_field[this.model.get('ID')] = this.value;
+    serialized_field[this.model.get('ID')] = this.currentLocation;
     return serialized_field;
   }
 });
