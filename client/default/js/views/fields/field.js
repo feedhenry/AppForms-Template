@@ -11,17 +11,13 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
-    _.bindAll(this, 'getValue');
+    _.bindAll(this, 'value');
     // only call render once. model will never update
     this.render();
   },
 
-  getValue: function() {
-    return $('#' + this.model.get('ID')).val();
-  },
-
   serialize: function() {
-    var value = this.getValue();
+    var value = this.value();
     var serialized_field = {};
     if(value !== "") {
       serialized_field[this.model.get('ID')] = value;
@@ -30,8 +26,9 @@ FieldView = Backbone.View.extend({
   },
 
   contentChanged: function(e) {
-    console.log("Value changed :: " + this.getValue());
-    this.model.set({Value: this.getValue()});
+    console.log("Value changed :: " + this.value());
+    console.log(this.value());
+    this.model.set({Value: this.value()});
   },
 
   render: function() {
@@ -141,7 +138,11 @@ FieldView = Backbone.View.extend({
   },
 
   // Return the value of this particular field
-  value: function() {
-    $('input',  this.$el).val();
+  value: function(value) {
+    if(value) {
+      $('#' + this.model.get('ID'),  this.$el).val(value);
+    }
+    return $('#' + this.model.get('ID'),  this.$el).val();
   }
+
 });
