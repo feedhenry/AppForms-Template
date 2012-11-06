@@ -11,7 +11,7 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   render: function() {
-    var html = _.template('<li><button class="show button-positive button-block"><%= name %></button></li>', {
+    var html = _.template('<li><button class="show button-block button-main"><%= name %></button></li>', {
       name: this.model.get("Name")
     });
     $(this.el).html(html);
