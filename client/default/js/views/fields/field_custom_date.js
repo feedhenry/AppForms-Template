@@ -1,5 +1,5 @@
 FieldCustomDateView = FieldView.extend({
-  extension_type: 'fhtime',
+  extension_type: 'fhdate',
 
   templates: {
     input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="date">'
