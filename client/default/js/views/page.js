@@ -48,7 +48,7 @@ PageView = Backbone.View.extend({
     var self = this;
 
     // all pages hidden initially
-    this.$el.empty().addClass('page');
+    this.$el.empty().addClass('page hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 

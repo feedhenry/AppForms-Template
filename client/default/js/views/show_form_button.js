@@ -36,5 +36,6 @@ ShowFormButtonView = Backbone.View.extend({
         model:this.model
       });
     }
+    App.views.form.render();
   }
 });

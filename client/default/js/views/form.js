@@ -16,7 +16,6 @@ FormView = Backbone.View.extend({
     });
 
     this.pages = [];
-    this.render();
   },
 
   serialize: function() {
