@@ -1,5 +1,5 @@
 HeaderView = Backbone.View.extend({
-  el: $('#fh_wufoo_header_wrapper'),
+  el: '#fh_wufoo_header',
 
   events: {
     'click li.fh_wufoo_home': 'showHome',
@@ -7,7 +7,24 @@ HeaderView = Backbone.View.extend({
     'click li.fh_wufoo_pending': 'showPending'
   },
 
-  template: ['<ul id="fh_wufoo_header">', '<li class="fh_wufoo_home">Home</li>', '<li class="fh_wufoo_drafts">Drafts<div class="count hidden">0</div></li>', '<li class="fh_wufoo_pending">Pending<div class="count hidden">0</div></li>', '</ul>', '<div id="fh_wufoo_alerts_area"></div>'].join(''),
+  // <ul class="segmented-controller">
+  //   <li class="active">
+  //     <a href="#">Forms</a>
+  //   </li>
+  //   <li>
+  //     <a href="#">Drafts <span class="count">5</span></a>
+  //   </li>
+  //   <li>
+  //     <a href="#">Pending <span class="count">10</span></a>
+  //   </li>
+  // </ul>
+  
+  templates: {
+    list: '<ul class="segmented-controller"></ul>',
+    forms_button: '<li class="fh_wufoo_home"><a href="#">Forms</a></li>',
+    drafts_button: '<li class="fh_wufoo_drafts"><a href="#">Drafts<span class="count"></span></a></li>',
+    pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>'
+  },
 
   initialize: function() {
     this.undelegateEvents();
@@ -20,10 +37,17 @@ HeaderView = Backbone.View.extend({
   },
 
   render: function() {
-    var html = this.template;
+    var self = this;
+
     console.log('render headerView');
     $(this.el).empty();
-    $(this.el).append(html);
+
+    var list = $(_.template(this.templates.list, {}));
+    list.append(this.templates.forms_button);
+    list.append(this.templates.drafts_button);
+    list.append(this.templates.pending_button);
+
+    $(this.el).append(list);
     $(this.el).show();
   },
 
