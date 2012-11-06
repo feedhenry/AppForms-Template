@@ -34,7 +34,6 @@ FieldRadioView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-    this.value(this.model.get('Value'));
     this.show();
   },
 

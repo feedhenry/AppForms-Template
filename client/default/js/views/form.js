@@ -194,7 +194,7 @@ FormView = Backbone.View.extend({
     App.views.header.showHome();
     self.showAlert('Submitting your form in the background.', 'success', 3000);
 
-    utils.isOnline(function(online) {
+    this.isOnline(function(online) {
       if (online) {
         $fh.act({
           "act": "postEntry",
@@ -271,6 +271,24 @@ FormView = Backbone.View.extend({
     _(this.pages).forEach(function(page, index) {
       page.hideField(id);
     });
+  },
+
+  isOnline: function(callback){
+    var online = true;
+    //first, check if navigator.online is available
+    if(typeof navigator.onLine != "undefined"){
+      online = navigator.onLine;
+    }
+    if(online){
+      //use phonegap to determin if the network is available
+      if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
+        var networkType = navigator.network.connection.type;
+        if(networkType == "none" || networkType == null){
+          online = false;
+        }
+      }
+    }
+    callback(online);
   }
 
 });
