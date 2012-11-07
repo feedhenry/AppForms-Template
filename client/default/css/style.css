@@ -316,11 +316,6 @@ table.likert {
   margin-bottom: 10px;
   font-size: 13px;
   padding: 5px;
-  display: none;
-}
-
-#fh_wufoo_content .field_container:hover .instruct {
-  display: block;
 }
 
 #logo {

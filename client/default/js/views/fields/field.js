@@ -1,6 +1,6 @@
 FieldView = Backbone.View.extend({
 
-  className : 'field_container',
+  className: 'field_container',
   templates: {
     instructions: '<p class="instruct"><%= instructions %></p>'
   },
@@ -16,9 +16,9 @@ FieldView = Backbone.View.extend({
   },
 
   serialize: function() {
-    var value = $('#' + this.model.get('ID'),  this.$el).val();
+    var value = $('#' + this.model.get('ID'), this.$el).val();
     var serialized_field = {};
-    if(value !== "") {
+    if (value !== "") {
       serialized_field[this.model.get('ID')] = value;
     }
     return serialized_field;
@@ -27,7 +27,9 @@ FieldView = Backbone.View.extend({
   contentChanged: function(e) {
     console.log("Value changed :: " + this.value());
     console.log(this.value());
-    this.model.set({Value: this.value()});
+    this.model.set({
+      Value: this.value()
+    });
   },
 
   render: function() {
@@ -51,16 +53,16 @@ FieldView = Backbone.View.extend({
     this.show();
   },
 
-  addRules: function () {
+  addRules: function() {
     this.addValidationRules();
     this.addSpecialRules();
   },
 
-  isRequired: function () {
+  isRequired: function() {
     return this.model.get('IsRequired') === '1';
   },
 
-  addValidationRules: function () {
+  addValidationRules: function() {
     if (this.model.get('IsRequired') === '1') {
       this.$el.find('#' + this.model.get('ID')).rules('add', {
         "required": true
@@ -68,11 +70,11 @@ FieldView = Backbone.View.extend({
     }
   },
 
-  addSpecialRules: function () {
+  addSpecialRules: function() {
     var self = this;
 
     var rules = {
-      'Show': function (rulePasses, params) {
+      'Show': function(rulePasses, params) {
         var fieldId = 'Field' + params.Setting.FieldName;
         if (rulePasses) {
           App.views.form.showField(fieldId);
@@ -80,7 +82,7 @@ FieldView = Backbone.View.extend({
           App.views.form.hideField(fieldId);
         }
       },
-      'Hide': function (rulePasses, params) {
+      'Hide': function(rulePasses, params) {
         var fieldId = 'Field' + params.Setting.FieldName;
         if (rulePasses) {
           App.views.form.hideField(fieldId);
@@ -91,7 +93,7 @@ FieldView = Backbone.View.extend({
     };
 
     // also apply any special rules
-    _(this.model.get('Rules') || []).each(function (rule) {
+    _(this.model.get('Rules') || []).each(function(rule) {
       var ruleConfig = _.clone(rule);
       ruleConfig.pageView = self.options.parentView;
       ruleConfig.fn = rules[rule.Type];
@@ -99,11 +101,11 @@ FieldView = Backbone.View.extend({
     });
   },
 
-  removeRules: function () {
+  removeRules: function() {
     this.$el.find('#' + this.model.get('ID')).rules('remove');
   },
 
-  hide: function () {
+  hide: function() {
     if (this.$el.is(':visible')) {
       this.$el.hide();
       // remove rules too
@@ -131,7 +133,7 @@ FieldView = Backbone.View.extend({
     return button;
   },
 
-  show: function () {
+  show: function() {
     if (!this.$el.is(':visible')) {
       this.$el.show();
       // add rules too
@@ -142,9 +144,9 @@ FieldView = Backbone.View.extend({
   },
 
   // Return the value of this particular field
-  value:function (value) {
+  value: function(value) {
     if (value) {
-      $.each(value, function (id, val) {
+      $.each(value, function(id, val) {
         $("#" + id).val(val);
       });
     }
