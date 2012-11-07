@@ -34,6 +34,26 @@ App.Router = Backbone.Router.extend({
     App.collections.pending.fhStorage.on('loaded', function () {
       App.collections.pending.fetch();
     });
+
+    $fh.ready(function () {
+      //initialise config
+      $fh.data({
+        act: 'load',
+        key: 'client_config'
+      }, function (res) {
+        if (res && res.val && res.val !== '') {
+          try {
+            // overwrite config with whats in local storage. May be overwritten again when initial act call to getForms responds
+            App.config = JSON.parse(res.val);
+          } catch(e) {
+            //log error, but no action
+            console.log('ERROR: parsing config from local storage. Using config defaults:', e);
+          }
+        } else {
+          console.log('No config in local storage. Using config defaults');
+        }
+      });
+    });
   },
 
   pending: function() {

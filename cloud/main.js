@@ -312,7 +312,8 @@ exports.getForms = function (params, callback) {
     if (err) return callback(null, err);
 
     return callback(null, {
-      data: results
+      data: results,
+      config: require('./client_config.js').config
     });
   });
 };

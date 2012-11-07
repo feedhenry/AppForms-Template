@@ -81,9 +81,9 @@ FieldCameraView = FieldView.extend({
   addImage: function (fromLibrary) {
     // TODO: move this to cloud config, synced to client on startup
     var camOptions = {
-      quality: 50,
-      targetWidth: 2048,
-      targetHeight: 1536
+      quality: App.config.cam_quality,
+      targetWidth: App.config.cam_targetWidth,
+      targetHeight: App.config.cam_targetHeight
     };
 
     if (typeof navigator.camera === 'undefined') {

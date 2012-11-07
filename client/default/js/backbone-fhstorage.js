@@ -43,9 +43,20 @@ var FHBackboneSyncStore = function(name, act) {
 
       // if theres an act defined, call it
       if (self.act !== null) {
+        console.log('Checking server for updates');
         $fh.act({
           act: self.act
         }, function (res) {
+          // update client config
+          if (res && res.config) {
+            console.log('Updating config from server');
+            App.config = res.config;
+            $fh.data({
+              act: 'save',
+              key: 'client_config',
+              val: JSON.stringify(App.config)
+            });
+          }
           if (res && res.data) {
             var dataObj = {};
             _(res.data).forEach(function (item, index) {
@@ -60,8 +71,8 @@ var FHBackboneSyncStore = function(name, act) {
               self.isLoaded = true;
               self.trigger('loaded');
             } else {
+              console.log('Reloading models from server');
               self.collection.fetch();
-              console.log('auto fetch/update');
             }
           });
         }, function (msg, err) {
@@ -71,7 +82,6 @@ var FHBackboneSyncStore = function(name, act) {
           }
           console.error('ERROR: act call :: msg:', msg, ' err:', err);
         });
-        // }, 5000);
       }
 
       // should we trigger loaded message now, or leave it to be triggered in act callback?
