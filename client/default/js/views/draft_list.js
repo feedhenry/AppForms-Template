@@ -1,5 +1,5 @@
 DraftListView = Backbone.View.extend({
-  el: $('#fh_wufoo_drafts_list'),
+  el: $('#fh_wufoo_drafts'),
 
   templates: {
     draft_list: '<ul class="list inset draft_list"></ul>',

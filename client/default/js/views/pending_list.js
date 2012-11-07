@@ -1,5 +1,5 @@
 PendingListView = Backbone.View.extend({
-  el: $('#fh_wufoo_pending_list'),
+  el: $('#fh_wufoo_pending'),
 
   templates: {
     pending_list: '<ul class="list inset pending_list"></ul>',

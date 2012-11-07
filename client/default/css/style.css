@@ -28,7 +28,7 @@
 html, body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
-  padding-top: 64px;
+  padding-top: 58px;
 }
 
 html {
@@ -40,19 +40,25 @@ label.error { display: inline; }
 label.choice { display: inline; }
 input[type="radio"], input[type="checkbox"] { width: inherit; }
 
-#fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_drafts_list, #fh_wufoo_pending_list {
+#fh_wufoo_content, #fh_wufoo_form_list {
   background: #fff;
   width: 97%;
   margin: 0 auto;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+  padding: 10px 0 10px 0;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -ms-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -o-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
-  padding: 10px 0 10px 0;
+}
+
+#fh_wufoo_drafts .list, #fh_wufoo_pending .list {
+  -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.75);
+  -moz-box-shadow:    0px 1px 0px rgba(255, 255, 255, 0.75);
+  box-shadow:         0px 1px 0px rgba(255, 255, 255, 0.75);
 }
 
 #fh_wufoo_content {
@@ -380,20 +386,20 @@ table.likert {
 }
 
 
-#fh_wufoo_pending_list .list.inset .delete-item, #fh_wufoo_drafts_list .list.inset .delete-item {
+#fh_wufoo_pending .list.inset .delete-item, #fh_wufoo_drafts .list.inset .delete-item {
   right: 82px;
 }
 
-#fh_wufoo_pending_list .list.inset .name, #fh_wufoo_drafts_list .list.inset .name {
+#fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
   font-size: 14px;
 }
 
-#fh_wufoo_pending_list .list.inset .ts, #fh_wufoo_drafts_list .list.inset .ts {
+#fh_wufoo_pending .list.inset .ts, #fh_wufoo_drafts .list.inset .ts {
   font-size: 12px;
   font-style: italic;
 }
 
-#fh_wufoo_pending_list .list.inset button, #fh_wufoo_drafts_list .list.inset button {
+#fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
   font-size: 12px;
 }
 
@@ -438,11 +444,11 @@ table.likert {
   top: 3px;
 }
 
-#fh_wufoo_form_list li, #fh_wufoo_drafts_list li, #fh_wufoo_pending_list li {
+#fh_wufoo_form_list li, #fh_wufoo_drafts li, #fh_wufoo_pending li {
   margin-bottom: 5px;
 }
 
-#fh_wufoo_form_list ul, #fh_wufoo_drafts_list ul, #fh_wufoo_pending_list ul {
+#fh_wufoo_form_list ul, #fh_wufoo_drafts ul, #fh_wufoo_pending ul {
   list-style: none;
 }
 
