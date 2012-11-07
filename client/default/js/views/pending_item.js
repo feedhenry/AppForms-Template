@@ -3,7 +3,8 @@ PendingItemView = Backbone.View.extend({
   className: 'pending_submission',
   events: {
     'click button.delete-item': 'delete',
-    'click button.submit-item': 'submit'
+    'click button.submit-item': 'submit',
+    'click': 'show'
   },
 
   templates: {

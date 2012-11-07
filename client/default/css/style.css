@@ -397,6 +397,10 @@ table.likert {
   font-size: 12px;
 }
 
+.pending_submission {
+  cursor: pointer;
+}
+
 
 
 
