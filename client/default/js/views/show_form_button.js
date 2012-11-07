@@ -5,8 +5,8 @@ ShowFormButtonView = Backbone.View.extend({
 
   templates: {
     form_button: '<li><button class="show button-block button-main"><%= name %></button></li>',
-    pending_button: '<li><button class="show button-block button-main" style="font-size: 12px;text-align: left;padding-left: 10px;"><%= name %><span class="count">10-10-12 15:35:32</span></button></li>',
-    draft_button: '<li><button class="show button-block button-main" style="font-size: 12px;text-align: left;padding-left: 10px;"><%= name %><span class="count">10-10-12 15:35:32</span></button></li>'
+    pending_button: '<li><button class="show button-block button-main" style="font-size: 12px;text-align: left;padding-left: 10px;"><%= name %><span class="count"><%= savedAt %></span></button></li>',
+    draft_button: '<li><button class="show button-block button-main" style="font-size: 12px;text-align: left;padding-left: 10px;"><%= name %><span class="count"><%= savedAt %></span></button></li>'
   },
 
   initialize: function() {
@@ -20,12 +20,15 @@ ShowFormButtonView = Backbone.View.extend({
     var html;
 
     if (this.model instanceof PendingModel) {
+      console.log(this.model)
       html = _.template(this.templates.pending_button, {
-        name: this.model.get("Name")
+        name: this.model.get("Name"),
+        savedAt: this.model.get("savedAt")
       });
     } else if (this.model instanceof DraftModel) {
       html = _.template(this.templates.draft_button, {
-        name: this.model.get("Name")
+        name: this.model.get("Name"),
+        savedAt: this.model.get("savedAt")
       });
     } else {
       html = _.template(this.templates.form_button, {
