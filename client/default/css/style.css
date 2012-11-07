@@ -407,6 +407,19 @@ table.likert {
   cursor: pointer;
 }
 
+#fh_wufoo_pending .loading {
+  float: right;
+}
+
+.list li {
+  padding: 20px 10px 20px 10px;
+}
+
+.loading {
+  height: 16px;
+  width: 16px;
+}
+
 
 
 
