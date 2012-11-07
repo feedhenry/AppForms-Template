@@ -5,7 +5,7 @@ PendingListView = Backbone.View.extend({
     pending_list: '<ul class="list inset pending_list"></ul>',
     pending_header: '<li class="list-divider">Pending Submissions</li>',
     in_progress_list: '<ul class="list inset in_progress_list"></ul>',
-    in_progress_header: '<li class="list-divider">Submissions being submitted<img src="img/loading.gif" class="loading" alt=""/></li>',
+    in_progress_header: '<li class="list-divider">Forms being submitted<img src="img/loading.gif" class="loading" alt=""/></li>',
     review_list: '<ul class="list inset review_list"></ul>',
     review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
   },
