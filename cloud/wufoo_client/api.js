@@ -4,6 +4,7 @@ var request = require('request');
 var wufoo_config = require('../wufoo_config.js');
 var cheerio = require('cheerio');
 var async = require('async');
+var _ = require('underscore');
 
 // DEPRECATED
 //http://www.wufoo.com/docs/api/v3/forms/
@@ -220,7 +221,6 @@ function doGet(end_point, callback, isBinary) {
 }
 
 function doPost(end_point, data, callback) {
-  //ToDO Refactor doGet and doPost later
   getConfig(function (err, wufoo_config) {
     if (err != null) {
       return callback(err, err);
@@ -231,17 +231,20 @@ function doPost(end_point, data, callback) {
     var url = "https://" + domain + "/api/v3/" + end_point + ".json";
 
     var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
-    var auth_header = {
-      'content-type' : 'application/x-www-form-urlencoded',
+    var headers = {
+      'content-type' : 'multipart/form-data',
       'Authorization':auth
     };
+    var multipart_data = dataToMultipart(data);
 
-    //console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
+    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
 
     request.post({url:url,
-      headers:auth_header,
-      body:querystring.stringify(data)
+      headers:headers,
+      multipart:multipart_data,
+      preambleCRLF: true
     }, function (err, res, body) {
+      console.log(JSON.stringify(body));
       if (err != null) {
         console.log("doPost: " + url + " :: error : " + err);
         return callback(err, err);
@@ -251,4 +254,32 @@ function doPost(end_point, data, callback) {
     });
 
   });
+}
+
+function dataToMultipart(data) {
+  var multipart_data = [];
+  if (data) {
+    _.each(data, function (value, key) {
+      var part = {};
+      if (_.isString(value)) {
+        part = {
+          'Content-Disposition':'form-data; name="' + key + '";',
+          'body':value
+        };
+      } else {
+        if(value.fileBase64 && value.filename && value.content_type) {
+          //Strip the data url stuff from the start, could get content type from this!
+//          var dataParts = sigData.match(/data:(.*\/(.*));base64,(.*)/);
+          value.fileBase64 = value.fileBase64.replace(/^data:([^,]*,|)/, "");
+          part = {
+            'Content-Disposition':'form-data; name="' + key + '"; filename="' + value.filename + '"',
+            'Content-Type':value.content_type,
+            'body':new Buffer(value.fileBase64, 'base64')
+          }
+        }
+      }
+      multipart_data.push(part);
+    });
+  }
+  return multipart_data;
 }

@@ -20,7 +20,6 @@ ShowFormButtonView = Backbone.View.extend({
     var html;
 
     if (this.model instanceof PendingModel) {
-      console.log(this.model)
       html = _.template(this.templates.pending_button, {
         name: this.model.get("Name"),
         savedAt: this.model.get("savedAt")
