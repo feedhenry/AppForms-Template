@@ -5,6 +5,17 @@
   margin: 0;
 }
 
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.clear {
+  clear: both;
+}
 
 .form_list {
   list-style: none;
@@ -87,7 +98,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 .fh_action_bar button {
   -webkit-appearance: button;
   font-size: 125%;
-  width: 50%;
+  width: 45%;
 }
 
 input {
