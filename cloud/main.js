@@ -264,7 +264,7 @@ exports.getForms = function (params, callback) {
 
     return callback(null, {
       data: results,
-      config: require('../shared/client_config.js').config
+      config: require('./client_config.js').config
     });
   });
 };

@@ -35,15 +35,17 @@ App.Router = Backbone.Router.extend({
       App.collections.pending.fetch();
     });
 
+    App.config = null;
     $fh.ready(function () {
       //initialise config
       $fh.data({
         act: 'load',
         key: 'client_config'
       }, function (res) {
-        if (res && res.val && res.val !== '') {
+        // only try set app config if not already done by initial act call
+        if (App.config == null && res && res.val && res.val !== '') {
           try {
-            // overwrite config with whats in local storage. May be overwritten again when initial act call to getForms responds
+            // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
             App.config = JSON.parse(res.val);
           } catch(e) {
             //log error, but no action
