@@ -380,20 +380,20 @@ table.likert {
 }
 
 
-#fh_wufoo_pending_list .list.inset .delete-item {
+#fh_wufoo_pending_list .list.inset .delete-item, #fh_wufoo_drafts_list .list.inset .delete-item {
   right: 82px;
 }
 
-#fh_wufoo_pending_list .list.inset .name {
+#fh_wufoo_pending_list .list.inset .name, #fh_wufoo_drafts_list .list.inset .name {
   font-size: 14px;
 }
 
-#fh_wufoo_pending_list .list.inset .ts {
+#fh_wufoo_pending_list .list.inset .ts, #fh_wufoo_drafts_list .list.inset .ts {
   font-size: 12px;
   font-style: italic;
 }
 
-#fh_wufoo_pending_list .list.inset button {
+#fh_wufoo_pending_list .list.inset button, #fh_wufoo_drafts_list .list.inset button {
   font-size: 12px;
 }
 

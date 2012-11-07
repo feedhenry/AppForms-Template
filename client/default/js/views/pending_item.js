@@ -28,7 +28,8 @@ PendingItemView = Backbone.View.extend({
     return this;
   },
 
-  delete: function() {
+  delete: function(e) {
+    e.stopPropagation();
     this.model.destroy();
   },
 

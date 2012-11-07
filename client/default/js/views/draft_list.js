@@ -2,24 +2,24 @@ DraftListView = Backbone.View.extend({
   el: $('#fh_wufoo_drafts_list'),
 
   templates: {
-    list: '<ul class="form_list"></ul>',
-    header: '<h2>Drafts</h2><h4>Choose a draft from the list below</h4>'
+    draft_list: '<ul class="list inset draft_list"></ul>',
+    draft_header: '<li class="list-divider">Draft Submissions</li>'
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'appendForm', 'changed');
+    _.bindAll(this, 'render', 'appendDraftForm', 'changed');
 
     App.collections.drafts.bind('add remove reset', this.changed, this);
 
     this.render();
   },
 
-  show: function () {
+  show: function() {
     App.views.header.markActive('.fh_wufoo_drafts');
     $(this.el).show();
   },
 
-  hide: function () {
+  hide: function() {
     $(this.el).hide();
   },
 
@@ -29,21 +29,19 @@ DraftListView = Backbone.View.extend({
     // Empty our existing view
     $(this.el).empty();
 
-    // Add list
-    $(this.el).append(this.templates.list);
-
-    // Add header
-    $('ul', this.el).append(this.templates.header);
+    // Add lists
+    $(this.el).append(this.templates.draft_list);
+    $('.draft_list', this.el).append(this.templates.draft_header);
 
     _(App.collections.drafts.models).each(function(form) {
-      self.appendForm(form);
+      self.appendDraftForm(form);
     }, this);
   },
 
-  appendForm: function(form) {
-    var view = new ShowFormButtonView({
+  appendDraftForm: function(form) {
+    var view = new PendingItemView({
       model: form
     });
-    $('ul', this.el).append(view.render().el);
+    $('.draft_list', this.el).append(view.render().el);
   }
 });
