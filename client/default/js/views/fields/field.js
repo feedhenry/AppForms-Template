@@ -38,9 +38,13 @@ FieldView = Backbone.View.extend({
       "value": this.model.get('Value')
     }));
 
-    $('label:first', this.el).after(_.template(this.templates.instructions, {
-      instructions: this.model.get('Instructions')
-    }));
+    var instructions = this.model.get('Instructions');
+
+    if (instructions && instructions !== '') {
+      $('label:first', this.el).after(_.template(this.templates.instructions, {
+        instructions: this.model.get('Instructions')
+      }));
+    }
 
     // add to dom
     this.options.parentEl.append(this.$el);
