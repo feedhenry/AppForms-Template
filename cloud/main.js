@@ -8,55 +8,6 @@ var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
 var _ = require('underscore');
 
-function cacheable() {
-  // Should page fragments be cached?
-  return false;
-}
-
-/*
- * Here we rewrite some Wufoo paths to JavaScript and CSS, since they're relative paths
- * rather than absolute ones. We also remove a Wufoo script tag (after form submission)
- * from the HTML, as this JavaScript will already be loaded client side as this point.
- */
-updateWufooHTML = function(form_hash, updated, html, remove_script, cb) {
-  inline({
-    "html": html,
-    "baseUrl": "https://" + wufoo_config.wufoo_config.api_domain,
-    "removeScripts": remove_script,
-    "id": form_hash
-  }, function(err, processed_html) {
-    if (err != null) {
-      console.error('error inlining html:' + err);
-    }
-
-    // save processed html to cache
-    if (updated) {
-      var form_data = JSON.stringify({
-        "updated": updated,
-        "html": processed_html
-      });
-
-      if (cacheable()) {
-        $fh.cache({
-          act: "save",
-          key: form_hash,
-          value: form_data
-        }, function(err, res) {
-          if (err) {
-            console.error('Error saving form html to cache :' + err.toString());
-          }
-
-          return cb(processed_html);
-        });
-      } else {
-        return cb(processed_html);
-      }
-    } else {
-      return cb(processed_html);
-    }
-  });
-};
-
 formDataToMultipart = function(form_data, cb) {
   var data = form_data;
   var multipart_data = [];
@@ -313,30 +264,7 @@ exports.getForms = function (params, callback) {
 
     return callback(null, {
       data: results,
-      config: require('./client_config.js').config
-    });
-  });
-};
-
-/* 
- * Here we get submit a form to Wufoo, and return its
- * proxied response back to the client
- */
-exports.submitForm = function(params, callback) {
-  var multipart_data = formDataToMultipart(params.form_data);
-  var req = request({
-    method: 'POST',
-    uri: params.form_submission_url,
-    followAllRedirects: true,
-    headers: {
-      'content-type': 'multipart/form-data;'
-    },
-    multipart: multipart_data
-  }, function(e, r, b) {
-    updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
-      return callback(null, {
-        "html": processed_html + '<button onclick="WufooController.showHome()">Back to Forms</button>'
-      });
+      config: require('../shared/client_config.js').config
     });
   });
 };

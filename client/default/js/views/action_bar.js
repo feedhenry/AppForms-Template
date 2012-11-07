@@ -15,7 +15,7 @@ ActionBarView = Backbone.View.extend({
   },
 
   render: function() {
-    this.$el.html('<button class="previous hidden button-block left">Previous</button><button class="next hidden button right">Next</button><button class="saveDraft hidden button left button-main">Save Draft</button><button class="submit hidden button right button-positive">Submit</button><br class="clear"/>');
+    this.$el.html('<button class="previous hidden button">Previous</button><button class="next hidden button">Next</button><button class="saveDraft hidden button button-main">Save Draft</button><button class="submit hidden button button-positive">Submit</button>');
     this.options.parentEl.append(this.$el);
   },
 
