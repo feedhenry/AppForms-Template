@@ -1,11 +1,13 @@
 PendingItemView = Backbone.View.extend({
+  tagName: 'li',
+  className: 'pending_submission',
   events: {
     'click button.delete-item': 'delete',
     'click button.submit-item': 'submit'
   },
 
   templates: {
-    item: '<li class="pending_submission"><span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item">Delete</button><button class="button button-positive submit-item">Submit</button></li>',
+    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item">Delete</button><button class="button button-positive submit-item">Submit</button>',
   },
 
   initialize: function() {
