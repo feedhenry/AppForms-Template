@@ -143,6 +143,11 @@ textarea {
   padding: 4px;
   font-size: 16px;
   width: 100%;
+  margin-top: 10px;
+}
+
+.checkbox, .radio {
+  margin-right: 10px;
 }
 
 /* Steps */
