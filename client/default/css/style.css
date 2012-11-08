@@ -206,6 +206,13 @@ td.active .page_title {
   padding: 20px;
 }
 
+.form_list .button-main:disabled {
+  background-color: #ddd;
+  background-image: -webkit-linear-gradient(top, #ddd 0, #bbb 100%);
+  background-image: linear-gradient(to bottom, #ddd 0, #bbb 100%);
+  border: 1px solid #aaa;
+}
+
 /* Error highlighting */
 .field_container.error input, .field_container.error textarea, .field_container.error select, .shortname.error input.error, .address.error input.error, .address.error textarea.error, .address.error select.error {
   border: 2px solid red;

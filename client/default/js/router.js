@@ -14,38 +14,18 @@ App.Router = Backbone.Router.extend({
     App.views.header.showHome();
 
     // store error handling
-    App.collections.forms.on('error', function (collection, msg , options) {
-      console.error(msg);
-    });
-    App.collections.drafts.on('error', function (collection, msg , options) {
-      console.error(msg);
-    });
-    App.collections.pending_submitted.on('error', function (collection, msg , options) {
-      console.error(msg);
-    });
-    App.collections.pending_submitting.on('error', function (collection, msg , options) {
-      console.error(msg);
-    });
-    App.collections.pending_review.on('error', function (collection, msg , options) {
-      console.error(msg);
+    _(App.collections).forEach(function (collection) {
+      collection.on('error', function (collection, msg , options) {
+        console.error(msg);
+      });
     });
 
     // Kick things off by fetching when all stores are initialised
-    App.collections.forms.fhStorage.on('loaded', function () {
-      App.collections.forms.fetch();
-    });
-    App.collections.drafts.fhStorage.on('loaded', function () {
-      App.collections.drafts.fetch();
-    });
-    App.collections.pending_submitted.fhStorage.on('loaded', function () {
-      App.collections.pending_submitted.fetch();
-    });
-    App.collections.pending_submitting.fhStorage.on('loaded', function () {
-      App.collections.pending_submitting.fetch();
-    });
-    App.collections.pending_review.fhStorage.on('loaded', function () {
-      App.collections.pending_review.fetch();
-    });
+    App.collections.forms.fetch();
+    App.collections.drafts.fetch();
+    App.collections.pending_submitted.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_review.fetch();
 
     App.config = null;
     $fh.ready(function () {
