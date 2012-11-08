@@ -145,7 +145,7 @@ exports.getForm = function (params, callback) {
     });
   }], function (err, results) {
     if (err) {
-      return cb(null, err);
+      return callback(null, err);
     }
     
     var form = results[0] || {};
