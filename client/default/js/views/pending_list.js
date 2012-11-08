@@ -64,7 +64,9 @@ PendingListView = Backbone.View.extend({
       self.appendWaitingForm(form);
     }, this);
 
-    $('.pending_waiting_list', this.el).append(this.templates.pending_waiting_submitall);
+    if (App.collections.pending_waiting.length > 0) {
+      $('.pending_waiting_list', this.el).append(this.templates.pending_waiting_submitall);
+    }
 
     _(App.collections.pending_submitting.models).each(function(form) {
       self.appendSubmittingForm(form);
