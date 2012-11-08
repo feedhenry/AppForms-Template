@@ -11,18 +11,11 @@
 
 <div id="fh_wufoo_form_list" class="hidden"></div>
 
-<ul id="fh_wufoo_drafts_list" class="hidden"></ul>
+<div id="fh_wufoo_drafts" class="hidden"></div>
 
-<ul id="fh_wufoo_pending_list" class="hidden"></ul>
+<div id="fh_wufoo_pending" class="hidden"></div>
 
 <div id="fh_wufoo_content" class="hidden"></div>
-
-<div id="fh_loading" class="hidden">
-  <div id="fh_loading_wrapper">
-    <img src="img/loading.gif" alt="">
-  </div>
-</div>
-
 
 <br/>
 <button onclick="App.collections.forms.create(App.MockForm);">Create Mock Form</button>
@@ -64,6 +57,7 @@ App.collections = App.collections || {};
 <script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/pending_item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
 
@@ -100,8 +94,7 @@ App.collections = App.collections || {};
 <script src="js/views/draft.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending.js" type="text/javascript" charset="utf-8"></script>
 
-<!-- Config/Router -->
-<script src="client_config.js" type="text/javascript" charset="utf-8"></script>
+<!-- Router -->
 <script src="js/router.js" type="text/javascript" charset="utf-8"></script>
 
 <style>

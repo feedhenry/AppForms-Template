@@ -1,25 +1,29 @@
 PendingListView = Backbone.View.extend({
-  el: $('#fh_wufoo_pending_list'),
+  el: $('#fh_wufoo_pending'),
 
   templates: {
-    list: '<ul class="form_list"></ul>',
-    header: '<h2>Pending Submissions</h2><h4>Below are your pending submissions</h4>'
+    pending_list: '<ul class="list inset pending_list"></ul>',
+    pending_header: '<li class="list-divider">Pending Submissions</li>',
+    in_progress_list: '<ul class="list inset in_progress_list"></ul>',
+    in_progress_header: '<li class="list-divider">Forms being submitted<img src="img/loading.gif" class="loading" alt=""/></li>',
+    review_list: '<ul class="list inset review_list"></ul>',
+    review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'appendForm', 'changed');
+    _.bindAll(this, 'render', 'appendPendingForm', 'changed');
 
     App.collections.pending.bind('add remove reset', this.changed, this);
 
     this.render();
   },
 
-  show: function () {
+  show: function() {
     App.views.header.markActive('.fh_wufoo_pending');
     $(this.el).show();
   },
 
-  hide: function () {
+  hide: function() {
     $(this.el).hide();
   },
 
@@ -29,21 +33,25 @@ PendingListView = Backbone.View.extend({
     // Empty our existing view
     $(this.el).empty();
 
-    // Add list
-    $(this.el).append(this.templates.list);
+    // Add lists
+    $(this.el).append(this.templates.pending_list);
+    $('.pending_list', this.el).append(this.templates.pending_header);
 
-    // Add header
-    $('ul', this.el).append(this.templates.header);
+    $(this.el).append(this.templates.in_progress_list);
+    $('.in_progress_list', this.el).append(this.templates.in_progress_header);
+
+    $(this.el).append(this.templates.review_list);
+    $('.review_list', this.el).append(this.templates.review_header);
 
     _(App.collections.pending.models).each(function(form) {
-      self.appendForm(form);
+      self.appendPendingForm(form);
     }, this);
   },
 
-  appendForm: function(form) {
-    var view = new ShowFormButtonView({
+  appendPendingForm: function(form) {
+    var view = new PendingItemView({
       model: form
     });
-    $('ul', this.el).append(view.render().el);
+    $('.pending_list', this.el).append(view.render().el);
   }
 });
