@@ -3,6 +3,16 @@ PendingModel = FormModel.extend({
   sync: FHBackboneDataSyncFn
 });
 
+PendingWaitingCollection = Backbone.Collection.extend({
+  model: PendingModel,
+  store: new FHBackboneDataSync("pending-waiting"),
+  sync: FHBackboneDataSyncFn,
+  create: function(attributes, options) {
+    attributes.savedAt = new Date().getTime();
+    Backbone.Collection.prototype.create.call(this, attributes, options);
+  }
+});
+
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
   store: new FHBackboneDataSync("pending-submitting"),
@@ -36,3 +46,4 @@ PendingReviewCollection = Backbone.Collection.extend({
 App.collections.pending_submitting = new PendingSubmittingCollection();
 App.collections.pending_submitted = new PendingSubmittedCollection();
 App.collections.pending_review = new PendingReviewCollection();
+App.collections.pending_waiting = new PendingWaitingCollection();

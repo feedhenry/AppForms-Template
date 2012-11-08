@@ -451,7 +451,14 @@ table.likert {
   padding-top: 34px;
 }
 
-
+.pending_waiting_list .submit-all {
+  position: inherit;
+  top: inherit;
+  right: inherit;
+  width: 100%;
+  margin: 0;
+  padding: 4px 12px;
+}
 
 /*
   
