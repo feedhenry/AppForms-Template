@@ -8,13 +8,17 @@ FormListView = Backbone.View.extend({
 
   initialize: function() {
     _.bindAll(this, 'render', 'appendForm', 'changed');
+    self.views = [];
 
-    App.collections.forms.bind('reset', function () {
-      App.collections.forms.each(function (form) {
-        form.fetch();
-      });
+    App.collections.forms.bind('reset', function (collection, options) {
+      if (options == null || !options.noFetch) {
+        console.log('reset forms collection');
+        App.collections.forms.each(function (form) {
+          form.fetch();
+        });
+      }
     });
-    App.collections.forms.bind('add remove reset', this.changed, this);
+    App.collections.forms.bind('add remove reset resync', this.changed, this);
 
     this.render();
   },
@@ -40,7 +44,7 @@ FormListView = Backbone.View.extend({
     // Add header
     $('ul', this.el).append(this.templates.header);
 
-    _(App.collections.forms.models).each(function(form) {
+    _(App.collections.forms.models).forEach(function(form) {
       self.appendForm(form);
     }, this);
   },
@@ -49,6 +53,7 @@ FormListView = Backbone.View.extend({
     var view = new ShowFormButtonView({
       model: form
     });
+    self.views.push(view);
     $('ul', this.el).append(view.render().el);
   }
 });
