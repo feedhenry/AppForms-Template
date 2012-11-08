@@ -1,9 +1,12 @@
 PendingModel = FormModel.extend({
+  idAttribute: 'id',
+  sync: FHBackboneDataSyncFn
 });
 
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  fhStorage: new FHBackboneSyncStore("pending-submitting"),
+  store: new FHBackboneDataSync("pending-submitting"),
+  sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
     Backbone.Collection.prototype.create.call(this, attributes, options);
@@ -12,7 +15,8 @@ PendingSubmittingCollection = Backbone.Collection.extend({
 
 PendingSubmittedCollection = Backbone.Collection.extend({
   model: PendingModel,
-  fhStorage: new FHBackboneSyncStore("pending-submitted"),
+  store: new FHBackboneDataSync("pending-submitted"),
+  sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
     Backbone.Collection.prototype.create.call(this, attributes, options);
@@ -21,7 +25,8 @@ PendingSubmittedCollection = Backbone.Collection.extend({
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
-  fhStorage: new FHBackboneSyncStore("pending-review"),
+  store: new FHBackboneDataSync("pending-review"),
+  sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
     Backbone.Collection.prototype.create.call(this, attributes, options);

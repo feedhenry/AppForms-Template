@@ -6,7 +6,6 @@ var cheerio = require('cheerio');
 var async = require('async');
 var _ = require('underscore');
 
-// DEPRECATED
 //http://www.wufoo.com/docs/api/v3/forms/
 exports.getForms = function (cb) {
   var end_point = "forms";

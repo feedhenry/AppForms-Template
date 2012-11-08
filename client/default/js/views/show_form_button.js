@@ -4,7 +4,7 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   templates: {
-    form_button: '<li><button class="show button-block button-main"><%= name %></button></li>',
+    form_button: '<li><button class="show button-block button-main <%= dataClass %>" <%= disabled %>><%= name %></button></li>',
     draft_button: '<li><button class="show button-block button-main" style="font-size: 12px;text-align: left;padding-left: 10px;"><%= name %><span class="count"><%= savedAt %></span></button></li>'
   },
 
@@ -24,13 +24,17 @@ ShowFormButtonView = Backbone.View.extend({
         savedAt: this.model.get("savedAt")
       });
     } else {
+      var fullyLoaded = this.model.get('fh_full_data_loaded');
       html = _.template(this.templates.form_button, {
-        name: this.model.get("Name")
+        name: this.model.get("Name"),
+        disabled: fullyLoaded ? '' : 'disabled="disabled"',
+        dataClass: fullyLoaded ? 'loaded': 'loading'
       });
     }
 
+    this.$el.html(html);
+    this.$el.find('button').not('.fh_full_data_loaded');
 
-    $(this.el).html(html);
     return this;
   },
 

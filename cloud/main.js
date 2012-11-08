@@ -102,7 +102,7 @@ exports.getFormFields = function (params, callback) {
 
 exports.getForm = function (params, callback) {
   console.log('getForm()');
-  var form_hash = params.form_hash;
+  var form_hash = params.id;
 
   // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
   if (form_hash == null) return callback(null, {
@@ -242,28 +242,28 @@ exports.postEntry = function (params, callback) {
   });
 };
 
-/* 
- * Here we get a Wufoo form's HTML, process it, and send it back to the client
- */
 
-/* 
+/*
  * Here we get a list of available Wufoo forms
  */
 exports.getForms = function (params, callback) {
+  // can't filter forms list endpoint by hash, so get all and filter them by hash here
   var hashes = wufoo_config.wufoo_config.form_hashes || [wufoo_config.wufoo_config.form_hash];
-  async.map(hashes, function (hash, aCallback) {
-    exports.getForm({
-      form_hash: hash
-    }, function (err, res) {
-      if (err) return aCallback(err);
-
-      return aCallback(null, res.data);
-    });
-  }, function (err, results) {
+  wufoo_api.getForms(function (err, results) {
     if (err) return callback(null, err);
+    var forms = _(results.Forms).filter(function (form) {
+      return hashes.indexOf(form.Hash) > -1;
+    }).map(function (form) {
+      // minimum amount required
+      return {
+        "Name": form.Name,
+        "Hash": form.Hash,
+        "DateUpdated": form.DateUpdated
+      };
+    });
 
     return callback(null, {
-      data: results,
+      data: forms,
       config: require('./client_config.js').config
     });
   });

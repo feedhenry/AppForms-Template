@@ -9,6 +9,11 @@ FormListView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render', 'appendForm', 'changed');
 
+    App.collections.forms.bind('reset', function () {
+      App.collections.forms.each(function (form) {
+        form.fetch();
+      });
+    });
     App.collections.forms.bind('add remove reset', this.changed, this);
 
     this.render();
