@@ -20,7 +20,13 @@ App.Router = Backbone.Router.extend({
     App.collections.drafts.on('error', function (collection, msg , options) {
       console.error(msg);
     });
-    App.collections.pending.on('error', function (collection, msg , options) {
+    App.collections.pending_submitted.on('error', function (collection, msg , options) {
+      console.error(msg);
+    });
+    App.collections.pending_submitting.on('error', function (collection, msg , options) {
+      console.error(msg);
+    });
+    App.collections.pending_review.on('error', function (collection, msg , options) {
       console.error(msg);
     });
 
@@ -31,8 +37,14 @@ App.Router = Backbone.Router.extend({
     App.collections.drafts.fhStorage.on('loaded', function () {
       App.collections.drafts.fetch();
     });
-    App.collections.pending.fhStorage.on('loaded', function () {
-      App.collections.pending.fetch();
+    App.collections.pending_submitted.fhStorage.on('loaded', function () {
+      App.collections.pending_submitted.fetch();
+    });
+    App.collections.pending_submitting.fhStorage.on('loaded', function () {
+      App.collections.pending_submitting.fetch();
+    });
+    App.collections.pending_review.fhStorage.on('loaded', function () {
+      App.collections.pending_review.fetch();
     });
 
     App.config = null;

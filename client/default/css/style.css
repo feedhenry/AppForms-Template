@@ -104,7 +104,6 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 .fh_action_bar button {
   -webkit-appearance: button;
-  font-size: 125%;
   width: 33.3333333%;
 }
 
