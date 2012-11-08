@@ -28,7 +28,7 @@
 html, body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
-  padding-top: 58px;
+  padding-top: 50px;
 }
 
 html {
@@ -385,9 +385,16 @@ table.likert {
   line-height: 21px;
 }
 
+#fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
+  margin-left: 5px;
+  margin-right: 5px;
+}
 
 #fh_wufoo_pending .list.inset .delete-item, #fh_wufoo_drafts .list.inset .delete-item {
-  right: 82px;
+  right: 116px;
+}
+#fh_wufoo_pending .list.inset .submit-item, #fh_wufoo_drafts .list.inset .submit-item {
+  right: 43px;
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
