@@ -423,6 +423,10 @@ table.likert {
 
 #fh_wufoo_pending .loading {
   float: right;
+  background: url(../img/loading.gif);
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
 }
 
 .list li {
