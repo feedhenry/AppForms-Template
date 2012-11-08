@@ -236,7 +236,7 @@ function doPost(end_point, data, callback) {
     };
     var multipart_data = dataToMultipart(data);
 
-    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
+//    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
 
     request.post({url:url,
       headers:headers,
