@@ -30,18 +30,9 @@ PageView = Backbone.View.extend({
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'serialize');
+    _.bindAll(this, 'render');
     this.fieldViews = {};
     this.render();
-  },
-
-  serialize: function() {
-    var self = this;
-    var serialized_page = {};
-    $.each(self.fieldViews, function(i, field) {
-      $.extend(serialized_page, field.serialize());
-    });
-    return serialized_page;
   },
 
   render: function() {

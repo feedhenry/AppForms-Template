@@ -1,5 +1,5 @@
 FieldNumberView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" value="<%= value %>" type="number">'],
+  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="number">'],
 
   addValidationRules: function () {
     // call super

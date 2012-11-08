@@ -39,7 +39,7 @@ DraftListView = Backbone.View.extend({
   },
 
   appendDraftForm: function(form) {
-    var view = new PendingItemView({
+    var view = new DraftItemView({
       model: form
     });
     $('.draft_list', this.el).append(view.render().el);

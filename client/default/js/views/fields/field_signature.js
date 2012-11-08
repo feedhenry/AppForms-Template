@@ -87,20 +87,16 @@ FieldSignatureView = FieldView.extend({
     })
   },
 
-  serialize: function() {
-    var serialized_field = {};
-    if(this.fileData) {
-      serialized_field[this.model.get('ID')] = this.fileData;
-    }
-    return serialized_field;
-  },
-
   value: function(value) {
-    if (value) {
+    if (value && !_.isEmpty(value)) {
       this.fileData = value[this.model.get('ID')];
       $('.sigImage', this.$el).attr('src', this.fileData.fileBase64);
       $('input', this.$el).val(this.fileData.fileBase64);
     }
-    return this.serialize();
+    value = {};
+    if(this.fileData) {
+      value[this.model.get('ID')] = this.fileData;
+    }
+    return value;
   }
 });

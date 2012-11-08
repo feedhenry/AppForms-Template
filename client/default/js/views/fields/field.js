@@ -15,15 +15,6 @@ FieldView = Backbone.View.extend({
     this.render();
   },
 
-  serialize: function() {
-    var value = $('#' + this.model.get('ID'), this.$el).val();
-    var serialized_field = {};
-    if (value !== "") {
-      serialized_field[this.model.get('ID')] = value;
-    }
-    return serialized_field;
-  },
-
   contentChanged: function(e) {
     console.log("Value changed :: " + this.value());
     console.log(this.value());
@@ -36,8 +27,7 @@ FieldView = Backbone.View.extend({
     // construct field html
     this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
-      "title": this.model.get('Title'),
-      "value": this.model.get('Value')
+      "title": this.model.get('Title')
     }));
 
     var instructions = this.model.get('Instructions');
@@ -139,18 +129,25 @@ FieldView = Backbone.View.extend({
       // add rules too
       this.addRules();
       //set the form value from model
-      this.value(this.model.get('Value'));
+      this.value(this.model.serialize());
     }
   },
 
-  // Return the value of this particular field
+  // Gets or Set the value for this field
+  // value should always be the serialized form value i.e {Field1 : "Test"}
+  // field with sub fields - {{Field1 : "First Name"}, {Field2 : "Second Name"}}
+  // More complex fields such as files may have value overridden
+  // file - {Field2 : {filebase64 : "sssss", filename : "test.txt", content_type : "text/plain"}}
   value: function(value) {
-    if (value) {
+    if (value && !_.isEmpty(value)) {
       $.each(value, function(id, val) {
         $("#" + id).val(val);
       });
     }
-    return this.serialize();
+    value = {};
+    this.$el.find('input, select, textarea').each(function() {
+      value[$(this).attr('id')] = $(this).val();
+    });
+    return value;
   }
-
 });

@@ -1,7 +1,7 @@
 FieldShortnameView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
-    input: '<span class="fancy_name"><input id="<%= id %>" name="<%= id %>" type="text" class="field text" value="<%= value %>"/><label for="<%= id %>"><%= label %></label></span>'
+    input: '<span class="fancy_name"><input id="<%= id %>" name="<%= id %>" type="text" class="field text"/><label for="<%= id %>"><%= label %></label></span>'
   },
 
   render: function() {
@@ -30,14 +30,6 @@ FieldShortnameView = FieldView.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
-  },
-
-  serialize: function() {
-    var serialized_field = {};
-    this.$el.find('input[type="text"]').each(function() {
-      serialized_field[$(this).attr('id')] = $(this).val();
-    });
-    return serialized_field;
   },
 
   addValidationRules: function () {

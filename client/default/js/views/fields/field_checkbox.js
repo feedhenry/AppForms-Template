@@ -29,14 +29,6 @@ FieldCheckboxView = FieldView.extend({
     this.show();
   },
 
-  serialize: function() {
-    var serialized_field = {};
-    this.$el.find('input[type="checkbox"]:checked').each(function() {
-      serialized_field[$(this).attr('id')] = $(this).val();
-    });
-    return serialized_field;
-  },
-  
   addValidationRules: function () {
     if (this.model.get('IsRequired') === '1') {
       // special required rule for checkbox fields
@@ -56,6 +48,10 @@ FieldCheckboxView = FieldView.extend({
         $("input[value='" + val + "']").attr("checked", "checked");
       });
     }
-    return this.serialize();
+    value = {};
+    this.$el.find('input[type="checkbox"]:checked').each(function() {
+      value[$(this).attr('id')] = $(this).val();
+    });
+    return value;
   }
 });

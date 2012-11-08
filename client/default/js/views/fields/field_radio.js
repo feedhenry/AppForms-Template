@@ -37,25 +37,21 @@ FieldRadioView = FieldView.extend({
     this.show();
   },
 
-  serialize: function() {
-    var self = this;
-    var serialized_field = {};
-    this.$el.find('input[type="radio"]:checked').each(function() {
-      serialized_field[self.model.get('ID')] = $(this).val();
-    });
-    return serialized_field;
-  },
-
   addValidationRules: function () {
     // first radio is always initially checked, so no need to do 'required' validation on this field
   },
 
   value:function (value) {
+    var self = this;
     if (value) {
       $.each(value, function (id, val) {
         $("input[value='" + val + "']").attr("checked", "checked");
       });
     }
-    return this.serialize();
+    value = {};
+    this.$el.find('input[type="radio"]:checked').each(function() {
+      value[self.model.get('ID')] = $(this).val();
+    });
+    return value;
   }
 });

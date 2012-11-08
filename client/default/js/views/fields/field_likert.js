@@ -63,13 +63,6 @@ FieldLikertView = FieldView.extend({
         "likert_group_required": true
       });
     }
-  },
-
-  serialize: function() {
-    var serialized_field = {};
-    this.$el.find('select').each(function() {
-      serialized_field[$(this).attr('id')] = $(this).val();
-    });
-    return serialized_field;
   }
+
 });

@@ -18,6 +18,11 @@ FieldModel = Backbone.Model.extend({
       }
     }
     return type;
+  },
+
+  //Returns the serialised field value, ready for submission to wuffoo
+  serialize: function() {
+    return this.attributes.Value;
   }
 });
 

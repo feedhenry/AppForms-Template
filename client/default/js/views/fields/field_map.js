@@ -90,9 +90,14 @@ FieldMapView = FieldView.extend({
     });
   },
 
-  serialize: function() {
-    var serialized_field = {};
-    serialized_field[this.model.get('ID')] = this.currentLocation;
-    return serialized_field;
+  value: function(value) {
+    if (value && !_.isEmpty(value)) {
+      $.each(value, function(id, val) {
+        $("#" + id).val(val);
+      });
+    }
+    value = {};
+    value[this.model.get('ID')] = this.currentLocation;
+    return value;
   }
 });

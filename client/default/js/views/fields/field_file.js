@@ -1,14 +1,6 @@
 FieldFileView = FieldView.extend({
   template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="file">'],
 
-  serialize: function() {
-    var serialized_field = {};
-    if(this.fileData) {
-      serialized_field[this.model.get('ID')] = this.fileData;
-    }
-    return serialized_field;
-  },
-
   contentChanged: function(e) {
     var self = this;
     self.fileData = {};
@@ -40,6 +32,10 @@ FieldFileView = FieldView.extend({
       //How can you update the file element to show the current file selected
       this.fileData = value[this.model.get('ID')];
     }
-    return this.serialize();
+    value = {};
+    if(this.fileData) {
+      value[this.model.get('ID')] = this.fileData;
+    }
+    return value;
   }
 });

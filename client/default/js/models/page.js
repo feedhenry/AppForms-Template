@@ -15,6 +15,15 @@ PageModel = Backbone.Model.extend({
     var page = Backbone.Model.prototype.toJSON.apply(this, arguments);
     page.Fields = self.fields.toJSON();
     return page;
+  },
+
+  serialize: function() {
+    var self = this;
+    var serialized_page = {};
+    self.fields.each(function (field) {
+      $.extend(serialized_page, field.serialize());
+    });
+    return serialized_page;
   }
 });
 

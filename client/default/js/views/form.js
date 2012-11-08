@@ -18,15 +18,6 @@ FormView = Backbone.View.extend({
     this.pages = [];
   },
 
-  serialize: function() {
-    var self = this;
-    var serialized_form = {};
-    $.each(self.pages, function(i, page) {
-      $.extend(serialized_form, page.serialize());
-    });
-    return serialized_form;
-  },
-
   render: function() {
     var self = this;
     App.views.header.hideAll();
@@ -166,8 +157,7 @@ FormView = Backbone.View.extend({
     var currentPage = this.model.get('active_page');
     var currentPageView = this.pages[currentPage];
     if (currentPageView.isValid()) {
-      // submit form
-      this.submitForm();
+      this.savePending();
     } else {
       this.focusValidation();
     }
@@ -182,53 +172,6 @@ FormView = Backbone.View.extend({
     }, 500, function() {
       $('input,select,textarea', first_container).focus();
     });
-  },
-
-  submitForm: function() {
-    var self = this;
-    var serialized_form = self.serialize();
-    var form_hash = this.model.get('Hash');
-    var form_name = this.model.get('Name');
-
-    // Immediately switch to Home page, send form in background.
-    App.views.header.showHome();
-    self.showAlert('Submitting your form in the background.', 'success', 3000);
-
-    this.isOnline(function(online) {
-      if (online) {
-        $fh.act({
-          "act": "postEntry",
-          "req": {
-            "form_hash": form_hash,
-            "data": serialized_form
-          }
-        }, function(res) {
-          console.log("submit resp :: " + JSON.stringify(res));
-          if(res.Success && res.Success === 1) {
-            console.log('Form submission: success.');
-            self.submitSuccess('A pending form was submitted in the background');
-          } else {
-            console.log('Form submission: error.');
-            //ToDO Parse error response properly
-            self.submitFailure('A validation error occured on a form submission. Please review your Pending forms.');
-          }
-        }, function(msg, err) {
-          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          self.submitFailure("Due to a poor network connection, submission of your form has failed. We've saved it in your pending items.");
-        });
-      } else {
-        self.submitFailure("We couldn't submit your form at this time. We've saved it in your pending items.");
-      }
-    });
-  },
-
-  submitFailure: function(msg) {
-    this.showAlert(msg);
-    this.savePending();
-  },
-
-  submitSuccess: function(msg) {
-    this.showAlert(msg);
   },
 
   saveDraft: function() {
@@ -271,24 +214,6 @@ FormView = Backbone.View.extend({
     _(this.pages).forEach(function(page, index) {
       page.hideField(id);
     });
-  },
-
-  isOnline: function(callback){
-    var online = true;
-    //first, check if navigator.online is available
-    if(typeof navigator.onLine != "undefined"){
-      online = navigator.onLine;
-    }
-    if(online){
-      //use phonegap to determin if the network is available
-      if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
-        var networkType = navigator.network.connection.type;
-        if(networkType == "none" || networkType == null){
-          online = false;
-        }
-      }
-    }
-    callback(online);
   }
 
 });

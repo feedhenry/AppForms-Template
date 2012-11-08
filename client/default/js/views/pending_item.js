@@ -31,10 +31,35 @@ PendingItemView = Backbone.View.extend({
   delete: function(e) {
     e.stopPropagation();
     this.model.destroy();
+    return false;
   },
 
   submit: function() {
-    console.log('submit form!');
+    var self = this;
+    self.model.submit(function(err, res) {
+        if(err) {
+          console.log('Form submission: error :: ' + JSON.stringify(err) + " :: " + JSON.stringify(res));
+          switch (err.error) {
+            case 'validation':
+              App.collections.pending_review.create(self.model.toJSON());
+              self.model.destroy();
+              break;
+            case 'network':
+              //Error in act call
+              break;
+            case 'offline':
+            //Offline mode
+            default:
+              console.log("Unknown Error")
+          }
+        } else {
+          console.log('Form submission: success :: ' + JSON.stringify(res));
+          App.collections.pending_submitted.create(self.model.toJSON());
+          self.model.destroy();
+        }
+      }
+    );
+    return false;
   },
 
   unrender: function() {
