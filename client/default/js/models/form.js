@@ -10,12 +10,18 @@ FormModel = Backbone.Model.extend({
   },
 
   initialize: function () {
-    var pages = this.get('Pages');
-    this.pages = new Pages(pages);
+    this.initPages();
+
+    this.bind('change', this.initPages, this);
 
     this.on('change:page_history', function (model, history) {
       model.set('active_page', _(history).last());
     });
+  },
+
+  initPages: function () {
+    var pages = this.get('Pages');
+    this.pages = new Pages(pages);
   },
 
   pushPage: function (page) {

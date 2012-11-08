@@ -421,22 +421,44 @@ table.likert {
   cursor: pointer;
 }
 
-#fh_wufoo_pending .loading {
+.loading {
   float: right;
+  background: url(../img/loading.gif);
+  background-size: 16px 16px;
+  height: 16px;
+  width: 16px;
 }
 
 .list li {
   padding: 20px 10px 20px 10px;
 }
 
-/* Remove? */
-/*.loading {
-  height: 16px;
-  width: 16px;
-}*/
+.pending_review_type {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 0 2px 10px;
+  color: #fff;
+  font-size: 13px;
+  background-color: #E71E1E;
+  background-image: -webkit-linear-gradient(top, #E71E1E 0,#C71A1A 100%);
+  background-image: linear-gradient(to bottom, #E71E1E 0, #C71A1A 100%);
+  border: 1px solid #B51A1A;
+}
 
+.pending_review_list li.pending_submission {
+  padding-top: 34px;
+}
 
-
+.pending_waiting_list .submit-all {
+  position: inherit;
+  top: inherit;
+  right: inherit;
+  width: 100%;
+  margin: 0;
+  padding: 4px 12px;
+}
 
 /*
   

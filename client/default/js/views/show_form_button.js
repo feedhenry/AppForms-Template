@@ -28,7 +28,7 @@ ShowFormButtonView = Backbone.View.extend({
       html = _.template(this.templates.form_button, {
         name: this.model.get("Name"),
         disabled: fullyLoaded ? '' : 'disabled="disabled"',
-        dataClass: fullyLoaded ? 'loaded': 'loading'
+        dataClass: fullyLoaded ? 'fetched': 'fetching'
       });
     }
 
@@ -45,11 +45,15 @@ ShowFormButtonView = Backbone.View.extend({
   show:function () {
     if (this.model instanceof DraftModel) {
       App.views.form = new DraftView({
-        model:this.model
+        model: this.model
+      });
+    } else if (this.model instanceof PendingModel) {
+      App.views.form = new PendingView({
+        model: this.model //new FormModel(this.model.toJSON()) // TODO: should just pass this.model???
       });
     } else {
       App.views.form = new FormView({
-        model:new FormModel(this.model.toJSON())
+        model: this.model
       });
     }
     App.views.form.render();

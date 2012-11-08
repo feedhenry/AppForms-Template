@@ -127,7 +127,7 @@ exports.getRules = function (form_hash, cb) {
       res.on('end', function() {
         if (200 === res.statusCode) {
           var rulesMatch = resBody.match(/__RULES\s*=\s*(.*?);*?\n/);
-          if (rulesMatch.length > 1) {
+          if (rulesMatch && rulesMatch.length > 1) {
             try {
               var rules = JSON.parse(rulesMatch[1]);
               return cb(null, rules);

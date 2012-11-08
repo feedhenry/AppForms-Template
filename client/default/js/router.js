@@ -25,6 +25,7 @@ App.Router = Backbone.Router.extend({
     App.collections.drafts.fetch();
     App.collections.pending_submitted.fetch();
     App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
     App.collections.pending_review.fetch();
 
     App.config = null;
