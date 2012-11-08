@@ -216,6 +216,11 @@ _.extend(FHBackboneDataActSync.prototype, {
     this.save(function (err) {
       return cb(err, model);
     });
+  },
+
+  reset: function (model) {
+    this.data = null;
+    model.fetch();
   }
 });
 
