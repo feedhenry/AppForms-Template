@@ -1,4 +1,6 @@
 FormModel = Backbone.Model.extend({
+  idAttribute: 'Hash',
+  sync: FHBackboneDataActSyncFn,
   defaults: {
     "Theme": "",
     "Pages": [],
@@ -43,7 +45,9 @@ FormModel = Backbone.Model.extend({
 
 FormsCollection = Backbone.Collection.extend({
   model: FormModel,
-  fhStorage: new FHBackboneSyncStore("forms", "getForms")
+  // form collection will only fetch minimum form details to populate models. Models will be fetched individually as full detail is required
+  store: new FHBackboneDataActSync('forms', 'getForms', 'getForm', 'Hash', 'DateUpdated'),
+  sync: FHBackboneDataActSyncFn
 });
 
 App.collections.forms = new FormsCollection();

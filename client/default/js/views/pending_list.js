@@ -2,18 +2,20 @@ PendingListView = Backbone.View.extend({
   el: $('#fh_wufoo_pending'),
 
   templates: {
-    pending_list: '<ul class="list inset pending_list"></ul>',
-    pending_header: '<li class="list-divider">Pending Submissions</li>',
-    in_progress_list: '<ul class="list inset in_progress_list"></ul>',
-    in_progress_header: '<li class="list-divider">Forms being submitted<img src="img/loading.gif" class="loading" alt=""/></li>',
-    review_list: '<ul class="list inset review_list"></ul>',
-    review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
+    pending_submitted_list: '<ul class="list inset pending_submitted_list"></ul>',
+    pending_submitted_header: '<li class="list-divider">Submitted Forms</li>',
+    pending_submitting_list: '<ul class="list inset pending_submitting_list"></ul>',
+    pending_submitting_header: '<li class="list-divider">Forms being submitted<img src="img/loading.gif" class="loading" alt=""/></li>',
+    pending_review_list: '<ul class="list inset pending_review_list"></ul>',
+    pending_review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'appendPendingForm', 'changed');
+    _.bindAll(this, 'render', 'appendSubmittingForm', 'changed');
 
-    App.collections.pending.bind('add remove reset', this.changed, this);
+    App.collections.pending_submitting.bind('add remove reset', this.changed, this);
+    App.collections.pending_submitted.bind('add remove reset', this.changed, this);
+    App.collections.pending_review.bind('add remove reset', this.changed, this);
 
     this.render();
   },
@@ -34,24 +36,46 @@ PendingListView = Backbone.View.extend({
     $(this.el).empty();
 
     // Add lists
-    $(this.el).append(this.templates.pending_list);
-    $('.pending_list', this.el).append(this.templates.pending_header);
+    $(this.el).append(this.templates.pending_submitting_list);
+    $('.pending_submitting_list', this.el).append(this.templates.pending_submitting_header);
 
-    $(this.el).append(this.templates.in_progress_list);
-    $('.in_progress_list', this.el).append(this.templates.in_progress_header);
+    $(this.el).append(this.templates.pending_review_list);
+    $('.pending_review_list', this.el).append(this.templates.pending_review_header);
 
-    $(this.el).append(this.templates.review_list);
-    $('.review_list', this.el).append(this.templates.review_header);
+    $(this.el).append(this.templates.pending_submitted_list);
+    $('.pending_submitted_list', this.el).append(this.templates.pending_submitted_header);
 
-    _(App.collections.pending.models).each(function(form) {
-      self.appendPendingForm(form);
+    _(App.collections.pending_submitting.models).each(function(form) {
+      self.appendSubmittingForm(form);
+    }, this);
+
+    _(App.collections.pending_submitted.models).each(function(form) {
+      self.appendSubmittedForm(form);
+    }, this);
+
+    _(App.collections.pending_review.models).each(function(form) {
+      self.appendReviewForm(form);
     }, this);
   },
 
-  appendPendingForm: function(form) {
-    var view = new PendingItemView({
+  appendSubmittingForm: function(form) {
+    var view = new PendingSubmittingItemView({
       model: form
     });
-    $('.pending_list', this.el).append(view.render().el);
+    $('.pending_submitting_list', this.el).append(view.render().el);
+  },
+
+  appendSubmittedForm: function(form) {
+    var view = new PendingSubmittedItemView({
+      model: form
+    });
+    $('.pending_submitted_list', this.el).append(view.render().el);
+  },
+
+  appendReviewForm: function(form) {
+    var view = new PendingReviewItemView({
+      model: form
+    });
+    $('.pending_review_list', this.el).append(view.render().el);
   }
 });

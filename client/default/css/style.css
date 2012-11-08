@@ -28,7 +28,7 @@
 html, body {
   font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #333;
-  padding-top: 58px;
+  padding-top: 50px;
 }
 
 html {
@@ -104,7 +104,6 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 .fh_action_bar button {
   -webkit-appearance: button;
-  font-size: 125%;
   width: 33.3333333%;
 }
 
@@ -205,6 +204,13 @@ td.active .page_title {
 /* Form List */
 .form_list {
   padding: 20px;
+}
+
+.form_list .button-main:disabled {
+  background-color: #ddd;
+  background-image: -webkit-linear-gradient(top, #ddd 0, #bbb 100%);
+  background-image: linear-gradient(to bottom, #ddd 0, #bbb 100%);
+  border: 1px solid #aaa;
 }
 
 /* Error highlighting */
@@ -385,9 +391,17 @@ table.likert {
   line-height: 21px;
 }
 
+#fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
+  margin-left: 5px;
+  margin-right: 5px;
+}
 
-#fh_wufoo_pending .list.inset .delete-item, #fh_wufoo_drafts .list.inset .delete-item {
-  right: 82px;
+.list.inset .first_button {
+  right: 107px;
+}
+
+.list.inset .second_button {
+  right: 33px;
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
@@ -415,10 +429,11 @@ table.likert {
   padding: 20px 10px 20px 10px;
 }
 
-.loading {
+/* Remove? */
+/*.loading {
   height: 16px;
   width: 16px;
-}
+}*/
 
 
 

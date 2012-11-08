@@ -18,12 +18,14 @@
 <div id="fh_wufoo_content" class="hidden"></div>
 
 <br/>
-<button onclick="App.collections.forms.create(App.MockForm);">Create Mock Form</button>
-<button onclick="App.collections.forms.create(App.MockSimplerMultiPageForm);">Create Simpler Mock Multi Page Form</button>
-<button onclick="App.collections.forms.create(App.MockSimpleSinglePageForm);">Create Mock Single Page Form</button>
-<button onclick="App.collections.drafts.create(App.MockForm);">Create Mock Draft</button>
-<button onclick="App.collections.pending.create(App.MockForm);">Create Mock Pending</button>
-<button onclick="localStorage.clear();location.reload();">Clear Local Storage</button>
+<button onclick="App.collections.forms.create(App.MockForm);">Create Mock Form</button><br/>
+<button onclick="App.collections.forms.create(App.MockSimplerMultiPageForm);">Create Simpler Mock Multi Page Form</button><br/>
+<button onclick="App.collections.forms.create(App.MockSimpleSinglePageForm);">Create Mock Single Page Form</button><br/>
+<button onclick="App.collections.drafts.create(App.MockForm);">Create Mock Draft</button><br/>
+<button onclick="App.collections.pending_submitting.create(App.MockForm);">Create Mock Pending Submitting</button><br/>
+<button onclick="App.collections.pending_submitted.create(App.MockForm);">Create Mock Pending Submitted</button><br/>
+<button onclick="App.collections.pending_review.create(App.MockForm);">Create Mock Pending Review</button><br/>
+<button onclick="localStorage.clear();location.reload();">Clear Local Storage</button><br/>
 
 <div id="app_version"></div>
 <div class="ts" display="none"></div>
@@ -40,7 +42,8 @@ App.collections = App.collections || {};
 <script src="js/jquery.wufoo_rules.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/underscore.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/backbone.js" type="text/javascript" charset="utf-8"></script>
-<script src="js/backbone-fhstorage.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/backbone.fhdata.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/backbone.fhdata.fhact.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/moment.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/utils/converter.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/signaturepad/jquery.signaturepad.js" type="text/javascript" charset="utf-8"></script>
@@ -58,6 +61,9 @@ App.collections = App.collections || {};
 <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending_item.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/pending_review_item.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/pending_submitting_item.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/pending_submitted_item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
 
