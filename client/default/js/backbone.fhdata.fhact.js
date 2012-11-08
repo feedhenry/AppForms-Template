@@ -62,6 +62,13 @@ _.extend(FHBackboneDataActSync.prototype, {
         $fh.act({
           act: self.actList
         }, function (res) {
+          if (res && res.error) {
+            if (!dataLoaded) {
+              return cb(res.error);
+            }
+            return;
+          }
+          
           // update client config if its in response
           if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
             console.log('updating config');
@@ -157,6 +164,12 @@ _.extend(FHBackboneDataActSync.prototype, {
         id: modelData[self.idField]
       }
     }, function (res) {
+      if (res && res.error) {
+        if (!dataLoaded) {
+          return cb(res.error);
+        }
+        return;
+      }
       // update data if there is any
       var dataUpdated = false;
       // only update data if we have full data for first time, or if version fields are different on what we have vs
@@ -172,7 +185,7 @@ _.extend(FHBackboneDataActSync.prototype, {
         self.save(function () {
           console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
         });
-        cb(null, self.data[modelToFind.id]);
+        return cb(null, self.data[modelToFind.id]);
       } else if (dataUpdated) {
         // data already initialised from local storage, need to update the data in local storage and let subsequent
         // events on model take care of updating views i.e. don't call cb
