@@ -73,7 +73,7 @@ PendingListView = Backbone.View.extend({
   },
 
   appendReviewForm: function(form) {
-    var view = new PendingItemView({
+    var view = new PendingReviewItemView({
       model: form
     });
     $('.pending_review_list', this.el).append(view.render().el);
