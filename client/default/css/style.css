@@ -389,10 +389,11 @@ table.likert {
   margin-right: 5px;
 }
 
-#fh_wufoo_pending .list.inset .delete-item, #fh_wufoo_drafts .list.inset .delete-item {
+.list.inset .first_button {
   right: 116px;
 }
-#fh_wufoo_pending .list.inset .submit-item, #fh_wufoo_drafts .list.inset .submit-item {
+
+.list.inset .second_button {
   right: 43px;
 }
 

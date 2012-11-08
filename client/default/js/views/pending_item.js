@@ -8,7 +8,7 @@ PendingItemView = Backbone.View.extend({
   },
 
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item">Delete</button><button class="button button-positive submit-item">Submit</button><span class="chevron"></span>',
+    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>',
   },
 
   initialize: function() {

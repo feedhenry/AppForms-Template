@@ -66,7 +66,7 @@ PendingListView = Backbone.View.extend({
   },
 
   appendSubmittedForm: function(form) {
-    var view = new PendingItemView({
+    var view = new PendingSubmittedItemView({
       model: form
     });
     $('.pending_submitted_list', this.el).append(view.render().el);
