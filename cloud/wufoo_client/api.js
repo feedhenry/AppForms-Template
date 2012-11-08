@@ -237,7 +237,7 @@ function doPost(end_point, data, callback) {
     };
     var multipart_data = dataToMultipart(data);
 
-//    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
+    console.log("doPost : " + url + " :: data : " + JSON.stringify(data));
 
     request.post({url:url,
       headers:headers,
@@ -278,7 +278,9 @@ function dataToMultipart(data) {
           }
         }
       }
-      multipart_data.push(part);
+      if(!_.isEmpty(part)) {
+        multipart_data.push(part);
+      }
     });
   }
   return multipart_data;
