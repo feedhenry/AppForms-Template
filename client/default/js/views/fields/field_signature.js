@@ -69,7 +69,7 @@ FieldSignatureView = FieldView.extend({
     $('.cap_sig_done_btn', this.$el).unbind('click').bind('click', function(e) {
       e.preventDefault();
       var sigData = sigPad.getSignatureImage();
-      if(sigData == "data:,"){ 
+      if(sigData == "data:,"){
         sigData = toBitmapURL($('.sigPad', self.$el).find('canvas')[0]);
         extension = "bmp";
       }
@@ -77,6 +77,30 @@ FieldSignatureView = FieldView.extend({
       img.src = sigData;
       $('input', self.$el).val(sigData);
       $('.sigPad', self.$el).hide();
+
+      var dataParts = sigData.match(/data:(.*\/(.*));base64,(.*)/);
+      self.fileData = {};
+      self.fileData.fileBase64 = sigData;
+      self.fileData.filename = "signature." + dataParts[2];
+      self.fileData.content_type = dataParts[1];
+      self.model.set({Value: self.value()});
     })
+  },
+
+  serialize: function() {
+    var serialized_field = {};
+    if(this.fileData) {
+      serialized_field[this.model.get('ID')] = this.fileData;
+    }
+    return serialized_field;
+  },
+
+  value: function(value) {
+    if (value) {
+      this.fileData = value[this.model.get('ID')];
+      $('.sigImage', this.$el).attr('src', this.fileData.fileBase64);
+      $('input', this.$el).val(this.fileData.fileBase64);
+    }
+    return this.serialize();
   }
 });
