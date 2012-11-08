@@ -15,7 +15,10 @@ PendingView = FormView.extend({
 
   saveDraft: function() {
     App.collections.drafts.create(this.model.toJSON());
-    this.model.destroy();
+
+    if (!(this.model instanceof DraftModel)) {
+      this.model.destroy();
+    }
     App.views.header.showDrafts();
   }
 

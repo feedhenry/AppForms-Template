@@ -49,7 +49,7 @@ ShowFormButtonView = Backbone.View.extend({
       });
     } else {
       App.views.form = new FormView({
-        model:this.model
+        model:new FormModel(this.model.toJSON())
       });
     }
     App.views.form.render();
