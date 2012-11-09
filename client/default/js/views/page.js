@@ -61,7 +61,6 @@ PageView = Backbone.View.extend({
     var self = this;
 
     this.$el.removeClass('hidden');
-    debugger;
     // see if we need to apply any validation errors got back from wufoo i.e. rules that we haven't implemented or cannot implement
     var error = this.options.parentView.model.get('error');
     if (error && error.details && error.details.FieldErrors) {
