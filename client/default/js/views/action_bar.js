@@ -22,11 +22,12 @@ ActionBarView = Backbone.View.extend({
   activePageChange: function (model, pageIndex) {
     // show/hide previous/next/submit buttons accordingly
     this.$el.find('button').addClass('hidden');
+    this.$el.find('.saveDraft').removeClass('hidden');
+
     var numPages = model.pages.length;
     if (numPages < 2) {
       // single-page. show submit button
       this.$el.find('.submit').removeClass('hidden');
-      this.$el.find('.saveDraft').removeClass('hidden');
     } else if (pageIndex === 0) {
       // multi-page, first page. show next button
       this.$el.find('.next').removeClass('hidden');
@@ -34,7 +35,6 @@ ActionBarView = Backbone.View.extend({
       // multi-page, last page. show submit button and previous
       this.$el.find('.submit').removeClass('hidden');
       this.$el.find('.previous').removeClass('hidden');
-      this.$el.find('.saveDraft').removeClass('hidden');
     } else {
       // multi-page, in-between page. show next & previous
       this.$el.find('.next').removeClass('hidden');
