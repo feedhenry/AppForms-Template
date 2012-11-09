@@ -59,6 +59,34 @@ PendingSubmittingCollection = Backbone.Collection.extend({
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
+
+    model.submit(function(err, res) {
+      if (err) {
+        console.log('Form submission: error :: ' + JSON.stringify(err) + " :: " + JSON.stringify(res));
+        switch (err.error) {
+        case 'validation':
+          App.collections.pending_review.create(model.toJSON());
+          model.destroy();
+          break;
+        case 'network':
+          //Error in act call
+          App.collections.pending_waiting.create(model.toJSON());
+          model.destroy();
+          break;
+        case 'offline':
+          //Offline mode
+          App.collections.pending_waiting.create(model.toJSON());
+          model.destroy();
+        default:
+          console.log("Unknown Error")
+        }
+      } else {
+        console.log('Form submission: success :: ' + JSON.stringify(res));
+        App.collections.pending_submitted.create(model.toJSON());
+        model.destroy();
+      }
+    });
+
     return model;
   }
 });

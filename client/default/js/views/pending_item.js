@@ -36,28 +36,8 @@ PendingItemView = Backbone.View.extend({
 
   submit: function() {
     var self = this;
-    self.model.submit(function(err, res) {
-      if (err) {
-        console.log('Form submission: error :: ' + JSON.stringify(err) + " :: " + JSON.stringify(res));
-        switch (err.error) {
-        case 'validation':
-          App.collections.pending_review.create(self.model.toJSON());
-          self.model.destroy();
-          break;
-        case 'network':
-          //Error in act call
-          break;
-        case 'offline':
-          //Offline mode
-        default:
-          console.log("Unknown Error")
-        }
-      } else {
-        console.log('Form submission: success :: ' + JSON.stringify(res));
-        App.collections.pending_submitted.create(self.model.toJSON());
-        self.model.destroy();
-      }
-    });
+    App.collections.pending_submitting.create(this.model.toJSON());
+    this.model.destroy();    
     return false;
   },
 
