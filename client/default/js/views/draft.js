@@ -175,7 +175,7 @@ DraftView = Backbone.View.extend({
   },
 
   saveDraft: function() {
-    App.collections.drafts.add(this.model);
+    App.collections.drafts.create(this.model);
     App.views.header.showDrafts();
   },
 
