@@ -1,6 +1,11 @@
 DraftModel = FormModel.extend({
   idAttribute: 'id',
-  sync: FHBackboneDataSyncFn
+  sync: FHBackboneDataSyncFn,
+
+  reInitPages: function () {
+    // Do Nothing
+  }
+
 });
 
 

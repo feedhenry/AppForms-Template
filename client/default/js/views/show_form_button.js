@@ -49,11 +49,11 @@ ShowFormButtonView = Backbone.View.extend({
       });
     } else if (this.model instanceof PendingModel) {
       App.views.form = new PendingView({
-        model: this.model //new FormModel(this.model.toJSON()) // TODO: should just pass this.model???
+        model: this.model
       });
     } else {
       App.views.form = new FormView({
-        model: this.model
+        model: new DraftModel(this.model.toJSON()) // Create a new draft form instance from the form template
       });
     }
     App.views.form.render();
