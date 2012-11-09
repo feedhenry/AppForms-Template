@@ -1,6 +1,6 @@
 PendingSubmittingItemView = PendingItemView.extend({
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span><span class="chevron"></span>',
+    item: '<span class="name"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span>',
   },
   //Added submit button for test only, remove after
 
@@ -13,5 +13,10 @@ PendingSubmittingItemView = PendingItemView.extend({
 
     $(this.el).html(item);
     return this;
+  },
+
+  show: function() {
+    //TODO: Impl?
+    console.log('show for submitting not implemented');
   }
 });
