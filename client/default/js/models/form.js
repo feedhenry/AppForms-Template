@@ -12,6 +12,7 @@ FormModel = Backbone.Model.extend({
   initialize: function () {
     this.initPages();
 
+    // if model changes, re-initialise sub-collection of pages
     this.bind('change', this.reInitPages, this);
 
     this.on('change:page_history', function (model, history) {

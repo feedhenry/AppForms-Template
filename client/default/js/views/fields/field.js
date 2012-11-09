@@ -27,7 +27,8 @@ FieldView = Backbone.View.extend({
     // construct field html
     this.$el.append(_.template(this.template.join(''), {
       "id": this.model.get('ID'),
-      "title": this.model.get('Title')
+      "title": this.model.get('Title'),
+      "defaultVal": this.model.get('DefaultVal') || ''
     }));
 
     var instructions = this.model.get('Instructions');
