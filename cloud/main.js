@@ -221,7 +221,7 @@ exports.getForm = function (params, callback) {
           var addField = true;
           if (field.Type === 'file' && field.ClassNames.indexOf('fhcam') > -1) { // field is fhcam
             var fieldBefore = page.Fields[page.Fields.length - 1];
-            if (fieldBefore.ClassNames.indexOf('fhcam') > -1) { // field before is also fhcam, group it
+            if (fieldBefore && fieldBefore.ClassNames.indexOf('fhcam') > -1) { // field before is also fhcam, group it
               addField = false;
               fieldBefore.SubFields = fieldBefore.SubFields || [];
               fieldBefore.SubFields.push(field);
