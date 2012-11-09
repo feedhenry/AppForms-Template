@@ -1,6 +1,7 @@
 var App = App || {};
 
 App.MockForm = {
+  "fh_full_data_loaded": true,
   "Name": "WuFoo Phase II",
   "Description": "This is the sample form being used for development of WuFoo Phase II. It contains all standard fields and has multiple pages and rules.",
   "RedirectMessage": "Great! Thanks for filling out my form!",
@@ -649,6 +650,7 @@ App.MockForm = {
 };
 
 App.MockSimplerMultiPageForm = {
+  "fh_full_data_loaded": true,
   "Name": "Simple Multi Page Form",
   "Description": "This is my form. Please fill it out. It's awesome!",
   "RedirectMessage": "Great! Thanks for filling out my form!",
@@ -871,6 +873,7 @@ App.MockSimplerMultiPageForm = {
 };
 
 App.MockSimpleSinglePageForm = {
+  "fh_full_data_loaded": true,
   "Name": "Single Page Form",
   "Description": "Simple single page form",
   "RedirectMessage": "Great! Thanks for filling out my form!",

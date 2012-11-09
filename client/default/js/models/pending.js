@@ -1,12 +1,12 @@
 PendingModel = FormModel.extend({
   idAttribute: 'id',
-  sync: FHBackboneDataSyncFn
+  sync: FHBackboneDataActSyncFn
 });
 
 PendingWaitingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataSync("pending-waiting"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("pending-waiting"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
     return Backbone.Collection.prototype.create.call(this, attributes, options);
@@ -15,8 +15,8 @@ PendingWaitingCollection = Backbone.Collection.extend({
 
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataSync("pending-submitting"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("pending-submitting"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
@@ -26,8 +26,8 @@ PendingSubmittingCollection = Backbone.Collection.extend({
 
 PendingSubmittedCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataSync("pending-submitted"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("pending-submitted"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
     return Backbone.Collection.prototype.create.call(this, attributes, options);
@@ -36,8 +36,8 @@ PendingSubmittedCollection = Backbone.Collection.extend({
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataSync("pending-review"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("pending-review"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
     return Backbone.Collection.prototype.create.call(this, attributes, options);

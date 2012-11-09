@@ -1,9 +1,9 @@
 /**
- * @fileOverview This is an adaptation of FHBackboneDataActSync, edited to allow
- * a cloud action to be linked with the store for syncing down from cloud
- *
+ * @fileOverview This is an adaptation of Backbone.localStorage, edited to work
+ *     with the asynchronous FeedHenry local data storage API,
+ *     with optional fh.act enpdoints for listing & reading from cloud
  * @version 0.3
- * @author david.martin@feedhenry.com
+ * @author gareth.cpm@gmail.com (Gareth Murphy), david.martin@feedhenry.com
  */
 
 
@@ -52,67 +52,71 @@ _.extend(FHBackboneDataActSync.prototype, {
         } catch(e) {
           // leave data as default
         }
-        // if no data, defer cb until we get from server
         var dataEmpty = _.isEmpty(self.data);
-        if (!dataEmpty) {
-          cb(null);
-        }
 
-        // get data from server
-        $fh.act({
-          act: self.actList
-        }, function (res) {
-          if (res && res.error) {
-            if (!dataLoaded) {
-              return cb(res.error);
-            }
-            return;
-          }
-          
-          // update client config if its in response
-          if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
-            console.log('updating config');
-            App.config = res.config;
-          }
-          // update data if there is any
-          var dataUpdated = false;
-          if (res && res.data) {
-            var dataObj = {};
-            _(res.data).forEach(function (item, index) {
-              var currentData = self.data[item[self.idField]];
-              // update data if data doesn't exist already, or if version is different, otherwise no change to data
-              if (currentData == null || (currentData[self.versionField] !== item[self.versionField])) {
-                console.log('updating data for:"', self.name, '"');
-                dataUpdated = true;
-                self.data[item[self.idField]] = item;
-                // don't update version field to force update of full details
-                if (currentData && currentData[self.versionField]) {
-                  self.data[item[self.idField]][self.versionField] = currentData[self.versionField];
-                }
+        // get data from server if act endpoint defined
+        if (self.actList != null) {
+          $fh.act({
+            act: self.actList
+          }, function (res) {
+            if (res && res.error) {
+              if (!dataLoaded) {
+                return cb(res.error);
+              } else {
+                return self.trigger('error', res.error);
               }
-            });
-          }
-          if (dataEmpty) {
-            // data inited for first time. save to local storage and callback straight away (no need to wait for save)
-            self.save(function () {
-              console.log('inited data for "', self.name, '" saved to local storage');
-            });
-            cb(null);
-          } else {
-            if (dataUpdated) {
-              // data already initialised from local storage, need to update the data and let subsequent events on models
-              // take care of updating views i.e. don't call cb
-              // TODO: ?
-              self.save(function () {
-                console.log('updated data for "', self.name, '" saved to local storage');
+            }
+            
+            // update client config if its in response
+            if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
+              console.log('updating config');
+              App.config = res.config;
+            }
+            // update data if there is any
+            var dataUpdated = false;
+            if (res && res.data) {
+              var dataObj = {};
+              _(res.data).forEach(function (item, index) {
+                var currentData = self.data[item[self.idField]];
+                // update data if data doesn't exist already, or if version is different, otherwise no change to data
+                if (currentData == null || (currentData[self.versionField] !== item[self.versionField])) {
+                  console.log('updating data for:"', self.name, '"');
+                  dataUpdated = true;
+                  self.data[item[self.idField]] = item;
+                  // don't update version field to force update of full details
+                  if (currentData && currentData[self.versionField]) {
+                    self.data[item[self.idField]][self.versionField] = currentData[self.versionField];
+                  }
+                }
               });
             }
-          }
-        }, function (msg, err) {
-          if (dataEmpty) {
-            cb(msg + '::' + err);
-          }
-        });
+            if (dataEmpty) {
+              // data inited for first time. save to local storage and callback straight away (no need to wait for save)
+              self.save(function () {
+                console.log('inited data for "', self.name, '" saved to local storage');
+              });
+              cb(null);
+            } else {
+              if (dataUpdated) {
+                // data already initialised from local storage, need to update the data and let subsequent events on models
+                // take care of updating views i.e. don't call cb
+                // TODO: ?
+                self.save(function () {
+                  console.log('updated data for "', self.name, '" saved to local storage');
+                });
+              }
+            }
+          }, function (msg, err) {
+            if (dataEmpty) {
+              cb(msg + '::' + err);
+            }
+          });
+        }
+
+        // if we have data already, or no act endpoint defined, cb now, otherwise cb will happen when act returns
+        if (!dataEmpty || self.actList == null) {
+          cb(null);
+        }
 
       }, function(msg, err) {
         cb(msg + '::' + err);
@@ -161,54 +165,65 @@ _.extend(FHBackboneDataActSync.prototype, {
     var modelData = this.data[modelToFind.id];
     var dataLoaded = modelData.fh_full_data_loaded;
 
-    // kick off act call to get/update full data
-    $fh.act({
-      act: self.actRead,
-      req: {
-        id: modelData[self.idField]
-      }
-    }, function (res) {
-      if (res && res.error) {
-        if (!dataLoaded) {
-          return cb(res.error);
+    // kick off act call to get/update full data if act endpoint defined
+    if (self.actRead != null) {
+      var actParams = {
+        act: self.actRead,
+        req: {
+          id: modelData[self.idField]
         }
-        return;
+      };
+      // send current version of full data, if we have full
+      if (dataLoaded) {
+        actParams.req.version = modelData[self.versionField];
       }
-      // update data if there is any
-      var dataUpdated = false;
-      // only update data if we have full data for first time, or if version fields are different on what we have vs
-      // what we got
-      if (res && res.data && (!dataLoaded || (res.data[self.versionField] !== self.data[modelToFind.id][self.versionField]))) {
-        dataUpdated = true;
-        console.log('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
-        self.data[modelToFind.id] = res.data;
-        self.data[modelToFind.id].fh_full_data_loaded = true;
-      }
-      if (!dataLoaded || dataUpdated) {
-        // save data to local storage
-        self.save(function () {
-          console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
-        });
-        // and either:
-        // - callback straight away if data never loaded before (no need to wait til save finished)
-        // - reset collection with updated data
-        if (!dataLoaded) {
-          return cb(null, self.data[modelToFind.id]);
-        } else {
-          var collection = modelToFind.collection;
-          collection.reset(_.values(self.data), {
-            noFetch: true
+      $fh.act(actParams, function (res) {
+        if (res && res.error) {
+          if (!dataLoaded) {
+            return cb(res.error);
+          } else {
+            return self.trigger('error', res.error);
+          }
+        }
+        // update data if there is any
+        var dataUpdated = false;
+        // only update data if we have full data for first time, or if version fields are different on what we have vs
+        // what we got
+        if (res && res.data && (!dataLoaded || (res.data[self.versionField] !== self.data[modelToFind.id][self.versionField]))) {
+          dataUpdated = true;
+          console.log('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
+          self.data[modelToFind.id] = res.data;
+          self.data[modelToFind.id].fh_full_data_loaded = true;
+        }
+        if (!dataLoaded || dataUpdated) {
+          // save data to local storage
+          self.save(function () {
+            console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
           });
+          // and either:
+          // - callback straight away if data never loaded before (no need to wait til save finished)
+          // - reset collection with updated data
+          if (!dataLoaded) {
+            return cb(null, self.data[modelToFind.id]);
+          } else {
+            var collection = modelToFind.collection;
+            collection.reset(_.values(self.data), {
+              noFetch: true
+            });
+          }
         }
-      }
-    }, function (msg, err) {
-      if (!dataLoaded) {
-        cb(msg + '::' + err);
-      }
-    });
+      }, function (msg, err) {
+        var errMsg = 'msg:' + msg + ' err:' + err;
+        if (!dataLoaded) {
+          cb(errMsg);
+        } else {
+          self.trigger('error', errMsg);
+        }
+      });
+    }
 
-    // if data already fully loaded, callback straight away instead of waiting for fhact response
-    if (dataLoaded) {
+    // if data already fully loaded or we have no act enpdoint to call, callback straight away instead of waiting for fhact response
+    if (dataLoaded || self.actRead == null) {
       return cb(null, modelData);
     }
   },

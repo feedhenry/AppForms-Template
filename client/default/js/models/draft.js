@@ -1,13 +1,13 @@
 DraftModel = FormModel.extend({
   idAttribute: 'id',
-  sync: FHBackboneDataSyncFn
+  sync: FHBackboneDataActSyncFn
 });
 
 
 DraftsCollection = Backbone.Collection.extend({
   model: DraftModel,
-  store: new FHBackboneDataSync("drafts"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("drafts"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     console.log(attributes)
     attributes.savedAt = new Date().getTime();
