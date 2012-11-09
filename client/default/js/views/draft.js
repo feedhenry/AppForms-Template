@@ -181,7 +181,6 @@ DraftView = Backbone.View.extend({
 
   savePending: function() {
     var pending = this.model.toJSON();
-    this.model.destroy();
     App.collections.pending_submitting.create(pending);
     App.views.header.showPending();
   },

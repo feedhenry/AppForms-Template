@@ -243,6 +243,11 @@ _.extend(FHBackboneDataActSync.prototype, {
 });
 
 FHBackboneDataActSyncFn = function(method, model, options) {
+  if (!model.store && !model.collection) {
+    console.log("Trying to destroy a model that's not part of a store, returning.");
+    return;
+  }
+
   var store = model.store || model.collection.store;
 
   function storeCb(err, resp) {
