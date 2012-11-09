@@ -28,7 +28,7 @@ ShowFormButtonView = Backbone.View.extend({
       html = _.template(this.templates.form_button, {
         name: this.model.get("Name"),
         disabled: fullyLoaded ? '' : 'disabled="disabled"',
-        dataClass: fullyLoaded ? 'fetched': 'fetching'
+        dataClass: fullyLoaded ? 'fetched' : 'fetching'
       });
     }
 
@@ -42,20 +42,11 @@ ShowFormButtonView = Backbone.View.extend({
     $(this.el).remove();
   },
 
-  show:function () {
-    if (this.model instanceof DraftModel) {
-      App.views.form = new DraftView({
-        model: this.model
-      });
-    } else if (this.model instanceof PendingModel) {
-      App.views.form = new PendingView({
-        model: this.model
-      });
-    } else {
-      App.views.form = new FormView({
-        model: new DraftModel(this.model.toJSON()) // Create a new draft form instance from the form template
-      });
-    }
+  show: function() {
+    var draft = new DraftModel(this.model.toJSON());
+    App.views.form = new DraftView({
+      model: draft
+    });
     App.views.form.render();
   }
 });
