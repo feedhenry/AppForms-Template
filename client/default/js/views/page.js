@@ -67,8 +67,9 @@ PageView = Backbone.View.extend({
       // filter out elements only visible on this page
       var validateErrors = {};
       _(error.details.FieldErrors).forEach(function (fieldError) {
-        if (self.$('[name="' + fieldError.ID + '"]').length) {
-          validateErrors[fieldError.ID] = fieldError.ErrorText;
+        var fieldEl = self.$('[name="' + fieldError.ID + '"],[name="' + fieldError.ID + '[]"]');
+        if (fieldEl.length) {
+          validateErrors[fieldEl.attr('name')] = fieldError.ErrorText;
         }
       });
       if (!_.isEmpty(validateErrors)) {
