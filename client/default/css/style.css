@@ -429,6 +429,18 @@ table.likert {
   width: 16px;
 }
 
+.fetching .loading {
+  display: inherit;
+  margin-right: 10px;
+  position: absolute;
+  right: 0;
+  top: 29%;
+}
+
+.fetched .loading {
+  display: none;
+}
+
 .list li {
   padding: 20px 10px 20px 10px;
 }
