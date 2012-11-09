@@ -29,7 +29,18 @@ PendingListView = Backbone.View.extend({
   },
 
   submitAll: function() {
-    console.log('Submit all forms!');
+    var pending = [];
+    
+    _(App.collections.pending_waiting.models).forEach(function(model){
+      App.collections.pending_submitting.create(model.toJSON());
+      pending.push(model);
+    });
+
+    _(pending).forEach(function(model){
+      model.destroy();  
+    });
+
+    return false;
   },
 
   show: function() {
