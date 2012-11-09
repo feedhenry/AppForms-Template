@@ -61,30 +61,28 @@ PendingSubmittingCollection = Backbone.Collection.extend({
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
     model.submit(function(err, res) {
+      var modelJson = model.toJSON();
       if (err) {
-        console.log('Form submission: error :: ' + JSON.stringify(err) + " :: " + JSON.stringify(res));
-        switch (err.error) {
-        case 'validation':
-          App.collections.pending_review.create(model.toJSON());
-          model.destroy();
-          break;
-        case 'network':
-          //Error in act call
-          App.collections.pending_waiting.create(model.toJSON());
-          model.destroy();
-          break;
-        case 'offline':
-          //Offline mode
-          App.collections.pending_waiting.create(model.toJSON());
-          model.destroy();
-        default:
-          console.log("Unknown Error")
+        // add error to model json
+        modelJson.error = {
+          "type": err.error,
+          "details": res
+        };
+        console.log('Form submission: error :: ' , err, " :: ", res);
+
+        if (/\b(offline|network)\b/.test(err.error)) {
+          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+          App.collections.pending_waiting.create(modelJson);
+        } else {
+          // move to review as the form cannot be resubmitted without being modified
+          App.collections.pending_review.create(modelJson);
         }
       } else {
         console.log('Form submission: success :: ' + JSON.stringify(res));
-        App.collections.pending_submitted.create(model.toJSON());
-        model.destroy();
+        App.collections.pending_submitted.create(modelJson);
       }
+      // model should added to another collection now. destroy it
+      model.destroy();
     });
 
     return model;

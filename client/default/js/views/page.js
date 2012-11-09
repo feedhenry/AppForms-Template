@@ -58,7 +58,24 @@ PageView = Backbone.View.extend({
   },
 
   show: function () {
+    var self = this;
+
     this.$el.removeClass('hidden');
+    debugger;
+    // see if we need to apply any validation errors got back from wufoo i.e. rules that we haven't implemented or cannot implement
+    var error = this.options.parentView.model.get('error');
+    if (error && error.details && error.details.FieldErrors) {
+      // filter out elements only visible on this page
+      var validateErrors = {};
+      _(error.details.FieldErrors).forEach(function (fieldError) {
+        if (self.$('[name="' + fieldError.ID + '"]').length) {
+          validateErrors[fieldError.ID] = fieldError.ErrorText;
+        }
+      });
+      if (!_.isEmpty(validateErrors)) {
+        this.options.parentEl.validate().showErrors(validateErrors);
+      }
+    }
   },
 
   hide: function () {
