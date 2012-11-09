@@ -9,7 +9,7 @@ PendingWaitingCollection = Backbone.Collection.extend({
   sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
 });
 
@@ -19,7 +19,8 @@ PendingSubmittingCollection = Backbone.Collection.extend({
   sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    var model = Backbone.Collection.prototype.create.call(this, attributes, options);
+    return model;
   }
 });
 
@@ -29,7 +30,7 @@ PendingSubmittedCollection = Backbone.Collection.extend({
   sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
 });
 
@@ -39,7 +40,7 @@ PendingReviewCollection = Backbone.Collection.extend({
   sync: FHBackboneDataSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
 });
 

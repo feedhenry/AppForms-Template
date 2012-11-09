@@ -11,7 +11,7 @@ DraftsCollection = Backbone.Collection.extend({
   create: function(attributes, options) {
     console.log(attributes)
     attributes.savedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
 });
 
