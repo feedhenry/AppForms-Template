@@ -12,7 +12,7 @@ PendingListView = Backbone.View.extend({
     pending_submitted_list: '<ul class="list inset pending_submitted_list"></ul>',
     pending_submitted_header: '<li class="list-divider">Submitted Forms</li>',
     pending_submitting_list: '<ul class="list inset pending_submitting_list"></ul>',
-    pending_submitting_header: '<li class="list-divider">Forms currently being submitted<div class="loading"></div></li>',
+    pending_submitting_header: '<li class="list-divider">Forms currently being submitted<div class="loading hidden"></div></li>',
     pending_review_list: '<ul class="list inset pending_review_list"></ul>',
     pending_review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
   },
@@ -66,6 +66,12 @@ PendingListView = Backbone.View.extend({
 
     if (App.collections.pending_waiting.length > 0) {
       $('.pending_waiting_list', this.el).append(this.templates.pending_waiting_submitall);
+    }
+
+    if (App.collections.pending_submitting.length > 0) {
+      $('.loading', this.el).show();
+    } else {
+      $('.loading', this.el).hide();
     }
 
     _(App.collections.pending_submitting.models).each(function(form) {
