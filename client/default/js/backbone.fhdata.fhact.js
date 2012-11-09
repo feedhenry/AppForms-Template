@@ -8,11 +8,13 @@
 
 
 // Generate four random hex digits (for GUIDs).
+
 function S4() {
   return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
 }
 
 // Generate a pseudo-GUID by concatenating random hexadecimal.
+
 function guid() {
   return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
 }
@@ -20,26 +22,169 @@ function guid() {
 // Our Store is represented by a single JS object in FeedHenry's data store.
 // Create it with a meaningful name, like the name you'd give a table.
 var FHBackboneDataActSync = function(name, actList, actRead, idField, versionField) {
-  var self = this;
-  this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
-  this.name = name;
-  this.data = null;
-  this.actList = actList;
-  this.actRead = actRead;
-  this.idField = idField;
-  this.versionField = versionField;
-};
+    var self = this;
+    this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
+    this.name = name;
+    this.data = null;
+    this.actList = actList;
+    this.actRead = actRead;
+    this.idField = idField;
+    this.versionField = versionField;
+  };
 
 _.extend(FHBackboneDataActSync.prototype, Backbone.Events);
 
 _.extend(FHBackboneDataActSync.prototype, {
 
-  init: function (model, cb) {
+  init: function(model, cb) {
     var self = this;
 
     this.data = {};
 
-    $fh.ready(function () {
+    $fh.ready(function() {
+
+      /* Monkey Patch for $fh.data to use File backed storage
+      
+                     .-"""-.
+                   _/-=-.   \
+                  (_|a a/   |_
+                   / "  \   ,_)
+              _    \`=' /__/
+             / \_  .;--'  `-.
+             \___)//      ,  \
+              \ \/;        \  \
+               \_.|         | |
+                .-\ '     _/_/
+              .'  _;.    (_  \
+             /  .'   `\   \\_/
+            |_ /       |  |\\
+           /  _)       /  / ||
+          /  /       _/  /  //
+          \_/       ( `-/  ||
+                    /  /   \\ .-.
+                    \_/     \'-'/
+                             `"`
+       */
+
+      if (typeof(window.requestFileSystem) !== 'undefined') {
+        console.log('Overriding $fh.data with file storage');
+
+        // Redefine $fh.data
+        $fh.data = function(options, success, failure) {
+          function fail(msg) {
+            if (typeof failure !== 'undefined') {
+              return failure(msg, {});
+            } else {
+              console.log('failure: ' + msg);
+            }
+          }
+
+          function filenameForKey(key, cb) {
+            console.log('filenameForKey: ' + key);
+            $fh.hash({
+              algorithm: "MD5",
+              text: key
+            }, function(result) {
+              var filename = result.hashvalue + '.txt';
+              return cb(filename);
+            });
+          }
+
+          function save(key, value) {
+            filenameForKey(key, function(hash) {
+              //console.log('saving: ' + key + ', ' + value + '. Filename: ' + hash);
+              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+                fileSystem.root.getFile(hash, {
+                  create: true
+                }, function gotFileEntry(fileEntry) {
+                  fileEntry.createWriter(function gotFileWriter(writer) {
+                    writer.onwrite = function(evt) {
+                      return success({
+                        key: key,
+                        val: value
+                      });
+                    };
+                    writer.write(value);
+                  }, function() {
+                    fail('[save] Failed to create file writer');
+                  });
+                }, function() {
+                  fail('[save] Failed to getFile');
+                });
+              }, function() {
+                fail('[save] Failed to requestFileSystem');
+              });
+            });
+          }
+
+          function remove(key) {
+            filenameForKey(key, function(hash) {
+              console.log('remove: ' + key + '. Filename: ' + hash);
+
+              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+                fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+                  fileEntry.remove(function() {
+                    return success({
+                      key: key,
+                      val: null
+                    });
+                  }, function() {
+                    fail('[remove] Failed to remove file');
+                  });
+                }, function() {
+                  fail('[remove] Failed to getFile');
+                });
+              }, function() {
+                fail('[remove] Failed to get fileSystem');
+              });
+            });
+          }
+
+          function load(key) {
+            filenameForKey(key, function(hash) {
+              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+                fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+                  fileEntry.file(function gotFile(file) {
+                    var reader = new FileReader();
+                    reader.onloadend = function(evt) {
+                      return success({
+                        key: key,
+                        val: evt.target.result
+                      });
+                    };
+                    reader.readAsText(file);
+                  }, function() {
+                    fail('[load] Failed to getFile');
+                  });
+                }, function() {
+                  // Success callback on key load failure
+                  success({
+                    key: key,
+                    val: null
+                  });
+                });
+              }, function() {
+                fail('[load] Failed to get fileSystem');
+              });
+            });
+          }
+          if (typeof options.act === 'undefined') {
+            return load(options.key);
+          } else if (options.act === 'save') {
+            return save(options.key, options.val);
+          } else if (options.act === 'remove') {
+            return remove(options.key);
+          } else if (options.act === 'load') {
+            return load(options.key);
+          } else {
+            if (typeof failure !== 'undefined') {
+              return failure("Action [" + options.act + "] is not defined", {});
+            }
+          }
+        }
+      }
+
+
       console.log('init data for:"', self.name, '"');
       $fh.data({
         key: self.name + self.localStoreVersion
@@ -49,7 +194,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             self.data = JSON.parse(res.val);
             console.log('found data in local storage for "', self.name, '"');
           }
-        } catch(e) {
+        } catch (e) {
           // leave data as default
         }
         var dataEmpty = _.isEmpty(self.data);
@@ -58,7 +203,7 @@ _.extend(FHBackboneDataActSync.prototype, {
         if (self.actList != null) {
           $fh.act({
             act: self.actList
-          }, function (res) {
+          }, function(res) {
             if (res && res.error) {
               if (!dataLoaded) {
                 return cb(res.error);
@@ -66,7 +211,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                 return self.trigger('error', res.error);
               }
             }
-            
+
             // update client config if its in response
             if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
               console.log('updating config');
@@ -76,7 +221,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             var dataUpdated = false;
             if (res && res.data) {
               var dataObj = {};
-              _(res.data).forEach(function (item, index) {
+              _(res.data).forEach(function(item, index) {
                 var currentData = self.data[item[self.idField]];
                 // update data if data doesn't exist already, or if version is different, otherwise no change to data
                 if (currentData == null || (currentData[self.versionField] !== item[self.versionField])) {
@@ -92,7 +237,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             }
             if (dataEmpty) {
               // data inited for first time. save to local storage and callback straight away (no need to wait for save)
-              self.save(function () {
+              self.save(function() {
                 console.log('inited data for "', self.name, '" saved to local storage');
               });
               cb(null);
@@ -101,12 +246,12 @@ _.extend(FHBackboneDataActSync.prototype, {
                 // data already initialised from local storage, need to update the data and let subsequent events on models
                 // take care of updating views i.e. don't call cb
                 // TODO: ?
-                self.save(function () {
+                self.save(function() {
                   console.log('updated data for "', self.name, '" saved to local storage');
                 });
               }
             }
-          }, function (msg, err) {
+          }, function(msg, err) {
             if (dataEmpty) {
               cb(msg + '::' + err);
             }
@@ -128,10 +273,10 @@ _.extend(FHBackboneDataActSync.prototype, {
   save: function(cb) {
     var self = this;
     $fh.data({
-      act:'save',
+      act: 'save',
       key: this.name + this.localStoreVersion,
       val: JSON.stringify(this.data)
-    }, function () {
+    }, function() {
       cb(null);
     }, function(msg, err) {
       var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
@@ -146,7 +291,7 @@ _.extend(FHBackboneDataActSync.prototype, {
   create: function(model, cb) {
     if (!model.id) model.set(model.idAttribute, guid());
     this.data[model.id] = model;
-    this.save(function (err) {
+    this.save(function(err) {
       return cb(err, model);
     });
   },
@@ -154,7 +299,7 @@ _.extend(FHBackboneDataActSync.prototype, {
   // Update a model by replacing its copy in`this.data`.
   update: function(model, cb) {
     this.data[model.id] = model;
-    this.save(function (err) {
+    this.save(function(err) {
       return cb(err, model);
     });
   },
@@ -177,7 +322,7 @@ _.extend(FHBackboneDataActSync.prototype, {
       if (dataLoaded) {
         actParams.req.version = modelData[self.versionField];
       }
-      $fh.act(actParams, function (res) {
+      $fh.act(actParams, function(res) {
         if (res && res.error) {
           if (!dataLoaded) {
             return cb(res.error);
@@ -197,7 +342,7 @@ _.extend(FHBackboneDataActSync.prototype, {
         }
         if (!dataLoaded || dataUpdated) {
           // save data to local storage
-          self.save(function () {
+          self.save(function() {
             console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
           });
           // and either:
@@ -212,7 +357,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             });
           }
         }
-      }, function (msg, err) {
+      }, function(msg, err) {
         var errMsg = 'msg:' + msg + ' err:' + err;
         if (!dataLoaded) {
           cb(errMsg);
@@ -236,7 +381,7 @@ _.extend(FHBackboneDataActSync.prototype, {
   // Delete a model from `this.data`, returning it.
   destroy: function(model, cb) {
     delete this.data[model.id];
-    this.save(function (err) {
+    this.save(function(err) {
       return cb(err, model);
     });
   }
@@ -256,17 +401,21 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
 
   function routeMethod() {
-    switch(method) {
-      case "read": return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
-      case "create": return store.create(model, storeCb);
-      case "update": return store.update(model, storeCb);
-      case "delete": return store.destroy(model, storeCb);
+    switch (method) {
+    case "read":
+      return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
+    case "create":
+      return store.create(model, storeCb);
+    case "update":
+      return store.update(model, storeCb);
+    case "delete":
+      return store.destroy(model, storeCb);
     }
   }
 
   // if we don't have data yet, initialise it before routing the method
   if (store.data == null) {
-    store.init(model, function (err) {
+    store.init(model, function(err) {
       if (err) return options.error(err);
 
       return routeMethod();
