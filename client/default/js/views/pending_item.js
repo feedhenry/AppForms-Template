@@ -70,7 +70,6 @@ PendingItemView = Backbone.View.extend({
     App.views.form = new DraftView({
       model: draft
     });
-    this.model.destroy();
     App.views.form.render();
   }
 });

@@ -61,7 +61,7 @@ DraftView = Backbone.View.extend({
       unhighlight: function(element, errorClass, validClass) {
         var el = $(element);
         el.addClass(validClass).removeClass(errorClass);
-        
+
         var container = el.closest('.field_container');
         // for address group of fields, only remove error class if there are no other error elements inside
         if (!(' ' + container.attr('class') + ' ').match(specialFieldsClassRegex) || container.find('input.error,select.error').length === 0) {
@@ -71,7 +71,7 @@ DraftView = Backbone.View.extend({
       errorPlacement: function(error, element) {
         var el = $(element);
         var container = el.closest('.field_container');
-        if (!!(' ' + container.attr('class') + ' ').match(specialFieldsClassRegex)) { // append after element
+        if ( !! (' ' + container.attr('class') + ' ').match(specialFieldsClassRegex)) { // append after element
           element.after(error);
         } else {
           error.appendTo(container);
@@ -163,7 +163,7 @@ DraftView = Backbone.View.extend({
     }
   },
 
-  focusValidation: function () {
+  focusValidation: function() {
     var first_container = this.$el.find('.field_container.error:first');
     var offset = first_container.offset().top - parseInt($('html').css('paddingTop'), 10);
 
@@ -175,17 +175,32 @@ DraftView = Backbone.View.extend({
   },
 
   saveDraft: function() {
-    App.collections.drafts.create(this.model);
+    var id = this.model.id;
+    _(App.collections).forEach(function(collection) {
+      var matched_model = collection.get(id);
+      if (matched_model) {
+        matched_model.destroy();
+      }
+    });
+
+    App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
   },
 
   savePending: function() {
-    var pending = this.model.toJSON();
-    App.collections.pending_submitting.create(pending);
+    var id = this.model.id;
+    _(App.collections).forEach(function(collection) {
+      var matched_model = collection.get(id);
+      if (matched_model) {
+        matched_model.destroy();
+      }
+    });
+
+    App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
   },
 
-  showAlert:function (message, type, timeout) {
+  showAlert: function(message, type, timeout) {
     alert("type ::" + type + " :: message :: " + message);
   },
 
