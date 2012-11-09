@@ -1,9 +1,13 @@
 DraftItemView = PendingItemView.extend({
 
+  templates: {
+    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item second_button">Delete</button><span class="chevron"></span>',
+  },
+
+
   submit: function() {
-    var pending = this.model.toJSON();
-    App.collections.pending_submitting.create(pending);
-    this.model.destroy();
+     App.collections.pending_submitting.add(this.model);
+     App.collections.drafts.remove(this.model);
     return false;
   },
 

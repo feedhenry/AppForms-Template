@@ -1,6 +1,6 @@
 DraftModel = FormModel.extend({
   idAttribute: 'id',
-  sync: FHBackboneDataSyncFn,
+  sync: FHBackboneDataActSyncFn,
 
   reInitPages: function () {
     // Do Nothing
@@ -11,12 +11,12 @@ DraftModel = FormModel.extend({
 
 DraftsCollection = Backbone.Collection.extend({
   model: DraftModel,
-  store: new FHBackboneDataSync("drafts"),
-  sync: FHBackboneDataSyncFn,
+  store: new FHBackboneDataActSync("drafts"),
+  sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     console.log(attributes)
     attributes.savedAt = new Date().getTime();
-    Backbone.Collection.prototype.create.call(this, attributes, options);
+    return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
 });
 
