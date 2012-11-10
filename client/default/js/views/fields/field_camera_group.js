@@ -22,6 +22,8 @@ FieldCameraGroupView = FieldCameraView.extend({
       subview.bind('imageAdded imageRemoved', self.updateFields, self); // purposely pass in self here as subviews need to be iterated over no matter which field changed
       self.subviews.push(subview);
     });
+    //ToDo subviews should probably be added in initialize?
+    this.value(this.model.serialize());
   },
 
   updateFields: function () {
@@ -58,6 +60,7 @@ FieldCameraGroupView = FieldCameraView.extend({
         optField.hide();
       }
     });
+    this.contentChanged(); //Call contentChanged so all image data is set on the group model
   },
 
     // group fields based on required status and whether or not image data is filled
@@ -91,7 +94,20 @@ FieldCameraGroupView = FieldCameraView.extend({
         }
       }
     });
-
     return groups;
+  },
+
+  value: function(value) {
+    if (value && !_.isEmpty(value)) {
+      _(this.subviews).forEach(function (subview, index) {
+        //subview might be the group, so we call value on FieldCameraView
+        FieldCameraView.prototype.value.call(subview, value);
+      });
+    }
+    value = {};
+    _(this.subviews).forEach(function (subview, index) {
+      $.extend(value, FieldCameraView.prototype.value.call(subview));
+    });
+    return value;
   }
 });

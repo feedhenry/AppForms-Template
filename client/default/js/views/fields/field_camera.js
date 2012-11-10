@@ -34,10 +34,10 @@ FieldCameraView = FieldView.extend({
     return this.options.order;
   },
 
-  setImageData: function (imageData) {
+  setImageData: function (imageData, contentChanged) {
     if (imageData) {
       console.log('setting imageData:', imageData.length);
-      var dataUri = 'data:image/jpg;base64,' + imageData;
+      var dataUri = 'data:image/jpeg;base64,' + imageData;
       this.$el.find('#' + this.model.get('ID')).val(dataUri);
       this.$el.find('.imageThumb').attr('src', dataUri);
       this.$el.find('.upload').hide();
@@ -45,14 +45,16 @@ FieldCameraView = FieldView.extend({
       this.fileData = {};
       this.fileData.fileBase64 = dataUri;
       this.fileData.filename = "photo.jpg";
-      this.fileData.content_type = "image/jpg";
-      this.model.set({Value: this.value()});
+      this.fileData.content_type = "image/jpeg";
     } else {
       this.$el.find('#' + this.model.get('ID')).val(null);
       this.$el.find('.imageThumb').removeAttr('src');
       this.$el.find('.upload').show();
       this.$el.find('.uploaded').hide();
       delete this.fileData;
+    }
+    if(contentChanged) {
+      this.contentChanged();
     }
   },
 
@@ -114,8 +116,8 @@ FieldCameraView = FieldView.extend({
   },
 
   value: function(value) {
-    if (value && !_.isEmpty(value) && value[this.model.get('ID')].fileBase64) {
-      this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""));
+    if (value && !_.isEmpty(value) && value[this.model.get('ID')] && value[this.model.get('ID')].fileBase64) {
+      this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""), false);
     }
     value = {};
     if(this.fileData) {
