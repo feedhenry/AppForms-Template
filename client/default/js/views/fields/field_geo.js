@@ -21,16 +21,17 @@ FieldGeoView = FieldView.extend({
   },
 
   action: function(el) {
+    var self = this;
     var ds = new moment().format('YYYY-MM-DD');
     var input = $('input', this.$el);
 
     $fh.geo(function(res) {
       var location = '(' + res.lat + ', ' + res.lon + ')';
       input.val(location);
+      self.contentChanged();
     }, function(msg, err) {
       input.val('Location could not be determined');
     });
     input.blur();
-    this.contentChanged();
   }
 });

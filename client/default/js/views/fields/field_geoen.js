@@ -29,11 +29,11 @@ FieldGeoENView = FieldView.extend({
       var en_location = self.convertLocation(res);
       var location = '(' + en_location.easting + ', ' + en_location.northing + ')';
       input.val(location);
+      self.contentChanged();
     }, function(msg, err) {
       input.val('Location could not be determined');
     });
     input.blur();
-    this.contentChanged();
   },
 
   convertLocation: function(location) {
