@@ -79,23 +79,30 @@ FieldMapView = FieldView.extend({
         title: "Drag this to set position"
       });
 
-      // Set initial location
-      self.currentLocation = marker.getPosition().toString();
-
+      var matches;
+      if(self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
+        var latlon = new google.maps.LatLng(matches[1], matches[2]);
+        marker.setPosition(latlon);
+        map.setCenter(latlon);
+      } else {
+        // Set initial location
+        self.currentLocation = marker.getPosition().toString();
+      }
       google.maps.event.addListener(marker, "dragend", function() {
         self.currentLocation = marker.getPosition().toString();
         self.contentChanged();
-      });
+      })
     }, function(err) {
       console.log(err);
     });
   },
 
   value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      $.each(value, function(id, val) {
-        $("#" + id).val(val);
-      });
+    if (value && !_.isEmpty(value) && value[this.model.get('ID')]) {
+      var val = value[this.model.get('ID')];
+      if(/\((.+),(.+)\)/.test(val)) {
+        this.currentLocation = val;
+      }
     }
     value = {};
     value[this.model.get('ID')] = this.currentLocation;
