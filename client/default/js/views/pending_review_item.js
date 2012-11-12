@@ -16,7 +16,7 @@ PendingReviewItemView = PendingItemView.extend({
     var item = _.template(this.templates.item, {
       name: this.model.get('Name'),
       timestamp: time,
-      error_type: error.type ? this.errorTypes[error.type] : this.errorTypes.defaults
+      error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
 
     $(this.el).html(item);
