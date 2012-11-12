@@ -5,7 +5,20 @@ FieldCameraView = FieldView.extend({
     'click button.fhpics': "addFromLibrary"
   },
 
-  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>', '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb">', '<button class="apibtn removeThumb">Remove Image</button></div>'],
+  template: ['<label for="<%= id %>"><%= title %></label>',
+    '<input id="<%= id %>" name="<%= id %>" type="hidden">',
+    '<div class="upload"><p>Please choose a picture</p>',
+    '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>',
+    '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>',
+    '<div class="uploaded"><p>Picture chosen</p>',
+    '<img class="imageThumb" height="42" width="42">',
+    '<button class="apibtn removeThumb">Remove Image</button></div>'],
+
+  initialize: function() {
+    //Make sure 'this' is bound for setImageData, was incorrect on device!
+    _.bindAll(this, 'setImageData');
+    this.render();
+  },
 
   render: function() {
     // construct field html
