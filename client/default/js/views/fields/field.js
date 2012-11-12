@@ -11,6 +11,10 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
+    var nonFhClasses = this.model.getNonFhClasses();
+    if (nonFhClasses) {
+      this.$el.addClass(nonFhClasses);
+    }
     // only call render once. model will never update
     this.render();
   },

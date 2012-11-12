@@ -20,6 +20,11 @@ FieldModel = Backbone.Model.extend({
     return type;
   },
 
+  getNonFhClasses: function () {
+    // return all classnames that don't start with fh
+    return this.attributes && this.attributes.ClassNames ? this.attributes.ClassNames.replace(/\bfh.*?\s/g, '') : '';
+  },
+
   //Returns the serialised field value, ready for submission to wuffoo
   serialize: function() {
     return this.attributes.Value;
