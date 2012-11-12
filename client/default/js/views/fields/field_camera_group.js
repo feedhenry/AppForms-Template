@@ -24,9 +24,17 @@ FieldCameraGroupView = FieldCameraView.extend({
     });
     //ToDo subviews should probably be added in initialize?
     this.value(this.model.serialize());
+
+    // if restoring from a draft, may need to show some additional fields
+    this._optimiseVisibleFields();
   },
 
   updateFields: function () {
+    this._fillBlanks();
+    this._optimiseVisibleFields();
+  },
+
+  _fillBlanks: function () {
     var groups = this._getGroupedFields();
 
     // move any optional filled fields into empty required field spots
@@ -47,9 +55,11 @@ FieldCameraGroupView = FieldCameraView.extend({
         groups.empty.push(optField); // field is now empty, add to end of empty list
       }
     });
-    
+  },
+
+  _optimiseVisibleFields: function () {
     // get groups again as they may have changed above (optional filled moved to req filled)
-    groups = this._getGroupedFields();
+    var groups = this._getGroupedFields();
 
     // all fields image data in order. See how many optional fields we should show, if any
     var amountToShow = groups.reqFilled.length >= groups.req.length ? Math.min(groups.opt.length, Math.max(0, groups.optFilled.length + 1)) : 0;
