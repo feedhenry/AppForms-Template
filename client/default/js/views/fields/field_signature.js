@@ -83,8 +83,8 @@ FieldSignatureView = FieldView.extend({
       self.fileData.fileBase64 = sigData;
       self.fileData.filename = "signature." + dataParts[2];
       self.fileData.content_type = dataParts[1];
-      self.model.set({Value: self.value()});
-    })
+      self.contentChanged();
+    });
   },
 
   value: function(value) {

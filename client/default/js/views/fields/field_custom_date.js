@@ -23,5 +23,6 @@ FieldCustomDateView = FieldView.extend({
   action: function(el) {
     var ds = new moment().format('YYYY-MM-DD');
     $('input', this.$el).val(ds).blur();
+    this.contentChanged();
   }
 });
