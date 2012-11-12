@@ -245,7 +245,6 @@ _.extend(FHBackboneDataActSync.prototype, {
               if (dataUpdated) {
                 // data already initialised from local storage, need to update the data and let subsequent events on models
                 // take care of updating views i.e. don't call cb
-                // TODO: ?
                 self.save(function() {
                   console.log('updated data for "', self.name, '" saved to local storage');
                 });

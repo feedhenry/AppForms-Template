@@ -1,3 +1,9 @@
+/*
+  jQuery plugin for wufoo rules validation i.e. Page & Field rules
+  @author david.martin@feedhenry.com
+  @version 0.1
+ */
+
 (function( $ ) {
   var events = {
     "text": 'focusin focusout keyup',
