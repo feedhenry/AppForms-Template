@@ -58,6 +58,7 @@ LoadingView = Backbone.View.extend({
     var self = this;
     // Check total loaded to see if we should hide
     if (this.totalCounter === App.collections.forms.length) {
+      App.views.loading.updateMessage("Form sync complete");
       setTimeout(function(){
         self.hide();
       }, 1000);
