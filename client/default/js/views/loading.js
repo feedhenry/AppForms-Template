@@ -34,7 +34,7 @@ LoadingView = Backbone.View.extend({
 
   updateLoadedCount: function() {
     this.formsCounter += 1;
-    App.views.loading.updateMessage("Loading forms. Loaded " + this.formsCounter + " of " + App.collections.forms.models.length);
+    App.views.loading.updateMessage("Form list loaded. Loading forms. Loaded " + this.formsCounter + " of " + App.collections.forms.models.length);
   },
 
   modelLoaded: function(a, b, c) {
