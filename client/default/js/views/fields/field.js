@@ -16,8 +16,7 @@ FieldView = Backbone.View.extend({
   },
 
   contentChanged: function(e) {
-    console.log("Value changed :: " + this.value());
-    console.log(this.value());
+    console.log("Value changed :: " + JSON.stringify(this.value()));
     this.model.set({
       Value: this.value()
     });

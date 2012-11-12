@@ -1,10 +1,6 @@
 LoadingView = Backbone.View.extend({
   el: $('#loading'),
 
-  events: {
-    'click': 'hide'
-  },
-
   templates: {},
   percent: 0,
   formsCounter: -1,
@@ -15,7 +11,27 @@ LoadingView = Backbone.View.extend({
     _.bindAll(this, 'render');
 
     App.collections.forms.bind('reset', this.formFetch, this);
+
+    App.collections.forms.on('error', function(collection, msg, options) {
+      App.views.loading.updateProgress(100);
+      App.views.loading.updateMessage("Your forms couldn't be synced.");
+      self.addError();
+
+      setTimeout(function() {
+        self.hide();
+        self.removeError();
+      }, 2000);
+    });
+
     this.render();
+  },
+
+  addError: function() {
+    this.$el.addClass('error');
+  },
+
+  removeError: function() {
+    this.$el.removeClass('error');
   },
 
   formFetch: function() {
@@ -43,7 +59,6 @@ LoadingView = Backbone.View.extend({
 
   modelLoaded: function(a, b, c) {
     this.percent += 100 / App.collections.forms.length;
-    console.log(' !! model loaded. ID: ' + a.id + this.percent);
     this.updateLoadedCount();
     this.totalCounter += 1;
     App.views.loading.updateProgress(this.percent);
@@ -63,7 +78,7 @@ LoadingView = Backbone.View.extend({
     // Check total loaded to see if we should hide
     if (this.totalCounter === App.collections.forms.length) {
       App.views.loading.updateMessage("Form sync complete");
-      setTimeout(function(){
+      setTimeout(function() {
         self.hide();
       }, 1000);
     }
@@ -94,6 +109,7 @@ LoadingView = Backbone.View.extend({
   },
 
   reset: function() {
+    this.removeError();
     this.updateProgress(1);
   },
 

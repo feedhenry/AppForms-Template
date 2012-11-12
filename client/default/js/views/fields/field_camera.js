@@ -5,14 +5,7 @@ FieldCameraView = FieldView.extend({
     'click button.fhpics': "addFromLibrary"
   },
 
-  template: ['<label for="<%= id %>"><%= title %></label>',
-    '<input id="<%= id %>" name="<%= id %>" type="hidden">',
-    '<div class="upload"><p>Please choose a picture</p>',
-    '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>',
-    '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>',
-    '<div class="uploaded"><p>Picture chosen</p>',
-    '<img class="imageThumb">',
-    '<button class="apibtn removeThumb">Remove Image</button></div>'],
+  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>', '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb">', '<button class="apibtn removeThumb">Remove Image</button></div>'],
 
   render: function() {
     // construct field html
@@ -30,11 +23,11 @@ FieldCameraView = FieldView.extend({
     this.show();
   },
 
-  getOrder: function () {
+  getOrder: function() {
     return this.options.order;
   },
 
-  setImageData: function (imageData, dontCallContentChanged) {
+  setImageData: function(imageData, dontCallContentChanged) {
     if (imageData) {
       console.log('setting imageData:', imageData.length);
       // prepend dataUri if not already there
@@ -63,15 +56,15 @@ FieldCameraView = FieldView.extend({
     }
   },
 
-  hasImageData: function () {
+  hasImageData: function() {
     return this.$el.find('#' + this.model.get('ID')).val().length > 0;
   },
 
-  getImageData: function () {
+  getImageData: function() {
     return this.$el.find('#' + this.model.get('ID')).val();
   },
 
-  removeThumb: function (e) {
+  removeThumb: function(e) {
     e.preventDefault();
     console.log('removeThumb');
 
@@ -79,25 +72,61 @@ FieldCameraView = FieldView.extend({
     this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
   },
 
-  addFromCamera: function (e) {
+  addFromCamera: function(e) {
     e.preventDefault();
     this.addImage();
     this.trigger('imageAdded'); // trigger events used by grouped camera fields
   },
 
-  addFromLibrary: function (e) {
+  addFromLibrary: function(e) {
     e.preventDefault();
     this.addImage(true);
     this.trigger('imageAdded'); // trigger events used by grouped camera fields
   },
 
-  addImage: function (fromLibrary) {
+  parseCssClassCameraOptions: function() {
+    var options = {
+      targetHeight: null,
+      targetWidth: null,
+      quality: null
+    };
+
+    var classNames = this.model.get('ClassNames');
+    if (classNames !== '') {
+      var classes = classNames.split(' ');
+      _(classes).forEach(function(className) {
+        if (className.indexOf("fhdimensions") != -1) {
+          var parts = className.split('=');
+          var val = parts[1].split('x');
+
+          // Retry
+          if (val.length == 2) {
+            options.targetWidth = val[0];
+            options.targetHeight = val[1];
+          }
+        } else if (className.indexOf("fhcompression") != -1) {
+          var parts = className.split('=');
+          var val = parts[1].split('%');
+
+          options.quality = val[0];
+        }
+      });
+    }
+
+    return options;
+  },
+
+  addImage: function(fromLibrary) {
     // TODO: move this to cloud config, synced to client on startup
     var camOptions = {
       quality: App.config.cam_quality,
       targetWidth: App.config.cam_targetWidth,
       targetHeight: App.config.cam_targetHeight
     };
+
+    var options = this.parseCssClassCameraOptions();
+    // Merge
+    camOptions = _.defaults(options, camOptions);
 
     if (typeof navigator.camera === 'undefined') {
       this.setImageData(this.sampleImage());
@@ -111,7 +140,7 @@ FieldCameraView = FieldView.extend({
     }
   },
 
-  show: function () {
+  show: function() {
     // only perform check once
     if (this.options.initHidden) {
       this.options.initHidden = false;
@@ -125,18 +154,16 @@ FieldCameraView = FieldView.extend({
       this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""), true);
     }
     value = {};
-    if(this.fileData) {
+    if (this.fileData) {
       value[this.model.get('ID')] = this.fileData;
     }
     return value;
   },
 
-  sampleImages: ['/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=',
-    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALklEQVQYV2NkwAT/oUKMyFIoHKAETBFIDU6FIEUgSaJMBJk0MhQihx2W8IcIAQBhewsKNsLKIgAAAABJRU5ErkJggg==',
-    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYUlEQVQYV2NkQAJlM1X/g7hd6bdBFCOyHCNIEigBppElkNkgeYIKYBrwKoQ6A+wEuDtwOQHmLLgbQbqQ3YnubhSfwRTj9DUu3+J0I7oGkPVwXwMZKOEHdCdcPdQJILczAAACnDmkK8T25gAAAABJRU5ErkJggg=='],
+  sampleImages: ['/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALklEQVQYV2NkwAT/oUKMyFIoHKAETBFIDU6FIEUgSaJMBJk0MhQihx2W8IcIAQBhewsKNsLKIgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYUlEQVQYV2NkQAJlM1X/g7hd6bdBFCOyHCNIEigBppElkNkgeYIKYBrwKoQ6A+wEuDtwOQHmLLgbQbqQ3YnubhSfwRTj9DUu3+J0I7oGkPVwXwMZKOEHdCdcPdQJILczAAACnDmkK8T25gAAAABJRU5ErkJggg=='],
 
-  sampleImage: function () {
-    window.sampleImageNum = (window.sampleImageNum+=1) % this.sampleImages.length;
+  sampleImage: function() {
+    window.sampleImageNum = (window.sampleImageNum += 1) % this.sampleImages.length;
     return this.sampleImages[window.sampleImageNum];
   }
 

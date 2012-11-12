@@ -205,7 +205,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             act: self.actList
           }, function(res) {
             if (res && res.error) {
-              if (!dataLoaded) {
+              if (dataEmpty) {
                 return cb(res.error);
               } else {
                 return self.trigger('error', res.error);
