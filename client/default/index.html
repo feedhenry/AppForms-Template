@@ -17,6 +17,29 @@
 
 <div id="fh_wufoo_content" class="hidden"></div>
 
+<!-- Loading Spinner -->
+<div id="loading" class="hidden">
+  <div id="loading_overlay"></div>
+  <div class="loading_container">
+    <div class="loading_spinner">
+      <div class="bar1"></div>
+      <div class="bar2"></div>
+      <div class="bar3"></div>
+      <div class="bar4"></div>
+      <div class="bar5"></div>
+      <div class="bar6"></div>
+      <div class="bar7"></div>
+      <div class="bar8"></div>
+      <div class="bar9"></div>
+      <div class="bar10"></div>
+      <div class="bar11"></div>
+      <div class="bar12"></div>
+    </div>
+    <div class="message"></div>
+    <div class="progress"><div class="bar"></div></div>
+  </div>
+</div>
+
 
 <br/>
 <button onclick="App.collections.forms.create(App.MockForm);">Create Mock Form</button><br/>
@@ -59,6 +82,7 @@ App.collections = App.collections || {};
 <script src="js/models/pending.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- Views -->
+<script src="js/views/loading.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
