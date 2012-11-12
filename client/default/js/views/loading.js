@@ -1,6 +1,10 @@
 LoadingView = Backbone.View.extend({
   el: $('#loading'),
 
+  events: {
+    'click': 'hide'
+  },
+
   templates: {},
   percent: 0,
   formsCounter: -1,
