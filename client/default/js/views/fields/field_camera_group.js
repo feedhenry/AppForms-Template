@@ -41,9 +41,9 @@ FieldCameraGroupView = FieldCameraView.extend({
         // remove entry from empty list as we'll be filling it here
         groups.empty.shift();
         // move image data to reqField
-        nextEmptyField.setImageData(optField.getImageData());
+        nextEmptyField.setImageData(optField.getImageData(), true);
         // empty image data from optField
-        optField.setImageData(null);
+        optField.setImageData(null, false);
         groups.empty.push(optField); // field is now empty, add to end of empty list
       }
     });

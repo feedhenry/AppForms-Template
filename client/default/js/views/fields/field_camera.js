@@ -21,7 +21,7 @@ FieldCameraView = FieldView.extend({
       "title": this.model.get('Title')
     }));
 
-    this.setImageData(null);
+    this.setImageData(null, true);
 
     // add to dom hidden
     this.$el.hide();
@@ -34,10 +34,14 @@ FieldCameraView = FieldView.extend({
     return this.options.order;
   },
 
-  setImageData: function (imageData, contentChanged) {
+  setImageData: function (imageData, dontCallContentChanged) {
     if (imageData) {
       console.log('setting imageData:', imageData.length);
-      var dataUri = 'data:image/jpeg;base64,' + imageData;
+      // prepend dataUri if not already there
+      var dataUri = imageData;
+      if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
+        dataUri = 'data:image/jpeg;base64,' + imageData;
+      }
       this.$el.find('#' + this.model.get('ID')).val(dataUri);
       this.$el.find('.imageThumb').attr('src', dataUri);
       this.$el.find('.upload').hide();
@@ -53,7 +57,8 @@ FieldCameraView = FieldView.extend({
       this.$el.find('.uploaded').hide();
       delete this.fileData;
     }
-    if(contentChanged) {
+    // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
+    if (!dontCallContentChanged) {
       this.contentChanged();
     }
   },
@@ -117,7 +122,7 @@ FieldCameraView = FieldView.extend({
 
   value: function(value) {
     if (value && !_.isEmpty(value) && value[this.model.get('ID')] && value[this.model.get('ID')].fileBase64) {
-      this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""), false);
+      this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""), true);
     }
     value = {};
     if(this.fileData) {
