@@ -25,6 +25,7 @@ App.Router = Backbone.Router.extend({
     });
 
     // Kick things off by fetching when all stores are initialised
+    App.views.loading.show("Loading your forms");
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
     App.collections.pending_submitted.fetch();

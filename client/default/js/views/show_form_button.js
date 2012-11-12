@@ -18,6 +18,7 @@ ShowFormButtonView = Backbone.View.extend({
     var html;
 
     var fullyLoaded = this.model.get('fh_full_data_loaded');
+    var errorLoading = this.model.get('fh_error_loading');
     html = _.template(this.templates.form_button, {
       name: this.model.get("Name"),
       disabled: fullyLoaded ? '' : 'disabled="disabled"',
