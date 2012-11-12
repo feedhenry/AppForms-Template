@@ -18,7 +18,7 @@ FormListView = Backbone.View.extend({
         });
       }
     });
-    App.collections.forms.bind('add remove reset resync', this.changed, this);
+    App.collections.forms.bind('add remove reset', this.changed, this);
 
     this.render();
   },
