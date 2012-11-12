@@ -14,8 +14,15 @@ LoadingView = Backbone.View.extend({
     var self = this;
   },
 
-  show: function() {
+  show: function(message) {
     this.reset();
+
+    if (message) {
+      this.updateMessage(message);
+    } else {
+      this.updateMessage('Loading Form List');
+    }
+
     this.$el.show();
   },
 
@@ -29,10 +36,9 @@ LoadingView = Backbone.View.extend({
 
   reset: function() {
     this.updateProgress(1);
-    this.updateMessage('Loading Form List');
   },
 
   hide: function() {
-    this.$el.hide();
+    this.$el.fadeOut();
   },
 });
