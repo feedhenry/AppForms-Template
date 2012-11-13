@@ -10,7 +10,7 @@ SentListView = Backbone.View.extend({
     sent_list: '<ul class="list inset sent_list"></ul>',
     sent_header: '<li class="list-divider">Sent Submissions</li>',
     dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>',
-    save_max: '<li><label for="sentSaveMax" class="sentSaveMaxLabel">Number of sent items to keep</label><select id="sentSaveMax"><option>5</option><option>10</option><option>15</option><option>20</option><option>25</option></select></li>'
+    save_max: '<li><label for="sentSaveMax" class="sentSaveMaxLabel">Number of sent items to keep</label><select id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option></select></li>'
   },
 
   initialize: function() {
@@ -27,6 +27,7 @@ SentListView = Backbone.View.extend({
       App.config.set(_.extend({}, App.config.attributes, {
         "sent_save_max": saveMax
       }));
+      App.collections.sent.checkSize();
     }
   },
 
@@ -74,6 +75,10 @@ SentListView = Backbone.View.extend({
 
     $('.sent_list', this.el).append(this.templates.dismiss_all);
     $('.sent_list', this.el).append(this.templates.save_max);
+
+    // Re-render save
+    var maxSize = App.config.get('sent_save_max');
+    $('#sentSaveMax', this.el).val(maxSize);
   },
 
   appendSentForm: function(form) {
