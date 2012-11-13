@@ -13,7 +13,7 @@ HeaderView = Backbone.View.extend({
     forms_button: '<li class="fh_wufoo_home"><a href="#">Forms</a></li>',
     drafts_button: '<li class="fh_wufoo_drafts"><a href="#">Drafts<span class="count"></span></a></li>',
     pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>',
-    sent_button: '<li class="fh_wufoo_sent"><a href="#">Sent<span class="count"></span></a></li>'
+    sent_button: '<li class="fh_wufoo_sent"><a href="#">Sent</a></li>'
   },
 
   initialize: function() {
@@ -102,11 +102,11 @@ HeaderView = Backbone.View.extend({
       $('.fh_wufoo_pending .count', this.el).hide();
     }
 
-    var sent_count = App.collections.sent.length;
-    if (sent_count > 0) {
-      $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_sent .count', this.el).hide();
-    }
+    // var sent_count = App.collections.sent.length;
+    // if (sent_count > 0) {
+    //   $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+    // } else {
+    //   $('.fh_wufoo_sent .count', this.el).hide();
+    // }
   }
 });
