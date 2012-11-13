@@ -1,18 +1,51 @@
 /*global module:false*/
 module.exports = function(grunt) {
 
+  grunt.task.registerHelper('jsFiles', function() {
+    grunt.log.writeln('jsFiles starting');
+
+    var cheerio = require('cheerio');
+    var fs = require('fs');
+
+    var scripts = [];
+    var $ = cheerio.load(fs.readFileSync('./client/default/index.html'));
+    $('script').each(function (index, el) {
+      var src = $(el).attr('src');
+      if (src != null) {
+        scripts.push('./client/default/' + src);
+      }
+    });
+
+    grunt.log.writeln('scripts in index.html:' + JSON.stringify(scripts));
+    return scripts;
+  });
+
+  var jsFiles = grunt.helper('jsFiles');
+
   // Project configuration.
   grunt.initConfig({
+    pkg: '<json:package.json>',
     meta: {
-      version: '0.1.0',
-      banner: '/*! FeedHenry Wufoo App Generator - v<%= meta.version %> - ' +
+      banner: '/*! <%= pkg.name %> - v<%= pkg.version %> - ' +
         '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
         '* https://github.com/feedhenry/Wufoo-Template/\n' +
         '* Copyright (c) <%= grunt.template.today("yyyy") %> ' +
         'FeedHenry */'
     },
     lint: {
-      files: ['grunt.js', 'client/default/js/**/*.js']
+      files: ['grunt.js', './client/default/js/**/*.js']
+    },
+    concat: {
+      dist: {
+        src: ['<banner>'].concat(jsFiles),
+        dest: 'dist-dev/main.js'
+      }
+    },
+    min: {
+      dist: {
+        src: ['<config:concat.dist.dest>'],
+        dest: 'dist-prod/main.min.js'
+      }
     },
     // qunit: {
     //   files: ['test/**/*.html']
@@ -48,19 +81,7 @@ module.exports = function(grunt) {
         laxcomma: true,
         jquery: true,
         loopfunc: true
-      },/*{
-        // curly: true,
-        // eqeqeq: true,
-        // immed: true,
-        // latedef: true,
-        // newcap: true,
-        // noarg: true,
-        // sub: true,
-        // undef: true,
-        // boss: true,
-        // eqnull: true,
-        // browser: true
-      },*/
+      },
       globals: {
         jQuery: true
       }
@@ -68,7 +89,52 @@ module.exports = function(grunt) {
     uglify: {}*/
   });
 
+  grunt.registerTask('clean', 'Clean up files/folders', function () {
+    var wrench = require('wrench');
+
+    wrench.rmdirSyncRecursive('./dist-dev');
+    wrench.rmdirSyncRecursive('./dist-prod');
+  });
+
+  grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
+    var cheerio = require('cheerio');
+    var fs = require('fs');
+
+    var $ = cheerio.load(fs.readFileSync('./client/default/index.html'));
+    $('script').each(function (index, el) {
+      var src = $(el).attr('src');
+      if (src != null) {
+        $(el).remove();
+      }
+    });
+
+    var html = $.html();
+
+    fs.writeFileSync('./dist-dev/index.html', html);
+    fs.writeFileSync('./dist-prod/index.html', html);
+    grunt.log.writeln('index copied and modified');
+  });
+
+  grunt.registerTask('copy', 'Copy stuff to dist folder', function () {
+    var wrench = require('wrench');
+
+    wrench.mkdirSyncRecursive('./dist-dev/css', '0777');
+    wrench.mkdirSyncRecursive('./dist-dev/img', '0777');
+    wrench.mkdirSyncRecursive('./dist-prod/css', '0777');
+    wrench.mkdirSyncRecursive('./dist-prod/img', '0777');
+    grunt.log.writeln('dist dirs created');
+
+    var opts = {
+      preserve: true
+    };
+    wrench.copyDirSyncRecursive('./client/default/css', './dist-dev/css', opts);
+    wrench.copyDirSyncRecursive('./client/default/css', './dist-prod/css', opts);
+    wrench.copyDirSyncRecursive('./client/default/img', './dist-dev/img', opts);
+    wrench.copyDirSyncRecursive('./client/default/img', './dist-prod/img', opts);
+    grunt.log.writeln('dist stuff copied');
+  });
+
   // Default task.
-  grunt.registerTask('default', 'lint');// 'lint qunit concat min');
+  grunt.registerTask('default', 'clean lint concat min index copy');// 'lint qunit concat min');
 
 };
