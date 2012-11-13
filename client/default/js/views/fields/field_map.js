@@ -39,7 +39,9 @@ FieldMapView = FieldView.extend({
 
     if (!this.loadingMap) {
       this.loadingMap = true;
-      this.renderMap();
+      setTimeout(function() {
+        self.renderMap();
+      }, 100);
     } else {
       var timer = 0;
       var interval = setInterval(function() {
