@@ -470,13 +470,14 @@ table.likert {
   padding-top: 34px;
 }
 
-.pending_waiting_list .submit-all {
+.pending_waiting_list .submit-all, .sent_list .dismiss-all {
   position: inherit;
   top: inherit;
   right: inherit;
   width: 100%;
   margin: 0;
   padding: 4px 12px;
+  font-size: 12px;
 }
 
 /* Loading Spinner styling */
@@ -583,6 +584,10 @@ div.loading_container div.loading_spinner div { background: #fff; }
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
   border-radius: 10px;
+}
+
+.dismiss-all {
+  width: 100%;
 }
 
 /*

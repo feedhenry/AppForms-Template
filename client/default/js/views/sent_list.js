@@ -1,9 +1,14 @@
 SentListView = Backbone.View.extend({
   el: $('#fh_wufoo_sent'),
 
+  events: {
+    'click button.dismiss-all': 'dismissAll',
+  },
+
   templates: {
     sent_list: '<ul class="list inset sent_list"></ul>',
-    sent_header: '<li class="list-divider">Sent Submissions</li>'
+    sent_header: '<li class="list-divider">Sent Submissions</li>',
+    dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>',
   },
 
   initialize: function() {
@@ -23,6 +28,18 @@ SentListView = Backbone.View.extend({
     $(this.el).hide();
   },
 
+  dismissAll: function(e) {    
+    var all = [];
+
+    _(App.collections.sent.models).forEach(function(model){
+      all.push(model);
+    });
+
+    _(all).forEach(function(model){
+      model.destroy();  
+    });
+  },
+
   changed: function() {
     var self = this;
 
@@ -36,6 +53,8 @@ SentListView = Backbone.View.extend({
     _(App.collections.sent.models).each(function(form) {
       self.appendSentForm(form);
     }, this);
+
+    $('.sent_list', this.el).append(this.templates.dismiss_all);
   },
 
   appendSentForm: function(form) {
