@@ -2,13 +2,13 @@ SentListView = Backbone.View.extend({
   el: $('#fh_wufoo_sent'),
 
   events: {
-    'click button.dismiss-all': 'dismissAll',
+    'click button.dismiss-all': 'dismissAll'
   },
 
   templates: {
     sent_list: '<ul class="list inset sent_list"></ul>',
     sent_header: '<li class="list-divider">Sent Submissions</li>',
-    dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>',
+    dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>'
   },
 
   initialize: function() {
