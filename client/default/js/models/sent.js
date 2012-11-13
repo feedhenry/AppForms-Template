@@ -19,7 +19,6 @@ SentCollection = Backbone.Collection.extend({
   },
 
   checkSize: function() {
-    console.log('check sent size!');
     if (this.length > this.maxSize) {
       var toDelete = this.models.slice(0, this.models.length - this.maxSize);
       _(toDelete).forEach(function(model) {
