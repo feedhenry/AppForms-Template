@@ -181,7 +181,7 @@ _.extend(FHBackboneDataActSync.prototype, {
               return failure("Action [" + options.act + "] is not defined", {});
             }
           }
-        }
+        };
       }
 
 
