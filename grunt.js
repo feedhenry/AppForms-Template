@@ -85,15 +85,17 @@ module.exports = function(grunt) {
       globals: {
         jQuery: true
       }
-    }/*,
-    uglify: {}*/
+    },
+    uglify: {
+      mangle: false
+    }
   });
 
   grunt.registerTask('clean', 'Clean up files/folders', function () {
     var wrench = require('wrench');
 
-    wrench.rmdirSyncRecursive('./dist-dev');
-    wrench.rmdirSyncRecursive('./dist-prod');
+    wrench.rmdirSyncRecursive('./dist-dev', true);
+    wrench.rmdirSyncRecursive('./dist-prod', true);
   });
 
   grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
@@ -101,6 +103,8 @@ module.exports = function(grunt) {
     var fs = require('fs');
 
     var $ = cheerio.load(fs.readFileSync('./client/default/index.html'));
+
+    // remove script tags with a src
     $('script').each(function (index, el) {
       var src = $(el).attr('src');
       if (src != null) {
@@ -108,22 +112,28 @@ module.exports = function(grunt) {
       }
     });
 
-    var html = $.html();
+    // append script tag with appropirate src
+    var htmlDev = $.root().append('<script src="main.js"></script>').html();
+    $('script[src="main.js"]').attr('src', 'main.min.js');
+    var htmlProd = $.html();
 
-    fs.writeFileSync('./dist-dev/index.html', html);
-    fs.writeFileSync('./dist-prod/index.html', html);
+    // write index files
+    fs.writeFileSync('./dist-dev/index.html', htmlDev);
+    fs.writeFileSync('./dist-prod/index.html', htmlProd);
     grunt.log.writeln('index copied and modified');
   });
 
   grunt.registerTask('copy', 'Copy stuff to dist folder', function () {
     var wrench = require('wrench');
 
+    // create dist dirs
     wrench.mkdirSyncRecursive('./dist-dev/css', '0777');
     wrench.mkdirSyncRecursive('./dist-dev/img', '0777');
     wrench.mkdirSyncRecursive('./dist-prod/css', '0777');
     wrench.mkdirSyncRecursive('./dist-prod/img', '0777');
     grunt.log.writeln('dist dirs created');
 
+    // copy dist stuff
     var opts = {
       preserve: true
     };
@@ -135,6 +145,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint concat min index copy');// 'lint qunit concat min');
+  grunt.registerTask('default', 'clean lint concat min index copy');
 
 };
