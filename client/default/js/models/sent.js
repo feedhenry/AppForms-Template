@@ -12,15 +12,14 @@ SentCollection = Backbone.Collection.extend({
   store: new FHBackboneDataActSync("sent"),
   sync: FHBackboneDataActSyncFn,
 
-  maxSize: 5,
-
   initialize: function() {
     this.on('add', this.checkSize);
   },
 
   checkSize: function() {
-    if (this.length > this.maxSize) {
-      var toDelete = this.models.slice(0, this.models.length - this.maxSize);
+    var maxSize = App.config.get('sent_save_max');
+    if (this.length > maxSize) {
+      var toDelete = this.models.slice(0, this.models.length - maxSize);
       _(toDelete).forEach(function(model) {
         model.destroy();
       });

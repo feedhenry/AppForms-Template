@@ -22,8 +22,12 @@ SentListView = Backbone.View.extend({
   },
 
   saveMaxSelected: function() {
-    var saveMax = $('#sentSaveMax', this.el).val();
-    console.log('saveMax:' + saveMax);
+    var saveMax = parseInt($('#sentSaveMax', this.el).val());
+    if (_.isNumber(saveMax)) {
+      App.config.set(_.extend({}, App.config.attributes, {
+        "sent_save_max": saveMax
+      }));
+    }
   },
 
   show: function() {
@@ -42,12 +46,12 @@ SentListView = Backbone.View.extend({
     if (confirmDismiss) {
       var all = [];
 
-      _(App.collections.sent.models).forEach(function(model){
+      _(App.collections.sent.models).forEach(function(model) {
         all.push(model);
       });
 
-      _(all).forEach(function(model){
-        model.destroy();  
+      _(all).forEach(function(model) {
+        model.destroy();
       });
     }
 
