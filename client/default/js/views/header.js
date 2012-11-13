@@ -4,14 +4,16 @@ HeaderView = Backbone.View.extend({
   events: {
     'click li.fh_wufoo_home': 'showHome',
     'click li.fh_wufoo_drafts': 'showDrafts',
-    'click li.fh_wufoo_pending': 'showPending'
+    'click li.fh_wufoo_pending': 'showPending',
+    'click li.fh_wufoo_sent': 'showSent'
   },
   
   templates: {
     list: '<ul class="segmented-controller"></ul>',
     forms_button: '<li class="fh_wufoo_home"><a href="#">Forms</a></li>',
     drafts_button: '<li class="fh_wufoo_drafts"><a href="#">Drafts<span class="count"></span></a></li>',
-    pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>'
+    pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>',
+    sent_button: '<li class="fh_wufoo_sent"><a href="#">Sent<span class="count"></span></a></li>'
   },
 
   initialize: function() {
@@ -22,6 +24,7 @@ HeaderView = Backbone.View.extend({
     App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
+    App.collections.pending_submitted.bind('add remove reset', this.updateCounts, this);
 
     this.render();
   },
@@ -36,6 +39,7 @@ HeaderView = Backbone.View.extend({
     list.append(this.templates.forms_button);
     list.append(this.templates.drafts_button);
     list.append(this.templates.pending_button);
+    list.append(this.templates.sent_button);
 
     $(this.el).append(list);
     $(this.el).show();
@@ -59,11 +63,18 @@ HeaderView = Backbone.View.extend({
     return false;
   },
 
+  showSent: function() {
+    this.hideAll();
+    App.views.sent_list.show();
+    return false;
+  },
+
   hideAll: function() {
     window.scrollTo(0, 0);
     App.views.form_list.hide();
     App.views.drafts_list.hide();
     App.views.pending_list.hide();
+    App.views.sent_list.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.hide();
     }
@@ -89,6 +100,13 @@ HeaderView = Backbone.View.extend({
       $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
     } else {
       $('.fh_wufoo_pending .count', this.el).hide();
+    }
+
+    var sent_count = App.collections.pending_submitted.length;
+    if (sent_count > 0) {
+      $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+    } else {
+      $('.fh_wufoo_sent .count', this.el).hide();
     }
   }
 });

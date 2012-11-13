@@ -9,8 +9,6 @@ PendingListView = Backbone.View.extend({
     pending_waiting_list: '<ul class="list inset pending_waiting_list"></ul>',
     pending_waiting_header: '<li class="list-divider">Forms Awaiting Submission</li>',
     pending_waiting_submitall: '<li><button class="submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
-    pending_submitted_list: '<ul class="list inset pending_submitted_list"></ul>',
-    pending_submitted_header: '<li class="list-divider">Submitted Forms</li>',
     pending_submitting_list: '<ul class="list inset pending_submitting_list"></ul>',
     pending_submitting_header: '<li class="list-divider">Forms currently being submitted<div class="loading hidden"></div></li>',
     pending_review_list: '<ul class="list inset pending_review_list"></ul>',
@@ -21,7 +19,6 @@ PendingListView = Backbone.View.extend({
     _.bindAll(this, 'render', 'changed');
 
     App.collections.pending_submitting.bind('add remove reset', this.changed, this);
-    App.collections.pending_submitted.bind('add remove reset', this.changed, this);
     App.collections.pending_review.bind('add remove reset', this.changed, this);
     App.collections.pending_waiting.bind('add remove reset', this.changed, this);
 
@@ -68,9 +65,6 @@ PendingListView = Backbone.View.extend({
     $(this.el).append(this.templates.pending_review_list);
     $('.pending_review_list', this.el).append(this.templates.pending_review_header);
 
-    $(this.el).append(this.templates.pending_submitted_list);
-    $('.pending_submitted_list', this.el).append(this.templates.pending_submitted_header);
-
     _(App.collections.pending_waiting.models).each(function(form) {
       self.appendWaitingForm(form);
     }, this);
@@ -89,10 +83,6 @@ PendingListView = Backbone.View.extend({
       self.appendSubmittingForm(form);
     }, this);
 
-    _(App.collections.pending_submitted.models).each(function(form) {
-      self.appendSubmittedForm(form);
-    }, this);
-
     _(App.collections.pending_review.models).each(function(form) {
       self.appendReviewForm(form);
     }, this);
@@ -106,17 +96,8 @@ PendingListView = Backbone.View.extend({
   },
 
   appendSubmittingForm: function(form) {
-    var view = new PendingSubmittingItemView({
-      model: form
-    });
-    $('.pending_submitting_list', this.el).append(view.render().el);
-  },
 
-  appendSubmittedForm: function(form) {
-    var view = new PendingSubmittedItemView({
-      model: form
-    });
-    $('.pending_submitted_list', this.el).append(view.render().el);
+    $('.pending_submitting_list', this.el).append(view.render().el);
   },
 
   appendReviewForm: function(form) {
