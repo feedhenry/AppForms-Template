@@ -54,28 +54,6 @@ App.Router = Backbone.Router.extend({
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
     App.collections.pending_review.fetch();
-
-    App.config = null;
-    $fh.ready(function () {
-      //initialise config
-      $fh.data({
-        act: 'load',
-        key: 'client_config'
-      }, function (res) {
-        // only try set app config if not already done by initial act call
-        if (App.config == null && res && res.val && res.val !== '') {
-          try {
-            // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
-            App.config = JSON.parse(res.val);
-          } catch(e) {
-            //log error, but no action
-            console.log('ERROR: parsing config from local storage. Using config defaults:', e);
-          }
-        } else {
-          console.log('No config in local storage. Using config defaults');
-        }
-      });
-    });
   },
 
   pending: function() {

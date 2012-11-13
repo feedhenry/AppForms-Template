@@ -215,7 +215,7 @@ _.extend(FHBackboneDataActSync.prototype, {
             // update client config if its in response
             if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
               console.log('updating config');
-              App.config = res.config;
+              App.config.set(_.extend({}, App.config.attributes, res.config));
             }
             // update data if there is any
             var dataUpdated = false;
