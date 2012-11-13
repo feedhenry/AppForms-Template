@@ -35,16 +35,23 @@ SentListView = Backbone.View.extend({
     $(this.el).hide();
   },
 
-  dismissAll: function(e) {    
-    var all = [];
+  dismissAll: function(e) {
+    e.stopPropagation();
 
-    _(App.collections.sent.models).forEach(function(model){
-      all.push(model);
-    });
+    var confirmDismiss = confirm("Are you sure you want to dismiss all submissions?");
+    if (confirmDismiss) {
+      var all = [];
 
-    _(all).forEach(function(model){
-      model.destroy();  
-    });
+      _(App.collections.sent.models).forEach(function(model){
+        all.push(model);
+      });
+
+      _(all).forEach(function(model){
+        model.destroy();  
+      });
+    }
+
+    return false;
   },
 
   changed: function() {
