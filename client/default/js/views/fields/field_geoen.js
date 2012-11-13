@@ -41,10 +41,10 @@ FieldGeoENView = FieldView.extend({
     var lon = location.lon;
     var params = {
       lat: function() {
-        return lat
+        return lat;
       },
       lon: function() {
-        return lon
+        return lon;
       }
     };
     return OsGridRef.latLongToOsGrid(params);

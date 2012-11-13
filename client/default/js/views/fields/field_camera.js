@@ -104,13 +104,13 @@ FieldCameraView = FieldView.extend({
       quality: null
     };
 
-    var classNames = this.model.get('ClassNames');
+    var classNames = this.model.get('ClassNames'), parts, val;
     if (classNames !== '') {
       var classes = classNames.split(' ');
       _(classes).forEach(function(className) {
         if (className.indexOf("fhdimensions") != -1) {
-          var parts = className.split('=');
-          var val = parts[1].split('x');
+          parts = className.split('=');
+          val = parts[1].split('x');
 
           // Retry
           if (val.length == 2) {
@@ -123,8 +123,8 @@ FieldCameraView = FieldView.extend({
             }
           }
         } else if (className.indexOf("fhcompression") != -1) {
-          var parts = className.split('=');
-          var val = parts[1].split('%');
+          parts = className.split('=');
+          val = parts[1].split('%');
 
           options.quality = val[0];
         }

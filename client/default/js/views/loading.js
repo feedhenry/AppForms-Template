@@ -115,5 +115,5 @@ LoadingView = Backbone.View.extend({
 
   hide: function() {
     this.$el.fadeOut();
-  },
+  }
 });

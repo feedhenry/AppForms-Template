@@ -41,7 +41,7 @@ FieldSignatureView = FieldView.extend({
       "canvasWidth": canvasWidth
     }));
 
-    var signaturePad = $('.sigPad', this.$el)
+    var signaturePad = $('.sigPad', this.$el);
     signaturePad.css({
       position: 'fixed',
       'z-index': 9999,

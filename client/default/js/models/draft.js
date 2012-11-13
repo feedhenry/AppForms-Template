@@ -14,7 +14,7 @@ DraftsCollection = Backbone.Collection.extend({
   store: new FHBackboneDataActSync("drafts"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
-    console.log(attributes)
+    console.log(attributes);
     attributes.savedAt = new Date().getTime();
     return Backbone.Collection.prototype.create.call(this, attributes, options);
   }

@@ -27,7 +27,7 @@ StepsView = Backbone.View.extend({
         step_name: page.get('Title'),
         step_num: index + 1
       }));
-      item.css('width', width + '%')
+      item.css('width', width + '%');
       $('tr:first', table).append(item);
     });
 
