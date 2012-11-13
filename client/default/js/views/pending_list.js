@@ -29,7 +29,11 @@ PendingListView = Backbone.View.extend({
     var pending = [];
     
     _(App.collections.pending_waiting.models).forEach(function(model){
-      App.collections.pending_submitting.create(model.toJSON());
+      var json = model.toJSON();
+      //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+      // to make sure it is re-created and not removed below by model.destroy.
+      delete json.id;
+      App.collections.pending_submitting.create(json);
       pending.push(model);
     });
 

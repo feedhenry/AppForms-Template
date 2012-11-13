@@ -41,7 +41,10 @@ ItemView = Backbone.View.extend({
 
   submit: function() {
     var self = this;
-    App.collections.pending_submitting.create(this.model.toJSON());
+    var json = this.model.toJSON();
+    delete json.id;
+    //Delete the id, or it might not get re-created on failure
+    App.collections.pending_submitting.create(json);
     this.model.destroy();
     return false;
   },
