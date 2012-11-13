@@ -1,4 +1,4 @@
-PendingSubmittingItemView = PendingItemView.extend({
+PendingSubmittingItemView = ItemView.extend({
   templates: {
     item: '<span class="name"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span>',
   },

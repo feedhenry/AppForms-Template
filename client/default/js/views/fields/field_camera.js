@@ -114,8 +114,13 @@ FieldCameraView = FieldView.extend({
 
           // Retry
           if (val.length == 2) {
-            options.targetWidth = val[0];
-            options.targetHeight = val[1];
+            // Validity check
+            if (val[0] < 10000 && val[1] < 10000) {
+              options.targetWidth = val[0];
+              options.targetHeight = val[1];
+            } else {
+              console.error('Invalid camera resolution, using defaults');
+            }
           }
         } else if (className.indexOf("fhcompression") != -1) {
           var parts = className.split('=');

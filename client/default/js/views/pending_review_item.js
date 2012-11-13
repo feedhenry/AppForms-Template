@@ -1,4 +1,4 @@
-PendingReviewItemView = PendingItemView.extend({
+PendingReviewItemView = ItemView.extend({
   templates: {
     item: '<span class="name"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
   },

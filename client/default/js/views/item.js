@@ -1,4 +1,4 @@
-PendingItemView = Backbone.View.extend({
+ItemView = Backbone.View.extend({
   tagName: 'li',
   className: 'pending_submission',
   events: {
@@ -30,14 +30,19 @@ PendingItemView = Backbone.View.extend({
 
   delete: function(e) {
     e.stopPropagation();
-    this.model.destroy();
+
+    var confirmDelete = confirm("Are you sure you want to delete this submission?");
+    if (confirmDelete) {
+      this.model.destroy();
+    }
+
     return false;
   },
 
   submit: function() {
     var self = this;
     App.collections.pending_submitting.create(this.model.toJSON());
-    this.model.destroy();    
+    this.model.destroy();
     return false;
   },
 
