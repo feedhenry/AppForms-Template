@@ -8,7 +8,7 @@ ItemView = Backbone.View.extend({
   },
 
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>',
+    item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
   },
 
   initialize: function() {
@@ -28,7 +28,7 @@ ItemView = Backbone.View.extend({
     return this;
   },
 
-  delete: function(e) {
+  "delete": function(e) {
     e.stopPropagation();
 
     var confirmDelete = confirm("Are you sure you want to delete this submission?");

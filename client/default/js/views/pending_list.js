@@ -2,7 +2,7 @@ PendingListView = Backbone.View.extend({
   el: $('#fh_wufoo_pending'),
 
   events: {
-    'click button.submit-all': 'submitAll',
+    'click button.submit-all': 'submitAll'
   },
 
   templates: {
@@ -34,7 +34,7 @@ PendingListView = Backbone.View.extend({
     });
 
     _(pending).forEach(function(model){
-      model.destroy();  
+      model.destroy();
     });
 
     return false;

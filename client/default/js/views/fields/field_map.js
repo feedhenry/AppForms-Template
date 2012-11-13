@@ -91,7 +91,7 @@ FieldMapView = FieldView.extend({
       google.maps.event.addListener(marker, "dragend", function() {
         self.currentLocation = marker.getPosition().toString();
         self.contentChanged();
-      })
+      });
     }, function(err) {
       console.log(err);
     });
