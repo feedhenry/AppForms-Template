@@ -11,11 +11,35 @@ FieldMapView = FieldView.extend({
   mapSettings: {
     mapWidth: '100%',
     mapHeight: '300px',
-    defaultZoom: 3,
+    defaultZoom: 16,
     location: {
       lon: -5.80078125,
       lat: 53.12040528310657
     }
+  },
+
+  parseCssOptions: function() {
+    var options = {
+      defaultZoom: null
+    };
+
+    var classNames = this.model.get('ClassNames'),
+      parts, val;
+    if (classNames !== '') {
+      var classes = classNames.split(' ');
+      _(classes).forEach(function(className) {
+        if (className.indexOf("fhzoom") != -1) {
+          parts = className.split('=');
+          val = parseInt(parts[1], 10);
+
+          if (_.isNumber(val)) {
+            options.defaultZoom = val;
+          }
+        }
+      });
+    }
+
+    return options;
   },
 
   currentLocation: null,
@@ -65,44 +89,62 @@ FieldMapView = FieldView.extend({
   renderMap: function() {
     var self = this;
     var mapCanvas = $('.fh_map_canvas', this.el);
+    var options = this.parseCssOptions();
 
-    $fh.map({
-      target: mapCanvas[0],
-      lon: self.mapSettings.location.lon,
-      lat: self.mapSettings.location.lat,
-      zoom: self.mapSettings.defaultZoom
-    }, function(res) {
-      var map = res.map;
-      var marker = new google.maps.Marker({
-        position: map.getCenter(),
-        map: map,
-        draggable: true,
-        animation: google.maps.Animation.DROP,
-        title: "Drag this to set position"
-      });
+    // Merge
+    this.mapSettings = _.defaults(options, this.mapSettings);
 
-      var matches;
-      if(self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
-        var latlon = new google.maps.LatLng(matches[1], matches[2]);
-        marker.setPosition(latlon);
-        map.setCenter(latlon);
-      } else {
-        // Set initial location
-        self.currentLocation = marker.getPosition().toString();
-      }
-      google.maps.event.addListener(marker, "dragend", function() {
-        self.currentLocation = marker.getPosition().toString();
-        self.contentChanged();
+    $fh.geo({
+      interval: 0
+    }, function(geoRes) {
+      // Override with geo, otherwise use defaults      
+      self.mapSettings = _.defaults({
+        location: {
+          lat: geoRes.lat,
+          lon: geoRes.lon
+        }
+      }, self.mapSettings);
+
+      $fh.map({
+        target: mapCanvas[0],
+        lon: self.mapSettings.location.lon,
+        lat: self.mapSettings.location.lat,
+        zoom: self.mapSettings.defaultZoom
+      }, function(res) {
+        var map = res.map;
+        var marker = new google.maps.Marker({
+          position: map.getCenter(),
+          map: map,
+          draggable: true,
+          animation: google.maps.Animation.DROP,
+          title: "Drag this to set position"
+        });
+
+        var matches;
+        if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
+          var latlon = new google.maps.LatLng(matches[1], matches[2]);
+          marker.setPosition(latlon);
+          map.setCenter(latlon);
+        } else {
+          // Set initial location
+          self.currentLocation = marker.getPosition().toString();
+        }
+        google.maps.event.addListener(marker, "dragend", function() {
+          self.currentLocation = marker.getPosition().toString();
+          self.contentChanged();
+        });
+      }, function(err) {
+        console.log(err);
       });
-    }, function(err) {
-      console.log(err);
     });
+
+
   },
 
   value: function(value) {
     if (value && !_.isEmpty(value) && value[this.model.get('ID')]) {
       var val = value[this.model.get('ID')];
-      if(/\((.+),(.+)\)/.test(val)) {
+      if (/\((.+),(.+)\)/.test(val)) {
         this.currentLocation = val;
       }
     }
