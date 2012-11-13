@@ -24,7 +24,7 @@ HeaderView = Backbone.View.extend({
     App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_submitted.bind('add remove reset', this.updateCounts, this);
+    App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
     this.render();
   },
@@ -102,7 +102,7 @@ HeaderView = Backbone.View.extend({
       $('.fh_wufoo_pending .count', this.el).hide();
     }
 
-    var sent_count = App.collections.pending_submitted.length;
+    var sent_count = App.collections.sent.length;
     if (sent_count > 0) {
       $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
     } else {

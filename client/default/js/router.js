@@ -50,7 +50,7 @@ App.Router = Backbone.Router.extend({
     App.views.loading.show("Loading form list");
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
-    App.collections.pending_submitted.fetch();
+    App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
     App.collections.pending_review.fetch();

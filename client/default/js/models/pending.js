@@ -17,15 +17,6 @@ PendingWaitingCollection = Backbone.Collection.extend({
   }
 });
 
-PendingSubmittedCollection = Backbone.Collection.extend({
-  model: PendingModel,
-  store: new FHBackboneDataActSync("pending-submitted"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    attributes.submittedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
-});
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
@@ -79,7 +70,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         }
       } else {
         console.log('Form submission: success :: ' + JSON.stringify(res));
-        App.collections.pending_submitted.create(modelJson);
+        App.collections.sent.create(modelJson);
       }
       // model should added to another collection now. destroy it
       model.destroy();
@@ -90,6 +81,6 @@ PendingSubmittingCollection = Backbone.Collection.extend({
 });
 
 App.collections.pending_submitting = new PendingSubmittingCollection();
-App.collections.pending_submitted = new PendingSubmittedCollection();
+App.collections.sent = new SentCollection();
 App.collections.pending_review = new PendingReviewCollection();
 App.collections.pending_waiting = new PendingWaitingCollection();

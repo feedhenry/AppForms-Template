@@ -9,7 +9,7 @@ SentListView = Backbone.View.extend({
   initialize: function() {
     _.bindAll(this, 'render', 'appendSentForm', 'changed');
 
-    App.collections.pending_submitted.bind('add remove reset', this.changed, this);
+    App.collections.sent.bind('add remove reset', this.changed, this);
 
     this.render();
   },
@@ -33,7 +33,7 @@ SentListView = Backbone.View.extend({
     $(this.el).append(this.templates.sent_list);
     $('.sent_list', this.el).append(this.templates.sent_header);
 
-    _(App.collections.pending_submitted.models).each(function(form) {
+    _(App.collections.sent.models).each(function(form) {
       self.appendSentForm(form);
     }, this);
   },
