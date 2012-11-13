@@ -22,7 +22,7 @@ SentListView = Backbone.View.extend({
   },
 
   saveMaxSelected: function() {
-    var saveMax = parseInt($('#sentSaveMax', this.el).val());
+    var saveMax = parseInt($('#sentSaveMax', this.el).val(), 10);
     if (_.isNumber(saveMax)) {
       App.config.set(_.extend({}, App.config.attributes, {
         "sent_save_max": saveMax
