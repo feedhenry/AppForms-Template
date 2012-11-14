@@ -15,6 +15,10 @@ FieldView = Backbone.View.extend({
     if (nonFhClasses) {
       this.$el.addClass(nonFhClasses);
     }
+
+    this.on('visible', function () {
+      console.log('field visible');
+    });
     // only call render once. model will never update
     this.render();
   },

@@ -30,8 +30,17 @@ PageView = Backbone.View.extend({
   },
 
   initialize: function() {
+    var self = this;
     _.bindAll(this, 'render');
     this.fieldViews = {};
+
+    // pass visible event down to all fields
+    this.on('visible', function () {
+      console.log('page visible');
+      _(self.fieldViews).forEach(function (fieldView) {
+        fieldView.trigger('visible');
+      });
+    });
     this.render();
   },
 
@@ -76,6 +85,8 @@ PageView = Backbone.View.extend({
         this.options.parentEl.validate().showErrors(validateErrors);
       }
     }
+
+    this.trigger('visible');
   },
 
   hide: function () {

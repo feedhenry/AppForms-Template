@@ -6,8 +6,6 @@ FieldMapView = FieldView.extend({
     mapArea: '<div class="fh_map_canvas"></div>'
   },
 
-  loadingMap: false,
-
   mapSettings: {
     mapWidth: '100%',
     mapHeight: '300px',
@@ -61,25 +59,7 @@ FieldMapView = FieldView.extend({
       height: self.mapSettings.mapHeight
     });
 
-    if (!this.loadingMap) {
-      this.loadingMap = true;
-      setTimeout(function() {
-        self.renderMap();
-      }, 100);
-    } else {
-      var timer = 0;
-      var interval = setInterval(function() {
-        timer += 50;
-        if ((typeof google != "undefined") && (typeof google.maps != "undefined") && (typeof google.maps.Map != "undefined")) {
-          clearInterval(interval);
-          this.renderMap();
-        }
-        if (timer >= 30000) {
-          clearInterval(interval);
-          console.log("Failed to load map component.");
-        }
-      }, 50);
-    }
+    this.renderMap();
 
     // add to dom
     this.options.parentEl.append(this.$el);
@@ -97,7 +77,7 @@ FieldMapView = FieldView.extend({
     $fh.geo({
       interval: 0
     }, function(geoRes) {
-      // Override with geo, otherwise use defaults      
+      // Override with geo, otherwise use defaults
       self.mapSettings = _.defaults({
         location: {
           lat: geoRes.lat,
@@ -111,20 +91,22 @@ FieldMapView = FieldView.extend({
         lat: self.mapSettings.location.lat,
         zoom: self.mapSettings.defaultZoom
       }, function(res) {
-        var map = res.map;
+        self.map = res.map;
         var marker = new google.maps.Marker({
-          position: map.getCenter(),
-          map: map,
+          position: self.map.getCenter(),
+          map: self.map,
           draggable: true,
           animation: google.maps.Animation.DROP,
           title: "Drag this to set position"
         });
 
+        self.on('visible', self.mapResize, self);
+
         var matches;
         if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
           var latlon = new google.maps.LatLng(matches[1], matches[2]);
           marker.setPosition(latlon);
-          map.setCenter(latlon);
+          self.map.setCenter(latlon);
         } else {
           // Set initial location
           self.currentLocation = marker.getPosition().toString();
@@ -137,8 +119,16 @@ FieldMapView = FieldView.extend({
         console.log(err);
       });
     });
+  },
 
-
+  mapResize: function () {
+    if (this.map != null) {
+      console.log('mapResize');
+      // trigger resize event
+      google.maps.event.trigger(this.map, 'resize');
+      // recenter map
+      this.map.setCenter(new google.maps.LatLng(this.mapSettings.location.lat, this.mapSettings.location.lon));
+    }
   },
 
   value: function(value) {

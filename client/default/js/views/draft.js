@@ -15,6 +15,10 @@ DraftView = Backbone.View.extend({
       self.activePageChange.call(self, model, page);
     });
 
+    this.on('visible', function () {
+      console.log('draft visible');
+    });
+
     this.pages = [];
   },
 
@@ -108,6 +112,7 @@ DraftView = Backbone.View.extend({
     this.model.pushPage(0);
 
     this.$el.show();
+    this.trigger('visible');
   },
 
   unrender: function() {
