@@ -269,6 +269,7 @@ function dataToMultipart(data) {
         if(value.fileBase64 && value.filename && value.content_type) {
           //Strip the data url stuff from the start, could get content type from this!
 //          var dataParts = sigData.match(/data:(.*\/(.*));base64,(.*)/);
+//          console.log("\n\nfile : " + JSON.stringify(value));
           value.fileBase64 = value.fileBase64.replace(/^data:([^,]*,|)/, "");
           part = {
             'Content-Disposition':'form-data; name="' + key + '"; filename="' + value.filename + '"',

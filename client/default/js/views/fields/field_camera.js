@@ -16,7 +16,7 @@ FieldCameraView = FieldView.extend({
 
   initialize: function() {
     //Make sure 'this' is bound for setImageData, was incorrect on device!
-    _.bindAll(this, 'setImageData');
+    _.bindAll(this, 'setImageData', 'imageSelected');
     this.render();
   },
 
@@ -88,12 +88,15 @@ FieldCameraView = FieldView.extend({
   addFromCamera: function(e) {
     e.preventDefault();
     this.addImage();
-    this.trigger('imageAdded'); // trigger events used by grouped camera fields
   },
 
   addFromLibrary: function(e) {
     e.preventDefault();
     this.addImage(true);
+  },
+
+  imageSelected: function(imageData) {
+    this.setImageData(imageData);
     this.trigger('imageAdded'); // trigger events used by grouped camera fields
   },
 
@@ -147,12 +150,12 @@ FieldCameraView = FieldView.extend({
     camOptions = _.defaults(options, camOptions);
 
     if (typeof navigator.camera === 'undefined') {
-      this.setImageData(this.sampleImage());
+      this.imageSelected(this.sampleImage());
     } else {
       if (fromLibrary) {
         camOptions.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
       }
-      navigator.camera.getPicture(this.setImageData, function(err) {
+      navigator.camera.getPicture(this.imageSelected, function(err) {
         alert('Camera Error: ' + err);
       }, camOptions);
     }
