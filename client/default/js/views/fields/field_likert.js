@@ -6,7 +6,8 @@ FieldLikertView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
     subfield_container: '<div class="likert_subfield"></div>',
-    select: '<label for="<%= id %>" class="font-normal"><%= label %></label><select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select>',
+    select_label: '<label for="<%= id %>" class="font-normal"><%= label %></label>',
+    select: '<select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select>',
     option: '<option value="<%= value %>"><%= label %></option>'
   },
 
@@ -23,9 +24,13 @@ FieldLikertView = FieldView.extend({
 
     $.each(subfields, function(i, subfield) {
       var subfield_container = $(_.template(self.templates.subfield_container, {}));
+      
+      var select_label = $(_.template(self.templates.select_label, {
+        id: subfield.ID,
+        label: subfield.Label
+      }));
       var select = $(_.template(self.templates.select, {
         id: subfield.ID,
-        label: subfield.Label,
         classes: i > 0 ? 'validate_ignore': ''
       }));
 
@@ -48,6 +53,7 @@ FieldLikertView = FieldView.extend({
       });
 
       // Add select
+      subfield_container.append(select_label);
       subfield_container.append(select);
       self.$el.append(subfield_container);
     });

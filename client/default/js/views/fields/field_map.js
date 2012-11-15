@@ -131,6 +131,10 @@ FieldMapView = FieldView.extend({
     }
   },
 
+  addValidationRules: function () {
+    // You can't have a required map, since there's no input. Also there's always a default location set.
+  },
+
   value: function(value) {
     if (value && !_.isEmpty(value) && value[this.model.get('ID')]) {
       var val = value[this.model.get('ID')];
