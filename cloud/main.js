@@ -1,65 +1,11 @@
 var util = require('util');
 var request = require('request');
 var url = require("url");
-var inline = require('./inline.js');
 var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_admin = require('./wufoo_client/admin.js');
 var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
 var _ = require('underscore');
-
-formDataToMultipart = function(form_data, cb) {
-  var data = form_data;
-  var multipart_data = [];
-
-  if (typeof wufoo_config == 'undefined') {
-    return cb(null, {
-      "html": "",
-      "error": "No config."
-    });
-  }
-
-  // // Password unlock on submit
-  // if (typeof wufoo_config.wufoo_config.form_password != 'undefined' && wufoo_config.wufoo_config.form_password) {
-  //   var multipart_part = {
-  //     'Content-Disposition': 'form-data; name=password"',
-  //     body: wufoo_config.wufoo_config.form_password,
-  //   }
-  //   multipart_data.push(multipart_part);
-  // }
-  form_data.forEach(function(field) {
-    if (field.name != 'output' && typeof field.value != 'undefined') {
-      if (field.name == 'clickOrEnter') {
-        // clickOrEnter needs to be set to blank or 
-        // multi-page forms won't work correctly
-        field.value = '';
-      }
-
-      if (field.type == 'text' || field.type == 'map' || field.type == 'radio' || field.type == 'checkbox') {
-        if (field.value != '') {
-          var multipart_part = {
-            'Content-Disposition': 'form-data; name="' + field.name + '"',
-            body: field.value,
-          }
-          multipart_data.push(multipart_part);
-        }
-      } else if (field.type == 'file') {
-        if (field.value != '') {
-          var multipart_part = {
-            'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
-            'Content-Type': 'image/' + field.extension,
-            body: new Buffer(field.value, 'base64'),
-          }
-          multipart_data.push(multipart_part);
-        }
-      } else {
-        console.error('Error, unknown field type: ' + field.type);
-      }
-    }
-  });
-
-  return multipart_data;
-};
 
 function getMinFormData(form) {
   return {
