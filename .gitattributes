@@ -1,0 +1,6 @@
+client/default/js export-ignore
+client/default/lib export-ignore
+client/default/index.html export-ignore
+grunt.js export-ignore
+package.json export-ignore
+README.md export-ignore
