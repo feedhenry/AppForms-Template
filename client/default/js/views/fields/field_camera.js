@@ -1,18 +1,11 @@
 FieldCameraView = FieldView.extend({
   events: {
-    'click button.removeThumb': "removeThumb",
+    'click button.remove': "removeThumb",
     'click button.fhcam': "addFromCamera",
-    'click button.fhpics': "addFromLibrary"
+    'click button.fhcam_lib': "addFromLibrary"
   },
 
-  template: ['<label for="<%= id %>"><%= title %></label>',
-    '<input id="<%= id %>" name="<%= id %>" type="hidden">',
-    '<div class="upload"><p>Please choose a picture</p>',
-    '<button class="apibtn fhcam"><img style="min-height:20px;" src="./img/fhcam.png"></button>',
-    '<button class="apibtn fhpics"><img style="min-height:20px;" src="./img/fhcam_lib.png"></button></div>',
-    '<div class="uploaded"><p>Picture chosen</p>',
-    '<img class="imageThumb" height="42" width="42">',
-    '<button class="apibtn removeThumb">Remove Image</button></div>'],
+  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" height="42" width="42">', '</div>'],
 
   initialize: function() {
     //Make sure 'this' is bound for setImageData, was incorrect on device!
@@ -27,6 +20,10 @@ FieldCameraView = FieldView.extend({
       "title": this.model.get('Title')
     }));
 
+    this.addButton(this.$el, 'fhcam', 'Capture Photo from Camera');
+    this.addButton(this.$el, 'fhcam_lib', 'Choose Photo from Library');
+    this.addButton(this.$el, 'remove', 'Remove Photo', 'uploaded');
+
     this.setImageData(null, true);
 
     // add to dom hidden
@@ -34,6 +31,34 @@ FieldCameraView = FieldView.extend({
     this.options.parentEl.append(this.$el);
 
     this.show();
+  },
+
+  addButton: function(input, img_file, label, classes, action) {
+    var self = this;
+    var button = $('<button>');
+    button.addClass('special_button');
+    button.addClass(img_file);
+    button.text(' ' + label);
+    var img = $('<img>');
+    img.attr('src', './img/' + img_file + '.png');
+    img.css('height', '28px');
+    img.css('width', '28px');
+    button.prepend(img);
+
+    if (typeof action !== 'undefined') {
+      button.click(function(e) {
+        action();
+        e.preventDefault();
+        return false;
+      });
+    }
+
+    if (classes) {
+      button.addClass(classes);
+    }
+
+    input.append(button);
+    return button;
   },
 
   getOrder: function() {
@@ -107,7 +132,8 @@ FieldCameraView = FieldView.extend({
       quality: null
     };
 
-    var classNames = this.model.get('ClassNames'), parts, val;
+    var classNames = this.model.get('ClassNames'),
+      parts, val;
     if (classNames !== '') {
       var classes = classNames.split(' ');
       _(classes).forEach(function(className) {
