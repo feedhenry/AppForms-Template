@@ -913,12 +913,13 @@ $fh.ready(function() {
       }
 
       function filenameForKey(key, cb) {
+        key = $fh.app_props.appid + key;
         console.log('filenameForKey: ' + key);
         $fh.hash({
           algorithm: "MD5",
           text: key
         }, function(result) {
-          var filename = $fh.app_props.appid + result.hashvalue + '.txt';
+          var filename = result.hashvalue + '.txt';
           return cb(filename);
         });
       }
