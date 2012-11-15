@@ -135,22 +135,22 @@ module.exports = function(grunt) {
     });
   });
 
-  grunt.registerTask('rearchive', 'Rearchive dist folder contents into zip file', function () {
-    var done = this.async();
+  // grunt.registerTask('rearchive', 'Rearchive dist folder contents into zip file', function () {
+  //   var done = this.async();
 
-    require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
-      grunt.log.writeln('stdout: ' + stdout);
-      grunt.log.writeln('stderr: ' + stderr);
-      if (error !== null) {
-        grunt.log.writeln('exec error: ' + error);
-        done(1);
-      } else {
-        done();
-      }
-    });
-  });
+  //   require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
+  //     grunt.log.writeln('stdout: ' + stdout);
+  //     grunt.log.writeln('stderr: ' + stderr);
+  //     if (error !== null) {
+  //       grunt.log.writeln('exec error: ' + error);
+  //       done(1);
+  //     } else {
+  //       done();
+  //     }
+  //   });
+  // });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint mkdirs archive concat min index rearchive');
+  grunt.registerTask('default', 'clean lint mkdirs archive concat min index');
 
 };
