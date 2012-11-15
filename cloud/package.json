@@ -1,0 +1,10 @@
+{
+  "name": "Wufoo",
+  "version": "0.0.1",
+  "dependencies" : {
+    "request": "2.11.4",
+    "cheerio" : "0.9.0",
+    "async": "0.1.22",
+    "underscore": "*"
+  }
+}
