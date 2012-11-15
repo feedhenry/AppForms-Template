@@ -1,5 +1,4 @@
 var https = require('https');
-var querystring = require('querystring');
 var request = require('request');
 var wufoo_config = require('../wufoo_config.js');
 var cheerio = require('cheerio');
