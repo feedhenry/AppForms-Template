@@ -913,7 +913,6 @@ $fh.ready(function() {
       }
 
       function filenameForKey(key, cb) {
-        key = $fh.app_props.appid + key;
         console.log('filenameForKey: ' + key);
         $fh.hash({
           algorithm: "MD5",
