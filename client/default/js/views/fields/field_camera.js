@@ -5,7 +5,7 @@ FieldCameraView = FieldView.extend({
     'click button.fhcam_lib': "addFromLibrary"
   },
 
-  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" height="42" width="42">', '</div>'],
+  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" width="100%">', '</div>'],
 
   initialize: function() {
     //Make sure 'this' is bound for setImageData, was incorrect on device!
