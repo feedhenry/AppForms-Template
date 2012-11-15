@@ -10,7 +10,7 @@ LoadingView = Backbone.View.extend({
     var self = this;
     _.bindAll(this, 'render');
 
-    App.collections.forms.bind('reset', this.formFetch, this);
+    App.collections.forms.bind('reset', _.after(2, this.formFetch), this);
 
     App.collections.forms.on('error', function(collection, msg, options) {
       App.views.loading.updateProgress(100);
@@ -38,7 +38,7 @@ LoadingView = Backbone.View.extend({
     var self = this;
 
     // Ignore initial reset
-    if (App.collections.forms.models.length > length) {
+    if (App.collections.forms.models.length > 0) {
       self.updateLoadedCount();
 
       _(App.collections.forms.models).forEach(function(model) {
@@ -46,9 +46,14 @@ LoadingView = Backbone.View.extend({
           model.bind('change:fh_full_data_loaded', self.modelLoaded, self);
           model.bind('error', self.modelLoadError, self);
         } else {
-          self.modelLoaded(model);
+          // async behaviour
+          setTimeout(function () {
+            self.modelLoaded(model);
+          }, 0);
         }
       });
+    } else {
+      this.checkTotal();
     }
   },
 
@@ -75,6 +80,7 @@ LoadingView = Backbone.View.extend({
 
   checkTotal: function() {
     var self = this;
+    console.log('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
     // Check total loaded to see if we should hide
     if (this.totalCounter === App.collections.forms.length) {
       App.views.loading.updateMessage("Form sync complete");
