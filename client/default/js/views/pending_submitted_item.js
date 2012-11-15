@@ -1,6 +1,6 @@
 PendingSubmittedItemView = ItemView.extend({
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts">Submitted: <%= timestamp %></span><button class="button button-main delete-item second_button">Dismiss</button><span class="chevron"></span>'
+    item: '<span class="name"><%= name %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main delete-item second_button">Dismiss</button><span class="chevron"></span>'
   },
 
   render: function() {
