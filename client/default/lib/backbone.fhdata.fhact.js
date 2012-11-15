@@ -80,8 +80,8 @@ _.extend(FHBackboneDataActSync.prototype, {
           }
 
           function filenameForKey(key, cb) {
-            console.log('filenameForKey: ' + key);
             key = $fh.app_props.appid + key;
+            console.log('filenameForKey: ' + key);
             $fh.hash({
               algorithm: "MD5",
               text: key
