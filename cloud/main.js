@@ -215,12 +215,18 @@ exports.postEntry = function (params, callback) {
  */
 exports.getForms = function (params, callback) {
   // can't filter forms list endpoint by hash, so get all and filter them by hash here
-  var hashes = wufoo_config.wufoo_config.form_hashes || [wufoo_config.wufoo_config.form_hash];
+  var hashes = wufoo_config.wufoo_config.form_hashes || (wufoo_config.wufoo_config.form_hash ? [wufoo_config.wufoo_config.form_hash] : []);
   wufoo_api.getForms(function (err, results) {
     if (err) return callback(null, err);
-    var forms = _(results.Forms).filter(function (form) {
-      return hashes.indexOf(form.Hash) > -1;
-    }).map(function (form) {
+    // filter out forms we want if certain form hashes are configured
+    var forms = results.Forms;
+    console.log('hashes:', hashes);
+    if (hashes != null && hashes.length > 0) {
+      forms = _(forms).filter(function (form) {
+        return hashes.indexOf(form.Hash) > -1;
+      });
+    }
+    forms.map(function (form) {
       // minimum amount required
       return getMinFormData(form);
     });
