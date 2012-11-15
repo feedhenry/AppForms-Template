@@ -38,34 +38,15 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: ['<banner>'].concat(jsFiles),
-        dest: 'dist-dev/main.js'
+        dest: 'dist-dev/client/default/main.js'
       }
     },
     min: {
       dist: {
         src: ['<config:concat.dist.dest>'],
-        dest: 'dist-prod/main.min.js'
+        dest: 'dist/client/default/main.min.js'
       }
     },
-    // qunit: {
-    //   files: ['test/**/*.html']
-    // },
-    // concat: {
-    //   dist: {
-    //     src: ['<banner:meta.banner>', '<file_strip_banner:lib/FILE_NAME.js>'],
-    //     dest: 'dist/FILE_NAME.js'
-    //   }
-    // },
-    // min: {
-    //   dist: {
-    //     src: ['<banner:meta.banner>', '<config:concat.dist.dest>'],
-    //     dest: 'dist/FILE_NAME.min.js'
-    //   }
-    // },
-    // watch: {
-    //   files: '<config:lint.files>',
-    //   tasks: 'lint qunit'
-    // },
     jshint: {
       options: {
         predef: [
@@ -93,9 +74,15 @@ module.exports = function(grunt) {
 
   grunt.registerTask('clean', 'Clean up files/folders', function () {
     var wrench = require('wrench');
+    var fs = require('fs');
 
+    wrench.rmdirSyncRecursive('./dist', true);
     wrench.rmdirSyncRecursive('./dist-dev', true);
-    wrench.rmdirSyncRecursive('./dist-prod', true);
+    try {
+      fs.unlinkSync('./dist.zip');
+    } catch (e) {
+      // fail silently
+    }
   });
 
   grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
@@ -118,33 +105,52 @@ module.exports = function(grunt) {
     var htmlProd = $.html();
 
     // write index files
-    fs.writeFileSync('./dist-dev/index.html', htmlDev);
-    fs.writeFileSync('./dist-prod/index.html', htmlProd);
+    fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
+    fs.writeFileSync('./dist/client/default/index.html', htmlProd);
     grunt.log.writeln('index copied and modified');
   });
 
-  grunt.registerTask('copy', 'Copy stuff to dist folder', function () {
+  grunt.registerTask('mkdirs', 'Make dirs used for dist stuff', function () {
     var wrench = require('wrench');
 
     // create dist dirs
-    wrench.mkdirSyncRecursive('./dist-dev/css', '0777');
-    wrench.mkdirSyncRecursive('./dist-dev/img', '0777');
-    wrench.mkdirSyncRecursive('./dist-prod/css', '0777');
-    wrench.mkdirSyncRecursive('./dist-prod/img', '0777');
+    ['./dist-dev/', './dist/'].forEach(function (dir) {
+      wrench.mkdirSyncRecursive(dir + 'client/default', '0777');
+    });
     grunt.log.writeln('dist dirs created');
+  });
 
-    // copy dist stuff
-    var opts = {
-      preserve: true
-    };
-    wrench.copyDirSyncRecursive('./client/default/css', './dist-dev/css', opts);
-    wrench.copyDirSyncRecursive('./client/default/css', './dist-prod/css', opts);
-    wrench.copyDirSyncRecursive('./client/default/img', './dist-dev/img', opts);
-    wrench.copyDirSyncRecursive('./client/default/img', './dist-prod/img', opts);
-    grunt.log.writeln('dist stuff copied');
+  grunt.registerTask('archive', 'Create archive of repo and unzip to temp folder', function () {
+    var done = this.async();
+
+    require('child_process').exec('git archive --worktree-attributes -o dist.zip -v HEAD;cd dist;unzip ../dist.zip;cd ..', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
+  });
+
+  grunt.registerTask('rearchive', 'Rearchive dist folder contents into zip file', function () {
+    var done = this.async();
+
+    require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
   });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint concat min index copy');
+  grunt.registerTask('default', 'clean lint mkdirs archive concat min index rearchive');
 
 };
