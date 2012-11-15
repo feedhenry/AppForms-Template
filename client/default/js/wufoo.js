@@ -918,7 +918,7 @@ $fh.ready(function() {
           algorithm: "MD5",
           text: key
         }, function(result) {
-          var filename = result.hashvalue + '.txt';
+          var filename = $fh.app_props.appid + result.hashvalue + '.txt';
           return cb(filename);
         });
       }
