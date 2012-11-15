@@ -7,4 +7,5 @@ fhc-debug.log
 admin_endpoints.txt
 test_admin.js
 dist-dev
-dist-prod
+dist
+dist.zip
