@@ -62,7 +62,8 @@ App.Router = Backbone.Router.extend({
   },
 
   onResume: function() {
-    alert('App resumed');
+    // Re-fetch on resume
+    App.collections.forms.fetch();
   },
 
   pending: function() {
