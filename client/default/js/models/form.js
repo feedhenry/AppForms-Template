@@ -58,7 +58,7 @@ FormModel = Backbone.Model.extend({
     var serialized_form = self.serialize();
     var form_hash = this.attributes.Hash;
 
-    this.isOnline(function(online) {
+    Utils.isOnline(function(online) {
       if (online) {
         $fh.act({
           "act": "postEntry",
@@ -90,24 +90,6 @@ FormModel = Backbone.Model.extend({
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
-  },
-
-  isOnline: function(callback){
-    var online = true;
-    //first, check if navigator.online is available
-    if(typeof navigator.onLine != "undefined"){
-      online = navigator.onLine;
-    }
-    if(online){
-      //use phonegap to determin if the network is available
-      if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
-        var networkType = navigator.network.connection.type;
-        if(networkType == "none" || networkType == null){
-          online = false;
-        }
-      }
-    }
-    callback(online);
   }
 });
 
@@ -115,7 +97,14 @@ FormsCollection = Backbone.Collection.extend({
   model: FormModel,
   // form collection will only fetch minimum form details to populate models. Models will be fetched individually as full detail is required
   store: new FHBackboneDataActSync('forms', 'getForms', 'getForm', 'Hash', 'DateUpdated'),
-  sync: FHBackboneDataActSyncFn
+  sync: FHBackboneDataActSyncFn,
+
+  initialize: function () {
+    var self = this;
+    this.store.on('error', function (error) {
+      self.trigger('error', error);
+    });
+  }
 });
 
 App.collections.forms = new FormsCollection();
