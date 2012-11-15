@@ -63,6 +63,8 @@ App.Router = Backbone.Router.extend({
 
   onResume: function() {
     // Re-fetch on resume
+    App.views.loading = new LoadingView();
+    App.views.loading.show("Loading form list");
     App.collections.forms.fetch();
   },
 
