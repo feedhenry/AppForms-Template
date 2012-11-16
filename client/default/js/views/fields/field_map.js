@@ -110,8 +110,6 @@ FieldMapView = FieldView.extend({
           title: "Drag this to set position"
         });
 
-        self.on('visible', self.mapResize, self);
-
         var matches;
         if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
           var latlon = new google.maps.LatLng(matches[1], matches[2]);
