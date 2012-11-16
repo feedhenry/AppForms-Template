@@ -443,6 +443,7 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
       return routeMethod();
     });
+    return;
   }
   return routeMethod();
 };

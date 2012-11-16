@@ -6,10 +6,16 @@ To build:
 
     grunt
 
-Produces 2 dist folders with client content:
+Produces a dist folder and dist.zip. To copy to dist branch:
 
-    dist-dev/ (merged, unminified scripts)
-    dist-prod/ (merged & minified scripts)
+    git checkout phase2
+    git pull origin phase2
+    grunt
+    git checkout phase2-dist
+    git pull origin phase2-dist
+    cp -r dist/* ./
+    git commit -am "Merging phase2 changes"
+    git push origin phase2-dist
 
 To just lint scripts:
 

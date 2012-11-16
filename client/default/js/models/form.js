@@ -102,7 +102,7 @@ FormsCollection = Backbone.Collection.extend({
   initialize: function () {
     var self = this;
     this.store.on('error', function (error) {
-      self.trigger('error', error);
+      //self.trigger('error', error);
     });
   }
 });

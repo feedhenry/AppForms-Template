@@ -33,7 +33,7 @@ App.Router = Backbone.Router.extend({
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
     App.views.sent_list = new SentListView();
-    App.views.loading = new LoadingView();
+    var loadingView = new LoadingCollectionView();
     App.views.header = new HeaderView();
     App.views.header.showHome();
 
@@ -48,7 +48,7 @@ App.Router = Backbone.Router.extend({
     });
 
     // Kick things off by fetching when all stores are initialised
-    App.views.loading.show("Loading form list");
+    loadingView.show("Loading form list");
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
@@ -63,8 +63,8 @@ App.Router = Backbone.Router.extend({
 
   onResume: function() {
     // Re-fetch on resume
-    App.views.loading = new LoadingView();
-    App.views.loading.show("Loading form list");
+    var loadingView = new LoadingCollectionView();
+    loadingView.show("Loading form list");
     App.collections.forms.fetch();
   },
 

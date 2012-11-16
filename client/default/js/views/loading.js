@@ -1,29 +1,54 @@
 LoadingView = Backbone.View.extend({
-  el: $('#loading'),
+  id: 'loading',
+  className: 'hidden',
 
-  templates: {},
-  percent: 0,
-  formsCounter: -1,
-  totalCounter: 0,
+  templates: {
+    spinner: '<div id="loading_overlay"></div><div class="loading_container"><div class="loading_spinner"><div class="bar1"></div><div class="bar2"></div><div class="bar3"></div><div class="bar4"></div><div class="bar5"></div><div class="bar6"></div><div class="bar7"></div><div class="bar8"></div><div class="bar9"></div><div class="bar10"></div><div class="bar11"></div><div class="bar12"></div>    </div>    <div class="message"></div>    <div class="progress"><div class="bar"></div></div>  </div>'
+  },
 
-  initialize: function() {
+  initialize: function(model) {
     var self = this;
-    _.bindAll(this, 'render');
 
-    App.collections.forms.bind('reset', _.after(2, this.formFetch), this);
+    this.percent = 0;
+    _.bindAll(this, 'destroyView');
 
-    App.collections.forms.on('error', function(collection, msg, options) {
-      App.views.loading.updateProgress(100);
-      App.views.loading.updateMessage("Your forms couldn't be synced.");
-      self.addError();
+    this.$el.html(this.templates.spinner);
 
-      setTimeout(function() {
-        self.hide();
-        self.removeError();
-      }, 2000);
-    });
+    $('body').append(this.$el);
 
-    this.render();
+    if (model != null) {
+      this.model = model;
+      // bind to model change and error events if model not fully loaded yet
+      if (!this.model.get('fh_full_data_loaded')) {
+        this.model.bind('change:fh_full_data_loaded', self.modelLoaded, self);
+        this.model.bind('error', self.modelLoadError, self);
+      } else {
+        // async behaviour
+        setTimeout(function () {
+          self.modelLoaded(this.model);
+        }, 0);
+      }
+    }
+  },
+
+  modelLoaded: function(a, b, c) {
+    var self = this;
+    this.model.set('fh_error_loading', false);
+    this.updateMessage("Form synced");
+    this.updateProgress(100);
+    setTimeout(function() {
+      self.hide();
+    }, 1000);
+  },
+
+  modelLoadError: function(model, b, c) {
+    var self = this;
+    this.model.set('fh_error_loading', true);
+    this.updateMessage("Error syncing form");
+    this.updateProgress(100);
+    setTimeout(function() {
+      self.hide();
+    }, 1000);
   },
 
   addError: function() {
@@ -34,74 +59,11 @@ LoadingView = Backbone.View.extend({
     this.$el.removeClass('error');
   },
 
-  formFetch: function() {
-    var self = this;
-
-    // Ignore initial reset
-    if (App.collections.forms.models.length > 0) {
-      self.updateLoadedCount();
-
-      _(App.collections.forms.models).forEach(function(model) {
-        if (!model.get('fh_full_data_loaded')) {
-          model.bind('change:fh_full_data_loaded', self.modelLoaded, self);
-          model.bind('error', self.modelLoadError, self);
-        } else {
-          // async behaviour
-          setTimeout(function () {
-            self.modelLoaded(model);
-          }, 0);
-        }
-      });
-    } else {
-      this.checkTotal();
-    }
-  },
-
-  updateLoadedCount: function() {
-    this.formsCounter += 1;
-    App.views.loading.updateMessage("Form list loaded. Loading forms. Loaded " + this.formsCounter + " of " + App.collections.forms.models.length);
-  },
-
-  modelLoaded: function(a, b, c) {
-    this.percent += 100 / App.collections.forms.length;
-    this.updateLoadedCount();
-    this.totalCounter += 1;
-    App.views.loading.updateProgress(this.percent);
-    this.checkTotal();
-  },
-
-  modelLoadError: function(a, b, c) {
-    this.percent += 100 / App.collections.forms.length;
-    console.log(' !! error loading model. ID: ' + a.id + this.percent);
-    this.totalCounter += 1;
-    App.views.loading.updateProgress(this.percent);
-    this.checkTotal();
-  },
-
-  checkTotal: function() {
-    var self = this;
-    console.log('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
-    // Check total loaded to see if we should hide
-    if (this.totalCounter === App.collections.forms.length) {
-      App.views.loading.updateMessage("Form sync complete");
-      setTimeout(function() {
-        self.hide();
-      }, 1000);
-    }
-  },
-
-  render: function() {
-    var self = this;
-  },
-
   show: function(message) {
     this.reset();
 
-    if (message) {
-      this.updateMessage(message);
-    } else {
-      this.updateMessage('Loading Form List');
-    }
+    this.updateMessage(message);
+    this.updateProgress(50); // halfway straight away. only a single step process
 
     this.$el.show();
   },
@@ -117,9 +79,28 @@ LoadingView = Backbone.View.extend({
   reset: function() {
     this.removeError();
     this.updateProgress(1);
+    this.updateMessage('');
+    this.percent = 0;
+    this.formsCounter = -1;
+    this.totalCounter = 0;
   },
 
   hide: function() {
-    this.$el.fadeOut();
+    this.$el.fadeOut(this.destroyView);
+  },
+
+  destroyView: function() {
+    //COMPLETELY UNBIND THE VIEW
+    this.undelegateEvents();
+
+    $(this.el).removeData().unbind();
+
+    if (this.model != null) {
+      this.model.off(null, null, this);
+    }
+
+    //Remove view from DOM
+    this.remove();
+    Backbone.View.prototype.remove.call(this);
   }
 });
