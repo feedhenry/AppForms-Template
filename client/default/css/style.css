@@ -250,6 +250,10 @@ td.active .page_title {
   font-weight: bold;
 }
 
+.field_container span label:first-child {
+  font-weight: normal;
+}
+
 .likert_subfield label.font-normal {
   font-weight: normal;
   margin-bottom: 0px;
