@@ -79,7 +79,7 @@ FieldCameraView = FieldView.extend({
       this.$el.find('.uploaded').show();
       this.fileData = {};
       this.fileData.fileBase64 = dataUri;
-      this.fileData.filename = "photo.jpg";
+      this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
     } else {
       this.$el.find('#' + this.model.get('ID')).val(null);
