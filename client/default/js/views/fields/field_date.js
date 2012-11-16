@@ -3,6 +3,16 @@ FieldDateView = FieldView.extend({
 
   // TODO: do we need validation? how is this inputted by user?
 
+
+  defaultValue: function() {
+    var defaultValue = {};
+    if(this.model.get('DefaultVal')) {
+      var val = new moment(this.model.get('DefaultVal'), 'MM/DD/YYYY');
+      defaultValue[this.model.get('ID')] = val.format('YYYYMMDD');
+    }
+    return defaultValue;
+  },
+
   value: function(value) {
     if (value && !_.isEmpty(value)) {
       $.each(value, function(id, val) {
