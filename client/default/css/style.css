@@ -452,6 +452,14 @@ table.likert {
   width: 16px;
 }
 
+.fetching {
+  background: #ddd;
+}
+
+.fetch_error {
+  background: #E75252;
+}
+
 .fetching .loading {
   display: inherit;
   margin-right: 10px;
@@ -460,7 +468,7 @@ table.likert {
   top: 29%;
 }
 
-.fetched .loading {
+.fetched .loading, .fetch_error .loading {
   display: none;
 }
 
