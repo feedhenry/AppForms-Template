@@ -59,6 +59,16 @@ App.Router = Backbone.Router.extend({
     $fh.ready(function() {
       document.addEventListener("resume", self.onResume, false);
     });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:debug_mode', function () {
+      if (App.config.get('debug_mode') === true) {
+        $('#debug_mode').removeClass('hidden');
+      } else {
+        $('#debug_mode').addClass('hidden');
+      }
+    });
   },
 
   onResume: function() {
