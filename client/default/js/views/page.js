@@ -109,7 +109,8 @@ PageView = Backbone.View.extend({
 
   isValid: function () {
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
-    return this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="hidden"]:hidden').valid();
+    var validateEls = this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="hidden"]:hidden');
+    return validateEls.length ? validateEls.valid() : true;
   },
 
   checkRules: function () {

@@ -16,6 +16,8 @@ FieldMapView = FieldView.extend({
     }
   },
 
+  currentLocation: null,
+
   parseCssOptions: function() {
     var options = {
       defaultZoom: null
@@ -40,7 +42,13 @@ FieldMapView = FieldView.extend({
     return options;
   },
 
-  currentLocation: null,
+  initialize: function() {
+    var self = this;
+    FieldView.prototype.initialize.call(this);
+    this.on('visible', function() {
+      self.show();
+    });
+  },
 
   render: function() {
     var self = this;
@@ -59,11 +67,13 @@ FieldMapView = FieldView.extend({
       height: self.mapSettings.mapHeight
     });
 
-    this.renderMap();
-
     // add to dom
     this.options.parentEl.append(this.$el);
-    this.show();
+  },
+
+  show: function() {
+    FieldView.prototype.show.call(this);
+    this.renderMap();
   },
 
   renderMap: function() {
@@ -121,7 +131,7 @@ FieldMapView = FieldView.extend({
     });
   },
 
-  mapResize: function () {
+  mapResize: function() {
     if (this.map != null) {
       console.log('mapResize');
       // trigger resize event
@@ -131,7 +141,7 @@ FieldMapView = FieldView.extend({
     }
   },
 
-  addValidationRules: function () {
+  addValidationRules: function() {
     // You can't have a required map, since there's no input. Also there's always a default location set.
   },
 
