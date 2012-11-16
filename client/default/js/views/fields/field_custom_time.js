@@ -21,8 +21,11 @@ FieldCustomTimeView = FieldView.extend({
   },
 
   action: function(el) {
-    var ts = new moment().format('HH:mm:ss');
-    $('input', this.$el).val(ts).blur();
+    var m = new moment();
+    $('input', this.$el).val(m.format('HH:mm:ss')).blur();
+    if($('input', this.$el).val() === "") {
+      $('input', this.$el).val(m.format('HH:mm')).blur();
+    }
     this.contentChanged();
   }
 });
