@@ -57,6 +57,17 @@ FieldAddressView = FieldView.extend({
     this.show();
   },
 
+  defaultValue:function () {
+    var defaultValue = {};
+    var subfields = this.model.get('SubFields');
+    $.each(subfields, function(i, subfield) {
+      if(subfield.DefaultVal) {
+        defaultValue[subfield.ID] = subfield.DefaultVal;
+      }
+    });
+    return defaultValue;
+  },
+
   addValidationRules: function () {
     if (this.isRequired()) {
       var message = 'Please fill in the highlighted fields.';

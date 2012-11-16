@@ -19,6 +19,13 @@ FieldView = Backbone.View.extend({
     this.on('visible', function () {
       console.log('field visible');
     });
+
+    if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
+      this.model.set({
+        Value: this.defaultValue()
+      });
+    }
+
     // only call render once. model will never update
     this.render();
   },
@@ -141,6 +148,12 @@ FieldView = Backbone.View.extend({
       //set the form value from model
       this.value(this.model.serialize());
     }
+  },
+
+  defaultValue: function() {
+    var defaultValue = {};
+    defaultValue[this.model.get('ID')] = this.model.get('DefaultVal');
+    return defaultValue;
   },
 
   // Gets or Set the value for this field

@@ -6,7 +6,9 @@ FieldDateView = FieldView.extend({
   value: function(value) {
     if (value && !_.isEmpty(value)) {
       $.each(value, function(id, val) {
-        $("#" + id).val(val);
+        if (val && !_.isEmpty(val)) {
+          $("#" + id).val(new moment(val).format('YYYY-MM-DD'));
+        }
       });
     }
     var val = $('#' + this.model.get('ID')).val();

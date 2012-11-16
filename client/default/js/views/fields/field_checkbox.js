@@ -42,6 +42,17 @@ FieldCheckboxView = FieldView.extend({
     }
   },
 
+  defaultValue:function () {
+    var defaultValue = {};
+    var subfields = this.model.get('SubFields');
+    $.each(subfields, function(i, subfield) {
+      if(subfield.DefaultVal && subfield.DefaultVal == 1) {
+        defaultValue[subfield.ID] = subfield.Label;
+      }
+    });
+    return defaultValue;
+  },
+
   value:function (value) {
     if (value) {
       $.each(value, function (id, val) {
