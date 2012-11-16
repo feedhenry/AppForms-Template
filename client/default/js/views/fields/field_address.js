@@ -1,8 +1,8 @@
 FieldAddressView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
-    input: '<span class="fancy_name"><input id="<%= id %>" name="<%= id %>" type="text" class="field text <%= classes %>" value="<%= value %>"/><label for="<%= id %>"><%= label %></label></span>',
-    countries_select: '<select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select>',
+    input: '<span class="fancy_name"><label for="<%= id %>"><%= label %></label><input id="<%= id %>" name="<%= id %>" type="text" class="field text <%= classes %>" value="<%= value %>"/></span>',
+    countries_select: '<span class="fancy_name"><label for="<%= id %>">Country</label><select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select></span>',
     countries_option: '<option><%= value %></option>'
   },
 
@@ -33,7 +33,7 @@ FieldAddressView = FieldView.extend({
           var option = $(_.template(self.templates.countries_option, {
             "value": country
           }));
-          select.append(option);
+          $('select', select).append(option);
         });
 
         self.$el.append(select);
