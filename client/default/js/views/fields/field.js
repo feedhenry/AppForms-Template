@@ -26,6 +26,10 @@ FieldView = Backbone.View.extend({
       });
     }
 
+    if (this.model.get('IsRequired') === '1') {
+      this.$el.addClass('required');
+    }
+
     // only call render once. model will never update
     this.render();
   },

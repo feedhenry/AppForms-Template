@@ -8,16 +8,16 @@ FieldRadioView = FieldView.extend({
   render: function() {
     var self = this;
 
-    var hidden_field = _.template(this.templates.hidden_field, {
-      "id": this.model.get('ID')
-    });
-    this.$el.append(hidden_field);
-
     var title = _.template(this.templates.title, {
       "title": this.model.get('Title')
     });
     this.$el.append(title);
 
+    var hidden_field = _.template(this.templates.hidden_field, {
+      "id": this.model.get('ID')
+    });
+    this.$el.append(hidden_field);
+    
     var choices = this.model.get('Choices');
     $.each(choices, function(i, choice) {
       var choice_field = $(_.template(self.templates.choice, {
