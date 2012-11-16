@@ -250,6 +250,10 @@ td.active .page_title {
   font-weight: bold;
 }
 
+.field_container span label:first-child {
+  font-weight: normal;
+}
+
 .likert_subfield label.font-normal {
   font-weight: normal;
   margin-bottom: 0px;
@@ -289,12 +293,8 @@ td.active .page_title {
 }
 
 .fancy_name input {
-  width: inherit;
-  display: inline-block;
-}
-
-.fancy_name {
-  float: left;
+  width: 100%;
+  display: block;
 }
 
 .fancy_name label {
@@ -452,6 +452,14 @@ table.likert {
   width: 16px;
 }
 
+.fetching {
+  background: #ddd;
+}
+
+.fetch_error {
+  background: #E75252;
+}
+
 .fetching .loading {
   display: inherit;
   margin-right: 10px;
@@ -460,7 +468,7 @@ table.likert {
   top: 29%;
 }
 
-.fetched .loading {
+.fetched .loading, .fetch_error .loading {
   display: none;
 }
 

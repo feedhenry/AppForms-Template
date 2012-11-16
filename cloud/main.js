@@ -64,6 +64,12 @@ exports.getForm = function (params, callback) {
     "error": "form_hash is required"
   });
 
+  // if (['q7p2s7', 'm7p7a7', 'm7p7q7'].indexOf(form_hash) > -1) {
+  //   return callback(null, {
+  //     "error": "Form '" + form_hash + "' temporarily disabled"
+  //   });
+  // }
+
   // asynchronously get:
   // - form data
   // - fields data
