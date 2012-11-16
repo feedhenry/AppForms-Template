@@ -293,12 +293,8 @@ td.active .page_title {
 }
 
 .fancy_name input {
-  width: inherit;
-  display: inline-block;
-}
-
-.fancy_name {
-  float: left;
+  width: 100%;
+  display: block;
 }
 
 .fancy_name label {

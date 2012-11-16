@@ -2,7 +2,7 @@ FieldAddressView = FieldView.extend({
   templates: {
     title: '<label><%= title %></label>',
     input: '<span class="fancy_name"><label for="<%= id %>"><%= label %></label><input id="<%= id %>" name="<%= id %>" type="text" class="field text <%= classes %>" value="<%= value %>"/></span>',
-    countries_select: '<span class="fancy_name"><label for="<%= id %>">Country</label><select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select></span>',
+    countries_select: '<span class="fancy_name"><label for="<%= id %>">Country</label><select id="<%= id %>" name="<%= id %>"></select></span>',
     countries_option: '<option><%= value %></option>'
   },
 
