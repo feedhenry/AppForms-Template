@@ -259,6 +259,12 @@ td.active .page_title {
   margin-bottom: 0px;
 }
 
+.field_container.required label:first-child:after {
+  color: #e32;
+  content: ' *';
+  display: inline;
+}
+
 .likert_subfield {
   margin-bottom: 10px;
 }
