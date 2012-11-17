@@ -181,6 +181,8 @@ FieldCameraView = FieldView.extend({
       if (fromLibrary) {
         camOptions.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
       }
+      // turn off refetch on resume from pic taking, necessary as pic/cam sends app in background
+      App.resumeFetchAllowed = false;
       navigator.camera.getPicture(this.imageSelected, function(err) {
         alert('Camera Error: ' + err);
       }, camOptions);

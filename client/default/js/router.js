@@ -57,6 +57,9 @@ App.Router = Backbone.Router.extend({
     App.collections.pending_review.fetch();
 
     $fh.ready(function() {
+      // by default, allow fetching on resume event.
+      // Can be set to false when taking a pic so refetch doesn't happen on resume from that
+      App.resumeFetchAllowed = true;
       document.addEventListener("resume", self.onResume, false);
     });
 
@@ -72,10 +75,20 @@ App.Router = Backbone.Router.extend({
   },
 
   onResume: function() {
-    // Re-fetch on resume
-    var loadingView = new LoadingCollectionView();
-    loadingView.show("Loading form list");
-    App.collections.forms.fetch();
+    // only trigger resync of forms if NOT resuming after taking a photo
+    if (App.resumeFetchAllowed) {
+      console.log('resume fetch in background');
+      // Re-fetch on resume
+      // NOTE: was originally showing loading view and progress while resyncing after resume.
+      //       Not any more. We'll let it happen in background so UI isn't blocking
+      // var loadingView = new LoadingCollectionView();
+      // loadingView.show("Loading form list");
+      App.collections.forms.fetch();
+    } else {
+      console.log('resume fetch blocked. resetting resume fetch flag');
+      // reset flag to true for next time
+      App.resumeFetchAllowed = true;
+    }
   },
 
   pending: function() {
