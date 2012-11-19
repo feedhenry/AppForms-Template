@@ -312,7 +312,7 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  getWufoo("/forms/" + wufoo_config.wufoo_config.form_hash, function (err,response){
+  getWufoo("/forms/" + params.form_hash, function (err,response){
     var $ = cheerio.load(response.body);
     var idstamp = $("#idstamp").attr("value");
     
