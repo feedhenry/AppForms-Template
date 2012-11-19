@@ -1,6 +1,7 @@
 var util = require('util');
 var request = require('request');
 var url = require("url");
+var cheerio = require("cheerio");
 var inline = require('./inline.js');
 var wufoo_config = require('./wufoo_config.js');
 
@@ -53,7 +54,7 @@ updateWufooHTML = function(form_hash, updated, html, remove_script, cb) {
   });
 };
 
-formDataToMultipart = function(form_data, cb) {
+formDataToMultipart = function(form_data, idstamp) {
   var data = form_data;
   var multipart_data = [];
 
@@ -84,8 +85,8 @@ formDataToMultipart = function(form_data, cb) {
         if (field.value != '') {
           var multipart_part = {
             'Content-Disposition': 'form-data; name="' + field.name + '"',
-            body: field.value,
-          }
+            body: (field.name === "idstamp" ? idstamp : field.value)
+          };
           multipart_data.push(multipart_part);
         }
       } else if (field.type == 'file') {
@@ -93,8 +94,8 @@ formDataToMultipart = function(form_data, cb) {
           var multipart_part = {
             'Content-Disposition': 'form-data; name="' + field.name + '"; filename="' + field.filename + '.' + field.extension + '"',
             'Content-Type': 'image/' + field.extension,
-            body: new Buffer(field.value, 'base64'),
-          }
+            body: new Buffer(field.value, 'base64')
+          };
           multipart_data.push(multipart_part);
         }
       } else {
@@ -107,16 +108,21 @@ formDataToMultipart = function(form_data, cb) {
 };
 
 getFormData = function(form_hash, callback) {
+  getWufoo("/api/v3/forms/" + form_hash + ".json",callback);
+};
+
+/**
+  * do a wufoo get
+  */
+getWufoo = function(path, callback) {
   getConfig(function(err, wufoo_config) {
     if (err != null) {
       return callback(null, err);
     }
     var domain = wufoo_config.wufoo_config.api_domain;
     var api_key = wufoo_config.wufoo_config.api_key;
-    var app_type = wufoo_config.wufoo_config.app_type;
 
-    var forms_url = "https://" + domain + "/api/v3/forms/" + form_hash + ".json";
-
+    var forms_url = "https://" + domain + path;
     var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
     var auth_header = {
       'Authorization': auth
@@ -306,20 +312,26 @@ exports.getForms = function(params, callback) {
  * proxied response back to the client
  */
 exports.submitForm = function(params, callback) {
-  var multipart_data = formDataToMultipart(params.form_data);
-  var req = request({
-    method: 'POST',
-    uri: params.form_submission_url,
-    followAllRedirects: true,
-    headers: {
-      'content-type': 'multipart/form-data;'
-    },
-    multipart: multipart_data
-  }, function(e, r, b) {
-    updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
-      return callback(null, {
-        "html": processed_html + '<button onclick="WufooController.showHome()">Back to Forms</button>'
+  getWufoo("/forms/" + wufoo_config.wufoo_config.form_hash, function (err,response){
+    var $ = cheerio.load(response.body);
+    var idstamp = $("#idstamp").attr("value");
+    
+    var multipart_data = formDataToMultipart(params.form_data,idstamp);
+    var req = request({
+      method: 'POST',
+      uri: params.form_submission_url,
+      followAllRedirects: true,
+      headers: {
+        'content-type': 'multipart/form-data;'
+      },
+      multipart: multipart_data
+    }, function(e, r, b) {
+      updateWufooHTML(params.form_hash, null, b, true, function(processed_html) {
+        return callback(null, {
+          "html": processed_html + '<button onclick="WufooController.showHome()">Back to Forms</button>'
+        });
       });
     });
-  });
+             
+  }); 
 };
