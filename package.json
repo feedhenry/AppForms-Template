@@ -1,8 +1,12 @@
 {
   "name": "FeedHenry-Wufoo-App-Generator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "dependencies": {
     "cheerio": "*",
     "wrench": "*"
+  },
+  "devDependencies"  : {
+    "grunt-contrib-copy" : "*"
   }
+
 }
