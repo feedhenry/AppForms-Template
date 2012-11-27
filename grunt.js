@@ -1,8 +1,9 @@
 /*global module:false*/
 module.exports = function(grunt) {
+  grunt.loadNpmTasks('grunt-contrib-copy');
 
-  grunt.task.registerHelper('jsFiles', function() {
-    grunt.log.writeln('jsFiles starting');
+  grunt.task.registerHelper('matchFiles', function(re) {
+    grunt.log.writeln('matchFiles starting');
 
     var cheerio = require('cheerio');
     var fs = require('fs');
@@ -11,16 +12,14 @@ module.exports = function(grunt) {
     var $ = cheerio.load(fs.readFileSync('./client/default/index.html'));
     $('script').each(function (index, el) {
       var src = $(el).attr('src');
-      if (src != null) {
+      if (src != null && src.match(re)) {
         scripts.push('./client/default/' + src);
       }
     });
 
-    grunt.log.writeln('scripts in index.html:' + JSON.stringify(scripts));
+    grunt.log.writeln('scripts matching ' + re + ' in index.html:' + JSON.stringify(scripts));
     return scripts;
   });
-
-  var jsFiles = grunt.helper('jsFiles');
 
   // Project configuration.
   grunt.initConfig({
@@ -37,14 +36,26 @@ module.exports = function(grunt) {
     },
     concat: {
       dist: {
-        src: ['<banner>'].concat(jsFiles),
+        // NOTE : current match is src not starting with lib (a simpler /^js\// would also work),
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)/)),
         dest: 'dist-dev/client/default/main.js'
+      },
+      lib: {
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^lib\//)),
+        dest: 'dist-dev/client/default/lib.js'
+      }
+    },
+    copy: {
+      dist: {
+        files: {
+          'dist/client/default/' : './dist-dev/client/default/main.js'
+        }
       }
     },
     min: {
-      dist: {
-        src: ['<config:concat.dist.dest>'],
-        dest: 'dist/client/default/main.min.js'
+      lib: {
+        src: ['<config:concat.lib.dest>'],
+        dest: 'dist/client/default/lib.min.js'
       }
     },
     jshint: {
@@ -99,9 +110,14 @@ module.exports = function(grunt) {
       }
     });
 
-    // append script tag with appropirate src
-    var htmlDev = $.root().append('<script src="main.js"></script>').html();
-    $('script[src="main.js"]').attr('src', 'main.min.js');
+
+    // add the tags and make a dev copy of the html
+    $.root().append('<script src="lib.js"></script>\n');
+    $.root().append('<script src="main.js"></script>\n');
+    var htmlDev = $.root().html();
+
+    // insert the minified files for prod
+    $('script[src="lib.js"]').attr('src', 'lib.min.js');
     var htmlProd = $.html();
 
     // write index files
@@ -153,6 +169,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint mkdirs archive concat min index rearchive');
+  grunt.registerTask('default', 'clean lint mkdirs archive concat copy min index rearchive');
 
 };
