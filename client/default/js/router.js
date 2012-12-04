@@ -82,6 +82,18 @@ App.Router = Backbone.Router.extend({
         $('#logger').addClass('hidden');
       }
     });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:default_timeout', function () {
+      var timeout = App.config.get('default_timeout');
+      if (_.isNumber(timeout)) {
+        $fh.ready({}, function(){
+          console.log("Setting timeout to " + timeout);
+          $fh.legacy.fh_timeout=timeout;
+        });
+      }
+    });
   },
 
   onResume: function() {

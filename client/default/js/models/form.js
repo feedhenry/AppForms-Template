@@ -10,11 +10,12 @@ FormModel = Backbone.Model.extend({
   },
 
   initialize: function () {
+    _.bindAll(this);
+
     this.initPages();
 
     // if model changes, re-initialise sub-collection of pages
     this.bind('change', this.reInitPages, this);
-
     this.on('change:page_history', function (model, history) {
       model.set('active_page', _(history).last());
     });
@@ -53,6 +54,37 @@ FormModel = Backbone.Model.extend({
     return form;
   },
 
+  dumpChunk:function (name,chunk) {
+    $fh.logger.debug("cacheChunk field='" , name );
+    $fh.logger.debug("cacheChunk content_type='" , chunk.content_type);
+    $fh.logger.debug("cacheChunk filename='" , chunk.filename);
+    $fh.logger.debug("cacheChunk size='" , chunk.fileBase64.length);
+  },
+
+  cacheChunk:function (serialized_form,form_hash,name,value, callback) {
+    var key = guid();
+    $fh.logger.debug("cacheChunk starting");
+    this.dumpChunk(name ,value);
+
+    $fh.act({
+      "act":"cacheChunk",
+      "retries" : App.config.get("max_retries"),
+      "req":{
+        "key":key,
+        "data":{"key":key, "name":name, "value":value, "form_hash":form_hash}
+      }
+    }, function (res) {
+      $fh.logger.debug("cacheChunk name='" , name , "',res='" , res);
+      if (res.Success && res.Success === 1) {
+        serialized_form[name] = {content_type:"ref", ref:key};
+        callback(null, res);
+      } else {
+        callback({error:'validation'}, res);
+      }
+    }, function (msg, err) {
+      callback({error:'network'}, msg);
+    });
+  },
   submit: function(cb) {
     var self = this;
     var serialized_form = self.serialize();
@@ -60,28 +92,51 @@ FormModel = Backbone.Model.extend({
 
     Utils.isOnline(function(online) {
       if (online) {
-        $fh.act({
-          "act": "postEntry",
-          "req": {
-            "form_hash": form_hash,
-            "data": serialized_form
+        //var chunkTasks = [function noOp(callback) {callback()}];
+        var chunkTasks = [];
+        if(App.config.get("use_chunking")) {
+          chunkTasks = _.collect(serialized_form, function chunkHandler(value,key){
+            if (_.isObject(value) && !_.isUndefined(value.filename)) {
+              $fh.logger.debug("value=",value);
+              return async.apply(self.cacheChunk,serialized_form,form_hash,key,value);
+            } else {
+              return null;
+            }
+          });
+          chunkTasks = _.compact(chunkTasks);
+        }
+        async.series(chunkTasks, function onComplete(err, results) {
+          if(err) {
+            $fh.logger.debug("form.submit err", err, ",results=", results);
+            self.showAlert("Unexpected Network error, please try again later", "error" ,5000);
+            return cb({error:'network'}, err);
           }
-        }, function(res) {
-          $fh.logger.debug("submit resp :: " + JSON.stringify(res));
-          if(res.Success && res.Success === 1) {
-            self.showAlert("Form Successfully submitted", "success" ,5000);
-            cb(null, res);
-          } else {
-            self.showAlert("There are validation errors", "error" ,5000);
-            cb({error : 'validation'}, res);
-          }
-        }, function(msg, err) {
-          $fh.logger.debug('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          self.showAlert("Unexpected Error :: " + msg + '. Error properties:' + JSON.stringify(err), "error" ,5000);
-          cb({error : 'network'}, msg);
+          $fh.act({
+            "act": "postEntry",
+            "req": {
+              "form_hash": form_hash,
+              "data": serialized_form
+            }
+          }, function(res) {
+            $fh.logger.debug("submit res=" , res);
+            if(res.Success && res.Success === 1) {
+              self.showAlert("Form Successfully Submitted", "success" ,5000);
+              $fh.logger.debug('Form Successfully Submitted: res:' ,res);
+              cb(null, res);
+            } else {
+              self.showAlert("Form is invalid, Please fix the highlighted errors", "error" ,5000);
+              $fh.logger.error('Form is invalid, Please fix the highlighted errors: res:' ,res);
+              cb({error : 'validation'}, res);
+            }
+          }, function(msg, err) {
+            self.showAlert("Unexpected Network error, please try again later", "error" ,5000);
+            $fh.logger.error('Cloud call failed with error:' ,  msg , '. Error properties:' ,err);
+            cb({error : 'network'}, msg);
+          });
         });
       } else {
         self.showAlert("Unable to submit the form : you are currently offline", "error" ,5000);
+        $fh.logger.error('Cloud call failed with error:' ,  msg , '. Error properties:' ,err);
         cb({error : 'offline'}, 'offline');
       }
     });

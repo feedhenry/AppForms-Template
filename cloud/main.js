@@ -200,21 +200,64 @@ exports.getForm = function (params, callback) {
 
 //{"error":"{"Success":0,"ErrorText":"Errors have been highlighted below.","FieldErrors":[{\"ID\":\"Field116\",\"ErrorText\":\"This field is required. Please enter a value.\"}]}"}
 
-exports.postEntry = function (params, callback) {
-  var form_hash = params.form_hash;
-  if (form_hash == null) return callback(null, {
-    "error": "form_hash is required"
-  });
+exports.cacheChunk= function (params, callback) {
+  var key = params.key;
   var data = params.data;
-  return wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
-    if (err != null) {
-      console.error('error posting form entry: ' + err.error);
-      return callback(null, err);
+  if (key === null || data === null) {
+    return callback(null, {"error": "key and data are required"});
+  } else {
+    $fh.cache({
+      act: "save",
+      key: key,
+      value: JSON.stringify(data) //data
+    }, function(err, res) {
+      if (err) {
+        return callback(null, {"error": err.toString()});
+      } else {
+        return callback(null, {"Success" : 1});
+      }
+    });  
+  }
+};
+
+exports.loadChunk = function (form,data,name, callback) {
+  $fh.cache({
+    act: "load",
+    key: data.ref
+  }, function(err, json) {
+    if (err) {
+      return callback(null, {"error": "cached chunk missing for : " + name + "("+ err.toString() + ")"});
+    } else {
+      var res =  JSON.parse(json);
+      form[name] = res.value;
+      return callback();
     }
-    return callback(null, resp);
   });
 };
 
+exports.postEntry = function (params, callback) {
+  var form_hash = params.form_hash;
+  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
+  var data = params.data;
+  var self = this;
+  var chunkTasks = _.collect(data, function chunkHandler(chunk,name){
+    if(chunk.content_type === "ref") {
+      return async.apply(self.loadChunk,data,chunk,name);
+    }
+  });
+  
+  chunkTasks = _.compact(chunkTasks);
+  async.parallel(chunkTasks, function onComplete(err, results) {
+    if(err) return cb({error:'network'}, err);
+    return wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
+      if (err !== null) {
+        console.error('error posting form entry: ' + err.error);
+        return callback(null, err);
+      }
+      return callback(null, resp);
+    });
+  });
+};
 
 /*
  * Here we get a list of available Wufoo forms
@@ -243,3 +286,16 @@ exports.getForms = function (params, callback) {
     });
   });
 };
+
+var self = this;
+_.each(exports, function (func,name){
+  exports[name] = _.wrap(func, function(func) {
+    console.log(name + " starting", arguments);
+    try {
+      return func.apply(self, Array.prototype.slice.call(arguments,1));
+    } catch(e) {
+      console.log(name,e);
+      throw e;
+    }
+  });
+});
