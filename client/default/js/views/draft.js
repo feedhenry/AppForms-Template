@@ -188,6 +188,7 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    delete this.model.id;
     App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
   },
@@ -201,6 +202,7 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    delete this.model.id;
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
   },
