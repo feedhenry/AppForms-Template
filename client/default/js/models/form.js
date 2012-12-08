@@ -67,14 +67,14 @@ FormModel = Backbone.Model.extend({
             "data": serialized_form
           }
         }, function(res) {
-          console.log("submit resp :: " + JSON.stringify(res));
+          $fh.logger.debug("submit resp :: " + JSON.stringify(res));
           if(res.Success && res.Success === 1) {
             cb(null, res);
           } else {
             cb({error : 'validation'}, res);
           }
         }, function(msg, err) {
-          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          $fh.logger.debug('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
           cb({error : 'network'}, msg);
         });
       } else {

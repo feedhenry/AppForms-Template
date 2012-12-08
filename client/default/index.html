@@ -35,6 +35,13 @@
 <button onclick="localStorage.clear();location.reload();">Clear Local Storage</button><br/>
 </div>
 
+<div id="logger" class="hidden">
+    <div id="fh_logs">
+        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br/>
+        <div class="logs"></div>
+    </div>
+</div>
+
 <!-- TODO: App Version -->
 <div id="app_version"></div>
 
@@ -44,6 +51,9 @@ var App = App || {};
 App.views = App.views || {};
 App.collections = App.collections || {};
 </script>
+
+<script src="lib/fh.logger.js" type="text/javascript" charset="utf-8"></script>
+
 
 <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
@@ -113,6 +123,7 @@ App.collections = App.collections || {};
 <script src="js/views/page.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/sent.js" type="text/javascript" charset="utf-8"></script>
+
 
 <!-- Router -->
 <script src="js/router.js" type="text/javascript" charset="utf-8"></script>

@@ -6,7 +6,6 @@
  * @author gareth.cpm@gmail.com (Gareth Murphy), david.martin@feedhenry.com
  */
 
-
 // Generate four random hex digits (for GUIDs).
 
 function S4() {
@@ -67,7 +66,7 @@ _.extend(FHBackboneDataActSync.prototype, {
        */
 
       if (typeof(window.requestFileSystem) !== 'undefined') {
-        console.log('Overriding $fh.data with file storage');
+        $fh.logger.info('Overriding $fh.data with file storage');
 
         // Redefine $fh.data
         $fh.data = function(options, success, failure) {
@@ -75,13 +74,13 @@ _.extend(FHBackboneDataActSync.prototype, {
             if (typeof failure !== 'undefined') {
               return failure(msg, {});
             } else {
-              console.log('failure: ' + msg);
+              $fh.logger.warn('failure: ' + msg);
             }
           }
 
           function filenameForKey(key, cb) {
             key = $fh.app_props.appid + key;
-            console.log('filenameForKey: ' + key);
+            $fh.logger.debug('filenameForKey: ' + key);
             $fh.hash({
               algorithm: "MD5",
               text: key
@@ -93,7 +92,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
           function save(key, value) {
             filenameForKey(key, function(hash) {
-              //console.log('saving: ' + key + ', ' + value + '. Filename: ' + hash);
+              //$fh.logger.debug('saving: ' + key + ', ' + value + '. Filename: ' + hash);
               window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
                 fileSystem.root.getFile(hash, {
                   create: true
@@ -120,7 +119,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
           function remove(key) {
             filenameForKey(key, function(hash) {
-              console.log('remove: ' + key + '. Filename: ' + hash);
+              $fh.logger.debug('remove: ' + key + '. Filename: ' + hash);
 
               window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
                 fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
@@ -186,14 +185,15 @@ _.extend(FHBackboneDataActSync.prototype, {
       }
 
 
-      console.log('init data for:"', self.name, '"');
+      $fh.logger.debug('init data for:"', self.name, '"');
+
       $fh.data({
         key: self.name + self.localStoreVersion
       }, function(res) {
         try {
           if (res.val && res.val !== '') {
             self.data = JSON.parse(res.val);
-            console.log('found data in local storage for "', self.name, '"');
+            $fh.logger.debug('found data in local storage for "' + self.name + '"');
           }
         } catch (e) {
           // leave data as default
@@ -218,7 +218,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
                 // update client config if its in response
                 if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
-                  console.log('updating config');
+                  $fh.logger.debug('updating config');
                   App.config.set(_.extend({}, App.config.attributes, res.config));
                 }
                 // update data if there is any
@@ -229,7 +229,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     var currentData = self.data[item[self.idField]];
                     // update data if data doesn't exist already, or if version is different, otherwise no change to data
                     if (currentData == null || (currentData[self.versionField] !== item[self.versionField])) {
-                      console.log('updating data for:"', self.name, '"');
+                      $fh.logger.debug('updating data for:"', self.name, '"');
                       dataUpdated = true;
                       self.data[item[self.idField]] = item;
                       // don't update version field to force update of full details
@@ -242,7 +242,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                 if (dataEmpty) {
                   // data inited for first time. save to local storage and callback straight away (no need to wait for save)
                   self.save(function() {
-                    console.log('inited data for "', self.name, '" saved to local storage');
+                    $fh.logger.debug('inited data for "', self.name, '" saved to local storage');
                   });
                   cb(null);
                 } else {
@@ -250,7 +250,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     // data already initialised from local storage, need to update the data and let subsequent events on models
                     // take care of updating views i.e. don't call cb
                     self.save(function() {
-                      console.log('updated data for "', self.name, '" saved to local storage');
+                      $fh.logger.debug('updated data for "', self.name, '" saved to local storage');
                     });
                   }
                 }
@@ -293,7 +293,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     }, function(msg, err) {
       var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
       self.trigger('error', errMsg);
-      console.error(errMsg);
+      $fh.logger.error(errMsg);
       cb(err);
     });
   },
@@ -350,14 +350,14 @@ _.extend(FHBackboneDataActSync.prototype, {
             // what we got
             if (res && res.data && (!dataLoaded || (res.data[self.versionField] !== self.data[modelToFind.id][self.versionField]))) {
               dataUpdated = true;
-              console.log('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
+              $fh.logger.debug('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
               self.data[modelToFind.id] = res.data;
               self.data[modelToFind.id].fh_full_data_loaded = true;
             }
             if (!dataLoaded || dataUpdated) {
               // save data to local storage
               self.save(function() {
-                console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
+                $fh.logger.debug('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
               });
               // and either:
               // - callback straight away if data never loaded before (no need to wait til save finished)
@@ -412,7 +412,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
 FHBackboneDataActSyncFn = function(method, model, options) {
   if (!model.store && !model.collection) {
-    console.log("Trying to destroy a model that's not part of a store, returning.");
+    $fh.logger.debug("Trying to destroy a model that's not part of a store, returning.");
     return;
   }
 

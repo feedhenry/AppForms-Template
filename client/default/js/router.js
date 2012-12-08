@@ -28,7 +28,7 @@ App.Router = Backbone.Router.extend({
 
   form_list: function() {
     var self = this;
-    console.log('route: form_list');
+    $fh.logger.debug('route: form_list');
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
@@ -40,10 +40,10 @@ App.Router = Backbone.Router.extend({
     // store error handling
     _(App.collections).forEach(function (collection) {
       collection.on('error', function (collection, msg , options) {
-        console.error('collection error:', msg);
+        $fh.logger.error('collection error:', msg);
       });
       collection.store.on('error', function (msg) {
-        console.error('collection store error:', msg);
+        $fh.logger.error('collection store error:', msg);
       });
     });
 
@@ -72,12 +72,22 @@ App.Router = Backbone.Router.extend({
         $('#debug_mode').addClass('hidden');
       }
     });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:logger', function () {
+      if (App.config.get('logger') === true) {
+        $('#logger').removeClass('hidden');
+      } else {
+        $('#logger').addClass('hidden');
+      }
+    });
   },
 
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
-      console.log('resume fetch in background');
+      $fh.logger.debug('resume fetch in background');
       // Re-fetch on resume
       // NOTE: was originally showing loading view and progress while resyncing after resume.
       //       Not any more. We'll let it happen in background so UI isn't blocking
@@ -85,14 +95,14 @@ App.Router = Backbone.Router.extend({
       // loadingView.show("Loading form list");
       App.collections.forms.fetch();
     } else {
-      console.log('resume fetch blocked. resetting resume fetch flag');
+      $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
       // reset flag to true for next time
       App.resumeFetchAllowed = true;
     }
   },
 
   pending: function() {
-    console.log('route: pending');
+    $fh.logger.debug('route: pending');
   }
 });
 

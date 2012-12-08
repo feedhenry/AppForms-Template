@@ -44,7 +44,7 @@ label.error { display: inline; }
 label.choice { display: inline; }
 input[type="radio"], input[type="checkbox"] { width: inherit; }
 
-#fh_wufoo_content, #fh_wufoo_form_list {
+#fh_logs, #fh_wufoo_content, #fh_wufoo_form_list {
   background: #fff;
   width: 97%;
   margin: 0 auto;

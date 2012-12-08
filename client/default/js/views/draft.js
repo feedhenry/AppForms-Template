@@ -16,7 +16,7 @@ DraftView = Backbone.View.extend({
     });
 
     this.on('visible', function () {
-      console.log('draft visible');
+      $fh.logger.debug('draft visible');
     });
 
     this.pages = [];
@@ -147,7 +147,7 @@ DraftView = Backbone.View.extend({
         nextPage = currentPage + 1;
       }
       nextPage = Math.min(this.pages.length - 1, nextPage); // make sure we don't go past the last page.
-      console.log('next page ', currentPage, '=>', nextPage);
+      $fh.logger.debug('next page ', currentPage, '=>', nextPage);
       // only change page if page is different
       if (nextPage !== currentPage) {
         this.model.pushPage(nextPage);

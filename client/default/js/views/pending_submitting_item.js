@@ -17,6 +17,6 @@ PendingSubmittingItemView = ItemView.extend({
 
   show: function() {
     //TODO: Impl?
-    console.log('show for submitting not implemented');
+    $fh.logger.debug('show for submitting not implemented');
   }
 });

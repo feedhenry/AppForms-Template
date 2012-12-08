@@ -69,7 +69,7 @@ FieldCameraView = FieldView.extend({
     var target = this.$el.find('#' + this.model.get('ID'));
 
     if (imageData) {
-      console.log('setting imageData:', imageData.length);
+      $fh.logger.debug('setting imageData:', imageData.length);
       // prepend dataUri if not already there
       var dataUri = imageData;
       if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
@@ -111,7 +111,7 @@ FieldCameraView = FieldView.extend({
 
   removeThumb: function(e) {
     e.preventDefault();
-    console.log('removeThumb');
+    $fh.logger.debug('removeThumb');
 
     this.setImageData(null);
     this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
@@ -155,7 +155,7 @@ FieldCameraView = FieldView.extend({
               options.targetWidth = val[0];
               options.targetHeight = val[1];
             } else {
-              console.error('Invalid camera resolution, using defaults');
+              $fh.logger.error('Invalid camera resolution, using defaults');
             }
           }
         } else if (className.indexOf("fhcompression") != -1) {

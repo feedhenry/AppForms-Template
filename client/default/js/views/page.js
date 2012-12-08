@@ -36,7 +36,7 @@ PageView = Backbone.View.extend({
 
     // pass visible event down to all fields
     this.on('visible', function () {
-      console.log('page visible');
+      $fh.logger.debug('page visible');
       _(self.fieldViews).forEach(function (fieldView) {
         fieldView.trigger('visible');
       });
@@ -61,7 +61,7 @@ PageView = Backbone.View.extend({
           model: field
         });
       } else {
-        console.log('FIELD NOT SUPPORTED:' + fieldType);
+        $fh.logger.debug('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
   },

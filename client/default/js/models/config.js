@@ -14,10 +14,10 @@ ConfigModel = Backbone.Model.extend({
             self.set(JSON.parse(res.val));
           } catch(e) {
             //log error, but no action
-            console.log('ERROR: parsing config from local storage. Using config defaults:', e);
+            $fh.logger.error('ERROR: parsing config from local storage. Using config defaults:', e);
           }
         } else {
-          console.log('No config in local storage. Using config defaults');
+          $fh.logger.warn('No config in local storage. Using config defaults');
         }
       });
     });
@@ -30,7 +30,7 @@ ConfigModel = Backbone.Model.extend({
       }, function () {
         // saved ok
       }, function (msg, err) {
-        console.error('ERROR: saving client_config to local storage :: ', msg);
+        $fh.logger.error('ERROR: saving client_config to local storage :: ', msg);
       });
     });
   }

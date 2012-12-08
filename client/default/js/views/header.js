@@ -32,7 +32,7 @@ HeaderView = Backbone.View.extend({
   render: function() {
     var self = this;
 
-    console.log('render headerView');
+    $fh.logger.debug('render headerView');
     $(this.el).empty();
 
     var list = $(_.template(this.templates.list, {}));
