@@ -138,10 +138,38 @@ module.exports = function(grunt) {
 
   grunt.registerTask('archive', 'Create archive of repo and unzip to temp folder', function () {
     var done = this.async();
-
     require('child_process').exec('git archive --worktree-attributes -o dist.zip -v HEAD;cd dist;unzip ../dist.zip;cd ..', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
+
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
+  });
+
+  grunt.registerTask('max-archive', 'Create unminfied archive of repo to import', function () {
+    var fs = require('fs');
+    var done = this.async();
+
+    fs.renameSync(".gitattributes", ".gitattributes.bak");
+    fs.writeFileSync(".gitattributes", 
+                     ["grunt.js export-ignore" ,
+                      "/package.json export-ignore" ,
+                      "README.md export-ignore" ,
+                      ".gitignore export-ignore" ,
+                      "client/wufoo_config.js export-subst" ,
+                      ".gitattributes export-ignore"].join("\n")
+                    );
+    
+    require('child_process').exec('git archive --worktree-attributes -o max.zip -v HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+
+      fs.renameSync(".gitattributes.bak", ".gitattributes");
       if (error !== null) {
         grunt.log.writeln('exec error: ' + error);
         done(1);
