@@ -33,7 +33,14 @@ SentListView = Backbone.View.extend({
 
   show: function() {
     App.views.header.markActive('.fh_wufoo_sent');
+    this.populate();
     $(this.el).show();
+  },
+
+  populate: function() {
+    // Re-render save
+    var maxSize = App.config.get('sent_save_max') || App.config.get('default_sent_save_max');
+    $('#sentSaveMax', this.el).val(maxSize);
   },
 
   hide: function() {
@@ -76,9 +83,7 @@ SentListView = Backbone.View.extend({
     $('.sent_list', this.el).append(this.templates.dismiss_all);
     $('.sent_list', this.el).append(this.templates.save_max);
 
-    // Re-render save
-    var maxSize = App.config.get('sent_save_max');
-    $('#sentSaveMax', this.el).val(maxSize);
+    this.populate();
   },
 
   appendSentForm: function(form) {

@@ -42,14 +42,6 @@ if (!$fh.logger) {
   };
 
   $fh.logger.warn = function(){
-    $fh.logger._dbg(console,console.debug,$fh.logger._stringify.apply(this,arguments));
-  };
-
-  $fh.logger.log = function(){
-    $fh.logger._dbg(console,console.log,$fh.logger._stringify.apply(this,arguments));
-  };
-
-  $fh.logger.warn = function(){
     $fh.logger._dbg("warn",console,console.debug,$fh.logger._stringify.apply(this,arguments));
   };
 
