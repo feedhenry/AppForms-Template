@@ -69,15 +69,19 @@ FormModel = Backbone.Model.extend({
         }, function(res) {
           $fh.logger.debug("submit resp :: " + JSON.stringify(res));
           if(res.Success && res.Success === 1) {
+            self.showAlert("Form Successfully submitted", "success" ,5000);
             cb(null, res);
           } else {
+            self.showAlert("There are validation errors", "error" ,5000);
             cb({error : 'validation'}, res);
           }
         }, function(msg, err) {
           $fh.logger.debug('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
+          self.showAlert("Unexpected Error :: " + msg + '. Error properties:' + JSON.stringify(err), "error" ,5000);
           cb({error : 'network'}, msg);
         });
       } else {
+        self.showAlert("Unable to submit the form : you are currently offline", "error" ,5000);
         cb({error : 'offline'}, 'offline');
       }
     });
@@ -90,7 +94,23 @@ FormModel = Backbone.Model.extend({
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
+  },
+
+  showAlert: function(message, type, timeout) {
+    var alertTpl = $('<div>').addClass('fh_wufoo_alert');
+
+    alertTpl.addClass(type);
+    alertTpl.text(message);
+
+    $('#fh_wufoo_alerts_area').append(alertTpl);
+
+    setTimeout(function() {
+      alertTpl.slideUp(function() {
+        $(this).remove();
+      });
+    }, timeout || 10000);
   }
+
 });
 
 FormsCollection = Backbone.Collection.extend({
