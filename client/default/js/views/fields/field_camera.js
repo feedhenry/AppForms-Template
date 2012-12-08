@@ -8,9 +8,9 @@ FieldCameraView = FieldView.extend({
   template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" width="100%">', '</div>'],
 
   initialize: function() {
+    FieldView.prototype.initialize.call(this);
     //Make sure 'this' is bound for setImageData, was incorrect on device!
     _.bindAll(this, 'setImageData', 'imageSelected');
-    this.render();
   },
 
   render: function() {
@@ -66,6 +66,8 @@ FieldCameraView = FieldView.extend({
   },
 
   setImageData: function(imageData, dontCallContentChanged) {
+    var target = this.$el.find('#' + this.model.get('ID'));
+
     if (imageData) {
       console.log('setting imageData:', imageData.length);
       // prepend dataUri if not already there
@@ -73,7 +75,7 @@ FieldCameraView = FieldView.extend({
       if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
         dataUri = 'data:image/jpeg;base64,' + imageData;
       }
-      this.$el.find('#' + this.model.get('ID')).val(dataUri);
+      target.val(dataUri);
       this.$el.find('.imageThumb').attr('src', dataUri);
       this.$el.find('.upload').hide();
       this.$el.find('.uploaded').show();
@@ -82,12 +84,17 @@ FieldCameraView = FieldView.extend({
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
     } else {
-      this.$el.find('#' + this.model.get('ID')).val(null);
+      target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');
       this.$el.find('.upload').show();
       this.$el.find('.uploaded').hide();
       delete this.fileData;
     }
+
+    // TODO horrible temp hack
+    this.$el.removeClass("error]");
+    this.$el.find("label[class=error]").remove();
+
     // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
     if (!dontCallContentChanged) {
       this.contentChanged();
