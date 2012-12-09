@@ -4,6 +4,7 @@ PageView = Backbone.View.extend({
     "text": FieldTextView,
     "number": FieldNumberView,
     "date": FieldDateView,
+    "eurodate": FieldDateView,
     "textarea": FieldTextareaView,
     "radio": FieldRadioView,
     "checkbox": FieldCheckboxView,
@@ -61,7 +62,7 @@ PageView = Backbone.View.extend({
           model: field
         });
       } else {
-        $fh.logger.debug('FIELD NOT SUPPORTED:' + fieldType);
+        $fh.logger.warn('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
   },
