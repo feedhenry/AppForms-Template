@@ -287,15 +287,18 @@ exports.getForms = function (params, callback) {
   });
 };
 
-var self = this;
-_.each(exports, function (func,name){
-  exports[name] = _.wrap(func, function(func) {
-    console.log(name + " starting", arguments);
-    try {
-      return func.apply(self, Array.prototype.slice.call(arguments,1));
-    } catch(e) {
-      console.log(name,e);
-      throw e;
-    }
+if(wufoo_config.logger) {
+  var self = this;
+  _.each(exports, function (func,name){
+    exports[name] = _.wrap(func, function(func) {
+      console.log(name + " starting", arguments);
+      try {
+        return func.apply(self, Array.prototype.slice.call(arguments,1));
+      } catch(e) {
+        console.log(name,e);
+        throw e;
+      }
+    });
   });
-});
+
+}
