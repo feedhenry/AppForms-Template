@@ -7,8 +7,14 @@
       var self = arguments[1];
       var func = arguments[2];
       var args = Array.prototype.slice.call(arguments,3)[0];
-      func.apply(self,args);
       $("#logger  .logs").prepend($("<p>").addClass(clazz).text(args.join(" ")));
+      try{
+        func.apply(self,args);
+      }catch(e){
+        if(console && console.log){
+          console.log("Failed to log message. Error: " + e.message);
+        }
+      }
     };
 
     $fh.logger._stringify = function(){
