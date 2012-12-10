@@ -287,7 +287,7 @@ exports.getForms = function (params, callback) {
   });
 };
 
-if(wufoo_config.logger) {
+if(wufoo_config.wufoo_config.logger) {
   var self = this;
   _.each(exports, function (func,name){
     exports[name] = _.wrap(func, function(func) {
