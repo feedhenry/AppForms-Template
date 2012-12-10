@@ -59,6 +59,10 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
   box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
 }
 
+#fh_logs {
+    overflow: auto;
+}
+
 #fh_wufoo_drafts .list, #fh_wufoo_pending .list {
   -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.75);
   -moz-box-shadow:    0px 1px 0px rgba(255, 255, 255, 0.75);
