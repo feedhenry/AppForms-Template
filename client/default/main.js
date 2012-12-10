@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.1.1 - 2012-11-27
+/*! FeedHenry-Wufoo-App-Generator - v0.1.1 - 2012-12-10
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2012 FeedHenry */
 
@@ -1060,26 +1060,32 @@ ConfigModel = Backbone.Model.extend({
     var self = this;
 
     $fh.ready(function () {
+      // TODO : check if there is a better way of ensuring fh.data has been monkey patched
+      overrideFHData();
       //initialise config
       $fh.data({
         act: 'load',
         key: 'client_config'
       }, function (res) {
+        $fh.logger.info('ConfigModel :: loaded=' + res.val);
         if (res && res.val && res.val !== '') {
           try {
             // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
-            self.set(JSON.parse(res.val));
+            $fh.logger.debug('ConfigModel :: loaded=' + res.val);
+            var read =JSON.parse(res.val);
+            self.set(read);
           } catch(e) {
             //log error, but no action
-            console.log('ERROR: parsing config from local storage. Using config defaults:', e);
+            $fh.logger.error('ERROR: parsing config from local storage. Using config defaults:', e);
           }
         } else {
-          console.log('No config in local storage. Using config defaults');
+          $fh.logger.warn('No config in local storage. Using config defaults');
         }
       });
     });
 
     this.on('change', function () {
+      $fh.logger.info('ConfigModel :: change=' + JSON.stringify(this.attributes));
       $fh.data({
         act: 'save',
         key: 'client_config',
@@ -1087,7 +1093,7 @@ ConfigModel = Backbone.Model.extend({
       }, function () {
         // saved ok
       }, function (msg, err) {
-        console.error('ERROR: saving client_config to local storage :: ', msg);
+        $fh.logger.error('ERROR: saving client_config to local storage :: ', msg);
       });
     });
   }
@@ -1176,11 +1182,12 @@ FormModel = Backbone.Model.extend({
   },
 
   initialize: function () {
+    _.bindAll(this);
+
     this.initPages();
 
     // if model changes, re-initialise sub-collection of pages
     this.bind('change', this.reInitPages, this);
-
     this.on('change:page_history', function (model, history) {
       model.set('active_page', _(history).last());
     });
@@ -1219,6 +1226,37 @@ FormModel = Backbone.Model.extend({
     return form;
   },
 
+  dumpChunk:function (name,chunk) {
+    $fh.logger.debug("cacheChunk field='" , name );
+    $fh.logger.debug("cacheChunk content_type='" , chunk.content_type);
+    $fh.logger.debug("cacheChunk filename='" , chunk.filename);
+    $fh.logger.debug("cacheChunk size='" , chunk.fileBase64.length);
+  },
+
+  cacheChunk:function (serialized_form,form_hash,name,value, callback) {
+    var key = guid();
+    $fh.logger.debug("cacheChunk starting");
+    this.dumpChunk(name ,value);
+
+    $fh.act({
+      "act":"cacheChunk",
+      "retries" : App.config.get("max_retries"),
+      "req":{
+        "key":key,
+        "data":{"key":key, "name":name, "value":value, "form_hash":form_hash}
+      }
+    }, function (res) {
+      $fh.logger.debug("cacheChunk name='" , name , "',res='" , res);
+      if (res.Success && res.Success === 1) {
+        serialized_form[name] = {content_type:"ref", ref:key};
+        callback(null, res);
+      } else {
+        callback({error:'validation'}, res);
+      }
+    }, function (msg, err) {
+      callback({error:'network'}, msg);
+    });
+  },
   submit: function(cb) {
     var self = this;
     var serialized_form = self.serialize();
@@ -1226,24 +1264,51 @@ FormModel = Backbone.Model.extend({
 
     Utils.isOnline(function(online) {
       if (online) {
-        $fh.act({
-          "act": "postEntry",
-          "req": {
-            "form_hash": form_hash,
-            "data": serialized_form
+        //var chunkTasks = [function noOp(callback) {callback()}];
+        var chunkTasks = [];
+        if(App.config.get("use_chunking")) {
+          chunkTasks = _.collect(serialized_form, function chunkHandler(value,key){
+            if (_.isObject(value) && !_.isUndefined(value.filename)) {
+              $fh.logger.debug("value=",value);
+              return async.apply(self.cacheChunk,serialized_form,form_hash,key,value);
+            } else {
+              return null;
+            }
+          });
+          chunkTasks = _.compact(chunkTasks);
+        }
+        async.series(chunkTasks, function onComplete(err, results) {
+          if(err) {
+            $fh.logger.debug("form.submit err", err, ",results=", results);
+            self.showAlert("Unexpected Network error, please try again later", "error" ,5000);
+            return cb({error:'network'}, err);
           }
-        }, function(res) {
-          console.log("submit resp :: " + JSON.stringify(res));
-          if(res.Success && res.Success === 1) {
-            cb(null, res);
-          } else {
-            cb({error : 'validation'}, res);
-          }
-        }, function(msg, err) {
-          console.log('Cloud call failed with error:' + msg + '. Error properties:' + JSON.stringify(err));
-          cb({error : 'network'}, msg);
+          $fh.act({
+            "act": "postEntry",
+            "req": {
+              "form_hash": form_hash,
+              "data": serialized_form
+            }
+          }, function(res) {
+            $fh.logger.debug("submit res=" , res);
+            if(res.Success && res.Success === 1) {
+              self.showAlert("Form Successfully Submitted", "success" ,5000);
+              $fh.logger.debug('Form Successfully Submitted: res:' ,res);
+              cb(null, res);
+            } else {
+              self.showAlert("Form is invalid, Please fix the highlighted errors", "error" ,5000);
+              $fh.logger.error('Form is invalid, Please fix the highlighted errors: res:' ,res);
+              cb({error : 'validation'}, res);
+            }
+          }, function(msg, err) {
+            self.showAlert("Unexpected Network error, please try again later", "error" ,5000);
+            $fh.logger.error('Cloud call failed with error:' ,  msg , '. Error properties:' ,err);
+            cb({error : 'network'}, msg);
+          });
         });
       } else {
+        self.showAlert("Unable to submit the form : you are currently offline", "error" ,5000);
+        $fh.logger.error('Cloud call failed with error:' ,  msg , '. Error properties:' ,err);
         cb({error : 'offline'}, 'offline');
       }
     });
@@ -1256,7 +1321,23 @@ FormModel = Backbone.Model.extend({
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
+  },
+
+  showAlert: function(message, type, timeout) {
+    var alertTpl = $('<div>').addClass('fh_wufoo_alert');
+
+    alertTpl.addClass(type);
+    alertTpl.text(message);
+
+    $('#fh_wufoo_alerts_area').append(alertTpl);
+
+    setTimeout(function() {
+      alertTpl.slideUp(function() {
+        $(this).remove();
+      });
+    }, timeout || 10000);
   }
+
 });
 
 FormsCollection = Backbone.Collection.extend({
@@ -1293,7 +1374,7 @@ SentCollection = Backbone.Collection.extend({
   },
 
   checkSize: function() {
-    var maxSize = App.config.get('sent_save_max');
+    var maxSize = App.config.get('sent_save_max') || App.config.get('sent_save_max');
     if (this.length > maxSize) {
       var toDelete = this.models.slice(0, this.models.length - maxSize);
       _(toDelete).forEach(function(model) {
@@ -1323,7 +1404,7 @@ DraftsCollection = Backbone.Collection.extend({
   store: new FHBackboneDataActSync("drafts"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
-    console.log(attributes);
+    $fh.logger.debug(attributes);
     attributes.savedAt = new Date().getTime();
     return Backbone.Collection.prototype.create.call(this, attributes, options);
   }
@@ -1391,7 +1472,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
           "type": err.error,
           "details": res
         };
-        console.log('Form submission: error :: ' , err, " :: ", res);
+        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
 
         if (/\b(offline|network)\b/.test(err.error)) {
           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
@@ -1401,7 +1482,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
           App.collections.pending_review.create(modelJson);
         }
       } else {
-        console.log('Form submission: success :: ' + JSON.stringify(res));
+        $fh.logger.debug('Form submission: success :: ' ,res);
         App.collections.sent.create(modelJson);
       }
       // model should added to another collection now. destroy it
@@ -1587,7 +1668,7 @@ LoadingCollectionView = LoadingView.extend({
   modelLoadError: function(model, b, c) {
     model.set('fh_error_loading', true);
     this.percent += 100 / App.collections.forms.length;
-    console.log(' !! error loading model. ID: ' + model.id + this.percent);
+    $fh.logger.debug(' !! error loading model. ID: ' + model.id + this.percent);
     this.totalCounter += 1;
     this.updateProgress(this.percent);
     this.checkTotal();
@@ -1595,7 +1676,7 @@ LoadingCollectionView = LoadingView.extend({
 
   checkTotal: function() {
     var self = this;
-    console.log('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
+    $fh.logger.debug('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
     // Check total loaded to see if we should hide
     if (this.totalCounter >= App.collections.forms.length) {
       this.updateMessage("Form sync complete");
@@ -1684,7 +1765,7 @@ FormListView = Backbone.View.extend({
 
     App.collections.forms.bind('reset', function (collection, options) {
       if (options == null || !options.noFetch) {
-        console.log('reset forms collection');
+        $fh.logger.debug('reset forms collection');
         App.collections.forms.each(function (form) {
           form.fetch();
         });
@@ -1764,7 +1845,14 @@ SentListView = Backbone.View.extend({
 
   show: function() {
     App.views.header.markActive('.fh_wufoo_sent');
+    this.populate();
     $(this.el).show();
+  },
+
+  populate: function() {
+    // Re-render save
+    var maxSize = App.config.get('sent_save_max') || App.config.get('default_sent_save_max');
+    $('#sentSaveMax', this.el).val(maxSize);
   },
 
   hide: function() {
@@ -1807,9 +1895,7 @@ SentListView = Backbone.View.extend({
     $('.sent_list', this.el).append(this.templates.dismiss_all);
     $('.sent_list', this.el).append(this.templates.save_max);
 
-    // Re-render save
-    var maxSize = App.config.get('sent_save_max');
-    $('#sentSaveMax', this.el).val(maxSize);
+    this.populate();
   },
 
   appendSentForm: function(form) {
@@ -1937,7 +2023,7 @@ DraftItemView = ItemView.extend({
 
   show: function() {
     App.views.form = new DraftView({
-      model: this.model
+      model: new DraftModel(this.model.toJSON())
     });
     App.views.form.render();
   }
@@ -1986,7 +2072,7 @@ PendingSubmittingItemView = ItemView.extend({
 
   show: function() {
     //TODO: Impl?
-    console.log('show for submitting not implemented');
+    $fh.logger.debug('show for submitting not implemented');
   }
 });
 PendingSubmittedItemView = ItemView.extend({
@@ -2003,7 +2089,15 @@ PendingSubmittedItemView = ItemView.extend({
 
     $(this.el).html(item);
     return this;
+  } ,
+
+  show: function() {
+    App.views.form = new SentView({
+      model: new DraftModel(this.model.toJSON())
+    });
+    App.views.form.render();
   }
+
 });
 PendingListView = Backbone.View.extend({
   el: $('#fh_wufoo_pending'),
@@ -2154,7 +2248,7 @@ HeaderView = Backbone.View.extend({
   render: function() {
     var self = this;
 
-    console.log('render headerView');
+    $fh.logger.debug('render headerView');
     $(this.el).empty();
 
     var list = $(_.template(this.templates.list, {}));
@@ -2251,7 +2345,7 @@ FieldView = Backbone.View.extend({
     }
 
     this.on('visible', function () {
-      console.log('field visible');
+      $fh.logger.debug('field visible');
     });
 
     if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
@@ -2269,7 +2363,7 @@ FieldView = Backbone.View.extend({
   },
 
   contentChanged: function(e) {
-    console.log("Value changed :: " + JSON.stringify(this.value()));
+    $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
     this.model.set({
       Value: this.value()
     });
@@ -2637,7 +2731,7 @@ FieldFileView = FieldView.extend({
         str = str.target.result; // file reader
       }
       self.fileData.fileBase64 = str;
-      console.log(self.fileData);
+      $fh.logger.debug(self.fileData);
       self.model.set({Value: self.value()});
     };
 
@@ -3013,9 +3107,9 @@ FieldCameraView = FieldView.extend({
   template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" width="100%">', '</div>'],
 
   initialize: function() {
+    FieldView.prototype.initialize.call(this);
     //Make sure 'this' is bound for setImageData, was incorrect on device!
     _.bindAll(this, 'setImageData', 'imageSelected');
-    this.render();
   },
 
   render: function() {
@@ -3071,14 +3165,16 @@ FieldCameraView = FieldView.extend({
   },
 
   setImageData: function(imageData, dontCallContentChanged) {
+    var target = this.$el.find('#' + this.model.get('ID'));
+
     if (imageData) {
-      console.log('setting imageData:', imageData.length);
+      $fh.logger.debug('setting imageData:', imageData.length);
       // prepend dataUri if not already there
       var dataUri = imageData;
       if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
         dataUri = 'data:image/jpeg;base64,' + imageData;
       }
-      this.$el.find('#' + this.model.get('ID')).val(dataUri);
+      target.val(dataUri);
       this.$el.find('.imageThumb').attr('src', dataUri);
       this.$el.find('.upload').hide();
       this.$el.find('.uploaded').show();
@@ -3087,12 +3183,17 @@ FieldCameraView = FieldView.extend({
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
     } else {
-      this.$el.find('#' + this.model.get('ID')).val(null);
+      target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');
       this.$el.find('.upload').show();
       this.$el.find('.uploaded').hide();
       delete this.fileData;
     }
+
+    // TODO horrible temp hack
+    this.$el.removeClass("error]");
+    this.$el.find("label[class=error]").remove();
+
     // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
     if (!dontCallContentChanged) {
       this.contentChanged();
@@ -3109,7 +3210,7 @@ FieldCameraView = FieldView.extend({
 
   removeThumb: function(e) {
     e.preventDefault();
-    console.log('removeThumb');
+    $fh.logger.debug('removeThumb');
 
     this.setImageData(null);
     this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
@@ -3153,7 +3254,7 @@ FieldCameraView = FieldView.extend({
               options.targetWidth = val[0];
               options.targetHeight = val[1];
             } else {
-              console.error('Invalid camera resolution, using defaults');
+              $fh.logger.error('Invalid camera resolution, using defaults');
             }
           }
         } else if (className.indexOf("fhcompression") != -1) {
@@ -3574,14 +3675,14 @@ FieldMapView = FieldView.extend({
           self.contentChanged();
         });
       }, function(err) {
-        console.log(err);
+        $fh.logger.debug(err);
       });
     });
   },
 
   mapResize: function() {
     if (this.map != null) {
-      console.log('mapResize');
+      $fh.logger.debug('mapResize');
       // trigger resize event
       google.maps.event.trigger(this.map, 'resize');
       // recenter map
@@ -3780,6 +3881,7 @@ PageView = Backbone.View.extend({
     "text": FieldTextView,
     "number": FieldNumberView,
     "date": FieldDateView,
+    "eurodate": FieldDateView,
     "textarea": FieldTextareaView,
     "radio": FieldRadioView,
     "checkbox": FieldCheckboxView,
@@ -3812,7 +3914,7 @@ PageView = Backbone.View.extend({
 
     // pass visible event down to all fields
     this.on('visible', function () {
-      console.log('page visible');
+      $fh.logger.debug('page visible');
       _(self.fieldViews).forEach(function (fieldView) {
         fieldView.trigger('visible');
       });
@@ -3837,7 +3939,7 @@ PageView = Backbone.View.extend({
           model: field
         });
       } else {
-        console.log('FIELD NOT SUPPORTED:' + fieldType);
+        $fh.logger.warn('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
   },
@@ -3912,7 +4014,7 @@ PageView = Backbone.View.extend({
 
     return result;
   }
-  
+
 });
 DraftView = Backbone.View.extend({
   el: $('#fh_wufoo_content'),
@@ -3932,7 +4034,7 @@ DraftView = Backbone.View.extend({
     });
 
     this.on('visible', function () {
-      console.log('draft visible');
+      $fh.logger.debug('draft visible');
     });
 
     this.pages = [];
@@ -4063,7 +4165,7 @@ DraftView = Backbone.View.extend({
         nextPage = currentPage + 1;
       }
       nextPage = Math.min(this.pages.length - 1, nextPage); // make sure we don't go past the last page.
-      console.log('next page ', currentPage, '=>', nextPage);
+      $fh.logger.debug('next page ', currentPage, '=>', nextPage);
       // only change page if page is different
       if (nextPage !== currentPage) {
         this.model.pushPage(nextPage);
@@ -4104,6 +4206,7 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    delete this.model.id;
     App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
   },
@@ -4117,6 +4220,7 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    delete this.model.id;
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
   },
@@ -4151,6 +4255,37 @@ DraftView = Backbone.View.extend({
     });
   }
 });
+/**
+ * SentView is required so that the sent items does not get cleared when drafts of sent items are created or
+ * when sent items are resubmitted
+ *
+ * @type {*}
+ */
+SentView = DraftView.extend({
+
+  /**
+   * clone the current sent item but remove the id so that a
+   * new draft instance is created
+   */
+  saveDraft: function() {
+    var clone = this.model.toJSON();
+    delete clone.id;
+    App.collections.drafts.create(clone);
+    App.views.header.showDrafts();
+  },
+
+  /**
+   * clone the current sent item but remove the id so that a
+   * new pending instance is created
+   */
+  savePending: function() {
+    var clone = this.model.toJSON();
+    delete clone.id;
+    App.collections.pending_submitting.create(clone);
+    App.views.header.showPending();
+  }
+
+});
 App.Router = Backbone.Router.extend({
 
   /*
@@ -4181,7 +4316,7 @@ App.Router = Backbone.Router.extend({
 
   form_list: function() {
     var self = this;
-    console.log('route: form_list');
+    $fh.logger.debug('route: form_list');
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
@@ -4193,10 +4328,10 @@ App.Router = Backbone.Router.extend({
     // store error handling
     _(App.collections).forEach(function (collection) {
       collection.on('error', function (collection, msg , options) {
-        console.error('collection error:', msg);
+        $fh.logger.error('collection error:', msg);
       });
       collection.store.on('error', function (msg) {
-        console.error('collection store error:', msg);
+        $fh.logger.error('collection store error:', msg);
       });
     });
 
@@ -4225,12 +4360,34 @@ App.Router = Backbone.Router.extend({
         $('#debug_mode').addClass('hidden');
       }
     });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:logger', function () {
+      if (App.config.get('logger') === true) {
+        $('#logger').removeClass('hidden');
+      } else {
+        $('#logger').addClass('hidden');
+      }
+    });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:default_timeout', function () {
+      var timeout = App.config.get('default_timeout');
+      if (_.isNumber(timeout)) {
+        $fh.ready({}, function(){
+          console.log("Setting timeout to " + timeout);
+          $fh.legacy.fh_timeout=timeout;
+        });
+      }
+    });
   },
 
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
-      console.log('resume fetch in background');
+      $fh.logger.debug('resume fetch in background');
       // Re-fetch on resume
       // NOTE: was originally showing loading view and progress while resyncing after resume.
       //       Not any more. We'll let it happen in background so UI isn't blocking
@@ -4238,14 +4395,14 @@ App.Router = Backbone.Router.extend({
       // loadingView.show("Loading form list");
       App.collections.forms.fetch();
     } else {
-      console.log('resume fetch blocked. resetting resume fetch flag');
+      $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
       // reset flag to true for next time
       App.resumeFetchAllowed = true;
     }
   },
 
   pending: function() {
-    console.log('route: pending');
+    $fh.logger.debug('route: pending');
   }
 });
 
