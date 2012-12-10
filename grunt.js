@@ -94,6 +94,11 @@ module.exports = function(grunt) {
     } catch (e) {
       // fail silently
     }
+    try {
+      fs.unlinkSync('./max.zip');
+    } catch (e) {
+      // fail silently
+    }
   });
 
   grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
