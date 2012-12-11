@@ -6,6 +6,6 @@ exports.config = {
   "debug_mode": false,
   "logger": true,
   "max_retries" : 5,
-  "use_chunking" : false,
+  "use_chunking" : true,
   "default_timeout" : 120
 };
