@@ -36,15 +36,24 @@
 <button onclick="localStorage.clear();location.reload();">Clear Local Storage</button><br/>
 </div>
 
+<div id="app_version"></div>
+<script>
+    $fh.ready(function (){
+        if (typeof fh_app_version === 'undefined') {
+            fh_app_version = 0;
+        }
+        jQuery('#app_version').html('Version: ' + fh_app_version);
+    });
+</script>
+
+
+
 <div id="logger" class="hidden">
     <div id="fh_logs">
         <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br/>
         <div class="logs"></div>
     </div>
 </div>
-
-<!-- TODO: App Version -->
-<div id="app_version"></div>
 
 <script>
 // Namespace
