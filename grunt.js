@@ -1,5 +1,6 @@
 /*global module:false*/
 module.exports = function(grunt) {
+  var sha = null;
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.task.registerHelper('matchFiles', function(re) {
@@ -119,16 +120,26 @@ module.exports = function(grunt) {
     // add the tags and make a dev copy of the html
     $.root().append('<script src="lib.js"></script>\n');
     $.root().append('<script src="main.js"></script>\n');
-    var htmlDev = $.root().html();
+    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      sha = stdout;
 
-    // insert the minified files for prod
-    $('script[src="lib.js"]').attr('src', 'lib.min.js');
-    var htmlProd = $.html();
+      $('#fh_banner').text('ID : ' + sha);
 
-    // write index files
-    fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
-    fs.writeFileSync('./dist/client/default/index.html', htmlProd);
-    grunt.log.writeln('index copied and modified');
+      var htmlDev = $.root().html();
+
+      // insert the minified files for prod
+      $('script[src="lib.js"]').attr('src', 'lib.min.js');
+      var htmlProd = $.html();
+
+      // write index files
+      fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
+      fs.writeFileSync('./dist/client/default/index.html', htmlProd);
+      grunt.log.writeln('index copied and modified');
+
+    });
+
   });
 
   grunt.registerTask('mkdirs', 'Make dirs used for dist stuff', function () {
@@ -192,6 +203,24 @@ module.exports = function(grunt) {
     require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
+  });
+
+
+  grunt.registerTask('get-commit-sha', 'get the current git commit sha', function () {
+    var done = this.async();
+
+    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      sha = stdout;
+      grunt.log.writeln('sha: ' +  sha + "'");
       if (error !== null) {
         grunt.log.writeln('exec error: ' + error);
         done(1);
