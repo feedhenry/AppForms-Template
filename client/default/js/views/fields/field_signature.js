@@ -121,8 +121,8 @@ FieldSignatureView = FieldView.extend({
   dbgImage: function(msg,image) {
     console.log(msg + (image ? (image.substring(0,image.indexOf(",")) + "[len=" + image.length +"]") : " empty"));
   },
-  toJpg: function() {
-    var image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
+  toJpg: function(image) {
+    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
     var cnvs = $('.sigPad', self.$el).find('canvas')[0];
 
     var canvas = this.scaleCanvas(cnvs, image.width, image.height);
@@ -131,7 +131,7 @@ FieldSignatureView = FieldView.extend({
   },
 
   toBmp: function(image) {
-    var image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
+    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
     var sigData;
     var cnvs = $('.sigPad', self.$el).find('canvas')[0];
 
