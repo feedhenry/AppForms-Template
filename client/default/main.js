@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.1.1 - 2012-12-11
+/*! FeedHenry-Wufoo-App-Generator - v0.1.1 - 2012-12-12
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2012 FeedHenry */
 
@@ -2558,7 +2558,7 @@ FieldTextareaView = FieldView.extend({
 });
 FieldRadioView = FieldView.extend({
   templates: {
-    hidden_field: '<input id="radio<%= id %>" type="hidden" value="">',
+    hidden_field: '<input id="radio<%= id %>" type="hidden" value="" data-type="radio">',
     title: '<label><%= title %></label>',
     choice: '<input id="<%= id %>_<%= iteration %>" name="<%= id %>" type="radio" class="field radio" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>_<%= iteration %>"><%= choice %></label><br/>'
   },
@@ -3478,7 +3478,6 @@ FieldSignatureView = FieldView.extend({
 
   showSignatureCapture: function() {
     var self = this;
-
     var winHeight = $(window).height();
     var winWidth = $(window).width();
     var canvasHeight = winHeight - 70;
@@ -3514,27 +3513,40 @@ FieldSignatureView = FieldView.extend({
       lineTop: lineTop
     });
 
+    $(this.$el).data('sigpadInited', true);
     // Bind capture
     $('.cap_sig_done_btn', this.$el).unbind('click').bind('click', function(e) {
       e.preventDefault();
-      var sigData = sigPad.getSignatureImage();
-      if(sigData == "data:,"){
-        sigData = toBitmapURL($('.sigPad', self.$el).find('canvas')[0]);
-        extension = "bmp";
-      }
-      var img = $('.sigImage', self.$el)[0];
-      img.src = sigData;
-      $('input', self.$el).val(sigData);
-      $('.sigPad', self.$el).hide();
+      var sig = sigPad.getSignature(); // get the default image type
+      if(sig && sig.length) {
+        var sigData = sigPad.getSignatureImage();
+        if(self.isEmptyImage(sigData)) {
+          sigData = sigPad.getSignatureImage("image/png");
+        }
+        if(self.isEmptyImage(sigData)) {
+          sigData = sigPad.getSignatureImage("image/jpeg");
+        }
+        if(self.isEmptyImage(sigData)) {
+          var canvas = $('.sigPad', self.$el).find('canvas')[0];
+          sigData = self.toBmp(canvas);
+        }
 
-      var dataParts = sigData.match(/data:(.*\/(.*));base64,(.*)/);
-      self.fileData = {};
-      self.fileData.fileBase64 = sigData;
-      self.fileData.filename = "signature." + dataParts[2];
-      self.fileData.content_type = dataParts[1];
+        var img = $('.sigImage', self.$el)[0];
+        img.src = sigData;
+        $('input', self.$el).val(sigData);
+
+        self.fileData = {};
+        self.fileData.fileBase64 = sigData;
+        var parts = self.splitImage(sigData);
+        self.fileData.content_type = parts[0];
+        self.fileData.filename = "signature." +  parts[1];
+      }
+      $('.sigPad', self.$el).hide();
       self.contentChanged();
     });
   },
+
+
 
   value: function(value) {
     if (value && !_.isEmpty(value)) {
@@ -3547,7 +3559,179 @@ FieldSignatureView = FieldView.extend({
       value[this.model.get('ID')] = this.fileData;
     }
     return value;
+  },
+
+  // bitMap handling code
+  readCanvasData: function(canvas) {
+    var iWidth = parseInt(canvas.width,10);
+    var iHeight = parseInt(canvas.height,10);
+    return canvas.getContext("2d").getImageData(0, 0, iWidth, iHeight);
+  },
+
+  encodeData: function(data) {
+    var strData = "";
+    if (typeof data == "string") {
+      strData = data;
+    } else {
+      var aData = data;
+      for ( var i = 0; i < aData.length; i++) {
+        strData += String.fromCharCode(aData[i]);
+      }
+    }
+    return btoa(strData);
+  },
+
+  createBMP: function(oData) {
+    var aHeader = [];
+
+    var iWidth = oData.width;
+    var iHeight = oData.height;
+
+    aHeader.push(0x42); // magic 1
+    aHeader.push(0x4D);
+
+    var iFileSize = iWidth * iHeight * 3 + 54; // total header size = 54
+    // bytes
+    aHeader.push(iFileSize % 256);
+    iFileSize = Math.floor(iFileSize / 256);
+    aHeader.push(iFileSize % 256);
+    iFileSize = Math.floor(iFileSize / 256);
+    aHeader.push(iFileSize % 256);
+    iFileSize = Math.floor(iFileSize / 256);
+    aHeader.push(iFileSize % 256);
+
+    aHeader.push(0); // reserved
+    aHeader.push(0);
+    aHeader.push(0); // reserved
+    aHeader.push(0);
+
+    aHeader.push(54); // dataoffset
+    aHeader.push(0);
+    aHeader.push(0);
+    aHeader.push(0);
+
+    var aInfoHeader = [];
+    aInfoHeader.push(40); // info header size
+    aInfoHeader.push(0);
+    aInfoHeader.push(0);
+    aInfoHeader.push(0);
+
+    var iImageWidth = iWidth;
+    aInfoHeader.push(iImageWidth % 256);
+    iImageWidth = Math.floor(iImageWidth / 256);
+    aInfoHeader.push(iImageWidth % 256);
+    iImageWidth = Math.floor(iImageWidth / 256);
+    aInfoHeader.push(iImageWidth % 256);
+    iImageWidth = Math.floor(iImageWidth / 256);
+    aInfoHeader.push(iImageWidth % 256);
+
+    var iImageHeight = iHeight;
+    aInfoHeader.push(iImageHeight % 256);
+    iImageHeight = Math.floor(iImageHeight / 256);
+    aInfoHeader.push(iImageHeight % 256);
+    iImageHeight = Math.floor(iImageHeight / 256);
+    aInfoHeader.push(iImageHeight % 256);
+    iImageHeight = Math.floor(iImageHeight / 256);
+    aInfoHeader.push(iImageHeight % 256);
+
+    aInfoHeader.push(1); // num of planes
+    aInfoHeader.push(0);
+
+    aInfoHeader.push(24); // num of bits per pixel
+    aInfoHeader.push(0);
+
+    aInfoHeader.push(0); // compression = none
+    aInfoHeader.push(0);
+    aInfoHeader.push(0);
+    aInfoHeader.push(0);
+
+    var iDataSize = iWidth * iHeight * 3;
+    aInfoHeader.push(iDataSize % 256);
+    iDataSize = Math.floor(iDataSize / 256);
+    aInfoHeader.push(iDataSize % 256);
+    iDataSize = Math.floor(iDataSize / 256);
+    aInfoHeader.push(iDataSize % 256);
+    iDataSize = Math.floor(iDataSize / 256);
+    aInfoHeader.push(iDataSize % 256);
+
+    for ( var i = 0; i < 16; i++) {
+      aInfoHeader.push(0); // these bytes not used
+    }
+
+    var iPadding = (4 - ((iWidth * 3) % 4)) % 4;
+
+    var aImgData = oData.data;
+
+    var strPixelData = "";
+    var y = iHeight;
+    do {
+      var iOffsetY = iWidth * (y - 1) * 4;
+      var strPixelRow = "";
+      for ( var x = 0; x < iWidth; x++) {
+        var iOffsetX = 4 * x;
+
+        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX + 2]);
+        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX + 1]);
+        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX]);
+      }
+      for ( var c = 0; c < iPadding; c++) {
+        strPixelRow += String.fromCharCode(0);
+      }
+      strPixelData += strPixelRow;
+    } while (--y);
+
+    var strEncoded = this.encodeData(aHeader.concat(aInfoHeader)) + this.encodeData(strPixelData);
+
+    return strEncoded;
+  },
+  makeDataURI: function(strData, strMime) {
+    return "data:" + strMime + ";base64," + strData;
+  },
+  scaleCanvas: function(canvas, iWidth, iHeight) {
+    if (iWidth && iHeight) {
+      var oSaveCanvas = document.createElement("canvas");
+      oSaveCanvas.width = iWidth;
+      oSaveCanvas.height = iHeight;
+      oSaveCanvas.style.width = iWidth + "px";
+      oSaveCanvas.style.height = iHeight + "px";
+
+      var oSaveCtx = oSaveCanvas.getContext("2d");
+
+      oSaveCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, iWidth, iHeight);
+      return oSaveCanvas;
+    }
+    return canvas;
+  },
+  toBmp: function(canvas) {
+    var sigData;
+    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
+    var iWidth = parseInt(cnvs.width,10);
+    var iHeight = parseInt(cnvs.height,10);
+
+    var oScaledCanvas = this.scaleCanvas(cnvs, iWidth, iHeight);
+    var oData = this.readCanvasData(oScaledCanvas);
+    var strImgData = this.createBMP(oData);
+
+    sigData = this.makeDataURI(strImgData, "image/bmp");
+    return sigData;
+  },
+  isEmptyImage: function(image) {
+    return image === null || image === "" || image === "data:,";
+  },
+  splitImage: function(image) {
+    var PREFIX = "data:";
+    var ENCODING = ";base64,";
+    var start = image.indexOf(PREFIX);
+    var content_type = "image/bmp";
+    var ext = "bmp";
+    if(start >= 0) {
+      var end = image.indexOf(ENCODING,start) + 1;
+      content_type = image.substring(start,end-1);
+      ext = content_type.split("/")[1];
+    }
+    return [content_type,ext];
   }
+
 });
 FieldMapView = FieldView.extend({
   extension_type: 'fhmap',
@@ -4007,9 +4191,14 @@ PageView = Backbone.View.extend({
     // iterate over page rules, if any, calling relevant rule function
     _(this.model.get('Rules') || []).forEach(function (rule, index) {
       // get element that rule condition is based on
-      var jqEl = self.$el.find('#Field' + rule.condition.FieldName);
+      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
       rule.fn = rules[rule.Type];
-      jqEl.wufoo_rules('exec', rule);
+      if(jqEl.data("type") === 'radio') {
+        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
+        rEl.wufoo_rules('exec', rule);
+      } else {
+        jqEl.wufoo_rules('exec', rule);
+      }
     });
 
     return result;
