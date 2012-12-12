@@ -3520,15 +3520,22 @@ FieldSignatureView = FieldView.extend({
       var sig = sigPad.getSignature(); // get the default image type
       if(sig && sig.length) {
         var sigData = sigPad.getSignatureImage();
+        self.dbgImage("signature field sig[default]=" ,sigData);
         if(self.isEmptyImage(sigData)) {
           sigData = sigPad.getSignatureImage("image/png");
+          self.dbgImage("signature field sig[image/png]=" ,sigData);
         }
         if(self.isEmptyImage(sigData)) {
           sigData = sigPad.getSignatureImage("image/jpeg");
+          self.dbgImage("signature field sig[image/jpeg]=" ,sigData);
         }
         if(self.isEmptyImage(sigData)) {
-          var canvas = $('.sigPad', self.$el).find('canvas')[0];
-          sigData = self.toBmp(canvas);
+          sigData = self.toJpg();
+          self.dbgImage("signature field sig[encoded jpg]=" ,sigData);
+        }
+        if(self.isEmptyImage(sigData)) {
+          sigData = self.toBmp();
+          self.dbgImage("signature field sigencoded bmp]=" ,sigData);
         }
 
         var img = $('.sigImage', self.$el)[0];
@@ -3559,6 +3566,30 @@ FieldSignatureView = FieldView.extend({
       value[this.model.get('ID')] = this.fileData;
     }
     return value;
+  },
+  dbgImage: function(msg,image) {
+    console.log(msg + (image ? (image.substring(0,image.indexOf(",")) + "[len=" + image.length +"]") : " empty"));
+  },
+  toJpg: function(image) {
+    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
+    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
+
+    var canvas = this.scaleCanvas(cnvs, image.width, image.height);
+    var myEncoder = new JPEGEncoder(image.quality);
+    return myEncoder.encode(canvas.getContext("2d").getImageData(0, 0, image.width, image.height));
+  },
+
+  toBmp: function(image) {
+    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
+    var sigData;
+    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
+
+    var oScaledCanvas = this.scaleCanvas(cnvs, image.width, image.height);
+    var oData = this.readCanvasData(oScaledCanvas);
+    var strImgData = this.createBMP(oData);
+
+    sigData = this.makeDataURI(strImgData, "image/bmp");
+    return sigData;
   },
 
   // bitMap handling code
@@ -3701,19 +3732,6 @@ FieldSignatureView = FieldView.extend({
       return oSaveCanvas;
     }
     return canvas;
-  },
-  toBmp: function(canvas) {
-    var sigData;
-    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
-    var iWidth = parseInt(cnvs.width,10);
-    var iHeight = parseInt(cnvs.height,10);
-
-    var oScaledCanvas = this.scaleCanvas(cnvs, iWidth, iHeight);
-    var oData = this.readCanvasData(oScaledCanvas);
-    var strImgData = this.createBMP(oData);
-
-    sigData = this.makeDataURI(strImgData, "image/bmp");
-    return sigData;
   },
   isEmptyImage: function(image) {
     return image === null || image === "" || image === "data:,";
