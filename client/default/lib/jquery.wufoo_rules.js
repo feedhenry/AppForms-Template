@@ -133,8 +133,12 @@
 
     wufoo_rules : function (command, argument) {
       var element = this[0];
+      if(!element) {
+        $fh.logger.warn('wufoo_rules : element is null');
+      }
       if (command) {
-        var rules = $.data(element, 'wufoo_rules') || [];
+        var rules = element ?  $.data(element, 'wufoo_rules') : [];
+        rules = rules || [];
         switch(command) {
         case "add": // add 1 rule
           rules.push(argument);

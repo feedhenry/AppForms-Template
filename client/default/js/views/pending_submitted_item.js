@@ -12,5 +12,13 @@ PendingSubmittedItemView = ItemView.extend({
 
     $(this.el).html(item);
     return this;
+  } ,
+
+  show: function() {
+    App.views.form = new SentView({
+      model: new DraftModel(this.model.toJSON())
+    });
+    App.views.form.render();
   }
+
 });

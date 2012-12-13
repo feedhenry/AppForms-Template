@@ -124,14 +124,14 @@ FieldMapView = FieldView.extend({
           self.contentChanged();
         });
       }, function(err) {
-        console.log(err);
+        $fh.logger.debug(err);
       });
     });
   },
 
   mapResize: function() {
     if (this.map != null) {
-      console.log('mapResize');
+      $fh.logger.debug('mapResize');
       // trigger resize event
       google.maps.event.trigger(this.map, 'resize');
       // recenter map

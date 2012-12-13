@@ -9,7 +9,7 @@ FieldFileView = FieldView.extend({
         str = str.target.result; // file reader
       }
       self.fileData.fileBase64 = str;
-      console.log(self.fileData);
+      $fh.logger.debug(self.fileData);
       self.model.set({Value: self.value()});
     };
 

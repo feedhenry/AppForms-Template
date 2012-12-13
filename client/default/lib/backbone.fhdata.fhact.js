@@ -6,6 +6,141 @@
  * @author gareth.cpm@gmail.com (Gareth Murphy), david.martin@feedhenry.com
  */
 
+/* Monkey Patch for $fh.data to use File backed storage */
+var overridden = false;
+function overrideFHData() {
+
+  if(!overridden) {
+    overridden = true;
+    /* Monkey Patch for $fh.data to use File backed storage */
+
+    if (typeof(window.requestFileSystem) !== 'undefined') {
+
+      // Redefine $fh.data
+      $fh.data = function(options, success, failure) {
+        function fail(msg) {
+          console.log('fail: msg= ' + msg);
+          if (typeof failure !== 'undefined') {
+            return failure(msg, {});
+          } else {
+            console.log('failure: ' + msg);
+          }
+        }
+
+        function filenameForKey(key, cb) {
+          key = $fh.app_props.appid + key;
+          console.log('filenameForKey: ' + key);
+          $fh.hash({
+            algorithm: "MD5",
+            text: key
+          }, function(result) {
+            var filename = result.hashvalue + '.txt';
+            return cb(filename);
+          });
+        }
+
+        function save(key, value) {
+          filenameForKey(key, function(hash) {
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+              fileSystem.root.getFile(hash, {
+                create: true
+              }, function gotFileEntry(fileEntry) {
+                fileEntry.createWriter(function gotFileWriter(writer) {
+                  console.log('save: ' + key + ', ' + value + '. Filename: ' + hash);
+                  writer.onwrite = function(evt) {
+                    return success({
+                      key: key,
+                      val: value
+                    });
+                  };
+                  writer.write(value);
+                }, function() {
+                  fail('[save] Failed to create file writer');
+                });
+              }, function() {
+                fail('[save] Failed to getFile');
+              });
+            }, function() {
+              fail('[save] Failed to requestFileSystem');
+            });
+          });
+        }
+
+        function remove(key) {
+          filenameForKey(key, function(hash) {
+            console.log('remove: ' + key + '. Filename: ' + hash);
+
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+              fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+                console.log('remove: ' + key +  '. Filename: ' + hash);
+                fileEntry.remove(function() {
+                  return success({
+                    key: key,
+                    val: null
+                  });
+                }, function() {
+                  fail('[remove] Failed to remove file');
+                });
+              }, function() {
+                fail('[remove] Failed to getFile');
+              });
+            }, function() {
+              fail('[remove] Failed to get fileSystem');
+            });
+          });
+        }
+
+        function load(key) {
+          filenameForKey(key, function(hash) {
+            window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
+              fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
+                fileEntry.file(function gotFile(file) {
+                  var reader = new FileReader();
+                  reader.onloadend = function(evt) {
+                    console.log('load: ' + key +  '. Filename: ' + hash + " value:" + evt.target.result);
+                    return success({
+                      key: key,
+                      val: evt.target.result
+                    });
+                  };
+                  reader.readAsText(file);
+                }, function() {
+                  fail('[load] Failed to getFile');
+                });
+              }, function() {
+                // Success callback on key load failure
+                success({
+                  key: key,
+                  val: null
+                });
+              });
+            }, function() {
+              fail('[load] Failed to get fileSystem');
+            });
+          });
+        }
+        if (typeof options.act === 'undefined') {
+          return load(options.key);
+        } else if (options.act === 'save') {
+          return save(options.key, options.val);
+        } else if (options.act === 'remove') {
+          return remove(options.key);
+        } else if (options.act === 'load') {
+          return load(options.key);
+        } else {
+          if (typeof failure !== 'undefined') {
+            return failure("Action [" + options.act + "] is not defined", {});
+          }
+        }
+      };
+    }
+  }
+}
+
+$fh.ready(function() {
+  overrideFHData();
+});
+
 
 // Generate four random hex digits (for GUIDs).
 
@@ -42,158 +177,14 @@ _.extend(FHBackboneDataActSync.prototype, {
     this.data = {};
 
     $fh.ready(function() {
-
-      /* Monkey Patch for $fh.data to use File backed storage
-      
-                     .-"""-.
-                   _/-=-.   \
-                  (_|a a/   |_
-                   / "  \   ,_)
-              _    \`=' /__/
-             / \_  .;--'  `-.
-             \___)//      ,  \
-              \ \/;        \  \
-               \_.|         | |
-                .-\ '     _/_/
-              .'  _;.    (_  \
-             /  .'   `\   \\_/
-            |_ /       |  |\\
-           /  _)       /  / ||
-          /  /       _/  /  //
-          \_/       ( `-/  ||
-                    /  /   \\ .-.
-                    \_/     \'-'/
-                             `"`
-       */
-
-      if (typeof(window.requestFileSystem) !== 'undefined') {
-        console.log('Overriding $fh.data with file storage');
-
-        // Redefine $fh.data
-        $fh.data = function(options, success, failure) {
-          function fail(msg) {
-            if (typeof failure !== 'undefined') {
-              return failure(msg, {});
-            } else {
-              console.log('failure: ' + msg);
-            }
-          }
-
-          function filenameForKey(key, cb) {
-            key = $fh.app_props.appid + key;
-            console.log('filenameForKey: ' + key);
-            $fh.hash({
-              algorithm: "MD5",
-              text: key
-            }, function(result) {
-              var filename = result.hashvalue + '.txt';
-              return cb(filename);
-            });
-          }
-
-          function save(key, value) {
-            filenameForKey(key, function(hash) {
-              //console.log('saving: ' + key + ', ' + value + '. Filename: ' + hash);
-              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
-                fileSystem.root.getFile(hash, {
-                  create: true
-                }, function gotFileEntry(fileEntry) {
-                  fileEntry.createWriter(function gotFileWriter(writer) {
-                    writer.onwrite = function(evt) {
-                      return success({
-                        key: key,
-                        val: value
-                      });
-                    };
-                    writer.write(value);
-                  }, function() {
-                    fail('[save] Failed to create file writer');
-                  });
-                }, function() {
-                  fail('[save] Failed to getFile');
-                });
-              }, function() {
-                fail('[save] Failed to requestFileSystem');
-              });
-            });
-          }
-
-          function remove(key) {
-            filenameForKey(key, function(hash) {
-              console.log('remove: ' + key + '. Filename: ' + hash);
-
-              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
-                fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
-                  fileEntry.remove(function() {
-                    return success({
-                      key: key,
-                      val: null
-                    });
-                  }, function() {
-                    fail('[remove] Failed to remove file');
-                  });
-                }, function() {
-                  fail('[remove] Failed to getFile');
-                });
-              }, function() {
-                fail('[remove] Failed to get fileSystem');
-              });
-            });
-          }
-
-          function load(key) {
-            filenameForKey(key, function(hash) {
-              window.requestFileSystem(LocalFileSystem.PERSISTENT, 0, function gotFS(fileSystem) {
-                fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
-                  fileEntry.file(function gotFile(file) {
-                    var reader = new FileReader();
-                    reader.onloadend = function(evt) {
-                      return success({
-                        key: key,
-                        val: evt.target.result
-                      });
-                    };
-                    reader.readAsText(file);
-                  }, function() {
-                    fail('[load] Failed to getFile');
-                  });
-                }, function() {
-                  // Success callback on key load failure
-                  success({
-                    key: key,
-                    val: null
-                  });
-                });
-              }, function() {
-                fail('[load] Failed to get fileSystem');
-              });
-            });
-          }
-          if (typeof options.act === 'undefined') {
-            return load(options.key);
-          } else if (options.act === 'save') {
-            return save(options.key, options.val);
-          } else if (options.act === 'remove') {
-            return remove(options.key);
-          } else if (options.act === 'load') {
-            return load(options.key);
-          } else {
-            if (typeof failure !== 'undefined') {
-              return failure("Action [" + options.act + "] is not defined", {});
-            }
-          }
-        };
-      }
-
-
-      console.log('init data for:"', self.name, '"');
+      $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
       $fh.data({
         key: self.name + self.localStoreVersion
       }, function(res) {
         try {
           if (res.val && res.val !== '') {
             self.data = JSON.parse(res.val);
-            console.log('found data in local storage for "', self.name, '"');
+            $fh.logger.info('FHBackboneDataActSync  :: found data in local storage for "' + self.name + '"');
           }
         } catch (e) {
           // leave data as default
@@ -218,7 +209,8 @@ _.extend(FHBackboneDataActSync.prototype, {
 
                 // update client config if its in response
                 if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
-                  console.log('updating config');
+                  var merged = _.extend({}, App.config.attributes, res.config);
+                  $fh.logger.debug('FHBackboneDataActSync :: updating config merged =' + JSON.stringify(merged));
                   App.config.set(_.extend({}, App.config.attributes, res.config));
                 }
                 // update data if there is any
@@ -229,7 +221,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     var currentData = self.data[item[self.idField]];
                     // update data if data doesn't exist already, or if version is different, otherwise no change to data
                     if (currentData == null || (currentData[self.versionField] !== item[self.versionField])) {
-                      console.log('updating data for:"', self.name, '"');
+                      $fh.logger.debug('updating data for:"', self.name, '"');
                       dataUpdated = true;
                       self.data[item[self.idField]] = item;
                       // don't update version field to force update of full details
@@ -242,7 +234,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                 if (dataEmpty) {
                   // data inited for first time. save to local storage and callback straight away (no need to wait for save)
                   self.save(function() {
-                    console.log('inited data for "', self.name, '" saved to local storage');
+                    $fh.logger.debug('inited data for "', self.name, '" saved to local storage');
                   });
                   cb(null);
                 } else {
@@ -250,7 +242,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     // data already initialised from local storage, need to update the data and let subsequent events on models
                     // take care of updating views i.e. don't call cb
                     self.save(function() {
-                      console.log('updated data for "', self.name, '" saved to local storage');
+                      $fh.logger.debug('updated data for "', self.name, '" saved to local storage');
                     });
                   }
                 }
@@ -293,7 +285,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     }, function(msg, err) {
       var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
       self.trigger('error', errMsg);
-      console.error(errMsg);
+      $fh.logger.error(errMsg);
       cb(err);
     });
   },
@@ -350,14 +342,14 @@ _.extend(FHBackboneDataActSync.prototype, {
             // what we got
             if (res && res.data && (!dataLoaded || (res.data[self.versionField] !== self.data[modelToFind.id][self.versionField]))) {
               dataUpdated = true;
-              console.log('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
+              $fh.logger.debug('updating data for:"', self.name, '" id:"', modelData[self.idField], '"');
               self.data[modelToFind.id] = res.data;
               self.data[modelToFind.id].fh_full_data_loaded = true;
             }
             if (!dataLoaded || dataUpdated) {
               // save data to local storage
               self.save(function() {
-                console.log('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
+                $fh.logger.debug('updated data for:"', self.name, '" id:"', modelToFind.id, '" saved to local storage');
               });
               // and either:
               // - callback straight away if data never loaded before (no need to wait til save finished)
@@ -412,7 +404,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
 FHBackboneDataActSyncFn = function(method, model, options) {
   if (!model.store && !model.collection) {
-    console.log("Trying to destroy a model that's not part of a store, returning.");
+    $fh.logger.debug("Trying to destroy a model that's not part of a store, returning.");
     return;
   }
 

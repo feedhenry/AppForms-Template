@@ -59,7 +59,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
           "type": err.error,
           "details": res
         };
-        console.log('Form submission: error :: ' , err, " :: ", res);
+        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
 
         if (/\b(offline|network)\b/.test(err.error)) {
           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
@@ -69,7 +69,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
           App.collections.pending_review.create(modelJson);
         }
       } else {
-        console.log('Form submission: success :: ' + JSON.stringify(res));
+        $fh.logger.debug('Form submission: success :: ' ,res);
         App.collections.sent.create(modelJson);
       }
       // model should added to another collection now. destroy it

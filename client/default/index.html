@@ -8,7 +8,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
 
+<div id="fh_banner" class="hidden"></div>
 <div id="fh_wufoo_header" class="hidden bar-title"></div>
+<div id="fh_wufoo_alerts_area"></div>
 
 <div id="fh_wufoo_form_list" class="hidden"></div>
 
@@ -35,8 +37,24 @@
 <button onclick="localStorage.clear();location.reload();">Clear Local Storage</button><br/>
 </div>
 
-<!-- TODO: App Version -->
 <div id="app_version"></div>
+<script>
+    $fh.ready(function (){
+        if (typeof fh_app_version === 'undefined') {
+            fh_app_version = 0;
+        }
+        jQuery('#app_version').html('Version: ' + fh_app_version);
+    });
+</script>
+
+
+
+<div id="logger" class="hidden">
+    <div id="fh_logs">
+        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br/>
+        <div class="logs"></div>
+    </div>
+</div>
 
 <script>
 // Namespace
@@ -45,13 +63,19 @@ App.views = App.views || {};
 App.collections = App.collections || {};
 </script>
 
+
+
+<script src="lib/jpeg_encoder/jpeg_encoder_basic.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.wufoo_rules.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/online.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/fh.logger.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/backbone.fhdata.fhact.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/fh.retry.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/async.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/moment.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/converter.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/signaturepad/bitmapurl.js" type="text/javascript" charset="utf-8"></script>
@@ -112,6 +136,7 @@ App.collections = App.collections || {};
 <script src="js/views/action_bar.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/page.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/sent.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- Router -->
 <script src="js/router.js" type="text/javascript" charset="utf-8"></script>
