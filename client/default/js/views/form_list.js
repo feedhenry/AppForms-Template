@@ -12,7 +12,7 @@ FormListView = Backbone.View.extend({
 
     App.collections.forms.bind('reset', function (collection, options) {
       if (options == null || !options.noFetch) {
-        console.log('reset forms collection');
+        $fh.logger.debug('reset forms collection');
         App.collections.forms.each(function (form) {
           form.fetch();
         });

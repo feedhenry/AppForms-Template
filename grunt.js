@@ -94,9 +94,15 @@ module.exports = function(grunt) {
     } catch (e) {
       // fail silently
     }
+    try {
+      fs.unlinkSync('./max.zip');
+    } catch (e) {
+      // fail silently
+    }
   });
 
   grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
+    var done = this.async();
     var cheerio = require('cheerio');
     var fs = require('fs');
 
@@ -114,16 +120,27 @@ module.exports = function(grunt) {
     // add the tags and make a dev copy of the html
     $.root().append('<script src="lib.js"></script>\n');
     $.root().append('<script src="main.js"></script>\n');
-    var htmlDev = $.root().html();
+    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      var sha = stdout.trim();
 
-    // insert the minified files for prod
-    $('script[src="lib.js"]').attr('src', 'lib.min.js');
-    var htmlProd = $.html();
+      $('#fh_banner').text('ID : ' + sha);
 
-    // write index files
-    fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
-    fs.writeFileSync('./dist/client/default/index.html', htmlProd);
-    grunt.log.writeln('index copied and modified');
+      var htmlDev = $.root().html();
+
+      // insert the minified files for prod
+      $('script[src="lib.js"]').attr('src', 'lib.min.js');
+      var htmlProd = $.html();
+
+      // write index files
+      fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
+      fs.writeFileSync('./dist/client/default/index.html', htmlProd);
+      grunt.log.writeln('index copied and modified');
+      done();
+
+    });
+
   });
 
   grunt.registerTask('mkdirs', 'Make dirs used for dist stuff', function () {
@@ -138,10 +155,38 @@ module.exports = function(grunt) {
 
   grunt.registerTask('archive', 'Create archive of repo and unzip to temp folder', function () {
     var done = this.async();
-
     require('child_process').exec('git archive --worktree-attributes -o dist.zip -v HEAD;cd dist;unzip ../dist.zip;cd ..', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
+
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
+  });
+
+  grunt.registerTask('max-archive', 'Create unminfied archive of repo to import', function () {
+    var fs = require('fs');
+    var done = this.async();
+
+    fs.renameSync(".gitattributes", ".gitattributes.bak");
+    fs.writeFileSync(".gitattributes", 
+                     ["grunt.js export-ignore" ,
+                      "/package.json export-ignore" ,
+                      "README.md export-ignore" ,
+                      ".gitignore export-ignore" ,
+                      "client/wufoo_config.js export-subst" ,
+                      ".gitattributes export-ignore"].join("\n")
+                    );
+    
+    require('child_process').exec('git archive --worktree-attributes -o max.zip -v HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+
+      fs.renameSync(".gitattributes.bak", ".gitattributes");
       if (error !== null) {
         grunt.log.writeln('exec error: ' + error);
         done(1);
@@ -159,6 +204,24 @@ module.exports = function(grunt) {
     require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
+      if (error !== null) {
+        grunt.log.writeln('exec error: ' + error);
+        done(1);
+      } else {
+        done();
+      }
+    });
+  });
+
+
+  grunt.registerTask('get-commit-sha', 'get the current git commit sha', function () {
+    var done = this.async();
+
+    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
+      grunt.log.writeln('stdout: ' + stdout);
+      grunt.log.writeln('stderr: ' + stderr);
+      sha = stdout;
+      grunt.log.writeln('sha: ' +  sha + "'");
       if (error !== null) {
         grunt.log.writeln('exec error: ' + error);
         done(1);

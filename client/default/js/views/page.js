@@ -4,6 +4,7 @@ PageView = Backbone.View.extend({
     "text": FieldTextView,
     "number": FieldNumberView,
     "date": FieldDateView,
+    "eurodate": FieldDateView,
     "textarea": FieldTextareaView,
     "radio": FieldRadioView,
     "checkbox": FieldCheckboxView,
@@ -36,7 +37,7 @@ PageView = Backbone.View.extend({
 
     // pass visible event down to all fields
     this.on('visible', function () {
-      console.log('page visible');
+      $fh.logger.debug('page visible');
       _(self.fieldViews).forEach(function (fieldView) {
         fieldView.trigger('visible');
       });
@@ -61,7 +62,7 @@ PageView = Backbone.View.extend({
           model: field
         });
       } else {
-        console.log('FIELD NOT SUPPORTED:' + fieldType);
+        $fh.logger.warn('FIELD NOT SUPPORTED:' + fieldType);
       }
     });
   },
@@ -129,12 +130,17 @@ PageView = Backbone.View.extend({
     // iterate over page rules, if any, calling relevant rule function
     _(this.model.get('Rules') || []).forEach(function (rule, index) {
       // get element that rule condition is based on
-      var jqEl = self.$el.find('#Field' + rule.condition.FieldName);
+      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
       rule.fn = rules[rule.Type];
-      jqEl.wufoo_rules('exec', rule);
+      if(jqEl.data("type") === 'radio') {
+        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
+        rEl.wufoo_rules('exec', rule);
+      } else {
+        jqEl.wufoo_rules('exec', rule);
+      }
     });
 
     return result;
   }
-  
+
 });

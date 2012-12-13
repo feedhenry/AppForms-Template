@@ -17,7 +17,7 @@ FieldView = Backbone.View.extend({
     }
 
     this.on('visible', function () {
-      console.log('field visible');
+      $fh.logger.debug('field visible');
     });
 
     if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
@@ -35,7 +35,7 @@ FieldView = Backbone.View.extend({
   },
 
   contentChanged: function(e) {
-    console.log("Value changed :: " + JSON.stringify(this.value()));
+    $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
     this.model.set({
       Value: this.value()
     });

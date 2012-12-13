@@ -6,7 +6,7 @@ DraftItemView = ItemView.extend({
 
   show: function() {
     App.views.form = new DraftView({
-      model: this.model
+      model: new DraftModel(this.model.toJSON())
     });
     App.views.form.render();
   }
