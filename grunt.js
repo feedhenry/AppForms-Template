@@ -1,6 +1,5 @@
 /*global module:false*/
 module.exports = function(grunt) {
-  var sha = null;
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.task.registerHelper('matchFiles', function(re) {
@@ -103,6 +102,7 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('index', 'Copy and modify index.html file for use with dist stuff', function () {
+    var done = this.async();
     var cheerio = require('cheerio');
     var fs = require('fs');
 
@@ -123,7 +123,7 @@ module.exports = function(grunt) {
     require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
-      sha = stdout;
+      var sha = stdout.trim();
 
       $('#fh_banner').text('ID : ' + sha);
 
@@ -137,6 +137,7 @@ module.exports = function(grunt) {
       fs.writeFileSync('./dist-dev/client/default/index.html', htmlDev);
       fs.writeFileSync('./dist/client/default/index.html', htmlProd);
       grunt.log.writeln('index copied and modified');
+      done();
 
     });
 
