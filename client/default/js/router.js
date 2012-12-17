@@ -85,6 +85,16 @@ App.Router = Backbone.Router.extend({
 
     // to enable debug mode: App.config.set('debug_mode', true);
     // or set config in client_config.js
+    App.config.on('change:max_retries', function () {
+      if (App.config.get('max_retries') <= 0) {
+        $fh.retry.enable();
+      } else {
+        $fh.retry.disable();
+      }
+    });
+
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
     App.config.on('change:default_timeout', function () {
       var timeout = App.config.get('default_timeout');
       if (_.isNumber(timeout)) {

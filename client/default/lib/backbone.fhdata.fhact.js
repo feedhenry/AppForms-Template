@@ -46,7 +46,7 @@ function overrideFHData() {
                 create: true
               }, function gotFileEntry(fileEntry) {
                 fileEntry.createWriter(function gotFileWriter(writer) {
-                  console.log('save: ' + key + ', ' + value + '. Filename: ' + hash);
+                  console.log('save: ' + key + ', ' + JSON.stringify(value).substring(0,50) + '. Filename: ' + hash);
                   writer.onwrite = function(evt) {
                     return success({
                       key: key,

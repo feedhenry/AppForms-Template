@@ -5,7 +5,7 @@ exports.config = {
   "default_sent_save_max": 5,
   "debug_mode": false,
   "logger": true,
-  "max_retries" : 5,
+  "max_retries" : 0,
   "use_chunking" : true,
-  "default_timeout" : 120
+  "default_timeout" : 30
 };

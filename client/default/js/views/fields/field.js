@@ -11,6 +11,8 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
+    _.bindAll(this, 'dumpContent');
+
     var nonFhClasses = this.model.getNonFhClasses();
     if (nonFhClasses) {
       this.$el.addClass(nonFhClasses);
@@ -34,8 +36,12 @@ FieldView = Backbone.View.extend({
     this.render();
   },
 
-  contentChanged: function(e) {
+  dumpContent: function() {
     $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
+  },
+
+  contentChanged: function(e) {
+    this.dumpContent();
     this.model.set({
       Value: this.value()
     });

@@ -1,6 +1,19 @@
 FieldFileView = FieldView.extend({
   template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="file">'],
 
+
+  dumpContent: function() {
+    var tmp = "<empty>";
+    if(this.fileData) {
+      var size = this.fileData.fileBase64.length +" bytes";
+      if(this.fileData.fileBase64.length > 1024) {
+        size = (Math.floor((this.fileData.fileBase64.length/ 1024) * 1000) / 1000) +" Kilo bytes";
+      }
+      tmp = {content_type : this.fileData.content_type,filename : this.fileData.filename , size: size }
+    }
+    $fh.logger.debug("Value changed :: " + JSON.stringify(tmp));
+  },
+
   contentChanged: function(e) {
     var self = this;
     self.fileData = {};
@@ -9,7 +22,7 @@ FieldFileView = FieldView.extend({
         str = str.target.result; // file reader
       }
       self.fileData.fileBase64 = str;
-      $fh.logger.debug(self.fileData);
+      self.dumpContent();
       self.model.set({Value: self.value()});
     };
 

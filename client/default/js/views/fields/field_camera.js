@@ -101,6 +101,10 @@ FieldCameraView = FieldView.extend({
     }
   },
 
+  dumpContent: function() {
+    FieldFileView.prototype.dumpContent.call(this);
+  },
+
   hasImageData: function() {
     return this.$el.find('#' + this.model.get('ID')).val().length > 0;
   },

@@ -6,6 +6,10 @@ FieldSignatureView = FieldView.extend({
     signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton">Clear</button><button class="cap_sig_done_btn">Done</button>', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
   },
 
+  dumpContent: function() {
+    FieldFileView.prototype.dumpContent.call(this);
+  },
+
   render: function() {
     var self = this;
 
