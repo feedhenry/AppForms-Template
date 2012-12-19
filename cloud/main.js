@@ -200,26 +200,6 @@ exports.getForm = function (params, callback) {
 
 //{"error":"{"Success":0,"ErrorText":"Errors have been highlighted below.","FieldErrors":[{\"ID\":\"Field116\",\"ErrorText\":\"This field is required. Please enter a value.\"}]}"}
 
-exports.cacheChunk= function (params, callback) {
-  var key = params.key;
-  var data = params.data;
-  if (key === null || data === null) {
-    return callback(null, {"error": "key and data are required"});
-  } else {
-    $fh.cache({
-      act: "save",
-      key: key,
-      value: JSON.stringify(data) //data
-    }, function(err, res) {
-      if (err) {
-        return callback(null, {"error": err.toString()});
-      } else {
-        return callback(null, {"Success" : 1});
-      }
-    });  
-  }
-};
-
 exports.loadChunk = function (form,data,name, callback) {
   $fh.cache({
     act: "load",
@@ -228,36 +208,269 @@ exports.loadChunk = function (form,data,name, callback) {
     if (err) {
       return callback(null, {"error": "cached chunk missing for : " + name + "("+ err.toString() + ")"});
     } else {
-      var res =  JSON.parse(json);
-      form[name] = res.value;
-      return callback();
+      if(json !== null) {
+        var res =  JSON.parse(json);
+        console.log("loadChunk :: res=" + res.form_hash)
+        form[name] = res.value;
+        return callback(null,form[name]);
+      } else {
+        return callback(null);
+      }
     }
   });
 };
 
-exports.postEntry = function (params, callback) {
-  var form_hash = params.form_hash;
-  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
-  var data = params.data;
-  var self = this;
-  var chunkTasks = _.collect(data, function chunkHandler(chunk,name){
-    if(chunk.content_type === "ref") {
-      return async.apply(self.loadChunk,data,chunk,name);
+
+exports.cacheForm= function (form, callback) {
+  var str = JSON.stringify(form);
+  console.log("cacheForm form=" + str.substring(0,50) + "....");
+  var key = form.form_id;
+  var data = form.data;
+  if (key === null || data === null) {
+    return callback(null, {"error": "key and data are required"});
+  } else {
+    console.log("calling cacheForm key=" + key);
+    $fh.cache({
+      act: "save",
+      key: key,
+      value: str
+    }, function(err, res) {
+      if (err) {
+        return callback(null, {"error": err.toString()});
+      } else {
+        return callback(null, {"Success" : 1});
+      }
+    });
+  }
+};
+
+exports.loadForm= function (key, callback) {
+  $fh.cache({
+    act: "load",
+    key: key
+  }, function(err, json) {
+    if (err) {
+      return callback(null, {"error": "cached chunk missing for : " + name + "("+ err.toString() + ")"});
+    } else {
+      if(json !== null) {
+        var form =  JSON.parse(json);
+        return callback(null,form);
+      } else {
+        return callback(null);
+      }
     }
   });
-  
-  chunkTasks = _.compact(chunkTasks);
-  async.parallel(chunkTasks, function onComplete(err, results) {
-    if(err) return cb({error:'network'}, err);
-    return wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
-      if (err !== null) {
-        console.error('error posting form entry: ' + err.error);
-        return callback(null, err);
+};
+exports.formComplete= function (form) {
+  //if(form.stat && form.stat.completedAt) {return true;}
+  var incomplete = _.find(form.data, function (v,k) {
+    return v.content_type === "ref";
+  });
+  return !incomplete;
+}
+
+exports.cacheChunk= function (chunk, callback) {
+  var self = this;
+  var key = chunk.key;
+  var data = chunk.value;
+  if (!key || !data ) {
+    return callback(null, {"error": "key and data are required"});
+  } else {
+    var name = chunk.name;
+    var form_id = chunk.form_id;
+    this.loadForm(form_id, function (err, form){
+      if (err) {
+        return callback(null, {"error": err.toString()});
+      } else {
+        form.stat.msg = name + " starting";
+        form.data[name] = data;
+
+        var complete =  self.formComplete(form.data);
+        if(complete) {
+          form.stat.err = err;
+          form.stat.completedAt= Date.now();
+        }
+        self.cacheForm(form, function (err){self._doPostWufoo(err,form);});
       }
-      return callback(null, resp);
+    });
+  }
+};
+
+exports.checkComplete= function (params, callback) {
+  var self = this;
+  var key = params.form_id;
+      if (err || (form && form.err)) {
+        return callback(null, {"error": (err || form.err).toString(), stat: form.stat});
+      } else {
+        var result = {"Success": 1};
+        if(form) {
+          result.stat= form.stat
+        }
+        return callback(null, result);
+      }
+  if (!key ) {
+    return callback(null, {"error": "key is required"});
+  } else {
+    this.loadForm(key, function (err, form){
+      if (err || (form && form.err)) {
+        return callback(null, {"error": (err || form.err).toString(), stat: form.stat});
+      } else {
+        var result = {"Success": 1};
+        if(form) {
+          result.stat= form.stat
+        }
+        return callback(null, result);
+      }
+      if (err || (form && form.err)) {
+        return callback(null, {"error": (err || form.err).toString(), stat: form.stat});
+      } else {
+        var result = {"Success": 1};
+        if(form) {
+          result.stat= form.stat
+        }
+        return callback(null, result);
+      }
+    });
+  }
+};
+exports._doPostWufoo = function (err,form, callback){
+  var self = this;
+  if(callback === null) {
+    callback = function(){};
+  }
+
+  if (err) {
+    form.stat.err = err;
+    form.stat.completedAt= Date.now();
+    return self.cacheForm(form , function () {callback(null, {"error": err.toString()});});
+  }
+
+  if(form.stat && form.stat.completedAt) {
+    return callback(null, {Success :1, CompletedAt : form.stat.completedAt});
+  }
+
+  var complete = self.formComplete(form);
+  if(complete) {
+    var data = form.data;
+    var form_hash = form.form_hash;
+    process.nextTick(function (){
+      return wufoo_api.postFormEntries(form_hash, data, function (err, resp) {
+        form.stat.completedAt = Date.now();
+        form.stat.err = err;
+        setTimeout(function (){
+          self.cacheForm(form, function (){});
+        }, 35000);
+      });
+    });
+  }
+  return callback(null, {Success :1 , msg : "waiting for chunks"});
+};
+
+exports.postEntry = function (params, callback) {
+  if(params.dummy) {
+    delete params.dummy;
+  }
+
+  var self = this;
+  var form_hash = params.form_hash;
+  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
+  self.checkComplete(params,function (err,res) {
+    if(!err && res && res.stat&& res.stat.completedAt) {
+      var completedAt = res.stat.completedAt;
+      return callback(null, {Success :1, CompletedAt : completedAt});
+    } else {
+      params.stat = {startedAt : Date.now()};
+      self.cacheForm(params, function (err){
+        self._doPostWufoo(err,params,callback);
+      });
+    }
+  });
+};
+
+exports.submitFormBody = function (params, callback) {
+  console.log("submitFormBody called");
+  if(params.dummy) {
+    delete params.dummy;
+  }
+
+  var self = this;
+  var form_hash = params.form_hash;
+  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
+  params.stat = {startedAt : Date.now()};
+  self.cacheForm(params, function (err){
+    return callback(null, err ? {"error" : err.toString()} : {"Success": 1});
+  });
+};
+
+exports.validateFormTransmission = function (params, callback) {
+  console.log("validateFormTransmission called");
+  var self = this;
+  var form_id = params.form_id ;
+  if (form_id  === null) return callback(null, {"error": "form_id  is required"});
+  params.stat = {startedAt : Date.now()};
+  self.loadForm(form_id, function (err,form){
+    if (err) {return callback(null, {"error": "Validate Transmission: no form stored for form_id : '" + form_id +"'" });}
+    if(self.formComplete(form)) {
+      return callback(null, {"Success": 1});
+
+    } else {
+      return callback(null, {"error" : "form transmission failure : incomplete"} );
+    }
+  });
+};
+exports.doRemoteFormSubmission = function (params, callback) {
+  console.log("doRemoteFormSubmission called");
+  var self = this;
+  var form_id = params.form_id ;
+  if (form_id  === null) return callback(null, {"error": "form_id  is required"});
+  self.loadForm(form_id, function (err,form){
+    if (err || !form) {return callback(null, {"error": !form ? ("Remote Form Submission : no form stored for form_id : '" + form_id +"'")  : err.toString()});}
+    var data = form.data;
+    var form_hash = form.form_hash;
+    return wufoo_api.postFormEntries(form_hash, data, function (err, res) {
+      form.stat.completedAt = Date.now();
+      form.stat.err = err;
+      process.nextTick(function () {
+        self.cacheForm(form, function (){});
+      });
+      return callback(null, err ? {"error": "Remote Form Submission : no form stored for form_id : '" + form_id +"'" } : res);
+
     });
   });
 };
+
+exports.pollRemoteFormSubmissionComplete= function (params, callback) {
+  console.log("pollRemoteFormSubmissionComplete called");
+  var self = this;
+  var form_id = params.form_id ;
+  if (form_id  === null) return callback(null, {"error": "form_id  is required"});
+  self.loadForm(form_id, function (err,form){
+    if (err || !form) {return callback(null, {"error": !form ? ("Poll Form Submission : no form stored for form_id : '" + form_id +"'")  : err.toString()});}
+    var stat = form.stat || {completedAt : null};
+    return callback(null, {"Success": 1, stat: form.stat});
+  });
+};
+// params = {form_id:form_id, "name":name,"value":value , "size":value.length};
+exports.submitChunk= function (params, callback) {
+  console.log("submitChunk called");
+  var self = this;
+  var form_id = params.form_id ;
+  var name = params.name;
+  if (form_id  === null) return callback(null, {"error": "form_id  is required"});
+  self.loadForm(form_id, function (err,form){
+    if (err || !form) {return callback(null, {"error": !form ? ("Chunk Submission[" + form_id + "][" + name + "] : no form stored ")  : err.toString()});}
+
+    _.each(form.data, function chunkHandler(value,field){
+      if (name === field) {
+        form.data[name] = params.value;
+      }
+    });
+    self.cacheForm(form, function (err){
+      return callback(null, err ? {"error": err.toString()}:{"Success": 1});
+    });
+  });
+};
+
 
 /*
  * Here we get a list of available Wufoo forms
