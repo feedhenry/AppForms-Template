@@ -55,7 +55,6 @@ exports.getFormFields = function (params, callback) {
 };
 
 exports.getForm = function (params, callback) {
-  console.log('getForm()');
   var form_hash = params.id;
   var updateDate = params.version || null;
 
@@ -210,7 +209,6 @@ exports.loadChunk = function (form,data,name, callback) {
     } else {
       if(json !== null) {
         var res =  JSON.parse(json);
-        console.log("loadChunk :: res=" + res.form_hash)
         form[name] = res.value;
         return callback(null,form[name]);
       } else {
@@ -223,13 +221,11 @@ exports.loadChunk = function (form,data,name, callback) {
 
 exports.cacheForm= function (form, callback) {
   var str = JSON.stringify(form);
-  console.log("cacheForm form=" + str.substring(0,50) + "....");
   var key = form.form_id;
   var data = form.data;
   if (key === null || data === null) {
     return callback(null, {"error": "key and data are required"});
   } else {
-    console.log("calling cacheForm key=" + key);
     $fh.cache({
       act: "save",
       key: key,
@@ -388,7 +384,6 @@ exports.postEntry = function (params, callback) {
 };
 
 exports.submitFormBody = function (params, callback) {
-  console.log("submitFormBody called");
   if(params.dummy) {
     delete params.dummy;
   }
@@ -403,7 +398,6 @@ exports.submitFormBody = function (params, callback) {
 };
 
 exports.validateFormTransmission = function (params, callback) {
-  console.log("validateFormTransmission called");
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -419,7 +413,6 @@ exports.validateFormTransmission = function (params, callback) {
   });
 };
 exports.doRemoteFormSubmission = function (params, callback) {
-  console.log("doRemoteFormSubmission called");
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -440,7 +433,6 @@ exports.doRemoteFormSubmission = function (params, callback) {
 };
 
 exports.pollRemoteFormSubmissionComplete= function (params, callback) {
-  console.log("pollRemoteFormSubmissionComplete called");
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -452,7 +444,6 @@ exports.pollRemoteFormSubmissionComplete= function (params, callback) {
 };
 // params = {form_id:form_id, "name":name,"value":value , "size":value.length};
 exports.submitChunk= function (params, callback) {
-  console.log("submitChunk called");
   var self = this;
   var form_id = params.form_id ;
   var name = params.name;
@@ -499,16 +490,32 @@ exports.getForms = function (params, callback) {
     });
   });
 };
+var truncate=function(o,len, chars) {
+  if(o=== null || o === undefined) {
+    return "";
+  }
+  var str = o;
+  if(!_.isString(o)) {
+    str = JSON.stringify(o);
+  }
+  len = len || 25;
+  chars = chars || '...';
+  var slen = str.length;
+  if(slen > len ) {
+    str = str.substring(0,Math.min(slen, len ) - chars.length )  + chars;
+  }
+  return str;
+};
 
 if(wufoo_config.wufoo_config.logger) {
   var self = this;
   _.each(exports, function (func,name){
     exports[name] = _.wrap(func, function(func) {
-      console.log(name + " starting", arguments);
+      console.log(name + "(" + truncate(arguments)  +")");
       try {
         return func.apply(self, Array.prototype.slice.call(arguments,1));
       } catch(e) {
-        console.log(name,e);
+        console.log(name + "(" + truncate(arguments)  +") e=" + e);
         throw e;
       }
     });
