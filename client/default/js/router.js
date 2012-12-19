@@ -87,9 +87,9 @@ App.Router = Backbone.Router.extend({
     // or set config in client_config.js
     App.config.on('change:max_retries', function () {
       if (App.config.get('max_retries') <= 0) {
-        $fh.retry.enable();
-      } else {
         $fh.retry.disable();
+      } else {
+        $fh.retry.enable();
       }
     });
 

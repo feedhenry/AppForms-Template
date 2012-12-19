@@ -7,5 +7,5 @@ exports.config = {
   "logger": true,
   "max_retries" : 0,
   "use_chunking" : true,
-  "default_timeout" : 30
+  "default_timeout" : 20
 };

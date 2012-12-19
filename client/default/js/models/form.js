@@ -54,46 +54,46 @@ FormModel = Backbone.Model.extend({
     return form;
   },
 
-  dumpChunk:function (name,chunk) {
-    $fh.logger.debug("dumpChunk field='" , name );
-    if(chunk) {
-      $fh.logger.debug("dumpChunk content_type='" + chunk.content_type);
-      $fh.logger.debug("dumpChunk filename='" + chunk.filename);
-      $fh.logger.debug("dumpChunk size='" + (chunk.fileBase64 ? chunk.fileBase64.length : 0));
-      $fh.logger.debug("dumpChunk fileBase64='" +this.truncate(chunk.fileBase64));
-    } else {
-      $fh.logger.debug("dumpChunk chunk=empty" );
+  getTimeout:function (millis) {
+    var timeout = App.config.get('default_timeout') || ($fh.legacy.fh_timeout / 1000);
+    if(millis) {
+      timeout = timeout *1000;
     }
+    return timeout;
   },
 
-  getTimeout:function () {
-    return App.config.get('default_timeout') || ($fh.legacy.fh_timeout / 1000);
-  },
-
-  checkNetworkRate:function (req) {
-    var start = req.start;
-    var end   = req.end;
-    var size  = req.total;
-    var max   = req.max;
-
-    var elapsed = end - start; // time in milliseconds
-    var actual   = ((size / elapsed) * 1000)/1024;
-
-    var timeout  = this.getTimeout();
-    var required = (max / timeout) /1024;
-
-    $fh.logger.debug("checkNetworkRate required=" + required + ", actual  = " + actual);
-
-    return {ok : actual > required,  actual :actual, required:  required};
-  },
-  handleError: function(msg, cb) {
-    $fh.logger.debug("handleError" + this.truncate(msg));
-    this.showAlert({text : JSON.stringify(msg)}, "error", 5000);
+  handleError: function(e, cb) {
+    var msg = e.msg || "network";
+    var err = e.err;
+    $fh.logger.debug("handleError" + this.truncate(e,150));
     var type = 'unknown';
+    if(msg  === "error_ajaxfail") {
+      msg = "Unexpected Network Error : " + (err ? err.error : "");
+      if(!err.error  || err.error.length === 0) {
+        if(err.message && err.message.length !== 0) {
+          msg += err.message;
+        } else {
+          msg += "Unknown";
+        }
+      }
+      type = "network";
+      this.showAlert({text : msg}, "error", 5000);
+      return cb({error:"network"}, msg);
+    }
+
+    if(msg  === "validation") {
+      msg = "Form Validation Error : " + (err ? err : "please fix the errors");
+      type = "validation";
+      this.showAlert({text : msg}, "error", 5000);
+      return cb({error:"validation"}, e.res || msg);
+    }
+
+    this.showAlert({text : JSON.stringify(msg)}, "error", 5000);
     if (_.isObject(msg)) {
       msg = msg.error;
       type = msg;
     }
+
     if(msg.indexOf("invalid") != -1) {
       type = 'validation';
     } else if(msg.indexOf("offline") != -1) {
@@ -101,7 +101,9 @@ FormModel = Backbone.Model.extend({
     } else if(msg.indexOf("network") != -1) {
       type = 'network';
     }
-    return cb({error:type}, msg);
+
+    this.showAlert({text : "Unknown Error : " + JSON.stringify(e)}, "error", 5000);
+    return cb({error:"unknown"}, msg);
   },
 
   toBytes: function(len){
@@ -122,9 +124,8 @@ FormModel = Backbone.Model.extend({
    */
   pollRemoteFormSubmissionComplete: function(req,form_id,res, cb) {
     var self = this;
-    this.showAlert({text : "Form Submitted to cloud"}, "success", 5000);
+    this.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
     $fh.logger.debug('Form Submitted to cloud: res:' + self.truncate(res));
-    var poll = async.apply($fh.act,{"act":"pollRemoteFormSubmissionComplete","req":{"form_id":form_id}});
     var timeout  = this.getTimeout();
     var start = Math.floor(Date.now() / 1000);
     var complete = false;
@@ -138,14 +139,20 @@ FormModel = Backbone.Model.extend({
       },
       function process(callback) {
         setTimeout(function () {
-          poll(function (res) {
-            $fh.logger.debug('pollRemoteFormSubmissionComplete process : res=' + self.truncate(res) );
-            if ((res.Success && res.Success === 1 && (res.stat && res.stat.completedAt)) || res.err){
-              callback(res);
-            } else {
-              callback();
-            }
-          });
+          $fh.act({"act":"pollRemoteFormSubmissionComplete","req":{"form_id":form_id}},
+                  function (res) {
+                    $fh.logger.debug('pollRemoteFormSubmissionComplete process : res=' + self.truncate(res) );
+                    if ((res.Success && res.Success === 1 && (res.stat && res.stat.completedAt)) || res.err){
+                      return callback(res);
+                    } else {
+                      return callback();
+                    }
+
+                  },
+                  function onError(msg, err) {
+                    $fh.logger.debug('pollRemoteFormSubmissionComplete failed : res=' + self.truncate(msg) +'err=' + self.truncate(err) );
+                    return callback();
+                  });
         }, 1000);
       },
       function complete(res) {
@@ -158,7 +165,7 @@ FormModel = Backbone.Model.extend({
               cb(null, res);
             }
           } else if(res.err  || res.Error) {
-            return self.handleError(res.err|| res.Error,cb);
+            return cb({err: (res.err|| res.Error)});
           }
 
         } else {
@@ -182,19 +189,23 @@ FormModel = Backbone.Model.extend({
       data.req.dummy = self.DUMMY_IMAGE;
     }
     req.total += JSON.stringify(data).length;
+    var timeout = self.getTimeout(true);
+    self.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
     var start = Date.now();
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res=" + self.truncate(res));
       if (res.Success && res.Success === 1) {
         var json = JSON.stringify(data);
-        var len = json.length;
-        req.size += len;
-        self.showAlert({ text : "Submitted form body ", current : req.size, total : req.total}, "success", 5000);
-        return callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
+        req.size += json.length;
+        self.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
+        callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
       } else {
-        return self.handleError("Form is invalid, Please fix the highlighted errors",callback);
+        cb({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
+    }, function (msg, err) {
+      $fh.logger.debug("submitFormBody failed : msg='"  + self.truncate(msg) +"' err='" + self.truncate(err,150)+ "'");
+      callback({msg : msg,err:err});
     });
   },
 
@@ -209,24 +220,26 @@ FormModel = Backbone.Model.extend({
     $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "]");
     var value = chunk.value;
     var len =  value.fileBase64.length;
+    var timeout = self.getTimeout(true) ;
+    self.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
 
     $fh.logger.debug("submitChunk starting value="  + self.truncate(value,50));
     $fh.act({
       "act":"submitChunk",
       "retries" : App.config.get("max_retries"),
       "req": chunk
-    }, function (res) {
+    }, function onSuccess(res) {
       $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] res='" + self.truncate(res ) + "'");
       if (res.Success && res.Success === 1) {
         req.size += len;
-        self.showAlert({text : "Submitted chunk[field=" + chunk.name + "]", current : req.size, total : req.total}, "success", 5000);
-        callback(null, res);
+        self.showAlert({text : "Chunk[field=" + chunk.name + "] complete", current : req.size, total : req.total}, "success", timeout);
+        return callback(null, res);
       } else {
-        callback({error:'unknown'}, res);
+        return callback({err:'unknown' , msg: JSON.stringify(res)}, res);
       }
-    }, function (msg, err) {
+    }, function onError(msg, err) {
       $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] msg='"  + self.truncate(msg) +"' err='" + self.truncate(err)+ "'");
-      callback({error:'network'}, msg);
+      return callback({msg : msg,err:err});
     });
   },
 
@@ -240,15 +253,21 @@ FormModel = Backbone.Model.extend({
     var self = this;
     var data = {"act":"validateFormTransmission","req":{form_id:form_id}};
     var start = Date.now();
+    var timeout = self.getTimeout(true);
+    $fh.logger.debug("validateFormTransmission [" +form_id + "] started");
+    self.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res="+ self.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Form submitted to cloud " ,current :req.total , total : req.total}, "success", 5000);
+        self.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
         return callback(null,{name : "validateFormTransmission", start : start, end : end, size : req.size});
       } else {
-        return self.handleError("Form is invalid, Please fix the highlighted errors",callback);
+        return callback({msg:"validation", err: "Please fix the highlighted errors",res:res});
       }
+    }, function onError(msg, err) {
+      $fh.logger.debug("validateFormTransmission [" +form_id + "] failed msg='"  + self.truncate(msg) +"' err='" + self.truncate(err)+ "'");
+      return callback({msg : msg,err:err});
     });
   },
 
@@ -262,15 +281,20 @@ FormModel = Backbone.Model.extend({
     var self = this;
     var data = {"act":"doRemoteFormSubmission","req":{form_id:form_id}};
     var start = Date.now();
+    $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] started");
+    self.showAlert({text : "Remote form submission: started"}, "success", 5000);
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res=" + self.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Starting submission to wufoo"}, "success", 5000);
+        self.showAlert({text : "Remote form submission: complete"}, "success", 5000);
         return callback(null,{name : "doRemoteFormSubmission", start : start, end : end, size: req.total});
       } else {
-        return self.handleError("Form is invalid, Please fix the highlighted errors",callback);
+        return callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
+    }, function onError(msg, err) {
+      $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] failed msg='"  + self.truncate(msg) +"' err='" + self.truncate(err)+ "'");
+      return callback({msg : msg,err:err});
     });
   },
 
@@ -356,23 +380,23 @@ FormModel = Backbone.Model.extend({
   submit: function(cb) {
     var self = this;
     $fh.env({}, function(props) {
-      var serialized_form = self.serialize();
-      var form_hash = self.attributes.Hash;
-      var form_id = [form_hash,props.uuid,self.id].join("/");
-      var form = {
-        "form_hash":form_hash,
-        "form_id":form_id,
-        "data":serialized_form
-      };
-      var req = {start : Date.now(),
-                 size : 0,
-                 total: 0,
-                 max :-1,
-                 chunks : [],
-                 form_id:form.form_id
-      };
       Utils.isOnline(function(online) {
         if (online) {
+          var serialized_form = self.serialize();
+          var form_hash = self.attributes.Hash;
+          var form_id = [form_hash,props.uuid,self.id].join("/");
+          var form = {
+            "form_hash":form_hash,
+            "form_id":form_id,
+            "data":serialized_form
+          };
+          var req = {start : Date.now(),
+            size : 0,
+            total: 0,
+            max :-1,
+            chunks : [],
+            form_id:form.form_id
+          };
           var tasks = self.splitFormIntoTasks(req,form);
           async.series(tasks,function(err, results){
             if (err) {return self.handleError(err,cb);}
@@ -382,7 +406,7 @@ FormModel = Backbone.Model.extend({
             });
           });
         } else {
-          return self.handleError("Unable to submit the form : you are currently offline",cb);
+          self.handleError({msg: "offline", err:"Unable to submit the form : you are currently offline"},cb);
         }
       });
     });
@@ -399,6 +423,7 @@ FormModel = Backbone.Model.extend({
 
   showAlert: function(o, type, timeout) {
     var alertTpl = $('<div>').addClass('fh_wufoo_alert');
+    $('#fh_wufoo_alerts_area ').empty();
 
     var message = o.text;
     var percent  = "";
@@ -450,9 +475,7 @@ FormsCollection = Backbone.Collection.extend({
   sync: FHBackboneDataActSyncFn,
 
   initialize: function () {
-    var self = this;
-    this.store.on('error', function (error) {
-    });
+    this.store.on('error', function () {});
   }
 });
 

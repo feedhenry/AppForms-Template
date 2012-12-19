@@ -363,10 +363,6 @@ exports._doPostWufoo = function (err,form, callback){
 };
 
 exports.postEntry = function (params, callback) {
-  if(params.dummy) {
-    delete params.dummy;
-  }
-
   var self = this;
   var form_hash = params.form_hash;
   if (form_hash === null) return callback(null, {"error": "form_hash is required"});
@@ -384,10 +380,6 @@ exports.postEntry = function (params, callback) {
 };
 
 exports.submitFormBody = function (params, callback) {
-  if(params.dummy) {
-    delete params.dummy;
-  }
-
   var self = this;
   var form_hash = params.form_hash;
   if (form_hash === null) return callback(null, {"error": "form_hash is required"});
@@ -522,3 +514,17 @@ if(wufoo_config.wufoo_config.logger) {
   });
 
 }
+//if (mock_fails) {
+//  var meld = require("meld");
+//  var self = this;
+//  var count = 0;
+//  meld.around(this, ['submitFormBody' , 'submitChunk', 'validateFormTransmission','doRemoteFormSubmission','pollRemoteFormSubmissionComplete'], function(methodCall) {
+//    console.log("BEFORE " + methodCall.method + "( " + truncate(methodCall.args,150) + ")");
+//    count = 0;
+//    var timeout = 30000;
+//    setTimeout(function(){
+//      methodCall.proceed();
+//    }, timeout);
+//  });
+//
+//}
