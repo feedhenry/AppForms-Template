@@ -47,10 +47,13 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       });
     });
   },
-  create: function(attributes, options) {
+  create: function(attributes, options,callback) {
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
+    if(callback === undefined || callback === null) {
+      callback = function (){};
+    }
     model.submit(function(err, res) {
       var modelJson = model.toJSON();
       if (err) {
@@ -73,7 +76,8 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         App.collections.sent.create(modelJson);
       }
       // model should added to another collection now. destroy it
-      model.destroy();
+      model.destroy(); // TODO check double deletion
+      callback(err,res);
     });
 
     return model;
