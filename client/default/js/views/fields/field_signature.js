@@ -71,6 +71,8 @@ FieldSignatureView = FieldView.extend({
     $(this.$el).data('sigpadInited', true);
     // Bind capture
     $('.cap_sig_done_btn', this.$el).unbind('click').bind('click', function(e) {
+      var loadingView = new LoadingView();
+      loadingView.show("generating signature");
       e.preventDefault();
       var sig = sigPad.getSignature(); // get the default image type
       if(sig && sig.length) {
@@ -104,6 +106,7 @@ FieldSignatureView = FieldView.extend({
         self.fileData.filename = "signature." +  parts[1];
       }
       $('.sigPad', self.$el).hide();
+      loadingView.hide();
       self.contentChanged();
     });
   },
