@@ -95,11 +95,11 @@ FormModel = Backbone.Model.extend({
       type = msg;
     }
     if(msg.indexOf("invalid") != -1) {
-      type = 'validation'
+      type = 'validation';
     } else if(msg.indexOf("offline") != -1) {
-      type = 'offline'
+      type = 'offline';
     } else if(msg.indexOf("network") != -1) {
-      type = 'network'
+      type = 'network';
     }
     return cb({error:type}, msg);
   },
@@ -208,7 +208,7 @@ FormModel = Backbone.Model.extend({
     var self = this;
     $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "]");
     var value = chunk.value;
-    var len =  value.fileBase64.length
+    var len =  value.fileBase64.length;
 
     $fh.logger.debug("submitChunk starting value="  + self.truncate(value,50));
     $fh.act({
@@ -260,7 +260,6 @@ FormModel = Backbone.Model.extend({
    */
   doRemoteFormSubmission: function(req,form_id, callback) {
     var self = this;
-    var form_id = req.form_id;
     var data = {"act":"doRemoteFormSubmission","req":{form_id:form_id}};
     var start = Date.now();
     $fh.act(data, function (res) {
@@ -364,7 +363,7 @@ FormModel = Backbone.Model.extend({
         "form_hash":form_hash,
         "form_id":form_id,
         "data":serialized_form
-      }
+      };
       var req = {start : Date.now(),
                  size : 0,
                  total: 0,
@@ -386,7 +385,7 @@ FormModel = Backbone.Model.extend({
           return self.handleError("Unable to submit the form : you are currently offline",cb);
         }
       });
-    })
+    });
   },
 
   serialize: function() {

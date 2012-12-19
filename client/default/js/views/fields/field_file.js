@@ -9,7 +9,7 @@ FieldFileView = FieldView.extend({
       if(this.fileData.fileBase64.length > 1024) {
         size = (Math.floor((this.fileData.fileBase64.length/ 1024) * 1000) / 1000) +" Kilo bytes";
       }
-      tmp = {content_type : this.fileData.content_type,filename : this.fileData.filename , size: size }
+      tmp = {content_type : this.fileData.content_type,filename : this.fileData.filename , size: size };
     }
     $fh.logger.debug("Value changed :: " + JSON.stringify(tmp));
   },
