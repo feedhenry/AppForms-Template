@@ -172,6 +172,7 @@ module.exports = function(grunt) {
     var fs = require('fs');
     var done = this.async();
 
+    var wufoo_config = grunt.option("wc");
     fs.renameSync(".gitattributes", ".gitattributes.bak");
     fs.writeFileSync(".gitattributes", 
                      ["grunt.js export-ignore" ,
@@ -181,17 +182,29 @@ module.exports = function(grunt) {
                       "client/wufoo_config.js export-subst" ,
                       ".gitattributes export-ignore"].join("\n")
                     );
-    
-    require('child_process').exec('git archive --worktree-attributes -o max.zip -v HEAD', function (error, stdout, stderr) {
+
+    var child = require('child_process');
+    child .exec('git archive --worktree-attributes -o max.zip -v HEAD', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
+      function finish(){
+        fs.renameSync(".gitattributes.bak", ".gitattributes");
+        if (error !== null) {
+          grunt.log.writeln('exec error: ' + error);
+          done(1);
+        } else {
+          done();
+        }
+      }
 
-      fs.renameSync(".gitattributes.bak", ".gitattributes");
-      if (error !== null) {
-        grunt.log.writeln('exec error: ' + error);
-        done(1);
+      if(wufoo_config) {
+        child.exec('zip max.zip cloud/wufoo_config.js', function (error, stdout, stderr) {
+          console.log("error : " + error);
+          console.log("stdout : " + stdout);
+          finish();
+        });
       } else {
-        done();
+        finish();
       }
     });
   });
