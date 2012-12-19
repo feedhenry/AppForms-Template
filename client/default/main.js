@@ -1576,7 +1576,7 @@ FormModel = Backbone.Model.extend({
     var percent  = "";
     if(o.current ) {
       var value  = Math.floor((o.current * 100)/ o.total);
-      percent = $('<progress>').attr("max", 100).attr("value", value).html($('<strong>').text( value + " % done"));
+      percent = $('<progress>').attr("max", 100).attr("value", value).html($('<strong>').text( value + " %"));
       $fh.logger.debug("showAlert current='" + this.toBytes(o.current)  + ", total='" + this.toBytes(o.total) + "%='" + percent );
     }
     alertTpl.addClass(type);

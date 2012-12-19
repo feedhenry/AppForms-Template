@@ -34,3 +34,10 @@ NOTE : This set of release covers commits from  197b74cb979c82641ec961b620a04727
  * 2710 : working on poll, added a bit more logging
  * 2907 : increased sent items options
  * 2891 : UI progress bar on submission
+
+
+0.1.4 - 2012-12-19  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2899 : create an android phonegap plugin to allow access to application sandbox 
+
+NOTE : if the android phone has no sdcard the sandboxed directory will be created but not deleted.
