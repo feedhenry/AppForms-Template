@@ -670,4 +670,42 @@ div.loading_container div.loading_spinner div { background: #fff; }
     font-size: 10px;
     font-family: Verdana;
 }
+#fh_wufoo_alerts_area span {
+    min-width : 75%;
+    width: 75%;
+    overflow:hidden;
+}
 
+#fh_wufoo_alerts_area progress,          /* All HTML5 progress enabled browsers */
+#fh_wufoo_alerts_area progress[role]     /* polyfill */
+{
+
+    /* Turns off styling - not usually needed, but good to know. */
+    appearance: none;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+
+    /* gets rid of default border in Firefox and Opera. */
+    border: none;
+
+    /* Needs to be in here for Safari polyfill so background images work as expected. */
+    background-size: auto;
+
+    /* Dimensions */
+    /*width: 400px; */
+    /*height: 60px;*/
+    padding-left : 2em;
+    float : right;
+    width : 20%;
+
+}
+
+/* Polyfill */
+#fh_wufoo_alerts_area progress[role]:after {
+    background-image: none; /* removes default background from polyfill */
+}
+
+/* Ensure fallback text doesn't appear in polyfill */
+#fh_wufoo_alerts_area progress[role] strong {
+    display: none;
+}
