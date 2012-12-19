@@ -35,7 +35,28 @@ function overrideFHData() {
             text: key
           }, function(result) {
             var filename = result.hashvalue + '.txt';
-            return cb(filename);
+            if (typeof navigator.externalstorage !== "undefined") {
+              navigator.externalstorage.enable(function handleSuccess(res){
+                var path = filename;
+                if(res.path ) {
+                  path = res.path;
+                  if(!res.path.match(/\/$/) && !filename.match(/^\//)) {
+                    path += '/';
+                  }
+                  path += filename;
+                }
+                console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+                return cb(filename);
+              },function handleError(err){
+                console.warn('filenameForKey ignoring error=' + JSON.stringify(err));
+                console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+                return cb(filename);
+              })
+            } else {
+              console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
+              return cb(filename);
+            }
+
           });
         }
 
