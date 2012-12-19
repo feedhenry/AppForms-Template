@@ -31,6 +31,6 @@ NOTE : This set of release covers commits from  197b74cb979c82641ec961b620a04727
 
 0.1.3 - 2012-12-19  - IR191 - Jim O'Leary
 ----------------------------------------------------------------------
- * 2884 : working on poll, added a bit more logging
+ * 2710 : working on poll, added a bit more logging
  * 2907 : increased sent items options
  * 2891 : UI progress bar on submission
