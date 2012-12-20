@@ -63,11 +63,11 @@ FormModel = Backbone.Model.extend({
   },
 
   handleError: function(e, cb) {
-    var msg = e.msg || "network";
+    var type = e.msg  || "unknown";
     var err = e.err;
+    var msg;
     $fh.logger.debug("handleError" + this.truncate(e,150));
-    var type = 'unknown';
-    if(msg  === "error_ajaxfail") {
+    if(type  === "error_ajaxfail") {
       msg = "Unexpected Network Error : " + (err ? err.error : "");
       if(!err.error  || err.error.length === 0) {
         if(err.message && err.message.length !== 0) {
@@ -76,33 +76,30 @@ FormModel = Backbone.Model.extend({
           msg += "Unknown";
         }
       }
-      type = "network";
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:"network"}, msg);
+      return cb({error:type}, msg);
     }
 
-    if(msg  === "validation") {
+    if(type  === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
-      type = "validation";
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:"validation"}, e.res || msg);
+      return cb({error:type}, e.res || msg);
     }
 
-    this.showAlert({text : JSON.stringify(msg)}, "error", 5000);
-    if (_.isObject(msg)) {
-      msg = msg.error;
-      type = msg;
+    if(type  === "offline") {
+      msg = err || "You are currently offline";
+      this.showAlert({text : msg}, "error", 5000);
+      return cb({error:type});
     }
 
-    if(msg.indexOf("invalid") != -1) {
-      type = 'validation';
-    } else if(msg.indexOf("offline") != -1) {
-      type = 'offline';
-    } else if(msg.indexOf("network") != -1) {
-      type = 'network';
+    if(type === "network") {
+      msg = "Network Error : " + (err || JSON.stringify(e));
+      this.showAlert({text : msg}, "error", 5000);
+      return cb({error:type});
     }
 
-    this.showAlert({text : "Unknown Error : " + JSON.stringify(e)}, "error", 5000);
+    msg = "Unknown Error : " + JSON.stringify(e);
+    this.showAlert({text : msg}, "error", 5000);
     return cb({error:"unknown"}, msg);
   },
 
