@@ -66,7 +66,6 @@ App.Router = Backbone.Router.extend({
       $fh.logger.info(" ======================================================");
       $('#fh_banner p').each(function(i , e) {
         $fh.logger.info(" = " + $(e).text());
-        banner.push($(e).text());
         banner = true;
       } );
       if(!banner) {
