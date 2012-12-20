@@ -47,11 +47,15 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 ----------------------------------------------------------------------
  * 2710: more error handling 
  * 2891: pending items submitted in series
- * XXXX: spinner on signature processing or you can accidentally click off page
- * XXXX: add upload wufoo config to grunt max archive
+ * 2919: spinner on signature processing or you can accidentally click off page
  * 2903: reduce cloud logs
  * 2879: fix submitted date format 
  * 2778: AppForm Clients should log a Banner message with the application config
  * 2919: add spinner to sig capture processing
  * 2918 : changed grunt un minfied archive to include wufoo_config.js if a cmd line flag is set
 NOTE : if the android phone has no sdcard the sandboxed directory will be created but not deleted.
+
+
+0.1.6 - 2012-12-20  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2899 : fully enable sandbox phonegap plugin for android

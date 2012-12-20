@@ -40,11 +40,12 @@ function overrideFHData() {
                 var path = filename;
                 if(res.path ) {
                   path = res.path;
-                  if(!res.path.match(/\/$/) && !filename.match(/^\//)) {
+                  if(!path.match(/\/$/)) {
                     path += '/';
                   }
                   path += filename;
                 }
+                filename = path;
                 console.log('filenameForKey key=' + key+ ' , Filename: ' + filename);
                 return cb(filename);
               },function handleError(err){
