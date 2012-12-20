@@ -61,6 +61,18 @@ App.Router = Backbone.Router.extend({
       // Can be set to false when taking a pic so refetch doesn't happen on resume from that
       App.resumeFetchAllowed = true;
       document.addEventListener("resume", self.onResume, false);
+      var banner = false;
+      $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
+      $fh.logger.info(" ======================================================");
+      $('#fh_banner p').each(function(i , e) {
+        $fh.logger.info(" = " + $(e).text());
+        banner.push($(e).text());
+        banner = true;
+      } );
+      if(!banner) {
+        $fh.logger.info(" = Dev Mode ");
+      }
+      $fh.logger.info(" ======================================================");
     });
 
     // to enable debug mode: App.config.set('debug_mode', true);

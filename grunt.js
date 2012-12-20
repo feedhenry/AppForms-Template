@@ -125,7 +125,11 @@ module.exports = function(grunt) {
       grunt.log.writeln('stderr: ' + stderr);
       var sha = stdout.trim();
 
-      $('#fh_banner').text('ID : ' + sha);
+      $('#fh_banner')
+        .append($('<p class="sha">').text('ID : ' + sha))
+        .append($('<p class="name">').text('name : ' + grunt.config("pkg.name")))
+        .append($('<p class="version">').text('version : ' + grunt.config("pkg.version")))
+        .append($('<p class="date">').text('date : ' + grunt.template.today("yyyy-mm-dd")));
 
       var htmlDev = $.root().html();
 
