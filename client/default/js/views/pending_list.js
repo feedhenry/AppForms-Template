@@ -50,7 +50,7 @@ PendingListView = Backbone.View.extend({
           }
           callback.apply(self,arguments);
         });
-      }
+      };
     });
     // Kick things off by fetching when all stores are initialised
 
