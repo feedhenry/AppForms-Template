@@ -120,7 +120,7 @@ module.exports = function(grunt) {
     // add the tags and make a dev copy of the html
     $.root().append('<script src="lib.js"></script>\n');
     $.root().append('<script src="main.js"></script>\n');
-    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
+    require('child_process').exec(' git rev-parse --short  --verify HEAD', function (error, stdout, stderr) {
       grunt.log.writeln('stdout: ' + stdout);
       grunt.log.writeln('stderr: ' + stderr);
       var sha = stdout.trim();

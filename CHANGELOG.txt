@@ -63,7 +63,7 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 
 0.1.7 - 2012-01-08  - IR192 - Jim O'Leary
 ----------------------------------------------------------------------
- * 2930 : graphical date picker
+ * 2930 : graphical date picker :: problem with mobiscroll minification
  * 2922 : Add error handling for 500 errors to act calls(still need to 
           release fh-nodeapp)
  * 2846 : App Forms Phase II : when form submission fails it should be 
