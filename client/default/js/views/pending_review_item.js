@@ -1,6 +1,6 @@
 PendingReviewItemView = ItemView.extend({
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
   },
   errorTypes: {
     "validation": "Validation Error. Please review for details.",

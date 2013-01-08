@@ -7,7 +7,7 @@ var Utils = Utils || {};
       online = navigator.onLine;
     }
     if(online){
-      //use phonegap to determin if the network is available
+      // use phonegap to determine if the network is available
       if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
         var networkType = navigator.network.connection.type;
         if(networkType == "none" || networkType == null) {
@@ -17,4 +17,5 @@ var Utils = Utils || {};
     }
     callback(online);
   };
+
 })(Utils);
