@@ -37,7 +37,8 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         // NOTE : current match is src not starting with lib (a simpler /^js\// would also work),
-        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)/)),
+        // TODO : minifying mobiscroll seems to cause a problem so I'm adding it to main.js for the moment
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll)/)),
         dest: 'dist-dev/client/default/main.js'
       },
       lib: {
