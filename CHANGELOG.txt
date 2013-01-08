@@ -59,3 +59,15 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 0.1.6 - 2012-12-20  - IR191 - Jim O'Leary
 ----------------------------------------------------------------------
  * 2899 : fully enable sandbox phonegap plugin for android
+
+
+0.1.7 - 2012-01-08  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2930 : graphical date picker
+ * 2922 : Add error handling for 500 errors to act calls(still need to 
+          release fh-nodeapp)
+ * 2846 : App Forms Phase II : when form submission fails it should be 
+          possible to view the last error for pending forms
+ * 2908 : App Forms Phase II : Ajax Errors that occur during the first 
+          application initialisation are not đisplayed properly (still
+          waiting for github downloads issue resolution)
