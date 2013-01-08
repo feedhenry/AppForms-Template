@@ -1,6 +1,6 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.1.6 - 2012-12-20
+/*! FeedHenry-Wufoo-App-Generator - v0.1.7 - 2013-01-08
 * https://github.com/feedhenry/Wufoo-Template/
-* Copyright (c) 2012 FeedHenry */
+* Copyright (c) 2013 FeedHenry */
 
 var App = App || {};
 
@@ -1240,28 +1240,32 @@ FormModel = Backbone.Model.extend({
     var msg;
     $fh.logger.debug("handleError" + this.truncate(e,150));
     if(type  === "error_ajaxfail") {
-      msg = "Unexpected Network Error : " + (err ? err.error : "");
-      if(!err.error  || err.error.length === 0) {
+
+      msg = "Unexpected Network Error : ";// + (err ? err.error : "");
+      if(!err.error  || err.error.length === 0 || err.error === "\"error\"") {
         if(err.message && err.message.length !== 0) {
           msg += err.message;
         } else {
           msg += "Unknown";
         }
+      } else {
+        msg += "Unknown";
+
       }
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type}, msg);
+      return cb({error:msg, type:"network"}, msg);
     }
 
     if(type  === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type}, e.res || msg);
+      return cb({error:msg, type:"validation"}, e.res || msg);
     }
 
     if(type  === "offline") {
       msg = err || "You are currently offline";
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type});
+      return cb({error:msg, type:"network"},msg);
     }
 
     if(type === "network") {
@@ -1272,7 +1276,7 @@ FormModel = Backbone.Model.extend({
 
     msg = "Unknown Error : " + JSON.stringify(e);
     this.showAlert({text : msg}, "error", 5000);
-    return cb({error:"unknown"}, msg);
+    return cb({error:msg, type:"unknown"}, msg);
   },
 
   toBytes: function(len){
@@ -1366,7 +1370,7 @@ FormModel = Backbone.Model.extend({
         self.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
         callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
       } else {
-        cb({msg:"validation", err:"Please fix the highlighted errors",res:res});
+        callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
     }, function (msg, err) {
       $fh.logger.debug("submitFormBody failed : msg='"  + self.truncate(msg) +"' err='" + self.truncate(err,150)+ "'");
@@ -1757,12 +1761,12 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       if (err) {
         // add error to model json
         modelJson.error = {
-          "type": err.error,
+          "type": err.type || err.error,
           "details": res
         };
         $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
 
-        if (/\b(offline|network)\b/.test(err.error)) {
+        if (/\b(offline|network)\b/.test(err.type)) {
           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
           App.collections.pending_waiting.create(modelJson);
         } else {
@@ -2251,7 +2255,16 @@ ItemView = Backbone.View.extend({
   },
 
   templates: {
+    item_failed: '<span class="name"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type <%= error_type %>"><%= error_message %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
     item: '<span class="name"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
+  },
+
+  errorTypes: {
+    "validation": "Validation Error. Please review for details.",
+    "offline": "Offline during submission. Ok to resubmit",
+    "network": "Network issue during submission. Ok to resubmit",
+    "timeout": "Form Submission timeout. Please try again later",
+    "defaults": "Unknown Error. Please review for details"
   },
 
   initialize: function() {
@@ -2262,9 +2275,16 @@ ItemView = Backbone.View.extend({
 
   render: function() {
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
-    var item = _.template(this.templates.item, {
+    var error = this.model.get('error');
+    var template = this.templates.item;
+    if(error) {
+      template = this.templates.item_failed;
+    }
+    var item = _.template(template, {
       name: this.model.get('Name'),
-      timestamp: time
+      timestamp: time,
+      error_type: (error && error.type ) ? error.type : null,
+      error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
 
     $(this.el).html(item);
@@ -4294,6 +4314,13 @@ FieldCustomDateView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
+    try {
+      this.$el.find('input[type="date"]').mobiscroll().date({theme:'android',display:'bottom'});
+
+    } catch(e) {
+      console.log("TODO :: mobiscroll fix");
+    }
+
     this.show();
   },
 
@@ -4905,6 +4932,11 @@ App.Router = Backbone.Router.extend({
     App.collections.pending_review.fetch();
 
     $fh.ready(function() {
+//      // TODO , ask enterprise if they want to keep to old errors across restarts ?
+//      _(App.collections.pending_waiting.models).each(function(model) {
+//        model.unset('error');
+//      }, this);
+
       // by default, allow fetching on resume event.
       // Can be set to false when taking a pic so refetch doesn't happen on resume from that
       App.resumeFetchAllowed = true;

@@ -10,9 +10,13 @@ exports.getForms = function (cb) {
   var end_point = "forms";
   doApiGet(end_point, function (err, body) {
     if (err) {return cb(err);}
-    return cb(null,
-      JSON.parse(body)
-    );
+    try {
+      return cb(null,
+        JSON.parse(body)
+      );
+    } catch(e){
+      return cb({"error":e, "msg":body});
+    }
   });
 };
 
@@ -26,9 +30,7 @@ exports.getForm = function(form_hash, cb) {
       var form = json.Forms[0];
       return cb(null, form);
     } catch (e) {
-      return cb({
-        "error":e
-      });
+      return cb({"error":e, "msg":body});
     }
   });
 };
@@ -42,9 +44,7 @@ exports.getFormFields = function (form_hash, cb) {
       var json = JSON.parse(body);
       return cb(null, json.Fields);
     } catch (e) {
-      return cb({
-        "error":e
-      });
+      return cb({"error":e, "msg":body});
     }
   });
 };
@@ -81,52 +81,61 @@ exports.getFormTheme = function (form_hash, cb) {
 };
 
 function getPages(html, cb) {
-  var pages = {PaginationType:'tab', Pages:[]};
-  var $ = cheerio.load(html);
-  var pagination = $('.paging-context');
-  pages.NoPageTitles = pagination.hasClass('nopagelabel');
+  try {
+    var pages = {PaginationType:'tab', Pages:[]};
+    var $ = cheerio.load(html);
+    var pagination = $('.paging-context');
+    pages.NoPageTitles = pagination.hasClass('nopagelabel');
 
-  if (pagination.find('table').hasClass('pgStyle2')) {
-    pages.PaginationType = "progress";
+    if (pagination.find('table').hasClass('pgStyle2')) {
+      pages.PaginationType = "progress";
+    }
+    var tdFields = pagination.find('td[class=t]');
+    var pageTitles = [];
+    if (tdFields.length > 0) {
+      $.each(tdFields, function (i, el) {
+        pageTitles.push({Title:$(this).text().trim()});
+      });
+    }
+    pages.Pages = pageTitles;
+    return cb(null, pages);
+  } catch(e) {
+    return cb({"error" : e, "msg" : html});
+
   }
-  var tdFields = pagination.find('td[class=t]');
-  var pageTitles = [];
-  if (tdFields.length > 0) {
-    $.each(tdFields, function (i, el) {
-      pageTitles.push({Title:$(this).text().trim()});
-    });
-  }
-  pages.Pages = pageTitles;
-  return cb(null, pages);
 }
 
 function getTheme(html, cb) {
-  var $ = cheerio.load(html);
-  var links = $('link[rel=stylesheet]');
-  var theme = "";
-  async.forEach(links, function(item, aCallback) {
-    var link = $(item);
-    var href = link.attr('href');
+  try {
+    var $ = cheerio.load(html);
+    var links = $('link[rel=stylesheet]');
+    var theme = "";
+    async.forEach(links, function(item, aCallback) {
+      var link = $(item);
+      var href = link.attr('href');
 
-    // If link has no href
-    if (href != null && href !== '' && href.indexOf("theme.css") != -1) {
-      doGet(href, function(err, body) {
-        if (err) {return aCallback(err);}
-        theme += body;
+      // If link has no href
+      if (href != null && href !== '' && href.indexOf("theme.css") != -1) {
+        doGet(href, function(err, body) {
+          if (err) {return aCallback(err);}
+          theme += body;
+          aCallback(null);
+        });
+      } else {
         aCallback(null);
+      }
+    }, function(err) {
+      if (err != null) {
+        console.error('error loading remote script:' + err.message);
+      }
+      inlineImages(theme, function(err, css) {
+        if (err) {return cb(err);}
+        return cb(null, css);
       });
-    } else {
-      aCallback(null);
-    }
-  }, function(err) {
-    if (err != null) {
-      console.error('error loading remote script:' + err.message);
-    }
-    inlineImages(theme, function(err, css) {
-      if (err) {return cb(err);}
-      return cb(null, css);
     });
-  });
+  } catch(e) {
+    return cb({"error" : e, "msg" : html});
+  }
 }
 
 function inlineImages(css, cb) {

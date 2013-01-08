@@ -487,20 +487,26 @@ table.likert {
 }
 
 .pending_review_type {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  padding: 2px 0 2px 10px;
-  color: #fff;
-  font-size: 13px;
-  background-color: #E71E1E;
-  background-image: -webkit-linear-gradient(top, #E71E1E 0,#C71A1A 100%);
-  background-image: linear-gradient(to bottom, #E71E1E 0, #C71A1A 100%);
-  border: 1px solid #B51A1A;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 2px 0 2px 10px;
+    color: #fff;
+    font-size: 13px;
+    background-color: #E71E1E;
+    background-image: -webkit-linear-gradient(top, #E71E1E 0,#C71A1A 100%);
+    background-image: linear-gradient(to bottom, #E71E1E 0, #C71A1A 100%);
+    border: 1px solid #B51A1A;
 }
 
-.pending_review_list li.pending_submission {
+.pending_review_type.network, .pending_review_type.offline, .pending_review_type.timeout{
+    background-color: #F89406;;
+    background-image: -webkit-linear-gradient(top, #F89406 0,#D89406 100%);
+    background-image: linear-gradient(to bottom, #F89406 0, #D89406 100%);
+}
+
+.pending_review_list li.pending_submission ,.pending_waiting_list li.pending_submission {
   padding-top: 34px;
 }
 
@@ -647,6 +653,9 @@ div.loading_container div.loading_spinner div { background: #fff; }
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
     border-color: #c43c35 #c43c35 #882a25;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+}
+.fh_wufoo_alert.warn {
+    background-color: #F89406;
 }
 
 .fh_wufoo_alert.success {

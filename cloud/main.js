@@ -18,7 +18,7 @@ function getMinFormData(form) {
 exports.getFormTheme = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash == null) return callback(null, {
+  if (form_hash === null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -31,7 +31,7 @@ exports.getFormTheme = function (params, callback) {
 exports.getFormPages = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash == null) return callback(null, {
+  if (form_hash === null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -44,7 +44,7 @@ exports.getFormPages = function (params, callback) {
 exports.getFormFields = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash == null) return callback(null, {
+  if (form_hash === null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -59,7 +59,7 @@ exports.getForm = function (params, callback) {
   var updateDate = params.version || null;
 
   // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
-  if (form_hash == null) return callback(null, {
+  if (form_hash === null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -91,7 +91,7 @@ exports.getForm = function (params, callback) {
     // check update date
     console.log('updateDate:', updateDate);
     console.log('res.DateUpdated:', res.DateUpdated);
-    if (updateDate != null && updateDate === res.DateUpdated) {
+    if (updateDate !== null && updateDate === res.DateUpdated) {
       // update dates are the same, send minimum data rather than waste bandwidth
       return callback(null, getMinFormData(res));
     }
@@ -160,7 +160,7 @@ exports.getForm = function (params, callback) {
         var pageNum = parseInt(field.Page || "1", 10) -1;
         if (wufoo_default_fields.indexOf(field.ID) === -1) {
           // if any field rules mathc this field id, add it to field Rules object
-          if (tempFieldRules[field.ID] != null) {
+          if (tempFieldRules[field.ID] !== null) {
             field.Rules = tempFieldRules[field.ID];
           }
 
@@ -263,7 +263,7 @@ exports.formComplete= function (form) {
     return v.content_type === "ref";
   });
   return !incomplete;
-}
+};
 
 exports.cacheChunk= function (chunk, callback) {
   var self = this;
@@ -300,7 +300,7 @@ exports.checkComplete= function (params, callback) {
       } else {
         var result = {"Success": 1};
         if(form) {
-          result.stat= form.stat
+          result.stat= form.stat;
         }
         return callback(null, result);
       }
@@ -313,7 +313,7 @@ exports.checkComplete= function (params, callback) {
       } else {
         var result = {"Success": 1};
         if(form) {
-          result.stat= form.stat
+          result.stat= form.stat;
         }
         return callback(null, result);
       }
@@ -322,7 +322,7 @@ exports.checkComplete= function (params, callback) {
       } else {
         var result = {"Success": 1};
         if(form) {
-          result.stat= form.stat
+          result.stat= form.stat;
         }
         return callback(null, result);
       }
@@ -466,7 +466,7 @@ exports.getForms = function (params, callback) {
     // filter out forms we want if certain form hashes are configured
     var forms = results.Forms;
     console.log('hashes:', hashes);
-    if (hashes != null && hashes.length > 0) {
+    if (hashes !== null && hashes.length > 0) {
       forms = _(forms).filter(function (form) {
         return hashes.indexOf(form.Hash) > -1;
       });
