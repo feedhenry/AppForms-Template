@@ -57,6 +57,11 @@ App.Router = Backbone.Router.extend({
     App.collections.pending_review.fetch();
 
     $fh.ready(function() {
+//      // TODO , ask enterprise if they want to keep to old errors across restarts ?
+//      _(App.collections.pending_waiting.models).each(function(model) {
+//        model.unset('error');
+//      }, this);
+
       // by default, allow fetching on resume event.
       // Can be set to false when taking a pic so refetch doesn't happen on resume from that
       App.resumeFetchAllowed = true;

@@ -68,28 +68,32 @@ FormModel = Backbone.Model.extend({
     var msg;
     $fh.logger.debug("handleError" + this.truncate(e,150));
     if(type  === "error_ajaxfail") {
-      msg = "Unexpected Network Error : " + (err ? err.error : "");
-      if(!err.error  || err.error.length === 0) {
+
+      msg = "Unexpected Network Error : ";// + (err ? err.error : "");
+      if(!err.error  || err.error.length === 0 || err.error === "\"error\"") {
         if(err.message && err.message.length !== 0) {
           msg += err.message;
         } else {
           msg += "Unknown";
         }
+      } else {
+        msg += "Unknown";
+
       }
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type}, msg);
+      return cb({error:msg, type:"network"}, msg);
     }
 
     if(type  === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type}, e.res || msg);
+      return cb({error:msg, type:"validation"}, e.res || msg);
     }
 
     if(type  === "offline") {
       msg = err || "You are currently offline";
       this.showAlert({text : msg}, "error", 5000);
-      return cb({error:type});
+      return cb({error:msg, type:"network"},msg);
     }
 
     if(type === "network") {
@@ -100,7 +104,7 @@ FormModel = Backbone.Model.extend({
 
     msg = "Unknown Error : " + JSON.stringify(e);
     this.showAlert({text : msg}, "error", 5000);
-    return cb({error:"unknown"}, msg);
+    return cb({error:msg, type:"unknown"}, msg);
   },
 
   toBytes: function(len){
@@ -194,7 +198,7 @@ FormModel = Backbone.Model.extend({
         self.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
         callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
       } else {
-        cb({msg:"validation", err:"Please fix the highlighted errors",res:res});
+        callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
     }, function (msg, err) {
       $fh.logger.debug("submitFormBody failed : msg='"  + self.truncate(msg) +"' err='" + self.truncate(err,150)+ "'");

@@ -59,12 +59,12 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       if (err) {
         // add error to model json
         modelJson.error = {
-          "type": err.error,
+          "type": err.type || err.error,
           "details": res
         };
         $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
 
-        if (/\b(offline|network)\b/.test(err.error)) {
+        if (/\b(offline|network)\b/.test(err.type)) {
           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
           App.collections.pending_waiting.create(modelJson);
         } else {
