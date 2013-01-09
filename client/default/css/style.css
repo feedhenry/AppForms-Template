@@ -718,3 +718,25 @@ div.loading_container div.loading_spinner div { background: #fff; }
 #fh_wufoo_alerts_area progress[role] strong {
     display: none;
 }
+
+
+@media only screen and (orientation : portrait) {
+    li span.name {
+        list-style-position: inside;
+        max-width: 40%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+}
+@media only screen and (orientation : landscape) {
+    li span.name {
+        list-style-position: inside;
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: inline-block;
+    }
+}
