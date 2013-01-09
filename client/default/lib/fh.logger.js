@@ -61,15 +61,18 @@
       },
       send: function () {
         var str = _getLogsAsString();
-        $fh.send({
-          "type": "email",
-          "to": App.config.get('log_email') || 'test@example.com',
-          "subject": "Wufoo App Logs",
-          "body": str
-        }, function () {
-          window.alert('LOGS SENT OK');
-        }, function (msg) {
-          window.alert('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
+
+        $fh.env(function (env) {
+          $fh.send({
+            "type": "email",
+            "to": App.config.get('log_email') || 'test@example.com',
+            "subject": "Wufoo App Logs",
+            "body": "Device Environment:\n" + JSON.stringify(env, null, 2) + "\n\nApp Logs:\n" + str
+          }, function () {
+            window.alert('LOGS SENT OK');
+          }, function (msg) {
+            window.alert('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
+          });
         });
       },
       store : function () {
