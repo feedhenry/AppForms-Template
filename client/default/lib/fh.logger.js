@@ -1,6 +1,12 @@
 //$fh.ready(function() {
+(function () {
+  var config = {
+    "log_line_limit": 300
+  };
+
   if (!$fh.logger) {
     $fh.logger = {};
+
 
     $fh.logger._dbg = function(){
       var clazz = arguments[0];
@@ -8,10 +14,18 @@
       var func = arguments[2];
       var args = Array.prototype.slice.call(arguments,3)[0];
 
-      var str = $fh.logger._stringify.apply(this,args);
-      $("#logger  .logs").prepend($("<p>").addClass(clazz).text(str.join(" ")));
+      var strArr = $fh.logger._stringify.apply(this,args);
+      strArr.unshift(new Date().toUTCString() + ' ::');
+      var str = strArr.join(' ');
+
+      // output to ui, which will also be our in-memory store
+      // and remove any lines over the line limit
+      $("#logger .logs").prepend($("<p>").addClass(clazz).text(str));
+      $('#logger .logs p:gt(' + (config.log_line_limit - 1) + ')').remove();
+
+      // output to console
       try{
-        func.apply(self,args);
+        func.call(self, str);
       }catch(e){
         if(console && console.log){
           console.log("Failed to log message. Error: " + e.message);
@@ -62,5 +76,5 @@
     };
 
   }
-//});
+})();
 
