@@ -7,5 +7,7 @@ exports.config = {
   "logger": true,
   "max_retries" : 0,
   "use_chunking" : true,
-  "default_timeout" : 30
+  "default_timeout" : 30,
+  "log_line_limit": 300,
+  "log_email": "jim.oleary+eplc@feedhenry.com"
 };

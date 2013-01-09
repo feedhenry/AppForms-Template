@@ -52,8 +52,10 @@
 
 <div id="logger" class="hidden">
     <div id="fh_logs">
-        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br/>
-        <div class="logs"></div>
+        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button>
+        <button onclick="if($fh.logger){ $fh.logger.send();}">Send Logs</button>
+<!--         <button onclick="if($fh.logger){ $fh.logger.store();}">Store Logs</button><br/>
+ -->        <div class="logs"></div>
     </div>
 </div>
 
