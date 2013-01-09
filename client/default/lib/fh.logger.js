@@ -1,9 +1,5 @@
 //$fh.ready(function() {
 (function () {
-  var config = {
-    "log_line_limit": 300,
-    "email": "test@example.com"
-  };
 
   var _dbg = function(){
     var clazz = arguments[0];
@@ -18,7 +14,9 @@
     // output to ui, which will also be our in-memory store
     // and remove any lines over the line limit
     $("#logger .logs").prepend($("<p>").addClass(clazz).text(str));
-    $('#logger .logs p:gt(' + (config.log_line_limit - 1) + ')').remove();
+    if (typeof App.config.get('log_line_limit') !== 'undefined') {
+      $('#logger .logs p:gt(' + (App.config.get('log_line_limit') - 1) + ')').remove();
+    }
 
     // output to console
     try{
@@ -65,7 +63,7 @@
         var str = _getLogsAsString();
         $fh.send({
           "type": "email",
-          "to": config.email,
+          "to": App.config.get('email') || 'test@example.com',
           "subject": "Wufoo App Logs",
           "body": str
         }, function () {
