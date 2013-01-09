@@ -63,7 +63,7 @@
         var str = _getLogsAsString();
         $fh.send({
           "type": "email",
-          "to": App.config.get('email') || 'test@example.com',
+          "to": App.config.get('log_email') || 'test@example.com',
           "subject": "Wufoo App Logs",
           "body": str
         }, function () {
