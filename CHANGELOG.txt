@@ -71,3 +71,9 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
  * 2908 : App Forms Phase II : Ajax Errors that occur during the first 
           application initialisation are not đisplayed properly (still
           waiting for github downloads issue resolution)
+
+0.1.8 - 2012-01-09  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2930 : graphical date picker :: problem with mobiscroll minification
+ * 2944 : App Form Phase II : Delete button overlaps the form name
+
