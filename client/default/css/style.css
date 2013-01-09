@@ -679,10 +679,15 @@ div.loading_container div.loading_spinner div { background: #fff; }
     font-size: 10px;
     font-family: Verdana;
 }
-#fh_wufoo_alerts_area span {
-    min-width : 75%;
-    width: 75%;
-    overflow:hidden;
+#fh_wufoo_alerts_area span.small {
+    max-width: 40%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    /*min-width : 30%;*/
+    /*width: 30%;*/
+    /*overflow:hidden;*/
 }
 
 #fh_wufoo_alerts_area progress,          /* All HTML5 progress enabled browsers */
@@ -705,7 +710,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
     /*height: 60px;*/
     padding-left : 2em;
     float : right;
-    width : 20%;
+    min-width : 70%;
 
 }
 

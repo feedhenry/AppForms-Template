@@ -41,10 +41,10 @@ App.Router = Backbone.Router.extend({
     // store error handling
     _(App.collections).forEach(function (collection) {
       collection.on('error', function (collection, msg , options) {
-        $fh.logger.error('collection error:', msg);
+        $fh.logger.error('collection error:\"' + msg + '\"');
       });
       collection.store.on('error', function (msg) {
-        $fh.logger.error('collection store error:', msg);
+        $fh.logger.error('collection store error: msg=\"' + msg + '\"');
       });
     });
 

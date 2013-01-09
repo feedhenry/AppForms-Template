@@ -11,8 +11,6 @@
     strArr.unshift(new Date().toUTCString() + ' ::');
     var str = strArr.join(' ');
 
-    // output to ui, which will also be our in-memory store
-    // and remove any lines over the line limit
     $("#logger .logs").prepend($("<p>").addClass(clazz).text(str));
     if (typeof App.config.get('log_line_limit') !== 'undefined') {
       $('#logger .logs p:gt(' + (App.config.get('log_line_limit') - 1) + ')').remove();
@@ -40,7 +38,11 @@
         return "<func>";
       }
       if(!_.isString(arg)   && !_.isNumber(arg)) {
-        return JSON.stringify(arg);
+        if(arg instanceof Error) {
+          return JSON.stringify(arg);
+        } else {
+          return Utils.truncate(JSON.stringify(arg),150);
+        }
       }
       return arg;
     });
@@ -91,6 +93,9 @@
         }, function (msg, err) {
           window.alert('ERROR STORED LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
         });
+      },
+      trace : function (){
+        _dbg("trace",console,console.debug,arguments);
       },
       silly : function (){
         _dbg("silly",console,console.trace,arguments);

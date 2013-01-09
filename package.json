@@ -3,7 +3,8 @@
   "version": "0.1.8",
   "dependencies": {
     "cheerio": "*",
-    "wrench": "*"
+    "wrench": "*",
+    "async" : "*"
   },
   "devDependencies"  : {
     "grunt-contrib-copy" : "*"
