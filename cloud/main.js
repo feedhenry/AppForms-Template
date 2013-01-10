@@ -528,3 +528,114 @@ if(wufoo_config.wufoo_config.logger) {
 //  });
 //
 //}
+
+
+
+// fh.logger endpoints
+exports.fh_logger_store = function (params, callback) {
+  console.log('fh_logger_store');
+  // TODO: store the logs in fh.db and return a unique id for this transaction
+  $fh.db({
+    "act": "create",
+    "type": "client_logs",
+    "fields": {
+      "env": JSON.stringify(params.env),
+      "logs": params.logs
+    }
+  }, function(err, data) {
+    if (err) return callback(err); // TODO: field errors?
+
+    console.log('data=', data);
+    return callback(null, {
+      "status": "ok",
+      "id": data.guid
+    });
+  });
+};
+
+
+// fh.db admin endpoints
+// http://editor.datatables.net/server/
+function dbDataToClientData(data, callback) {
+  var res = {
+    "id": data.guid,
+    "row": data.fields
+  };
+  return callback(null, res);
+
+}
+
+function dbList(params, callback) {
+  $fh.db({
+    "act": "list",
+    "type": params.entity
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    var res = {
+      aaData: []
+    };
+
+    for (var di = 0, dl = data.list.length; di < dl; di += 1) {
+      var tempRow = data.list[di].fields;
+      tempRow.DT_RowId = data.list[di].guid;
+      res.aaData.push(tempRow);
+    }
+
+    return callback(null, res);
+  });
+}
+
+function dbCreate(params, callback) {
+  $fh.db({
+    "act": "create",
+    "type": params.entity,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err); // TODO: field errors?
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbUpdate(params, callback) {
+  $fh.db({
+    "act": "update",
+    "type": params.entity,
+    "guid": params.id,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbDelete(params, callback) {
+  $fh.db({
+    "act": "delete",
+    "type": params.entity,
+    "guid": params.data[0] // TODO: allow multiple deletes?
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return callback(null, {
+      "id": -1
+    });
+  });
+}
+
+exports.db = function (params, callback) {
+  console.log('params:', params);
+
+  var action = params.action || 'list';
+
+  switch(action)
+  {
+    case "create": dbCreate(params, callback); break;
+    case "edit": dbUpdate(params, callback); break;
+    case "remove": dbDelete(params, callback); break;
+    default: dbList(params, callback);
+  }
+
+};

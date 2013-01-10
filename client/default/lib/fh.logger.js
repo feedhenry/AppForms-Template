@@ -91,19 +91,23 @@
       },
       store : function () {
         var str = _getLogsAsString();
-        $fh.act({
-          "act": "fh_logger_store",
-          "req": {
-            "logs": str
-          }
-        }, function (res) {
-          if (res && res.status === 'ok') {
-            window.alert('LOGS STORED OK: res=' + JSON.stringify(res));
-          } else {
-            window.alert('ERROR STORED LOGS (1100): res=' + JSON.stringify(res));
-          }
-        }, function (msg, err) {
-          window.alert('ERROR STORED LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
+
+        $fh.env(function (env) {
+          $fh.act({
+            "act": "fh_logger_store",
+            "req": {
+              "env": env,
+              "logs": str
+            }
+          }, function (res) {
+            if (res && res.status === 'ok') {
+              window.alert('LOGS STORED OK: ID=' + res.id + ' res=' + JSON.stringify(res));
+            } else {
+              window.alert('ERROR STORING LOGS (1100): res=' + JSON.stringify(res));
+            }
+          }, function (msg, err) {
+            window.alert('ERROR STORING LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
+          });
         });
       },
       trace : function (){
