@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
 
-<div id="fh_banner" class="hidden"><p class="sha">ID : 082c705</p><p class="name">name : FeedHenry-Wufoo-App-Generator</p><p class="version">version : 0.1.8</p><p class="date">date : 2013-01-09</p></div>
+<div id="fh_banner" class="hidden"><p class="sha">ID : 2db72a2</p><p class="name">name : FeedHenry-Wufoo-App-Generator</p><p class="version">version : 0.1.9</p><p class="date">date : 2013-01-10</p></div>
 <div id="fh_wufoo_header" class="hidden bar-title"></div>
 <div id="fh_wufoo_alerts_area"></div>
 
@@ -20,6 +20,8 @@
 <div id="fh_wufoo_pending" class="hidden"></div>
 
 <div id="fh_wufoo_sent" class="hidden"></div>
+
+<div id="fh_wufoo_settings" class="hidden"></div>
 
 <div id="fh_wufoo_content" class="hidden"></div>
 
@@ -52,7 +54,8 @@
 
 <div id="logger" class="hidden">
     <div id="fh_logs">
-        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br>
+        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button>
+        <button onclick="if($fh.logger){ $fh.logger.send();}">Send Logs</button>
         <div class="logs"></div>
     </div>
 </div>
@@ -63,6 +66,9 @@ var App = App || {};
 App.views = App.views || {};
 App.collections = App.collections || {};
 </script>
+
+
+
 
 
 
@@ -142,6 +148,7 @@ App.collections = App.collections || {};
 
 
 
+
 <!-- Router -->
 
 
@@ -155,3 +162,10 @@ App.collections = App.collections || {};
 </style>
 <script src="lib.min.js"></script>
 <script src="main.js"></script>
+
+<script>
+  $fh.ready(
+    function (){
+      Advice.adviseBackbone(FormModel);
+  });
+</script>
