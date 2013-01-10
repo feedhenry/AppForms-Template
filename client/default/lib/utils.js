@@ -8,8 +8,8 @@ var Utils = Utils || {};
     }
     if(online){
       // use phonegap to determine if the network is available
-      if(typeof navigator.network != "undefined" && typeof navigator.network.connection != "undefined"){
-        var networkType = navigator.network.connection.type;
+      if(typeof navigator.connection != "undefined") {
+        var networkType = navigator.connection.type;
         if(networkType == "none" || networkType == null) {
           online = false;
         }
@@ -33,6 +33,14 @@ var Utils = Utils || {};
       str = str.substring(0,Math.min(slen, len ) - chars.length )  + chars;
     }
     return str;
+  };
+
+
+  self.isIOS= function() {
+    if(typeof device  != "undefined" && device.platform ) {
+      return device.platform  === "iPhone";
+    }
+    return false; // ?
   };
 
 })(Utils);
