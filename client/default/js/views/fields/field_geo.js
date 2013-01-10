@@ -30,7 +30,7 @@ FieldGeoView = FieldView.extend({
       input.val(location);
       self.contentChanged();
     }, function(msg, err) {
-      input.val('Location could not be determined');
+      input.attr('placeholder','Location could not be determined');
     });
     input.blur();
   }
