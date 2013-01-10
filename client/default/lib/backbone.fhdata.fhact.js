@@ -230,10 +230,29 @@ _.extend(FHBackboneDataActSync.prototype, {
                 }
 
                 // update client config if its in response
-                if (res && res.config) { // NOTE: no versioning on config so ovewrite it always
-                  var merged = _.extend({}, App.config.attributes, res.config);
+                if (res && res.config) {
+                  var merged = {};
+                  var current_attributes = _.clone(App.config.attributes);
+                  var old_defaults = _.clone(current_attributes.__defaults || {});
+                  var new_defaults = _.clone(res.config);
+                  delete current_attributes.__defaults;
+
+                  if (res.config.force_cloud_config_updates) {
+                    // disregard any client modified values and ovewrite with latest config from cloud
+                    merged = _.extend({}, current_attributes, new_defaults);
+                  } else {
+                    // only update config values that haven't been modified by the client i.e. values that are still the default
+                    var modified_attributes = {};
+                    _.each(current_attributes, function (val, key) {
+                      if (val !== old_defaults[key]) {
+                        modified_attributes[key] = val;
+                      }
+                    });
+                    merged = _.defaults(modified_attributes, new_defaults);
+                  }
                   $fh.logger.debug('FHBackboneDataActSync :: updating config merged =' + JSON.stringify(merged));
-                  App.config.set(_.extend({}, App.config.attributes, res.config));
+                  merged.__defaults = new_defaults;
+                  App.config.set(merged);
                 }
                 // update data if there is any
                 var dataUpdated = false;

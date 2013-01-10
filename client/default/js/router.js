@@ -33,6 +33,7 @@ App.Router = Backbone.Router.extend({
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
     App.views.sent_list = new SentListView();
+    App.views.settings = new SettingsView();
     var loadingView = new LoadingCollectionView();
     App.views.header = new HeaderView();
     App.views.header.showHome();

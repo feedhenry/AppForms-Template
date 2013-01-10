@@ -44,7 +44,7 @@ label.error { display: inline; }
 label.choice { display: inline; }
 input[type="radio"], input[type="checkbox"] { width: inherit; }
 
-#fh_logs, #fh_wufoo_content, #fh_wufoo_form_list {
+#fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
   background: #fff;
   width: 97%;
   margin: 0 auto;
@@ -739,4 +739,38 @@ div.loading_container div.loading_spinner div { background: #fff; }
         text-overflow: ellipsis;
         display: inline-block;
     }
+}
+
+/* Ratchet overrides */
+.toggle {
+  float:right;
+  top:5px;
+  right:10px;
+}
+
+.input-row label {
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+#fh_wufoo_settings .button-negative {
+  width: 40%;
+}
+
+#fh_wufoo_settings .button-positive {
+  width: 40%;
+  float: right;
+}
+
+.settings {
+  display: block;
+  position: relative;
+  float: right;
+  cursor: pointer;
+  right: 6px;
+  bottom: 12px;
+}
+.settings img {
+  width: 16px;
+  height: 16px;
 }
