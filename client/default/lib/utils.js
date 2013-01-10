@@ -18,4 +18,21 @@ var Utils = Utils || {};
     callback(online);
   };
 
+  self.truncate= function(o,len, chars) {
+    if(o=== null || o === undefined) {
+      return "";
+    }
+    var str = o;
+    if(!_.isString(o)) {
+      str = JSON.stringify(o);
+    }
+    len = len || 25;
+    chars = chars || '...';
+    var slen = str.length;
+    if(slen > len ) {
+      str = str.substring(0,Math.min(slen, len ) - chars.length )  + chars;
+    }
+    return str;
+  };
+
 })(Utils);

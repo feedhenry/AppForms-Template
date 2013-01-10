@@ -680,14 +680,11 @@ div.loading_container div.loading_spinner div { background: #fff; }
     font-family: Verdana;
 }
 #fh_wufoo_alerts_area span.small {
-    max-width: 40%;
+    max-width: 30%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
-    /*min-width : 30%;*/
-    /*width: 30%;*/
-    /*overflow:hidden;*/
 }
 
 #fh_wufoo_alerts_area progress,          /* All HTML5 progress enabled browsers */
@@ -705,10 +702,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
     /* Needs to be in here for Safari polyfill so background images work as expected. */
     background-size: auto;
 
-    /* Dimensions */
-    /*width: 400px; */
-    /*height: 60px;*/
-    padding-left : 2em;
+    padding-left : 1em;
     float : right;
     min-width : 70%;
 

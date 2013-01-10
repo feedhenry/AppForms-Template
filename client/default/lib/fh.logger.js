@@ -1,6 +1,17 @@
 //$fh.ready(function() {
 (function () {
 
+  Function.prototype.getName = function()
+  {
+    if(this.name)
+      return this.name;
+    var definition = this.toString().split("\n")[0];
+    var exp = /^function ([^\s(]+).+/;
+    if(exp.test(definition))
+      return definition.split("\n")[0].replace(exp, "$1") || "anonymous";
+    return "anonymous";
+  }
+
   var _dbg = function(){
     var clazz = arguments[0];
     var self = arguments[1];
@@ -35,7 +46,8 @@
         });
       }
       if(_.isFunction(arg)) {
-        return "<func>";
+        //return "<func>";
+        return Utils.truncate(arg.getName(),150);
       }
       if(!_.isString(arg)   && !_.isNumber(arg)) {
         if(arg instanceof Error) {
