@@ -77,3 +77,10 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
  * 2930 : graphical date picker :: problem with mobiscroll minification
  * 2944 : App Form Phase II : Delete button overlaps the form name
 
+0.1.9 - 2012-01-10  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2904 : App Form Phase II : add a button to allow the client side logs to be email
+ * 2953 : App Form Phase II : change progress status in form upload
+ * 2946 : App Form Phase II : add better error handling for client side exception
+ * 2956 : App Form Phase II : Error messages in input fields should not be validated
+

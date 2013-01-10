@@ -17,13 +17,7 @@ FieldCustomDateView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-    try {
-      this.$el.find('input[type="date"]').mobiscroll().date({theme:'android',display:'bottom'});
-
-    } catch(e) {
-      console.log("TODO :: mobiscroll fix");
-    }
-
+    this.$el.find('input[type="date"]').mobiscroll().date({theme:'android',display:'bottom',dateOrder : "ddmmyy"});
     this.show();
   },
 
