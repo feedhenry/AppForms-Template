@@ -1,4 +1,4 @@
-/**
+(/**
  * @fileOverview This is an adaptation of Backbone.localStorage, edited to work
  *     with the asynchronous FeedHenry local data storage API,
  *     with optional fh.act enpdoints for listing & reading from cloud
@@ -231,14 +231,18 @@ _.extend(FHBackboneDataActSync.prototype, {
 
                 // update client config if its in response
                 if (res && res.config) {
+
+                  // pull out current config attributes, previous defaults and new defualts.
+                  // need previous defaults to check if any were modified by client
                   var merged = {};
                   var current_attributes = _.clone(App.config.attributes);
                   var old_defaults = _.clone(current_attributes.__defaults || {});
                   var new_defaults = _.clone(res.config);
                   delete current_attributes.__defaults;
 
+                  // see if we should nuke any settings modified by client
                   if (res.config.force_cloud_config_updates) {
-                    // disregard any client modified values and ovewrite with latest config from cloud
+                    // disregard any client modified values and ovewrite with latest config default from cloud
                     merged = _.extend({}, current_attributes, new_defaults);
                   } else {
                     // only update config values that haven't been modified by the client i.e. values that are still the default
@@ -251,6 +255,7 @@ _.extend(FHBackboneDataActSync.prototype, {
                     merged = _.defaults(modified_attributes, new_defaults);
                   }
                   $fh.logger.debug('FHBackboneDataActSync :: updating config merged =' + JSON.stringify(merged));
+                  // save the new defaults too so they can be checked in future for client modifications
                   merged.__defaults = new_defaults;
                   App.config.set(merged);
                 }
