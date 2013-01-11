@@ -331,7 +331,7 @@ exports.checkComplete= function (params, callback) {
 };
 exports._doPostWufoo = function (err,form, callback){
   var self = this;
-  if(callback === null) {
+  if(callback == null) {
     callback = function(){};
   }
 
