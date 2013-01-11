@@ -248,7 +248,7 @@ exports.loadForm= function (key, callback) {
     if (err) {
       return callback(null, {"error": "cached chunk missing for : " + name + "("+ err.toString() + ")"});
     } else {
-      if(json !== null) {
+      if(json != null) {
         var form =  JSON.parse(json);
         return callback(null,form);
       } else {
