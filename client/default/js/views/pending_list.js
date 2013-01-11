@@ -26,21 +26,37 @@ PendingListView = Backbone.View.extend({
   },
 
   submitAll: function() {
-    var pending = [];
-    
-    _(App.collections.pending_waiting.models).forEach(function(model){
-      var json = model.toJSON();
-      //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-      // to make sure it is re-created and not removed below by model.destroy.
-      delete json.id;
-      App.collections.pending_submitting.create(json);
-      pending.push(model);
-    });
+    var self = this;
+    var loadingView = new LoadingCollectionView();
+    loadingView.show("Submitting Pending Forms");
+    var c = 1;
+    var tasks = _.collect(App.collections.pending_waiting.models,function (model) {
+      return function (callback){
+        loadingView.updateProgress(c * 100 / tasks.length);
+        loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
 
-    _(pending).forEach(function(model){
-      model.destroy();
+        var json = model.toJSON();
+        return App.collections.pending_submitting.create(json,{},function (err){
+           c += 1;
+          loadingView.updateProgress(c * 100 / tasks.length);
+          if(!err) {
+            loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+            //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+            // to make sure it is re-created and not removed below by model.destroy.
+            delete json.id;
+            model.destroy(); // TODO check double deletion
+          } else {
+            loadingView.updateMessage("Submitting " + c + " failed");
+          }
+          callback.apply(self,arguments);
+        });
+      };
     });
+    // Kick things off by fetching when all stores are initialised
 
+    async.series(tasks, function (){
+      loadingView.hide();
+    });
     return false;
   },
 

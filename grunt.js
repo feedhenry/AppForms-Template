@@ -1,9 +1,12 @@
 /*global module:false*/
+var cheerio = require('cheerio');
+var fs = require('fs');
+var child = require('child_process');
+
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.task.registerHelper('matchFiles', function(re) {
-    grunt.log.writeln('matchFiles starting');
 
     var cheerio = require('cheerio');
     var fs = require('fs');
@@ -16,9 +19,24 @@ module.exports = function(grunt) {
         scripts.push('./client/default/' + src);
       }
     });
-
-    grunt.log.writeln('scripts matching ' + re + ' in index.html:' + JSON.stringify(scripts));
+    if(grunt.option("verbose")) {
+      grunt.log.writeln('scripts matching ' + re + ' in index.html:' + JSON.stringify(scripts));
+    }
     return scripts;
+  });
+
+  grunt.task.registerHelper('adviseModels', function(name,models,done) {
+    var $ = cheerio.load(fs.readFileSync(name + '/client/default/index.html'));
+    $.root().append("\n<script>\n  $fh.ready(\n    function (){\n      Advice.adviseBackbone(" + models+ ");\n  });\n</script>\n");
+    var html = $.root().html();
+    fs.writeFileSync(name + '/client/default/index.html', html);
+
+    child.exec('cd '+ name + ' && zip -r ../'+ name + '.zip .', function (error, stdout, stderr) {
+      if(grunt.option("verbose")) {
+        grunt.log.writeln("advise models error : " + error);
+      }
+      done(error);
+    });
   });
 
   // Project configuration.
@@ -37,7 +55,8 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         // NOTE : current match is src not starting with lib (a simpler /^js\// would also work),
-        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)/)),
+        // TODO : minifying mobiscroll seems to cause a problem so I'm adding it to main.js for the moment
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll)/)),
         dest: 'dist-dev/client/default/main.js'
       },
       lib: {
@@ -120,12 +139,18 @@ module.exports = function(grunt) {
     // add the tags and make a dev copy of the html
     $.root().append('<script src="lib.js"></script>\n');
     $.root().append('<script src="main.js"></script>\n');
-    require('child_process').exec(' git rev-parse --verify HEAD', function (error, stdout, stderr) {
-      grunt.log.writeln('stdout: ' + stdout);
-      grunt.log.writeln('stderr: ' + stderr);
+    require('child_process').exec(' git rev-parse --short  --verify HEAD', function (error, stdout, stderr) {
+      if(grunt.option("verbose")) {
+        grunt.log.writeln('stdout: ' + stdout);
+        grunt.log.writeln('stderr: ' + stderr);
+      }
       var sha = stdout.trim();
 
-      $('#fh_banner').text('ID : ' + sha);
+      $('#fh_banner')
+        .append($('<p class="sha">').text('ID : ' + sha))
+        .append($('<p class="name">').text('name : ' + grunt.config("pkg.name")))
+        .append($('<p class="version">').text('version : ' + grunt.config("pkg.version")))
+        .append($('<p class="date">').text('date : ' + grunt.template.today("yyyy-mm-dd")));
 
       var htmlDev = $.root().html();
 
@@ -169,30 +194,53 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('max-archive', 'Create unminfied archive of repo to import', function () {
-    var fs = require('fs');
     var done = this.async();
 
-    fs.renameSync(".gitattributes", ".gitattributes.bak");
-    fs.writeFileSync(".gitattributes", 
-                     ["grunt.js export-ignore" ,
-                      "/package.json export-ignore" ,
-                      "README.md export-ignore" ,
-                      ".gitignore export-ignore" ,
-                      "client/wufoo_config.js export-subst" ,
-                      ".gitattributes export-ignore"].join("\n")
-                    );
-    
-    require('child_process').exec('git archive --worktree-attributes -o max.zip -v HEAD', function (error, stdout, stderr) {
-      grunt.log.writeln('stdout: ' + stdout);
-      grunt.log.writeln('stderr: ' + stderr);
+    var wufoo_config = grunt.option("wc");
 
-      fs.renameSync(".gitattributes.bak", ".gitattributes");
-      if (error !== null) {
-        grunt.log.writeln('exec error: ' + error);
-        done(1);
-      } else {
+    fs.renameSync(".gitattributes", ".gitattributes.bak");
+    fs.writeFileSync(".gitattributes",
+      ["grunt.js export-ignore" ,
+        "/package.json export-ignore" ,
+        "README.md export-ignore" ,
+        ".gitignore export-ignore" ,
+        "client/wufoo_config.js export-subst" ,
+        ".gitattributes export-ignore"].join("\n")
+    );
+
+    var tasks = [];
+    tasks.push(function(done){
+      child.exec('git archive --worktree-attributes -o max.zip -v HEAD && unzip max.zip -d max', function (error, stdout, stderr) {
+        if(grunt.option("verbose") && error) {
+          grunt.log.writeln('exec error: ' + error);
+        }
+        done(error);
+      });
+    });
+
+    if(grunt.option("am")) {
+      tasks.push(function(done){
+        grunt.helper('adviseModels', 'max',grunt.option("am"),done);
+      });
+      tasks.push(function(done){
+        require('wrench').rmdirSyncRecursive('./max', true);
         done();
-      }
+      });
+
+    }
+    console.log("wufoo_config: " +  wufoo_config);
+    if(wufoo_config) {
+      tasks.push(function(done){
+        child.exec('zip max.zip cloud/wufoo_config.js', function (error, stdout, stderr) {
+          grunt.log.writeln("wufoo_config error : " + error);
+          done(error);
+        });
+      });
+    }
+
+    require("async").series(tasks,function(err){
+      fs.renameSync(".gitattributes.bak", ".gitattributes");
+      done(err);
     });
   });
 
@@ -200,17 +248,27 @@ module.exports = function(grunt) {
     var done = this.async();
 
     require('wrench').rmdirSyncRecursive('./dist-dev', true);
-
-    require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
-      grunt.log.writeln('stdout: ' + stdout);
-      grunt.log.writeln('stderr: ' + stderr);
-      if (error !== null) {
-        grunt.log.writeln('exec error: ' + error);
-        done(1);
-      } else {
-        done();
-      }
+    var tasks = [];
+    tasks.push(function(done){
+      require('child_process').exec('cd dist;zip -r ../dist.zip .;cd ..', function (error, stdout, stderr) {
+        grunt.log.writeln('stdout: ' + stdout);
+        grunt.log.writeln('stderr: ' + stderr);
+        if (error !== null) {
+          grunt.log.writeln('exec error: ' + error);
+        }
+        done(error);
+      });
     });
+
+    if(grunt.option("am")) {
+      tasks.push(function(done){
+        grunt.helper('adviseModels', 'dist',grunt.option("am"),done);
+      });
+    }
+    require("async").series(tasks,function(err){
+      done(err);
+    });
+
   });
 
 

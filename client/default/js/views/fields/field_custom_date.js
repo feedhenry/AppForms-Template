@@ -17,7 +17,26 @@ FieldCustomDateView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
+    this.$el.find('input[type="date"]').mobiscroll().date({theme:'android',display:'bottom',dateOrder : "ddmmyy"});
     this.show();
+  },
+
+  value: function(value) {
+    if (value && !_.isEmpty(value)) {
+      $.each(value, function(id, val) {
+        if (val && !_.isEmpty(val)) {
+          var formated = new moment(val,"DD-MM-YYYY").format("YYYY-MM-DD");
+          $("#" + id).val(formated);
+        }
+      });
+    }
+    var val = $('#' + this.model.get('ID')).val();
+
+    value = {};
+    if(val !== "") {
+      value[this.model.get('ID')] = new moment(val).format('DD-MM-YYYY');
+    }
+    return value;
   },
 
   action: function(el) {

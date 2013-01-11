@@ -5,3 +5,82 @@ Component: AppForms Phase II
 0.1.1 - 2012-11-27 - IR189 - Jim O'Leary
 ----------------------------------------------------------------------
 * 2757 - App Forms JavaScript should not be minified
+
+0.1.2 - 2012-12-10  - IR190 - Jim O'Leary
+----------------------------------------------------------------------
+NOTE : This set of release covers commits from  197b74cb979c82641ec961b620a047271007d304 to 6a19251ef5d1faf43847dac0fca12f8645978793 on the phase2-dist branch (going forward I'll keep this more uptodate)
+
+* 2683 App Forms Phase II Bugfixing / QA
+* 2856 : App Form Phase II : add configurable aspect based logging to the main.js cloud code
+* 2842 : App Forms Phase II : Setting the date format of a wufoo date field to "DD/MM/YYYY" stops it from being rendered
+* 2710/2491 : multi phase commit implemented with fh-cache/ Low Bandwidth connections expose problem with fh.act call
+* 2853 : sent items dropdown is always reset
+* 2814 : show alerts to user
+* 2855 : add grunt task to create un-minified importable archive
+* 2854 : added in client side logger
+* 2851 : fhcam validation errors
+* 2850 : creating a draft or re submitting a sent item should not delete the original sent item
+* 2845 : Draft changes are automatically saved
+* 2864 : App Form Phase II : when client logs are displayed it is possible to scroll left/right in the app
+* 2868 : App Forms Phase II : MultiPage Form page, the next button doesn't work and set use_chunking to true
+* 2871 App Forms Phase II : index.html should contain the version number
+* 2881 : Signature on Galaxy Mini
+*  2868 : MultiPage Form page
+
+
+
+0.1.3 - 2012-12-19  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2710 : working on poll, added a bit more logging
+ * 2907 : increased sent items options
+ * 2891 : UI progress bar on submission
+
+
+0.1.4 - 2012-12-19  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2899 : create an android phonegap plugin to allow access to application sandbox 
+
+NOTE : if the android phone has no sdcard the sandboxed directory will be created but not deleted.
+
+
+0.1.5 - 2012-12-20  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2710: more error handling 
+ * 2891: pending items submitted in series
+ * 2919: spinner on signature processing or you can accidentally click off page
+ * 2903: reduce cloud logs
+ * 2879: fix submitted date format 
+ * 2778: AppForm Clients should log a Banner message with the application config
+ * 2919: add spinner to sig capture processing
+ * 2918 : changed grunt un minfied archive to include wufoo_config.js if a cmd line flag is set
+NOTE : if the android phone has no sdcard the sandboxed directory will be created but not deleted.
+
+
+0.1.6 - 2012-12-20  - IR191 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2899 : fully enable sandbox phonegap plugin for android
+
+
+0.1.7 - 2012-01-08  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2930 : graphical date picker :: problem with mobiscroll minification
+ * 2922 : Add error handling for 500 errors to act calls(still need to 
+          release fh-nodeapp)
+ * 2846 : App Forms Phase II : when form submission fails it should be 
+          possible to view the last error for pending forms
+ * 2908 : App Forms Phase II : Ajax Errors that occur during the first 
+          application initialisation are not đisplayed properly (still
+          waiting for github downloads issue resolution)
+
+0.1.8 - 2012-01-09  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2930 : graphical date picker :: problem with mobiscroll minification
+ * 2944 : App Form Phase II : Delete button overlaps the form name
+
+0.1.9 - 2012-01-10  - IR192 - Jim O'Leary
+----------------------------------------------------------------------
+ * 2904 : App Form Phase II : add a button to allow the client side logs to be email
+ * 2953 : App Form Phase II : change progress status in form upload
+ * 2946 : App Form Phase II : add better error handling for client side exception
+ * 2956 : App Form Phase II : Error messages in input fields should not be validated
+

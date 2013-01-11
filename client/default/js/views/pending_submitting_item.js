@@ -1,6 +1,6 @@
 PendingSubmittingItemView = ItemView.extend({
   templates: {
-    item: '<span class="name"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span>'
   },
   //Added submit button for test only, remove after
 

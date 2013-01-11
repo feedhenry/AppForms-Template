@@ -1,6 +1,7 @@
 <link rel="stylesheet" type="text/css" href="css/ratchet.css" />
 <link rel="stylesheet" type="text/css" href="css/style.css" />
 <link rel="stylesheet" type="text/css" href="css/jquery.signaturepad.css" />
+<link rel="stylesheet" type="text/css" href="css/mobiscroll.custom.min.css" />
 
 <title>Forms App</title>
 
@@ -19,6 +20,8 @@
 <div id="fh_wufoo_pending" class="hidden"></div>
 
 <div id="fh_wufoo_sent" class="hidden"></div>
+
+<div id="fh_wufoo_settings" class="hidden"></div>
 
 <div id="fh_wufoo_content" class="hidden"></div>
 
@@ -51,7 +54,8 @@
 
 <div id="logger" class="hidden">
     <div id="fh_logs">
-        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button><br/>
+        <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button>
+        <button onclick="if($fh.logger){ $fh.logger.send();}">Send Logs</button>
         <div class="logs"></div>
     </div>
 </div>
@@ -69,7 +73,7 @@ App.collections = App.collections || {};
 <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/jquery.wufoo_rules.js" type="text/javascript" charset="utf-8"></script>
-<script src="lib/online.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/fh.logger.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>
@@ -80,6 +84,12 @@ App.collections = App.collections || {};
 <script src="lib/converter.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/signaturepad/bitmapurl.js" type="text/javascript" charset="utf-8"></script>
 <script src="lib/signaturepad/jquery.signaturepad.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/ratchet.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/jquery-aop.js" type="text/javascript" charset="utf-8"></script>
+<script src="lib/advice.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- mobiscroll -->
+<script src="lib/mobiscroll.custom.min.js" type="text/javascript" charset="utf-8"></script>
 
 <!-- Models -->
 <script src="js/models/mock.js" type="text/javascript" charset="utf-8"></script>
@@ -98,6 +108,7 @@ App.collections = App.collections || {};
 <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/sent_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/settings.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending_review_item.js" type="text/javascript" charset="utf-8"></script>

@@ -47,21 +47,24 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       });
     });
   },
-  create: function(attributes, options) {
+  create: function(attributes, options,callback) {
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
+    if(callback == null) {
+      callback = function (){};
+    }
     model.submit(function(err, res) {
       var modelJson = model.toJSON();
       if (err) {
         // add error to model json
         modelJson.error = {
-          "type": err.error,
+          "type": err.type || err.error,
           "details": res
         };
         $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
 
-        if (/\b(offline|network)\b/.test(err.error)) {
+        if (/\b(offline|network)\b/.test(err.type)) {
           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
           App.collections.pending_waiting.create(modelJson);
         } else {
@@ -73,7 +76,8 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         App.collections.sent.create(modelJson);
       }
       // model should added to another collection now. destroy it
-      model.destroy();
+      model.destroy(); // TODO check double deletion
+      callback(err,res);
     });
 
     return model;
