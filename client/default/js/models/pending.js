@@ -51,7 +51,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
-    if(callback === undefined || callback === null) {
+    if(callback == null) {
       callback = function (){};
     }
     model.submit(function(err, res) {
