@@ -26,8 +26,8 @@ $fh.ready(function () {
 
       aoColumns.push({
         "mDataProp": null,
-        "sClass": "center",
-        "sDefaultContent": '<a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>'
+        "sClass": "center omit",
+        "sDefaultContent": '<a href="" class="editor_view">View</a> / <a href="" class="editor_edit">Edit</a> / <a href="" class="editor_remove">Delete</a>'
       });
 
       editor = new $.fn.dataTable.Editor( {
@@ -50,6 +50,16 @@ $fh.ready(function () {
       // fix for fields container height (max-height is too small)
       editor.on('onOpen', function (e) {
         $('.DTE_Body_Content').removeAttr('style');
+      });
+
+      // View record
+      entityTable.on('click', 'a.editor_view,tr td:not(.omit)', function (e) {
+        e.preventDefault();
+        var row = $(this).parents('tr')[0];
+        var data = entityTable.fnGetData(row);
+
+        var win = window.open();
+        $(win.document.body).html('<h3>' + data.id + ' (' + new Date(data.timestamp).toUTCString() + ')</h3><pre>' + data.logs + '</pre>');
       });
 
       // Edit record

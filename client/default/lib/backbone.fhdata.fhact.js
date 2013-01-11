@@ -1,4 +1,4 @@
-(/**
+/**
  * @fileOverview This is an adaptation of Backbone.localStorage, edited to work
  *     with the asynchronous FeedHenry local data storage API,
  *     with optional fh.act enpdoints for listing & reading from cloud

@@ -540,7 +540,8 @@ exports.fh_logger_store = function (params, callback) {
     "type": "client_logs",
     "fields": {
       "env": JSON.stringify(params.env),
-      "logs": params.logs
+      "logs": params.logs,
+      "timestamp": Date.now()
     }
   }, function(err, data) {
     if (err) return callback(err); // TODO: field errors?
@@ -548,7 +549,7 @@ exports.fh_logger_store = function (params, callback) {
     console.log('data=', data);
     return callback(null, {
       "status": "ok",
-      "id": data.guid
+      "id": parseIdFromGuid(data.guid)
     });
   });
 };
@@ -565,6 +566,11 @@ function dbDataToClientData(data, callback) {
 
 }
 
+function parseIdFromGuid(id) {
+  // use last 6 digits of guid as id and covert to int
+  return parseInt(id.substring(id.length - 6, id.length), 10);
+}
+
 function dbList(params, callback) {
   $fh.db({
     "act": "list",
@@ -579,6 +585,9 @@ function dbList(params, callback) {
     for (var di = 0, dl = data.list.length; di < dl; di += 1) {
       var tempRow = data.list[di].fields;
       tempRow.DT_RowId = data.list[di].guid;
+      tempRow.id = parseIdFromGuid(tempRow.DT_RowId);
+      tempRow.logs_length = tempRow.logs.length;
+      tempRow.timestamp = tempRow.timestamp || new Date(0).getTime();
       res.aaData.push(tempRow);
     }
 
