@@ -1,9 +1,14 @@
 FormListView = Backbone.View.extend({
   el: $('#fh_wufoo_form_list'),
 
+  events: {
+    'click .settings': 'showSettings'
+  },
+
   templates: {
     list: '<ul class="form_list"></ul>',
-    header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>'
+    header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
+    footer: '<a class="settings"><img src="img/settings.png"></a>'
   },
 
   initialize: function() {
@@ -47,6 +52,8 @@ FormListView = Backbone.View.extend({
     _(App.collections.forms.models).forEach(function(form) {
       self.appendForm(form);
     }, this);
+
+    this.$el.append(this.templates.footer);
   },
 
   appendForm: function(form) {
@@ -55,5 +62,9 @@ FormListView = Backbone.View.extend({
     });
     self.views.push(view);
     $('ul', this.el).append(view.render().el);
+  },
+
+  showSettings: function () {
+    App.views.header.showSettings();
   }
 });
