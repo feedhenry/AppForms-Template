@@ -26,12 +26,38 @@ HeaderView = Backbone.View.extend({
     App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
     App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
+    jQuery.aop.around( {target: this, method: /^show.*/},
+      function(invocation) {
+        var skip = false;
+        var args = invocation["arguments"];
+        if(args.length && args[0] === true) {
+          skip = true;
+        }
+        var proceed = function(clear){
+          try {
+            return invocation.proceed();
+          } finally {
+            if(clear && App.views.form){
+              App.views.form.clearFieldChanged();
+            }
+          }
+        };
+        if(skip || App.views.form == null|| (App.views.form && !App.views.form.hasFieldChanged())) {
+          return proceed();
+        } else {
+          var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+          if (confirmDelete) {
+            return proceed(true);
+          } else {
+            return false;
+          }
+        }
+      });
+
     this.render();
   },
 
   render: function() {
-    var self = this;
-
     $fh.logger.debug('render headerView');
     $(this.el).empty();
 
@@ -53,6 +79,8 @@ HeaderView = Backbone.View.extend({
 
   showDrafts: function() {
     this.hideAll();
+
+
     App.views.drafts_list.show();
     return false;
   },
@@ -89,6 +117,7 @@ HeaderView = Backbone.View.extend({
     App.views.settings.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.hide();
+      //App.views.form = null;
     }
   },
 

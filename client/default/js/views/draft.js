@@ -20,6 +20,20 @@ DraftView = Backbone.View.extend({
     });
 
     this.pages = [];
+    this.on('change:field', this.notifyFieldChanged, this);
+
+  },
+
+  notifyFieldChanged: function () {
+    this.fieldChanged = true;
+  },
+
+  hasFieldChanged: function () {
+    return this.fieldChanged;
+  },
+
+  clearFieldChanged: function () {
+    this.fieldChanged = false;
   },
 
   render: function() {
@@ -166,6 +180,7 @@ DraftView = Backbone.View.extend({
     } else {
       this.focusValidation();
     }
+    this.clearFieldChanged();
   },
 
   focusValidation: function() {
@@ -188,6 +203,7 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    this.clearFieldChanged();
     delete this.model.id;
     App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
@@ -203,6 +219,7 @@ DraftView = Backbone.View.extend({
     });
 
     delete this.model.id;
+    this.clearFieldChanged();
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
   },

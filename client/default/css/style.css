@@ -807,13 +807,13 @@ a.settings{
   margin-right:1em;
   float: right;
 }
-ul.list {
+#fh_wufoo_banner ul.list {
   font: 7px "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
-ul.list span {
+#fh_wufoo_banner ul.list span {
   width: 60%;
 }
-ul.list span:first-child {
+#fh_wufoo_banner ul.list span:first-child {
   font-style: italic;
   width: 30%;
 }
