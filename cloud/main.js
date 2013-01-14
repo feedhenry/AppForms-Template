@@ -630,7 +630,7 @@ function dbList(params, callback) {
       var tempRow = data.list[di].fields;
       tempRow.DT_RowId = data.list[di].guid;
       tempRow.logs_length = tempRow.logs.length;
-      tempRow.timestamp = tempRow.timestamp || new Date(0).getTime();
+      tempRow.timestamp = tempRow.timestamp ? new Date(tempRow.timestamp).toUTCString() : new Date(0).toUTCString();
       res.aaData.push(tempRow);
     }
 
