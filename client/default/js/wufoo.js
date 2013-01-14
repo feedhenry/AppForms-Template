@@ -981,9 +981,22 @@ $fh.ready(function() {
               fileEntry.file(function gotFile(file) {
                 var reader = new FileReader();
                 reader.onloadend = function(evt) {
+                  var text = evt.target.result;
+
+                  // Check for URLencoded
+                  // PG 2.2 bug in readAsText()
+                  try {
+                    text = decodeURIComponent(text);
+                    console.log('decoded URLencoded file for key: ' + key);
+                  } catch (e) {
+                    // Swallow exception if not URLencoded
+                    // Just use the result
+                    console.log('file not urlencoded for key: ' + key);
+                  }
+
                   return success({
                     key: key,
-                    val: evt.target.result
+                    val: text
                   });
                 };
                 reader.readAsText(file);
