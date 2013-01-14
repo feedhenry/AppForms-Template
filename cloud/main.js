@@ -534,22 +534,71 @@ if(wufoo_config.wufoo_config.logger) {
 // fh.logger endpoints
 exports.fh_logger_store = function (params, callback) {
   console.log('fh_logger_store');
-  // TODO: store the logs in fh.db and return a unique id for this transaction
-  $fh.db({
-    "act": "create",
-    "type": "client_logs",
-    "fields": {
-      "env": JSON.stringify(params.env),
-      "logs": params.logs,
-      "timestamp": Date.now()
-    }
-  }, function(err, data) {
-    if (err) return callback(err); // TODO: field errors?
 
-    console.log('data=', data);
+  async.waterfall([function (cb) {
+    // get next id from counter collection
+    $fh.db({
+      "act": "list",
+      "type": "client_logs_counter"
+    }, function (err, data) {
+      if (err) return cb(err);
+
+      // check if counter was initialised
+      var counter = 1;
+      if (data && data.list && data.list.length > 0) {
+        var entry = data.list[0];
+        counter = entry.fields.counter;
+
+        // update counter
+        counter += 1;
+        $fh.db({
+          "act": "update",
+          "type": "client_logs_counter",
+          "guid": entry.guid,
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      } else {
+        $fh.db({
+          "act": "create",
+          "type": "client_logs_counter",
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      }
+    });
+  }, function (counter, cb) {
+    $fh.db({
+      "act": "create",
+      "type": "client_logs",
+      "fields": {
+        "env": JSON.stringify(params.env),
+        "logs": params.logs,
+        "timestamp": Date.now(),
+        "id": counter
+      }
+    }, function(err, data) {
+      if (err) return cb(err);
+      
+      console.log('data=', data);
+      return cb(null, data);
+    });
+  }], function (err, data) {
+    if (err) return callback(err);
+
     return callback(null, {
       "status": "ok",
-      "id": parseIdFromGuid(data.guid)
+      "id": data.fields.id
     });
   });
 };
@@ -566,11 +615,6 @@ function dbDataToClientData(data, callback) {
 
 }
 
-function parseIdFromGuid(id) {
-  // use last 6 digits of guid as id and covert to int
-  return parseInt(id.substring(id.length - 6, id.length), 10);
-}
-
 function dbList(params, callback) {
   $fh.db({
     "act": "list",
@@ -585,7 +629,6 @@ function dbList(params, callback) {
     for (var di = 0, dl = data.list.length; di < dl; di += 1) {
       var tempRow = data.list[di].fields;
       tempRow.DT_RowId = data.list[di].guid;
-      tempRow.id = parseIdFromGuid(tempRow.DT_RowId);
       tempRow.logs_length = tempRow.logs.length;
       tempRow.timestamp = tempRow.timestamp || new Date(0).getTime();
       res.aaData.push(tempRow);
