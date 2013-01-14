@@ -5,7 +5,8 @@ $fh.ready(function () {
   $(document).ready(function() {
     entityTable = $('#entityTable');
 
-    $('#go').on('click', function () {
+    $('#go').on('click', function (e) {
+      e.preventDefault();
       var schema = $('#schema').val().split(',');
       var entityName = $('#entityName').val();
       var editorFields = [];

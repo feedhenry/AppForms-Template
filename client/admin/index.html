@@ -3,9 +3,25 @@
 <link href="css/dataTables.tabletools.css" rel="stylesheet"/>
 <link href="css/dataTables.editor.css" rel="stylesheet"/>
 
-<label for="entityName">Entity Name:</label><input id="entityName" type="text" value="client_logs"><br>
-<label for="schema">Schema:</label><input id="schema" type="text" value="id,env,logs_length,timestamp"><br>
-<button id="go" class="btn btn-primary">Go</button>
+<form class="form-horizontal">
+  <div class="control-group">
+    <label class="control-label" for="entityName">Entity Name:</label>
+    <div class="controls">
+      <input type="text" id="entityName" placeholder="entity name" value="client_logs">
+    </div>
+  </div>
+  <div class="control-group">
+    <label class="control-label" for="schema">Schema:</label>
+    <div class="controls">
+      <input type="text" id="schema" placeholder="schema" value="id,env,logs_length,timestamp">
+    </div>
+  </div>
+  <div class="control-group">
+    <div class="controls">
+      <button id="go" class="btn btn-primary" type="submit">Go</button>
+    </div>
+  </div>
+</form>
 <table cellpadding="0" cellspacing="0" border="0" class="table table-striped table-bordered" id="entityTable"></table>
 
 <script src="js/jquery.js"></script>
