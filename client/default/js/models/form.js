@@ -80,30 +80,30 @@ FormModel = Backbone.Model.extend({
         msg += "Unknown";
 
       }
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"network"}, msg);
     }
 
     if(type  === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"validation"}, e.res || msg);
     }
 
     if(type  === "offline") {
       msg = err || "You are currently offline";
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"network"},msg);
     }
 
     if(type === "network") {
       msg = "Network Error : " + (err || JSON.stringify(e));
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:type});
     }
 
     msg = "Unknown Error : " + JSON.stringify(e);
-    this.showAlert({text : msg}, "error", 5000);
+    AlertView.showAlert({text : msg}, "error", 5000);
     return cb({error:msg, type:"unknown"}, msg);
   },
 
@@ -125,7 +125,7 @@ FormModel = Backbone.Model.extend({
    */
   pollRemoteFormSubmissionComplete: function(req,form_id,res, cb) {
     var self = this;
-    this.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
+    AlertView.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
     $fh.logger.debug('Form Submitted to cloud: res:' + Utils.truncate(res));
     var timeout  = this.getTimeout();
     var start = Math.floor(Date.now() / 1000);
@@ -162,7 +162,7 @@ FormModel = Backbone.Model.extend({
           if (res.Success === 1){
 
             if(res.stat && res.stat.completedAt){
-              self.showAlert({text:"Form Submission complete"}, "success", 5000);
+              AlertView.showAlert({text:"Form Submission complete"}, "success", 5000);
               cb(null, res);
             }
           } else if(res.err  || res.Error) {
@@ -187,7 +187,7 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"submitFormBody","req":form};
     req.total += JSON.stringify(data).length;
     var timeout = self.getTimeout(true);
-    self.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
+    AlertView.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
     var start = Date.now();
     $fh.act(data, function (res) {
       var end = Date.now();
@@ -195,7 +195,7 @@ FormModel = Backbone.Model.extend({
       if (res.Success && res.Success === 1) {
         var json = JSON.stringify(data);
         req.size += json.length;
-        self.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
+        AlertView.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
         callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
       } else {
         callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
@@ -220,8 +220,8 @@ FormModel = Backbone.Model.extend({
     var timeout = self.getTimeout(true) ;
     req.current_chunk += 1;
     var title = "Field " + req.current_chunk+  " of "+ req.num_chunks;
-    //self.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
-    self.showAlert({text : (title + " started"), current : req.size, total : req.total}, "success", timeout);
+    //AlertView.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
+    AlertView.showAlert({text : (title + " started"), current : req.size, total : req.total}, "success", timeout);
 
     $fh.logger.debug("submitChunk starting value="  + Utils.truncate(value,50));
     $fh.act({
@@ -232,7 +232,7 @@ FormModel = Backbone.Model.extend({
       $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] res='" + Utils.truncate(res ) + "'");
       if (res.Success && res.Success === 1) {
         req.size += len;
-        self.showAlert({text : (title + " complete"), current : req.size, total : req.total}, "success", timeout);
+        AlertView.showAlert({text : (title + " complete"), current : req.size, total : req.total}, "success", timeout);
         return callback(null, res);
       } else {
         return callback({err:'unknown' , msg: JSON.stringify(res)}, res);
@@ -255,12 +255,12 @@ FormModel = Backbone.Model.extend({
     var start = Date.now();
     var timeout = self.getTimeout(true);
     $fh.logger.debug("validateFormTransmission [" +form_id + "] started");
-    self.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
+    AlertView.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res="+ Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
+        AlertView.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
         return callback(null,{name : "validateFormTransmission", start : start, end : end, size : req.size});
       } else {
         return callback({msg:"validation", err: "Please fix the highlighted errors",res:res});
@@ -282,12 +282,12 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"doRemoteFormSubmission","req":{form_id:form_id}};
     var start = Date.now();
     $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] started");
-    self.showAlert({text : "Remote form submission: started"}, "success", 5000);
+    AlertView.showAlert({text : "Remote form submission: started"}, "success", 5000);
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Remote form submission: complete"}, "success", 5000);
+        AlertView.showAlert({text : "Remote form submission: complete"}, "success", 5000);
         return callback(null,{name : "doRemoteFormSubmission", start : start, end : end, size: req.total});
       } else {
         return callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
@@ -417,44 +417,9 @@ FormModel = Backbone.Model.extend({
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
-  },
+  }
 
-  showAlert: function(o, type, timeout) {
-    var alertTpl = $('<div>').addClass('fh_wufoo_alert');
-    $('#fh_wufoo_alerts_area ').empty();
-
-    var message = o.text;
-    var percent  = "";
-    if(o.current ) {
-      var value  = Math.floor((o.current * 100)/ o.total);
-      if(Utils.isIOS()) {
-        percent = $('<strong>').text( message + " " + value + " %");
-        $fh.logger.debug("showAlert current='" + this.toBytes(o.current)  + ", total='" + this.toBytes(o.total) + "%='" + percent );
-        alertTpl.append(percent);
-      } else {
-        percent = $('<progress>').attr("max", 100).attr("value", value).html($('<strong>').text( message));
-        $fh.logger.debug("showAlert current='" + this.toBytes(o.current)  + ", total='" + this.toBytes(o.total) + "%='" + percent );
-        alertTpl.append($('<span class="small">').text(message)).append(percent);
-      }
-    } else {
-      alertTpl.append($('<span>').text(message));
-    }
-    alertTpl.addClass(type);
-
-    var el = $('#fh_wufoo_alerts_area .' + type);
-    if(el.length) {
-      el.replaceWith(alertTpl);
-    } else {
-      $('#fh_wufoo_alerts_area').append(alertTpl);
-    }
-
-
-    setTimeout(function() {
-      alertTpl.slideUp(function() {
-        $(this).remove();
-      });
-    }, timeout || 10000);
-  }});
+});
 
 FormsCollection = Backbone.Collection.extend({
   model: FormModel,
