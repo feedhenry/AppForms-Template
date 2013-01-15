@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
 
-<div id="fh_banner" class="hidden"></div>
 <div id="fh_wufoo_header" class="hidden bar-title"></div>
 <div id="fh_wufoo_alerts_area"></div>
 
@@ -22,6 +21,20 @@
 <div id="fh_wufoo_sent" class="hidden"></div>
 
 <div id="fh_wufoo_settings" class="hidden"></div>
+
+<div id="fh_wufoo_banner"  class="popover">
+  <header class="popover-header">
+    <h3 class="title">App Forms</h3>
+  </header>
+  <ul class="list">
+      <li class="device"  ><span>Device</span>:<span>uuid</span></li>
+      <li class="name"    ><span>Name</span>:<span>name</span></li>
+      <li class="version" ><span>Version</span>:<span>version</span></li>
+      <li class="date"    ><span>Date</span>:<span>date</span></li>
+      <li class="commit"  ><span>Sha</span>:<span>sha</span></li>
+  </ul>
+</div>
+
 
 <div id="fh_wufoo_content" class="hidden"></div>
 
@@ -112,6 +125,7 @@ App.collections = App.collections || {};
 <script src="js/views/sent_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/settings.js" type="text/javascript" charset="utf-8"></script>
+<script src="js/views/about.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/draft_item.js" type="text/javascript" charset="utf-8"></script>
 <script src="js/views/pending_review_item.js" type="text/javascript" charset="utf-8"></script>

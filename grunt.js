@@ -1,5 +1,6 @@
 /*global module:false*/
 var cheerio = require('cheerio');
+var _= require('underscore');
 var fs = require('fs');
 var child = require('child_process');
 
@@ -7,9 +8,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
   grunt.task.registerHelper('matchFiles', function(re) {
-
-    var cheerio = require('cheerio');
-    var fs = require('fs');
 
     var scripts = [];
     var $ = cheerio.load(fs.readFileSync('./client/default/index.html'));
@@ -36,6 +34,44 @@ module.exports = function(grunt) {
         grunt.log.writeln("advise models error : " + error);
       }
       done(error);
+    });
+  });
+
+  grunt.task.registerHelper('updateBanner', function(options,done) {
+    var name = options.name;
+    var $ = options.$;
+
+    if(!$) {
+      $ = cheerio.load(fs.readFileSync(name + '/client/default/index.html'));
+    }
+    require('child_process').exec(' git rev-parse --short  --verify HEAD', function (error, stdout, stderr) {
+      if(grunt.option("verbose")) {
+        grunt.log.writeln('stdout: ' + stdout);
+        grunt.log.writeln('stderr: ' + stderr);
+      }
+      var sha = stdout.trim();
+
+      var ul =$('#fh_wufoo_banner .list');
+      $(ul).empty();
+
+      // not actually camel case!
+      String.prototype.toCamelCase = function(){return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();};
+
+      var template = "\n\t<li class='<%= name.toLowerCase()%>'><span><%= name.toCamelCase() %></span>:<span><%= value %></span></li>";
+
+      $(ul).append(_.template(template, {name:"device", value:""}));
+      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
+      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
+      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
+      $(ul).append(_.template(template, {name:"commit", value:sha}));
+
+      var htmlDev = $.root().html();
+
+      // write index files
+      fs.writeFileSync(name + '/client/default/index.html', htmlDev);
+      grunt.log.writeln('index copied and modified');
+      done();
+
     });
   });
 
@@ -146,11 +182,16 @@ module.exports = function(grunt) {
       }
       var sha = stdout.trim();
 
-      $('#fh_banner')
-        .append($('<p class="sha">').text('ID : ' + sha))
-        .append($('<p class="name">').text('name : ' + grunt.config("pkg.name")))
-        .append($('<p class="version">').text('version : ' + grunt.config("pkg.version")))
-        .append($('<p class="date">').text('date : ' + grunt.template.today("yyyy-mm-dd")));
+      var ul =$('#fh_wufoo_banner .list');
+      $(ul).empty();
+
+      var template = "<li class='<%= name.toLowerCase()%>'><span><%= name.toUpperCase() %></span>:<span><%= value %></span></li>";
+
+      $(ul).append(_.template(template, {name:"device", value:""}));
+      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
+      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
+      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
+      $(ul).append(_.template(template, {name:"commit", value:sha}));
 
       var htmlDev = $.root().html();
 
@@ -218,15 +259,14 @@ module.exports = function(grunt) {
       });
     });
 
+    tasks.push(function(done){
+      grunt.helper('updateBanner', {name:'max'},done);
+    });
+
     if(grunt.option("am")) {
       tasks.push(function(done){
         grunt.helper('adviseModels', 'max',grunt.option("am"),done);
       });
-      tasks.push(function(done){
-        require('wrench').rmdirSyncRecursive('./max', true);
-        done();
-      });
-
     }
     console.log("wufoo_config: " +  wufoo_config);
     if(wufoo_config) {
@@ -239,6 +279,7 @@ module.exports = function(grunt) {
     }
 
     require("async").series(tasks,function(err){
+      require('wrench').rmdirSyncRecursive('./max', true);
       fs.renameSync(".gitattributes.bak", ".gitattributes");
       done(err);
     });
