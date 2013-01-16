@@ -55,7 +55,7 @@ FormModel = Backbone.Model.extend({
   },
 
   getTimeout:function (millis) {
-    var timeout = App.config.get('default_timeout') || ($fh.legacy.fh_timeout / 1000);
+    var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
     if(millis) {
       timeout = timeout *1000;
     }
@@ -226,7 +226,7 @@ FormModel = Backbone.Model.extend({
     $fh.logger.debug("submitChunk starting value="  + Utils.truncate(value,50));
     $fh.act({
       "act":"submitChunk",
-      "retries" : App.config.get("max_retries"),
+      "retries" : App.config.getValueOrDefault("max_retries"),
       "req": chunk
     }, function onSuccess(res) {
       $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] res='" + Utils.truncate(res ) + "'");
@@ -315,7 +315,7 @@ FormModel = Backbone.Model.extend({
     var tasks  = [];
     var serialized_form = form.data;
     var form_id = req.form_id;
-    if(App.config.get("use_chunking")) {
+    if(App.config.getValueOrDefault("use_chunking")) {
       _.each(serialized_form, function chunkHandler(value,name){
         if (_.isObject(value) && !_.isUndefined(value.filename)) {
           var str = JSON.stringify(value);

@@ -177,9 +177,9 @@ FieldCameraView = FieldView.extend({
   addImage: function(fromLibrary) {
     // TODO: move this to cloud config, synced to client on startup
     var camOptions = {
-      quality: App.config.get('cam_quality'),
-      targetWidth: App.config.get('cam_targetWidth'),
-      targetHeight: App.config.get('cam_targetHeight')
+      quality: App.config.getValueOrDefault('cam_quality'),
+      targetWidth: App.config.getValueOrDefault('cam_targetWidth'),
+      targetHeight: App.config.getValueOrDefault('cam_targetHeight')
     };
 
     var options = this.parseCssClassCameraOptions();

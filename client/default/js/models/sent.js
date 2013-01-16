@@ -17,7 +17,7 @@ SentCollection = Backbone.Collection.extend({
   },
 
   checkSize: function() {
-    var maxSize = App.config.get('sent_save_max') || App.config.get('sent_save_max');
+    var maxSize = (App.config.attributes.hasOwnProperty('sent_save_max') ?  App.config.get('sent_save_max') : App.config.get('defaults')['sent_save_max']);
     if (this.length > maxSize) {
       var toDelete = this.models.slice(0, this.models.length - maxSize);
       _(toDelete).forEach(function(model) {

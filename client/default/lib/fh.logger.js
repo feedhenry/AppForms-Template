@@ -23,8 +23,8 @@
     var str = strArr.join(' ');
 
     $("#logger .logs").prepend($("<p>").addClass(clazz).text(str));
-    if (typeof App.config.get('log_line_limit') !== 'undefined') {
-      $('#logger .logs p:gt(' + (App.config.get('log_line_limit') - 1) + ')').remove();
+    if (typeof App.config.getValueOrDefault('log_line_limit') !== 'undefined') {
+      $('#logger .logs p:gt(' + (App.config.getValueOrDefault('log_line_limit') - 1) + ')').remove();
     }
 
     // output to console
@@ -79,7 +79,7 @@
         $fh.env(function (env) {
           $fh.send({
             "type": "email",
-            "to": App.config.get('log_email') || 'test@example.com',
+            "to": App.config.getValueOrDefault('log_email') || 'test@example.com',
             "subject": "Wufoo App Logs",
             "body": "Device Environment:\n" + JSON.stringify(env, null, 2) + "\n\nApp Logs:\n" + str
           }, function () {

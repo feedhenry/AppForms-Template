@@ -26,15 +26,17 @@ App.Router = Backbone.Router.extend({
     "*path": "form_list" // Default route
   },
 
+  initialize: function () {
+    _.bindAll(this);
+  },
+
   form_list: function() {
-    var self = this;
     $fh.logger.debug('route: form_list');
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
     App.views.sent_list = new SentListView();
     App.views.settings = new SettingsView();
-    var loadingView = new LoadingCollectionView();
     App.views.header = new HeaderView();
     App.views.header.showHome();
 
@@ -48,79 +50,29 @@ App.Router = Backbone.Router.extend({
       });
     });
 
-    // Kick things off by fetching when all stores are initialised
-    loadingView.show("Loading form list");
-    App.collections.forms.fetch();
-    App.collections.drafts.fetch();
-    App.collections.sent.fetch();
-    App.collections.pending_submitting.fetch();
-    App.collections.pending_waiting.fetch();
-    App.collections.pending_review.fetch();
+    $fh.ready(this.onReady);
+  },
 
-    $fh.ready(function() {
-//      // TODO , ask enterprise if they want to keep to old errors across restarts ?
-//      _(App.collections.pending_waiting.models).each(function(model) {
-//        model.unset('error');
-//      }, this);
+  onReady: function() {
+    $fh.env(this.onPropsRead);
+    App.config.loadConfig(this.onConfigLoaded);
 
-      // by default, allow fetching on resume event.
-      // Can be set to false when taking a pic so refetch doesn't happen on resume from that
-      App.resumeFetchAllowed = true;
-      document.addEventListener("resume", self.onResume, false);
-      var banner = false;
-      $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
-      $fh.logger.info(" ======================================================");
-      $('#fh_banner p').each(function(i , e) {
-        $fh.logger.info(" = " + $(e).text());
-        banner = true;
-      } );
-      if(!banner) {
-        $fh.logger.info(" = Dev Mode ");
-      }
-      $fh.logger.info(" ======================================================");
-    });
+    // by default, allow fetching on resume event.
+    // Can be set to false when taking a pic so refetch doesn't happen on resume from that
+    App.resumeFetchAllowed = true;
+    document.addEventListener("resume", self.onResume, false);
+    var banner = false;
+    $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
+    $fh.logger.info(" ======================================================");
+    $('#fh_wufoo_banner .list li').each(function(i , e) {
+      $fh.logger.info(" = " + $(e).text());
+      banner = true;
+    } );
+    if(!banner) {
+      $fh.logger.info(" = Dev Mode ");
+    }
 
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:debug_mode', function () {
-      if (App.config.get('debug_mode') === true) {
-        $('#debug_mode').removeClass('hidden');
-      } else {
-        $('#debug_mode').addClass('hidden');
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:logger', function () {
-      if (App.config.get('logger') === true) {
-        $('#logger').removeClass('hidden');
-      } else {
-        $('#logger').addClass('hidden');
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:max_retries', function () {
-      if (App.config.get('max_retries') <= 0) {
-        $fh.retry.disable();
-      } else {
-        $fh.retry.enable();
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:default_timeout', function () {
-      var timeout = App.config.get('default_timeout');
-      if (_.isNumber(timeout)) {
-        $fh.ready({}, function(){
-          $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-          $fh.legacy.fh_timeout=timeout * 1000;
-        });
-      }
-    });
+    $fh.logger.info(" ======================================================");
   },
 
   onResume: function() {
@@ -142,6 +94,69 @@ App.Router = Backbone.Router.extend({
 
   pending: function() {
     $fh.logger.debug('route: pending');
+  },
+
+  onConfigLoaded: function() {
+    var loadingView = new LoadingCollectionView();
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:debug_mode', this.onDebugModeChanged);
+    App.config.on('change:white_list', this.onWhitelistChanged);
+    App.config.on('change:logger', this.onLoggerChanged);
+    App.config.on('change:max_retries', this.onRetriesChanged);
+    App.config.on('change:defaults', this.onDefaultsChanged);
+    App.config.on('change:timeout', this.onTimeoutChanged);
+
+    loadingView.show("Loading form list");
+    App.collections.forms.fetch();
+    App.collections.drafts.fetch();
+    App.collections.sent.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
+    App.collections.pending_review.fetch();
+  },
+
+  onPropsRead: function(props) {
+    this.props = props;
+    App.views.about = new AboutView(props);
+  },
+
+  onTimeoutChanged: function() {
+    var timeout= App.config.getValueOrDefault("timeout");
+    if (_.isNumber(timeout)) {
+      $fh.ready({}, function(){
+        $fh.logger.debug("Setting timeout to " + timeout + " seconds");
+        $fh.legacy.fh_timeout=timeout * 1000;
+      });
+    }
+  },
+
+  onLoggerChanged: function() {
+    var logger = App.config.getValueOrDefault("logger");
+    $('#logger').toggle(logger);
+  },
+
+  onRetriesChanged: function() {
+    var max_retries = App.config.getValueOrDefault("max_retries");
+    $fh.retry.toggle(max_retries > 1);
+  },
+
+  onDebugModeChanged: function() {
+    var debug_mode = App.config.getValueOrDefault("debug_mode");
+    $('#debug_mode').toggle(debug_mode);
+  },
+
+  onWhitelistChanged: function() {
+    var white_list = App.config.getValueOrDefault("white_list") || [];
+    var listed = _.indexOf(white_list,this.props.uuid) !== -1;
+    // on start up the setting icon may not be rendered yet
+    setTimeout(function (){$('a.settings').toggle(listed);},500);
+  },
+
+  onDefaultsChanged: function() {
+    this.onLoggerChanged();
+    this.onTimeoutChanged();
+    this.onWhitelistChanged();
   }
 });
 
