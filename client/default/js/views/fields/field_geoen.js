@@ -48,5 +48,13 @@ FieldGeoENView = FieldView.extend({
       }
     };
     return OsGridRef.latLongToOsGrid(params);
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
   }
+
 });

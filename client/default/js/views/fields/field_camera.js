@@ -83,6 +83,14 @@ FieldCameraView = FieldView.extend({
       this.fileData.fileBase64 = dataUri;
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
+
+      // TODO horrible temp hack
+      var clear = _.bind(function() {
+        this.$el.find("label[class=error]").remove();
+        this.$el.removeClass("error");
+        this.$el.find(".error").removeClass("error");
+      },this);
+      setTimeout(clear,1000);
     } else {
       target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');
@@ -90,10 +98,6 @@ FieldCameraView = FieldView.extend({
       this.$el.find('.uploaded').hide();
       delete this.fileData;
     }
-
-    // TODO horrible temp hack
-    this.$el.removeClass("error]");
-    this.$el.find("label[class=error]").remove();
 
     // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
     if (!dontCallContentChanged) {
