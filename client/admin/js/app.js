@@ -101,7 +101,7 @@ $fh.ready(function () {
             fnCallback({
               aaData: []
             });
-            window.alert('ERROR GETTING DATA FROM SERVER (9100): msg=' + msg + ', err=' + JSON.stringify(err));
+            $fh.logger.warn('ERROR GETTING DATA FROM SERVER (9100): msg=' + msg + ', err=' + JSON.stringify(err));
           });
         },
         "aoColumns": aoColumns,

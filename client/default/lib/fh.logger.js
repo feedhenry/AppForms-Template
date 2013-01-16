@@ -83,9 +83,9 @@
             "subject": "Wufoo App Logs",
             "body": "Device Environment:\n" + JSON.stringify(env, null, 2) + "\n\nApp Logs:\n" + str
           }, function () {
-            window.alert('LOGS SENT OK');
+            $fh.logger.debug('LOGS SENT OK');
           }, function (msg) {
-            window.alert('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
+            $fh.logger.warn('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
           });
         });
       },
@@ -101,12 +101,12 @@
             }
           }, function (res) {
             if (res && res.status === 'ok') {
-              window.alert('LOGS STORED OK: ID=' + res.id + ' res=' + JSON.stringify(res));
+              $fh.logger.debug('LOGS STORED OK: ID=' + res.id + ' res=' + JSON.stringify(res));
             } else {
-              window.alert('ERROR STORING LOGS (1100): res=' + JSON.stringify(res));
+              $fh.logger.warn('ERROR STORING LOGS (1100): res=' + JSON.stringify(res));
             }
           }, function (msg, err) {
-            window.alert('ERROR STORING LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
+            $fh.logger.warn('ERROR STORING LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
           });
         });
       },
