@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.2.0 - 2013-01-17
+/*! FeedHenry-Wufoo-App-Generator - v0.2.1 - 2013-01-17
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -2924,7 +2924,7 @@ FieldView = Backbone.View.extend({
     }
 
     this.on('visible', function () {
-      $fh.logger.debug('field visible');
+      //$fh.logger.debug('field visible');
     });
 
     if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
@@ -3171,7 +3171,7 @@ FieldRadioView = FieldView.extend({
       "id": this.model.get('ID')
     });
     this.$el.append(hidden_field);
-    
+
     var choices = this.model.get('Choices');
     $.each(choices, function(i, choice) {
       var choice_field = $(_.template(self.templates.choice, {
@@ -3189,6 +3189,9 @@ FieldRadioView = FieldView.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
+    // ensure that the field has a value, otherwise
+    // submission will fail on a required radio with the default field as the first field
+    this.model.set({Value: this.value()});
   },
 
   addValidationRules: function () {
@@ -4908,7 +4911,7 @@ DraftView = Backbone.View.extend({
     });
 
     this.on('visible', function () {
-      $fh.logger.debug('draft visible');
+      //$fh.logger.debug('draft visible');
     });
 
     this.pages = [];
@@ -5244,7 +5247,7 @@ App.Router = Backbone.Router.extend({
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
     App.resumeFetchAllowed = true;
-    document.addEventListener("resume", self.onResume, false);
+    document.addEventListener("resume", this.onResume, false);
     var banner = false;
     $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
     $fh.logger.info(" ======================================================");

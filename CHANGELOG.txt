@@ -98,3 +98,8 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
  * 2955 : store logs on server
  * 2964 : PG 2.2 decode
  * 3020 : App Form Phase II : Minified Jquery-aop causes a problem on Samsung Galaxy Mini
+
+0.2.1 - 2012-01-17  - IR193 - Jim O'Leary
+----------------------------------------------------------------------
+ * 3026 : App Forms Phase II : onResume not working on iOS
+ * 3025 : App Form Phase II : Default Values on radio button don't seem to work
