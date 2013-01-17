@@ -50,7 +50,7 @@ FieldCustomDateView = FieldView.extend({
     this.$el.find("label[class=error]").remove();
     this.$el.removeClass("error");
     this.$el.find(".error").removeClass("error");
-  },
+  }
 
 
 });
