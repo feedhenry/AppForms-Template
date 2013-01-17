@@ -17,7 +17,7 @@ FieldRadioView = FieldView.extend({
       "id": this.model.get('ID')
     });
     this.$el.append(hidden_field);
-    
+
     var choices = this.model.get('Choices');
     $.each(choices, function(i, choice) {
       var choice_field = $(_.template(self.templates.choice, {
@@ -35,6 +35,9 @@ FieldRadioView = FieldView.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
+    // ensure that the field has a value, otherwise
+    // submission will fail on a required radio with the default field as the first field
+    this.model.set({Value: this.value()});
   },
 
   addValidationRules: function () {
