@@ -60,7 +60,7 @@ App.Router = Backbone.Router.extend({
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
     App.resumeFetchAllowed = true;
-    document.addEventListener("resume", self.onResume, false);
+    document.addEventListener("resume", this.onResume, false);
     var banner = false;
     $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
     $fh.logger.info(" ======================================================");
