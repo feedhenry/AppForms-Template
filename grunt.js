@@ -25,7 +25,7 @@ module.exports = function(grunt) {
 
   grunt.task.registerHelper('adviseModels', function(name,models,done) {
     var $ = cheerio.load(fs.readFileSync(name + '/client/default/index.html'));
-    $.root().append("\n<script>\n  $fh.ready(\n    function (){\n      Advice.adviseBackbone(" + models+ ");\n  });\n</script>\n");
+    $.root().append("\n<script>\n  $fh.ready(\nfunction (){\n      Advice.adviseBackbone(" + models+ ");\n  });\n</script>\n");
     var html = $.root().html();
     fs.writeFileSync(name + '/client/default/index.html', html);
 

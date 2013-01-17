@@ -59,8 +59,10 @@
         if (typeof fh_app_version === 'undefined') {
             fh_app_version = 0;
         }
-        jQuery('#app_version').html('Version: ' + fh_app_version);
-        jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
+        jQuery(document).ready(function(){
+            jQuery('#app_version').html('Version: ' + fh_app_version);
+            jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
+        });
         //Utils.loadTouch();
     });
 </script>
