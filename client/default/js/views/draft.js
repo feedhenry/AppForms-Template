@@ -16,7 +16,7 @@ DraftView = Backbone.View.extend({
     });
 
     this.on('visible', function () {
-      $fh.logger.debug('draft visible');
+      //$fh.logger.debug('draft visible');
     });
 
     this.pages = [];
