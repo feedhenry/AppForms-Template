@@ -48,7 +48,13 @@ ConfigModel = Backbone.Model.extend({
       } finally {
         callback();
       }
-    });
+    }, function (msg,err) {
+      try {
+        $fh.logger.info('ConfigModel :: error msg=' + msg, "err=" , err);
+      } finally {
+        callback();
+      }
+    } );
   }
 });
 
