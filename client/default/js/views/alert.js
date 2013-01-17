@@ -24,6 +24,7 @@ AlertView = Backbone.View.extend({
     }
 
     this.$el.html(_.template(template, {message:message,value:value,type:type}));
+    this.$el.show();
     setTimeout(function() {
       self.$el.slideUp(function() {
         $(self.$el).empty();

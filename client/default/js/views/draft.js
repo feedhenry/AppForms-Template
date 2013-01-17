@@ -205,6 +205,7 @@ DraftView = Backbone.View.extend({
 
     this.clearFieldChanged();
     delete this.model.id;
+    this.model.unset("error",{silent:true})
     App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
   },
