@@ -93,7 +93,8 @@ module.exports = function(grunt) {
         // NOTE : current match is src not starting with lib (a simpler /^js\// would also work),
         // TODO : minifying mobiscroll seems to cause a problem so I'm adding it to main.js for the moment
         // TODO : minifying jquery-aop seems to cause a problem on samsung galaxy mini so I'm adding it to main.js for the moment
-        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll|jquery-aop)/)),
+//        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll|jquery-aop)/)),
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll)/)),
         dest: 'dist-dev/client/default/main.js'
       },
       lib: {
