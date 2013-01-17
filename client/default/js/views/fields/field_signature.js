@@ -116,6 +116,8 @@ FieldSignatureView = FieldView.extend({
   value: function(value) {
     if (value && !_.isEmpty(value)) {
       this.fileData = value[this.model.get('ID')];
+      $fh.logger.debug("value" , this.fileData.fileBase64)
+      console.log("\n\n\n\n\nvalue=" + this.fileData.fileBase64 + "\n\n\n\n\n")
       $('.sigImage', this.$el).attr('src', this.fileData.fileBase64);
       $('input', this.$el).val(this.fileData.fileBase64);
     }
