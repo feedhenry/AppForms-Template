@@ -17,6 +17,16 @@ Produces a dist folder and dist.zip. To copy to dist branch:
     git commit -am "Merging phase2 changes"
     git push origin phase2-dist
 
+NOTE: make sure that you have added all files you need and not added any 
+unecessary one!
+
 To just lint scripts:
 
     grunt lint
+
+To test a release candidate run the following : 
+   grunt
+   cp dist.zip candidate.zip
+   zip candidate cloud/wufoo_config.js
+
+Then import the candidate.zip into the studio, build and test it.

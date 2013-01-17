@@ -20,6 +20,13 @@ FieldGeoView = FieldView.extend({
     this.show();
   },
 
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
+  },
+
   action: function(el) {
     var self = this;
     var ds = new moment().format('YYYY-MM-DD');

@@ -528,3 +528,166 @@ if(wufoo_config.wufoo_config.logger) {
 //  });
 //
 //}
+
+
+
+// fh.logger endpoints
+exports.fh_logger_store = function (params, callback) {
+  console.log('fh_logger_store');
+
+  async.waterfall([function (cb) {
+    // get next id from counter collection
+    $fh.db({
+      "act": "list",
+      "type": "client_logs_counter"
+    }, function (err, data) {
+      if (err) return cb(err);
+
+      // check if counter was initialised
+      var counter = 1;
+      if (data && data.list && data.list.length > 0) {
+        var entry = data.list[0];
+        counter = entry.fields.counter;
+
+        // update counter
+        counter += 1;
+        $fh.db({
+          "act": "update",
+          "type": "client_logs_counter",
+          "guid": entry.guid,
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      } else {
+        $fh.db({
+          "act": "create",
+          "type": "client_logs_counter",
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      }
+    });
+  }, function (counter, cb) {
+    $fh.db({
+      "act": "create",
+      "type": "client_logs",
+      "fields": {
+        "env": JSON.stringify(params.env),
+        "logs": params.logs,
+        "timestamp": Date.now(),
+        "id": counter
+      }
+    }, function(err, data) {
+      if (err) return cb(err);
+      
+      console.log('data=', data);
+      return cb(null, data);
+    });
+  }], function (err, data) {
+    if (err) return callback(err);
+
+    return callback(null, {
+      "status": "ok",
+      "id": data.fields.id
+    });
+  });
+};
+
+
+// fh.db admin endpoints
+// http://editor.datatables.net/server/
+function dbDataToClientData(data, callback) {
+  var res = {
+    "id": data.guid,
+    "row": data.fields
+  };
+  return callback(null, res);
+
+}
+
+function dbList(params, callback) {
+  $fh.db({
+    "act": "list",
+    "type": params.entity
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    var res = {
+      aaData: []
+    };
+
+    for (var di = 0, dl = data.list.length; di < dl; di += 1) {
+      var tempRow = data.list[di].fields;
+      tempRow.DT_RowId = data.list[di].guid;
+      tempRow.logs_length = tempRow.logs.length;
+      tempRow.timestamp = tempRow.timestamp ? new Date(tempRow.timestamp).toUTCString() : new Date(0).toUTCString();
+      res.aaData.push(tempRow);
+    }
+
+    return callback(null, res);
+  });
+}
+
+function dbCreate(params, callback) {
+  $fh.db({
+    "act": "create",
+    "type": params.entity,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err); // TODO: field errors?
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbUpdate(params, callback) {
+  $fh.db({
+    "act": "update",
+    "type": params.entity,
+    "guid": params.id,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbDelete(params, callback) {
+  $fh.db({
+    "act": "delete",
+    "type": params.entity,
+    "guid": params.data[0] // TODO: allow multiple deletes?
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return callback(null, {
+      "id": -1
+    });
+  });
+}
+
+exports.db = function (params, callback) {
+  console.log('params:', params);
+
+  var action = params.action || 'list';
+
+  switch(action)
+  {
+    case "create": dbCreate(params, callback); break;
+    case "edit": dbUpdate(params, callback); break;
+    case "remove": dbDelete(params, callback); break;
+    default: dbList(params, callback);
+  }
+
+};

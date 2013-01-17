@@ -39,7 +39,7 @@ SentListView = Backbone.View.extend({
 
   populate: function() {
     // Re-render save
-    var maxSize = App.config.get('sent_save_max') || App.config.get('default_sent_save_max');
+    var maxSize = App.config.getValueOrDefault('sent_save_max');
     $('#sentSaveMax', this.el).val(maxSize);
   },
 

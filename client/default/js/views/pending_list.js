@@ -25,8 +25,13 @@ PendingListView = Backbone.View.extend({
     this.render();
   },
 
+  scrollToTop: function() {
+    window.scrollTo(0, 0);
+  },
+
   submitAll: function() {
     var self = this;
+    this.scrollToTop();
     var loadingView = new LoadingCollectionView();
     loadingView.show("Submitting Pending Forms");
     var c = 1;
@@ -36,6 +41,8 @@ PendingListView = Backbone.View.extend({
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
 
         var json = model.toJSON();
+        delete json.id;
+        model.destroy(); // TODO check double deletion
         return App.collections.pending_submitting.create(json,{},function (err){
            c += 1;
           loadingView.updateProgress(c * 100 / tasks.length);
@@ -43,8 +50,6 @@ PendingListView = Backbone.View.extend({
             loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
             //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
             // to make sure it is re-created and not removed below by model.destroy.
-            delete json.id;
-            model.destroy(); // TODO check double deletion
           } else {
             loadingView.updateMessage("Submitting " + c + " failed");
           }

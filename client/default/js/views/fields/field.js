@@ -40,8 +40,21 @@ FieldView = Backbone.View.extend({
     $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
   },
 
+  getTopView: function(){
+    var view = this.options.parentView;
+    var parent;
+    do {
+      parent = view.options.parentView;
+      if(parent) {
+        view = parent;
+      }
+    }while(parent);
+    return view;
+  },
+
   contentChanged: function(e) {
     this.dumpContent();
+    this.getTopView().trigger('change:field');
     this.model.set({
       Value: this.value()
     });

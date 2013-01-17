@@ -6,6 +6,10 @@
  */
 SentView = DraftView.extend({
 
+  hasFieldChanged: function () {
+    return false;
+  },
+
   /**
    * clone the current sent item but remove the id so that a
    * new draft instance is created

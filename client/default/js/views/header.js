@@ -18,7 +18,7 @@ HeaderView = Backbone.View.extend({
 
   initialize: function() {
     this.undelegateEvents();
-    _.bindAll(this, 'render', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
+    _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
     App.collections.drafts.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
@@ -26,12 +26,12 @@ HeaderView = Backbone.View.extend({
     App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
     App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
+    var self = this;
+    this.adviseAll();
     this.render();
   },
 
   render: function() {
-    var self = this;
-
     $fh.logger.debug('render headerView');
     $(this.el).empty();
 
@@ -44,6 +44,41 @@ HeaderView = Backbone.View.extend({
     $(this.el).append(list);
     $(this.el).show();
   },
+  adviseAll: function() {
+    this.showHome = this.advise(this.showHome);
+    this.showDrafts= this.advise(this.showDrafts);
+    this.showPending= this.advise(this.showPending);
+    this.showSent= this.advise(this.showSent);
+  },
+  advise: function(func) {
+    var self = this;
+    return function() {
+      var skip = false;
+      var args = arguments;
+      if(args.length && args[0] === true) {
+        skip = true;
+      }
+      var proceed = function(clear){
+        try {
+          return func.call(self,args);
+        } finally {
+          if(clear && App.views.form){
+            App.views.form.clearFieldChanged();
+          }
+        }
+      };
+      if(skip || App.views.form == null|| (App.views.form && !App.views.form.hasFieldChanged())) {
+        return proceed();
+      } else {
+        var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+        if (confirmDelete) {
+          return proceed(true);
+        } else {
+          return false;
+        }
+      }
+    };
+  },
 
   showHome: function() {
     this.hideAll();
@@ -53,6 +88,8 @@ HeaderView = Backbone.View.extend({
 
   showDrafts: function() {
     this.hideAll();
+
+
     App.views.drafts_list.show();
     return false;
   },
@@ -74,6 +111,12 @@ HeaderView = Backbone.View.extend({
     App.views.settings.show();
   },
 
+  showAbout: function () {
+//    if(App.views.about) {
+//      App.views.about.show();
+//    }
+  },
+
   hideAll: function() {
     window.scrollTo(0, 0);
     App.views.form_list.hide();
@@ -83,6 +126,7 @@ HeaderView = Backbone.View.extend({
     App.views.settings.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.hide();
+      //App.views.form = null;
     }
   },
 

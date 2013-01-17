@@ -118,11 +118,20 @@ function overrideFHData() {
               fileSystem.root.getFile(hash, {}, function gotFileEntry(fileEntry) {
                 fileEntry.file(function gotFile(file) {
                   var reader = new FileReader();
-                  reader.onloadend = function(evt) {
+                  reader.onloadend = function (evt) {
+                    var text = evt.target.result;
+                    // Check for URLencoded
+                    // PG 2.2 bug in readAsText()
+                    try {
+                      text = decodeURIComponent(text);
+                    } catch (e) {
+                      // Swallow exception if not URLencoded
+                      // Just use the result
+                    }
                     console.log('load: ' + key +  '. Filename: ' + hash + " value:" + evt.target.result);
                     return success({
                       key: key,
-                      val: evt.target.result
+                      val: text
                     });
                   };
                   reader.readAsText(file);
@@ -229,29 +238,34 @@ _.extend(FHBackboneDataActSync.prototype, {
                   }
                 }
 
-                // update client config if its in response
+                // res.config are the incoming default values
+                // if force_cloud_config_updates is set to true
+                //    then delete all the current values and set current to defaults
+                // if force_cloud_config_updates is set to field name(s)
+                //    then delete those fields and update to defaults
+                // otherwise just update defaults
                 if (res && res.config) {
-                  var merged = {};
-                  var current_attributes = _.clone(App.config.attributes);
-                  var old_defaults = _.clone(current_attributes.__defaults || {});
-                  var new_defaults = _.clone(res.config);
-                  delete current_attributes.__defaults;
+                  var defaults = _.extend({}, res.config);
+                  var force = defaults.force_cloud_config_updates;
+                  delete defaults.force_cloud_config_updates;
 
-                  if (res.config.force_cloud_config_updates) {
-                    // disregard any client modified values and ovewrite with latest config from cloud
-                    merged = _.extend({}, current_attributes, new_defaults);
-                  } else {
-                    // only update config values that haven't been modified by the client i.e. values that are still the default
-                    var modified_attributes = {};
-                    _.each(current_attributes, function (val, key) {
-                      if (val !== old_defaults[key]) {
-                        modified_attributes[key] = val;
-                      }
-                    });
-                    merged = _.defaults(modified_attributes, new_defaults);
+                  // new res.config are the incoming defaults
+                  var merged = _.extend({}, App.config.attributes);
+
+                  if(force === true || _.isArray(force) || _.isString(force) ) {
+                    // silent stops the events being fired
+                    if(force === true) {
+                      App.config.clear({silent:true});
+                      merged = _.extend({}, defaults);
+                    } else {
+                      // clear the listed attributes
+                      var toClear = _.flatten([force]);
+                      var updates = _.pick(defaults, toClear);
+                      merged = _.extend({}, App.config.attributes, updates);
+                    }
                   }
+                  merged.defaults = _.extend({}, defaults);
                   $fh.logger.debug('FHBackboneDataActSync :: updating config merged =' + JSON.stringify(merged));
-                  merged.__defaults = new_defaults;
                   App.config.set(merged);
                 }
                 // update data if there is any
@@ -458,14 +472,14 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
   function routeMethod() {
     switch (method) {
-    case "read":
-      return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
-    case "create":
-      return store.create(model, storeCb);
-    case "update":
-      return store.update(model, storeCb);
-    case "delete":
-      return store.destroy(model, storeCb);
+      case "read":
+        return model.id ? store.find(model, storeCb) : store.findAll(storeCb);
+      case "create":
+        return store.create(model, storeCb);
+      case "update":
+        return store.update(model, storeCb);
+      case "delete":
+        return store.destroy(model, storeCb);
     }
   }
 
