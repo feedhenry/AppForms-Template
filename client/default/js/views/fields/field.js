@@ -11,7 +11,7 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
-    _.bindAll(this, 'dumpContent');
+    _.bindAll(this, 'dumpContent', 'clearError');
 
     var nonFhClasses = this.model.getNonFhClasses();
     if (nonFhClasses) {
@@ -195,5 +195,13 @@ FieldView = Backbone.View.extend({
       value[$(this).attr('id')] = $(this).val();
     });
     return value;
+  } ,
+
+  // TODO horrible hack
+  clearError: function(){
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
   }
+
 });

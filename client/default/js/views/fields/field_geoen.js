@@ -5,6 +5,11 @@ FieldGeoENView = FieldView.extend({
     input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text" disabled>'
   },
 
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
+  },
+
   render: function() {
     // construct field html
     this.$el.append(_.template(this.templates.input, {
@@ -52,9 +57,7 @@ FieldGeoENView = FieldView.extend({
 
   contentChanged: function(e) {
     FieldView.prototype.contentChanged.apply(this,arguments);
-    this.$el.find("label[class=error]").remove();
-    this.$el.removeClass("error");
-    this.$el.find(".error").removeClass("error");
+    this.clearError();
   }
 
 });

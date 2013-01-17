@@ -1,4 +1,24 @@
 FieldCameraGroupView = FieldCameraView.extend({
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    //Make sure 'this' is bound for setImageData, was incorrect on device!
+    // pass visible event down to all fields
+    var parent = this;
+    this.on('visible', function () {
+      // clear this
+      parent.clearError();
+      $fh.logger.debug('group visible');
+      var subviews = this.subviews;
+      _(subviews).forEach(function (fieldView) {
+        // this group is a camera view and contains itself
+        // we've already triggered visible on the group, so skip
+        if(parent !== fieldView){
+          fieldView.trigger('visible');
+        }
+      });
+    });
+  },
+
   render: function () {
     var self = this;
     // this view subclasses camera view, so render it for first camera item
