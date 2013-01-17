@@ -59,17 +59,20 @@ LoadingView = Backbone.View.extend({
     this.$el.removeClass('error');
   },
 
-  show: function(message) {
+  show: function(message,progress) {
     this.reset();
 
     this.updateMessage(message);
-    this.updateProgress(50); // halfway straight away. only a single step process
+    if (!_.isNumber(progress)) {
+      progress =50;
+    }
+    this.updateProgress(progress); // halfway straight away. only a single step process
 
     this.$el.show();
   },
 
   updateMessage: function(message) {
-    $('.loading_container .message', this.el).text(message);
+    $('.loading_container .message', this.el).html(message);
   },
 
   updateProgress: function(progress) {

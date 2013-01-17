@@ -31,7 +31,11 @@ App.Router = Backbone.Router.extend({
   },
 
   form_list: function() {
+
     $fh.logger.debug('route: form_list');
+    this.loadingView = new LoadingCollectionView();
+    this.loadingView.show("App Starting");
+
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
@@ -50,12 +54,15 @@ App.Router = Backbone.Router.extend({
       });
     });
 
-    $fh.ready(this.onReady);
+    $fh.ready({},this.onReady);
   },
 
   onReady: function() {
+    this.loadingView.show("App Ready, Loading form list");
+
     $fh.env(this.onPropsRead);
-    App.config.loadConfig(this.onConfigLoaded);
+    App.config.on('config:loaded', this.onConfigLoaded);
+    App.config.loadConfig();
 
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
@@ -75,6 +82,7 @@ App.Router = Backbone.Router.extend({
     $fh.logger.info(" ======================================================");
   },
 
+  // run App.router.onResume() to test this in browser
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
@@ -97,9 +105,9 @@ App.Router = Backbone.Router.extend({
   },
 
   onConfigLoaded: function() {
-    var loadingView = new LoadingCollectionView();
+    this.loadingView.show("Config Loaded , fetching forms");
     // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
+
     App.config.on('change:debug_mode', this.onDebugModeChanged);
     App.config.on('change:white_list', this.onWhitelistChanged);
     App.config.on('change:logger', this.onLoggerChanged);
@@ -107,13 +115,28 @@ App.Router = Backbone.Router.extend({
     App.config.on('change:defaults', this.onDefaultsChanged);
     App.config.on('change:timeout', this.onTimeoutChanged);
 
-    loadingView.show("Loading form list");
+    this.fetchTo = setTimeout(this.fetchTimeout,10000);
+
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
     App.collections.pending_review.fetch();
+  },
+
+  fetchTimeout: function() {
+    clearTimeout(this.fetchTo);
+    this.loadingView.hide();
+    App.resumeFetchAllowed = false;
+    this.fullyLoaded = true;
+    this.onResume();
+  },
+
+  reload: function() {
+    if(this.fullyLoaded){
+      this.onDefaultsChanged();
+    }
   },
 
   onPropsRead: function(props) {

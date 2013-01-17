@@ -168,9 +168,7 @@ function overrideFHData() {
   }
 }
 
-$fh.ready(function() {
-  overrideFHData();
-});
+$fh.ready({},overrideFHData);
 
 
 // Generate four random hex digits (for GUIDs).
@@ -207,7 +205,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
     this.data = {};
 
-    $fh.ready(function() {
+    $fh.ready({},function() {
       $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
       $fh.data({
         key: self.name + self.localStoreVersion

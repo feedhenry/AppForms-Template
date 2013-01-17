@@ -21,7 +21,7 @@ ConfigModel = Backbone.Model.extend({
       return null;
     }
   },
-  loadConfig: function (callback) {
+  loadConfig: function () {
     var self = this;
     // TODO : check if there is a better way of ensuring fh.data has been monkey patched
     overrideFHData();
@@ -46,13 +46,13 @@ ConfigModel = Backbone.Model.extend({
           $fh.logger.warn('No config in local storage. Using config defaults');
         }
       } finally {
-        callback();
+        self.trigger("config:loaded");
       }
     }, function (msg,err) {
       try {
         $fh.logger.info('ConfigModel :: error msg=' + msg, "err=" , err);
       } finally {
-        callback();
+        self.trigger("config:loaded");
       }
     } );
   }
