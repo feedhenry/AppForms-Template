@@ -2,13 +2,14 @@ FormListView = Backbone.View.extend({
   el: $('#fh_wufoo_form_list'),
 
   events: {
-    'click .settings': 'showSettings'
+    'click .settings': 'showSettings',
+    'click .aboutXX': 'showAbout'
   },
 
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
-    footer: '<a class="settings"><img src="img/settings.png"></a>'
+    footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
   },
 
   initialize: function() {
@@ -66,5 +67,9 @@ FormListView = Backbone.View.extend({
 
   showSettings: function () {
     App.views.header.showSettings();
+  },
+
+  showAbout: function () {
+    App.views.header.showAbout();
   }
 });

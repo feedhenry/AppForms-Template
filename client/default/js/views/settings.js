@@ -18,7 +18,6 @@ SettingsView = Backbone.View.extend({
   },
 
   initialize: function() {
-
   },
 
   render: function () {
@@ -35,11 +34,12 @@ SettingsView = Backbone.View.extend({
 
     var div = this.$el.find('.input-group');
 
+    var processed = {};
     var config = App.config.attributes;
-    for (var key in config) {
-      // make sure key isn't special e.g. storing defaults for all fields, flag for nuking client modified config vals
-      if (config.hasOwnProperty(key) && '__defaults' !== key && 'force_cloud_config_updates' !== key) {
-        var val = config[key];
+    var keys = _.union(_.keys(config) , _.keys(config.defaults));
+    _.each(keys, function (key){
+      if('defaults' !== key && 'white_list' !== key && 'force_cloud_config_updates' !== key) {
+        var val = (config.hasOwnProperty(key) ? config[key] : config.defaults[key]);
         var el;
         if ('boolean' === typeof val) {
           // special toggle field
@@ -65,8 +65,7 @@ SettingsView = Backbone.View.extend({
         }
         div.append(el);
       }
-    }
-
+    },this);
     div.append(this.templates.footer);
   },
 

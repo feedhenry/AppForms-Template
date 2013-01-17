@@ -23,8 +23,8 @@
     var str = strArr.join(' ');
 
     $("#logger .logs").prepend($("<p>").addClass(clazz).text(str));
-    if (typeof App.config.get('log_line_limit') !== 'undefined') {
-      $('#logger .logs p:gt(' + (App.config.get('log_line_limit') - 1) + ')').remove();
+    if (typeof App.config.getValueOrDefault('log_line_limit') !== 'undefined') {
+      $('#logger .logs p:gt(' + (App.config.getValueOrDefault('log_line_limit') - 1) + ')').remove();
     }
 
     // output to console
@@ -79,31 +79,35 @@
         $fh.env(function (env) {
           $fh.send({
             "type": "email",
-            "to": App.config.get('log_email') || 'test@example.com',
+            "to": App.config.getValueOrDefault('log_email') || 'test@example.com',
             "subject": "Wufoo App Logs",
             "body": "Device Environment:\n" + JSON.stringify(env, null, 2) + "\n\nApp Logs:\n" + str
           }, function () {
-            window.alert('LOGS SENT OK');
+            $fh.logger.debug('LOGS SENT OK');
           }, function (msg) {
-            window.alert('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
+            $fh.logger.warn('ERROR SENDING LOGS (1200): msg=' + JSON.stringify(msg));
           });
         });
       },
       store : function () {
         var str = _getLogsAsString();
-        $fh.act({
-          "act": "fh_logger_store",
-          "req": {
-            "logs": str
-          }
-        }, function (res) {
-          if (res && res.status === 'ok') {
-            window.alert('LOGS STORED OK: res=' + JSON.stringify(res));
-          } else {
-            window.alert('ERROR STORED LOGS (1100): res=' + JSON.stringify(res));
-          }
-        }, function (msg, err) {
-          window.alert('ERROR STORED LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
+
+        $fh.env(function (env) {
+          $fh.act({
+            "act": "fh_logger_store",
+            "req": {
+              "env": env,
+              "logs": str
+            }
+          }, function (res) {
+            if (res && res.status === 'ok') {
+              $fh.logger.debug('LOGS STORED OK: ID=' + res.id + ' res=' + JSON.stringify(res));
+            } else {
+              $fh.logger.warn('ERROR STORING LOGS (1100): res=' + JSON.stringify(res));
+            }
+          }, function (msg, err) {
+            $fh.logger.warn('ERROR STORING LOGS (1101): msg=' + msg + ', err=' + JSON.stringify(err));
+          });
         });
       },
       trace : function (){

@@ -1,6 +1,6 @@
 var Advice = Advice || {};
 (function (self) {
-  self.adviseBackbone = function(callback){
+  self.adviseBackbone = function(){
     _.each(arguments,function (clazz){
       var old = clazz.prototype.initialize;
       clazz.prototype.initialize = function () {

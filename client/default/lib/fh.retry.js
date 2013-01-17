@@ -1,6 +1,13 @@
 $fh.ready(function() {
   $fh.retry= $fh.retry || {};
   if(!$fh.retry.disable) {
+    $fh.retry.toggle = function (enable){
+      if (enable) {
+        $fh.retry.enable()
+      } else {
+        $fh.retry.disable()
+      }
+    };
     $fh.retry.disable = function (){
       if ($fh.retry.act) {
         $fh.act = $fh.retry.act;

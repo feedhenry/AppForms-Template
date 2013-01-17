@@ -84,3 +84,17 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
  * 2946 : App Form Phase II : add better error handling for client side exception
  * 2956 : App Form Phase II : Error messages in input fields should not be validated
 
+
+0.2.0 - 2012-01-17  - IR193 - Jim O'Leary
+----------------------------------------------------------------------
+ * 3018 : App Form Phase II : alert view when submitting forms can disappears before submission complete
+ * 3017 : App Form Phase II : off by 1 error when submitting multiple pending forms
+ * 3016 : App Form Phase II : Saving Submitted Forms with validation errors fails
+ * 3015 : photo_validation warning from wufoo
+ * 3014 : App Form Phase II : remove alerts from logger store calls
+ * 2883 : working on check navigate
+ * 2889 : hide controls based on device uuid white list
+ * 2953 : ios progress bar
+ * 2955 : store logs on server
+ * 2964 : PG 2.2 decode
+ * 3020 : App Form Phase II : Minified Jquery-aop causes a problem on Samsung Galaxy Mini
