@@ -8,15 +8,14 @@ AlertView = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.render();
   },
 
-  render: function() {
+  render: function(opts) {
     var self=this;
     var template = this.templates.alert;
     var value;
-    var type = this.options.type;
-    var o = this.options.o;
+    var type = opts.type;
+    var o = opts.o;
     var message = o.text || '';
     if(null != o.current ) {
       value  = Math.floor((o.current * 100)/ o.total);
@@ -25,15 +24,17 @@ AlertView = Backbone.View.extend({
 
     this.$el.html(_.template(template, {message:message,value:value,type:type}));
     this.$el.show();
-    setTimeout(function() {
+    clearTimeout(this.to);
+    this.to = setTimeout(function() {
       self.$el.slideUp(function() {
         $(self.$el).empty();
       });
-    }, this.options.timeout || 10000);
+    }, opts.timeout || 10000);
     return this;
   }
 });
+var alertView = new AlertView();//{o:o, type:type, timeout:timeout});
 
 AlertView.showAlert = function(o, type, timeout) {
-  new AlertView({o:o, type:type, timeout:timeout});
+  alertView.render({o:o, type:type, timeout:timeout});
 };
