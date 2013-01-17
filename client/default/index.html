@@ -9,7 +9,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="format-detection" content="telephone=no">
 
-<div id="fh_banner" class="hidden"><p class="sha">ID : 2db72a2</p><p class="name">name : FeedHenry-Wufoo-App-Generator</p><p class="version">version : 0.1.9</p><p class="date">date : 2013-01-10</p></div>
 <div id="fh_wufoo_header" class="hidden bar-title"></div>
 <div id="fh_wufoo_alerts_area"></div>
 
@@ -22,6 +21,14 @@
 <div id="fh_wufoo_sent" class="hidden"></div>
 
 <div id="fh_wufoo_settings" class="hidden"></div>
+
+<div id="fh_wufoo_banner" class="popover">
+  <header class="popover-header">
+    <h3 class="title">App Forms</h3>
+  </header>
+  <ul class="list"><li class="device"><span>DEVICE</span>:<span></span></li><li class="name"><span>NAME</span>:<span>FeedHenry-Wufoo-App-Generator</span></li><li class="version"><span>VERSION</span>:<span>0.2.0</span></li><li class="date"><span>DATE</span>:<span>2013-01-17</span></li><li class="commit"><span>COMMIT</span>:<span>f5cb56c</span></li></ul>
+</div>
+
 
 <div id="fh_wufoo_content" class="hidden"></div>
 
@@ -46,7 +53,11 @@
         if (typeof fh_app_version === 'undefined') {
             fh_app_version = 0;
         }
-        jQuery('#app_version').html('Version: ' + fh_app_version);
+        jQuery(document).ready(function(){
+            jQuery('#app_version').html('Version: ' + fh_app_version);
+            jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
+        });
+        //Utils.loadTouch();
     });
 </script>
 
@@ -56,6 +67,7 @@
     <div id="fh_logs">
         <button onclick="if($fh.logger){ $fh.logger.clear();}">Clear Logs</button>
         <button onclick="if($fh.logger){ $fh.logger.send();}">Send Logs</button>
+        <button onclick="if($fh.logger){ $fh.logger.store();}">Store Logs</button><br>
         <div class="logs"></div>
     </div>
 </div>
@@ -85,7 +97,7 @@ App.collections = App.collections || {};
 
 
 
-
+<!--<script src="lib/jquery-aop.js" type="text/javascript" charset="utf-8"></script>-->
 
 
 <!-- mobiscroll -->
@@ -149,6 +161,8 @@ App.collections = App.collections || {};
 
 
 
+
+
 <!-- Router -->
 
 
@@ -162,10 +176,3 @@ App.collections = App.collections || {};
 </style>
 <script src="lib.min.js"></script>
 <script src="main.js"></script>
-
-<script>
-  $fh.ready(
-    function (){
-      Advice.adviseBackbone(FormModel);
-  });
-</script>

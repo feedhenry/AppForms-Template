@@ -18,7 +18,7 @@ function getMinFormData(form) {
 exports.getFormTheme = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash === null) return callback(null, {
+  if (form_hash == null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -31,7 +31,7 @@ exports.getFormTheme = function (params, callback) {
 exports.getFormPages = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash === null) return callback(null, {
+  if (form_hash == null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -44,7 +44,7 @@ exports.getFormPages = function (params, callback) {
 exports.getFormFields = function (params, callback) {
   var form_hash = params.form_hash;
 
-  if (form_hash === null) return callback(null, {
+  if (form_hash == null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -59,7 +59,7 @@ exports.getForm = function (params, callback) {
   var updateDate = params.version || null;
 
   // TODO: should client handle error as first params? currently sends 500 if error is first param, 200 if second param
-  if (form_hash === null) return callback(null, {
+  if (form_hash == null) return callback(null, {
     "error": "form_hash is required"
   });
 
@@ -91,7 +91,7 @@ exports.getForm = function (params, callback) {
     // check update date
     console.log('updateDate:', updateDate);
     console.log('res.DateUpdated:', res.DateUpdated);
-    if (updateDate !== null && updateDate === res.DateUpdated) {
+    if (updateDate != null && updateDate === res.DateUpdated) {
       // update dates are the same, send minimum data rather than waste bandwidth
       return callback(null, getMinFormData(res));
     }
@@ -160,7 +160,7 @@ exports.getForm = function (params, callback) {
         var pageNum = parseInt(field.Page || "1", 10) -1;
         if (wufoo_default_fields.indexOf(field.ID) === -1) {
           // if any field rules mathc this field id, add it to field Rules object
-          if (tempFieldRules[field.ID] !== null) {
+          if (tempFieldRules[field.ID] != null) {
             field.Rules = tempFieldRules[field.ID];
           }
 
@@ -248,7 +248,7 @@ exports.loadForm= function (key, callback) {
     if (err) {
       return callback(null, {"error": "cached chunk missing for : " + name + "("+ err.toString() + ")"});
     } else {
-      if(json !== null) {
+      if(json != null) {
         var form =  JSON.parse(json);
         return callback(null,form);
       } else {
@@ -331,7 +331,7 @@ exports.checkComplete= function (params, callback) {
 };
 exports._doPostWufoo = function (err,form, callback){
   var self = this;
-  if(callback === null) {
+  if(callback == null) {
     callback = function(){};
   }
 
@@ -365,7 +365,7 @@ exports._doPostWufoo = function (err,form, callback){
 exports.postEntry = function (params, callback) {
   var self = this;
   var form_hash = params.form_hash;
-  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
+  if (form_hash == null) return callback(null, {"error": "form_hash is required"});
   self.checkComplete(params,function (err,res) {
     if(!err && res && res.stat&& res.stat.completedAt) {
       var completedAt = res.stat.completedAt;
@@ -382,7 +382,7 @@ exports.postEntry = function (params, callback) {
 exports.submitFormBody = function (params, callback) {
   var self = this;
   var form_hash = params.form_hash;
-  if (form_hash === null) return callback(null, {"error": "form_hash is required"});
+  if (form_hash == null) return callback(null, {"error": "form_hash is required"});
   params.stat = {startedAt : Date.now()};
   self.cacheForm(params, function (err){
     return callback(null, err ? {"error" : err.toString()} : {"Success": 1});
@@ -466,7 +466,7 @@ exports.getForms = function (params, callback) {
     // filter out forms we want if certain form hashes are configured
     var forms = results.Forms;
     console.log('hashes:', hashes);
-    if (hashes !== null && hashes.length > 0) {
+    if (hashes != null && hashes.length > 0) {
       forms = _(forms).filter(function (form) {
         return hashes.indexOf(form.Hash) > -1;
       });
@@ -528,3 +528,166 @@ if(wufoo_config.wufoo_config.logger) {
 //  });
 //
 //}
+
+
+
+// fh.logger endpoints
+exports.fh_logger_store = function (params, callback) {
+  console.log('fh_logger_store');
+
+  async.waterfall([function (cb) {
+    // get next id from counter collection
+    $fh.db({
+      "act": "list",
+      "type": "client_logs_counter"
+    }, function (err, data) {
+      if (err) return cb(err);
+
+      // check if counter was initialised
+      var counter = 1;
+      if (data && data.list && data.list.length > 0) {
+        var entry = data.list[0];
+        counter = entry.fields.counter;
+
+        // update counter
+        counter += 1;
+        $fh.db({
+          "act": "update",
+          "type": "client_logs_counter",
+          "guid": entry.guid,
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      } else {
+        $fh.db({
+          "act": "create",
+          "type": "client_logs_counter",
+          "fields": {
+            "counter": counter
+          }
+        }, function (err, data) {
+          if (err) return cb(err);
+
+          return cb(null, counter);
+        });
+      }
+    });
+  }, function (counter, cb) {
+    $fh.db({
+      "act": "create",
+      "type": "client_logs",
+      "fields": {
+        "env": JSON.stringify(params.env),
+        "logs": params.logs,
+        "timestamp": Date.now(),
+        "id": counter
+      }
+    }, function(err, data) {
+      if (err) return cb(err);
+      
+      console.log('data=', data);
+      return cb(null, data);
+    });
+  }], function (err, data) {
+    if (err) return callback(err);
+
+    return callback(null, {
+      "status": "ok",
+      "id": data.fields.id
+    });
+  });
+};
+
+
+// fh.db admin endpoints
+// http://editor.datatables.net/server/
+function dbDataToClientData(data, callback) {
+  var res = {
+    "id": data.guid,
+    "row": data.fields
+  };
+  return callback(null, res);
+
+}
+
+function dbList(params, callback) {
+  $fh.db({
+    "act": "list",
+    "type": params.entity
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    var res = {
+      aaData: []
+    };
+
+    for (var di = 0, dl = data.list.length; di < dl; di += 1) {
+      var tempRow = data.list[di].fields;
+      tempRow.DT_RowId = data.list[di].guid;
+      tempRow.logs_length = tempRow.logs.length;
+      tempRow.timestamp = tempRow.timestamp ? new Date(tempRow.timestamp).toUTCString() : new Date(0).toUTCString();
+      res.aaData.push(tempRow);
+    }
+
+    return callback(null, res);
+  });
+}
+
+function dbCreate(params, callback) {
+  $fh.db({
+    "act": "create",
+    "type": params.entity,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err); // TODO: field errors?
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbUpdate(params, callback) {
+  $fh.db({
+    "act": "update",
+    "type": params.entity,
+    "guid": params.id,
+    "fields": params.data
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return dbDataToClientData(data, callback);
+  });
+}
+
+function dbDelete(params, callback) {
+  $fh.db({
+    "act": "delete",
+    "type": params.entity,
+    "guid": params.data[0] // TODO: allow multiple deletes?
+  }, function(err, data) {
+    if (err) return callback(err);
+
+    return callback(null, {
+      "id": -1
+    });
+  });
+}
+
+exports.db = function (params, callback) {
+  console.log('params:', params);
+
+  var action = params.action || 'list';
+
+  switch(action)
+  {
+    case "create": dbCreate(params, callback); break;
+    case "edit": dbUpdate(params, callback); break;
+    case "remove": dbDelete(params, callback); break;
+    default: dbList(params, callback);
+  }
+
+};

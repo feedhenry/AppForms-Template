@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.1.9 - 2013-01-10
+/*! FeedHenry-Wufoo-App-Generator - v0.2.0 - 2013-01-17
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -1096,33 +1096,6 @@ App.MockSimpleSinglePageForm = {
 
 ConfigModel = Backbone.Model.extend({
   initialize: function () {
-    var self = this;
-
-    $fh.ready(function () {
-      // TODO : check if there is a better way of ensuring fh.data has been monkey patched
-      overrideFHData();
-      //initialise config
-      $fh.data({
-        act: 'load',
-        key: 'client_config'
-      }, function (res) {
-        $fh.logger.info('ConfigModel :: loaded=' + res.val);
-        if (res && res.val && res.val !== '') {
-          try {
-            // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
-            $fh.logger.debug('ConfigModel :: loaded=' + res.val);
-            var read =JSON.parse(res.val);
-            self.set(read);
-          } catch(e) {
-            //log error, but no action
-            $fh.logger.error('ERROR: parsing config from local storage. Using config defaults:', e);
-          }
-        } else {
-          $fh.logger.warn('No config in local storage. Using config defaults');
-        }
-      });
-    });
-
     this.on('change', function () {
       $fh.logger.info('ConfigModel :: change=' + JSON.stringify(this.attributes));
       $fh.data({
@@ -1135,6 +1108,49 @@ ConfigModel = Backbone.Model.extend({
         $fh.logger.error('ERROR: saving client_config to local storage :: ', msg);
       });
     });
+  },
+  getValueOrDefault: function (key) {
+    try {
+      var value= (this.attributes.hasOwnProperty(key)  ? this.get(key) : this.get('defaults')[key]) ;
+      return value;
+    } catch(e) {
+      return null;
+    }
+  },
+  loadConfig: function (callback) {
+    var self = this;
+    // TODO : check if there is a better way of ensuring fh.data has been monkey patched
+    overrideFHData();
+    //initialise config
+    $fh.data({
+      act: 'load',
+      key: 'client_config'
+    }, function (res) {
+      try {
+        $fh.logger.info('ConfigModel :: loaded=' + res.val);
+        if (res && res.val !== null) {
+          try {
+            // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
+            $fh.logger.debug('ConfigModel :: loaded=' + res.val);
+            var read =JSON.parse(res.val);
+            self.set(read);
+          } catch(e) {
+            //log error, but no action
+            $fh.logger.error('ERROR: parsing config from local storage. Using config defaults:', e);
+          }
+        } else {
+          $fh.logger.warn('No config in local storage. Using config defaults');
+        }
+      } finally {
+        callback();
+      }
+    }, function (msg,err) {
+      try {
+        $fh.logger.info('ConfigModel :: error msg=' + msg, "err=" , err);
+      } finally {
+        callback();
+      }
+    } );
   }
 });
 
@@ -1266,7 +1282,7 @@ FormModel = Backbone.Model.extend({
   },
 
   getTimeout:function (millis) {
-    var timeout = App.config.get('default_timeout') || ($fh.legacy.fh_timeout / 1000);
+    var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
     if(millis) {
       timeout = timeout *1000;
     }
@@ -1291,30 +1307,30 @@ FormModel = Backbone.Model.extend({
         msg += "Unknown";
 
       }
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"network"}, msg);
     }
 
     if(type  === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"validation"}, e.res || msg);
     }
 
     if(type  === "offline") {
       msg = err || "You are currently offline";
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:msg, type:"network"},msg);
     }
 
     if(type === "network") {
       msg = "Network Error : " + (err || JSON.stringify(e));
-      this.showAlert({text : msg}, "error", 5000);
+      AlertView.showAlert({text : msg}, "error", 5000);
       return cb({error:type});
     }
 
     msg = "Unknown Error : " + JSON.stringify(e);
-    this.showAlert({text : msg}, "error", 5000);
+    AlertView.showAlert({text : msg}, "error", 5000);
     return cb({error:msg, type:"unknown"}, msg);
   },
 
@@ -1336,7 +1352,7 @@ FormModel = Backbone.Model.extend({
    */
   pollRemoteFormSubmissionComplete: function(req,form_id,res, cb) {
     var self = this;
-    this.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
+    AlertView.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
     $fh.logger.debug('Form Submitted to cloud: res:' + Utils.truncate(res));
     var timeout  = this.getTimeout();
     var start = Math.floor(Date.now() / 1000);
@@ -1373,7 +1389,7 @@ FormModel = Backbone.Model.extend({
           if (res.Success === 1){
 
             if(res.stat && res.stat.completedAt){
-              self.showAlert({text:"Form Submission complete"}, "success", 5000);
+              AlertView.showAlert({text:"Form Submission complete"}, "success", 5000);
               cb(null, res);
             }
           } else if(res.err  || res.Error) {
@@ -1398,7 +1414,7 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"submitFormBody","req":form};
     req.total += JSON.stringify(data).length;
     var timeout = self.getTimeout(true);
-    self.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
+    AlertView.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
     var start = Date.now();
     $fh.act(data, function (res) {
       var end = Date.now();
@@ -1406,7 +1422,7 @@ FormModel = Backbone.Model.extend({
       if (res.Success && res.Success === 1) {
         var json = JSON.stringify(data);
         req.size += json.length;
-        self.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
+        AlertView.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
         callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
       } else {
         callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
@@ -1431,19 +1447,19 @@ FormModel = Backbone.Model.extend({
     var timeout = self.getTimeout(true) ;
     req.current_chunk += 1;
     var title = "Field " + req.current_chunk+  " of "+ req.num_chunks;
-    //self.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
-    self.showAlert({text : (title + " started"), current : req.size, total : req.total}, "success", timeout);
+    //AlertView.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
+    AlertView.showAlert({text : (title + " started"), current : req.size, total : req.total}, "success", timeout);
 
     $fh.logger.debug("submitChunk starting value="  + Utils.truncate(value,50));
     $fh.act({
       "act":"submitChunk",
-      "retries" : App.config.get("max_retries"),
+      "retries" : App.config.getValueOrDefault("max_retries"),
       "req": chunk
     }, function onSuccess(res) {
       $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] res='" + Utils.truncate(res ) + "'");
       if (res.Success && res.Success === 1) {
         req.size += len;
-        self.showAlert({text : (title + " complete"), current : req.size, total : req.total}, "success", timeout);
+        AlertView.showAlert({text : (title + " complete"), current : req.size, total : req.total}, "success", timeout);
         return callback(null, res);
       } else {
         return callback({err:'unknown' , msg: JSON.stringify(res)}, res);
@@ -1466,12 +1482,12 @@ FormModel = Backbone.Model.extend({
     var start = Date.now();
     var timeout = self.getTimeout(true);
     $fh.logger.debug("validateFormTransmission [" +form_id + "] started");
-    self.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
+    AlertView.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res="+ Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
+        AlertView.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
         return callback(null,{name : "validateFormTransmission", start : start, end : end, size : req.size});
       } else {
         return callback({msg:"validation", err: "Please fix the highlighted errors",res:res});
@@ -1493,12 +1509,12 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"doRemoteFormSubmission","req":{form_id:form_id}};
     var start = Date.now();
     $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] started");
-    self.showAlert({text : "Remote form submission: started"}, "success", 5000);
+    AlertView.showAlert({text : "Remote form submission: started"}, "success", 5000);
     $fh.act(data, function (res) {
       var end = Date.now();
       $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        self.showAlert({text : "Remote form submission: complete"}, "success", 5000);
+        AlertView.showAlert({text : "Remote form submission: complete"}, "success", 5000);
         return callback(null,{name : "doRemoteFormSubmission", start : start, end : end, size: req.total});
       } else {
         return callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
@@ -1526,7 +1542,7 @@ FormModel = Backbone.Model.extend({
     var tasks  = [];
     var serialized_form = form.data;
     var form_id = req.form_id;
-    if(App.config.get("use_chunking")) {
+    if(App.config.getValueOrDefault("use_chunking")) {
       _.each(serialized_form, function chunkHandler(value,name){
         if (_.isObject(value) && !_.isUndefined(value.filename)) {
           var str = JSON.stringify(value);
@@ -1628,44 +1644,9 @@ FormModel = Backbone.Model.extend({
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
-  },
+  }
 
-  showAlert: function(o, type, timeout) {
-    var alertTpl = $('<div>').addClass('fh_wufoo_alert');
-    $('#fh_wufoo_alerts_area ').empty();
-
-    var message = o.text;
-    var percent  = "";
-    if(o.current ) {
-      var value  = Math.floor((o.current * 100)/ o.total);
-      if(Utils.isIOS()) {
-        percent = $('<strong>').text( message + " " + value + " %");
-        $fh.logger.debug("showAlert current='" + this.toBytes(o.current)  + ", total='" + this.toBytes(o.total) + "%='" + percent );
-        alertTpl.append(percent);
-      } else {
-        percent = $('<progress>').attr("max", 100).attr("value", value).html($('<strong>').text( message));
-        $fh.logger.debug("showAlert current='" + this.toBytes(o.current)  + ", total='" + this.toBytes(o.total) + "%='" + percent );
-        alertTpl.append($('<span class="small">').text(message)).append(percent);
-      }
-    } else {
-      alertTpl.append($('<span>').text(message));
-    }
-    alertTpl.addClass(type);
-
-    var el = $('#fh_wufoo_alerts_area .' + type);
-    if(el.length) {
-      el.replaceWith(alertTpl);
-    } else {
-      $('#fh_wufoo_alerts_area').append(alertTpl);
-    }
-
-
-    setTimeout(function() {
-      alertTpl.slideUp(function() {
-        $(this).remove();
-      });
-    }, timeout || 10000);
-  }});
+});
 
 FormsCollection = Backbone.Collection.extend({
   model: FormModel,
@@ -1699,7 +1680,7 @@ SentCollection = Backbone.Collection.extend({
   },
 
   checkSize: function() {
-    var maxSize = App.config.get('sent_save_max') || App.config.get('sent_save_max');
+    var maxSize = (App.config.attributes.hasOwnProperty('sent_save_max') ?  App.config.get('sent_save_max') : App.config.get('defaults')['sent_save_max']);
     if (this.length > maxSize) {
       var toDelete = this.models.slice(0, this.models.length - maxSize);
       _(toDelete).forEach(function(model) {
@@ -1789,7 +1770,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
     attributes.savedAt = new Date().getTime();
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
-    if(callback === undefined || callback === null) {
+    if(callback == null) {
       callback = function (){};
     }
     model.submit(function(err, res) {
@@ -2084,13 +2065,14 @@ FormListView = Backbone.View.extend({
   el: $('#fh_wufoo_form_list'),
 
   events: {
-    'click .settings': 'showSettings'
+    'click .settings': 'showSettings',
+    'click .aboutXX': 'showAbout'
   },
 
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
-    footer: '<a class="settings"><img src="img/settings.png"></a>'
+    footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
   },
 
   initialize: function() {
@@ -2148,6 +2130,10 @@ FormListView = Backbone.View.extend({
 
   showSettings: function () {
     App.views.header.showSettings();
+  },
+
+  showAbout: function () {
+    App.views.header.showAbout();
   }
 });
 SentListView = Backbone.View.extend({
@@ -2191,7 +2177,7 @@ SentListView = Backbone.View.extend({
 
   populate: function() {
     // Re-render save
-    var maxSize = App.config.get('sent_save_max') || App.config.get('default_sent_save_max');
+    var maxSize = App.config.getValueOrDefault('sent_save_max');
     $('#sentSaveMax', this.el).val(maxSize);
   },
 
@@ -2312,7 +2298,6 @@ SettingsView = Backbone.View.extend({
   },
 
   initialize: function() {
-
   },
 
   render: function () {
@@ -2329,11 +2314,12 @@ SettingsView = Backbone.View.extend({
 
     var div = this.$el.find('.input-group');
 
+    var processed = {};
     var config = App.config.attributes;
-    for (var key in config) {
-      // make sure key isn't special e.g. storing defaults for all fields, flag for nuking client modified config vals
-      if (config.hasOwnProperty(key) && '__defaults' !== key && 'force_cloud_config_updates' !== key) {
-        var val = config[key];
+    var keys = _.union(_.keys(config) , _.keys(config.defaults));
+    _.each(keys, function (key){
+      if('defaults' !== key && 'white_list' !== key && 'force_cloud_config_updates' !== key) {
+        var val = (config.hasOwnProperty(key) ? config[key] : config.defaults[key]);
         var el;
         if ('boolean' === typeof val) {
           // special toggle field
@@ -2359,8 +2345,7 @@ SettingsView = Backbone.View.extend({
         }
         div.append(el);
       }
-    }
-
+    },this);
     div.append(this.templates.footer);
   },
 
@@ -2408,6 +2393,13 @@ SettingsView = Backbone.View.extend({
 
   hide: function() {
     this.$el.hide();
+  }
+});
+AboutView = Backbone.View.extend({
+  el: $('#fh_wufoo_banner'),
+
+  initialize: function(props) {
+    this.$el.find("ul li.device").html("<span>Device</span>:<span>" + props.uuid + "</span>");
   }
 });
 ItemView = Backbone.View.extend({
@@ -2600,8 +2592,13 @@ PendingListView = Backbone.View.extend({
     this.render();
   },
 
+  scrollToTop: function() {
+    window.scrollTo(0, 0);
+  },
+
   submitAll: function() {
     var self = this;
+    this.scrollToTop();
     var loadingView = new LoadingCollectionView();
     loadingView.show("Submitting Pending Forms");
     var c = 1;
@@ -2611,6 +2608,8 @@ PendingListView = Backbone.View.extend({
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
 
         var json = model.toJSON();
+        delete json.id;
+        model.destroy(); // TODO check double deletion
         return App.collections.pending_submitting.create(json,{},function (err){
            c += 1;
           loadingView.updateProgress(c * 100 / tasks.length);
@@ -2618,8 +2617,6 @@ PendingListView = Backbone.View.extend({
             loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
             //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
             // to make sure it is re-created and not removed below by model.destroy.
-            delete json.id;
-            model.destroy(); // TODO check double deletion
           } else {
             loadingView.updateMessage("Submitting " + c + " failed");
           }
@@ -2724,7 +2721,7 @@ HeaderView = Backbone.View.extend({
 
   initialize: function() {
     this.undelegateEvents();
-    _.bindAll(this, 'render', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
+    _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
     App.collections.drafts.bind('add remove reset', this.updateCounts, this);
     App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
@@ -2732,12 +2729,12 @@ HeaderView = Backbone.View.extend({
     App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
     App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
+    var self = this;
+    this.adviseAll();
     this.render();
   },
 
   render: function() {
-    var self = this;
-
     $fh.logger.debug('render headerView');
     $(this.el).empty();
 
@@ -2750,6 +2747,41 @@ HeaderView = Backbone.View.extend({
     $(this.el).append(list);
     $(this.el).show();
   },
+  adviseAll: function() {
+    this.showHome = this.advise(this.showHome);
+    this.showDrafts= this.advise(this.showDrafts);
+    this.showPending= this.advise(this.showPending);
+    this.showSent= this.advise(this.showSent);
+  },
+  advise: function(func) {
+    var self = this;
+    return function() {
+      var skip = false;
+      var args = arguments;
+      if(args.length && args[0] === true) {
+        skip = true;
+      }
+      var proceed = function(clear){
+        try {
+          return func.call(self,args);
+        } finally {
+          if(clear && App.views.form){
+            App.views.form.clearFieldChanged();
+          }
+        }
+      };
+      if(skip || App.views.form == null|| (App.views.form && !App.views.form.hasFieldChanged())) {
+        return proceed();
+      } else {
+        var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+        if (confirmDelete) {
+          return proceed(true);
+        } else {
+          return false;
+        }
+      }
+    };
+  },
 
   showHome: function() {
     this.hideAll();
@@ -2759,6 +2791,8 @@ HeaderView = Backbone.View.extend({
 
   showDrafts: function() {
     this.hideAll();
+
+
     App.views.drafts_list.show();
     return false;
   },
@@ -2780,6 +2814,12 @@ HeaderView = Backbone.View.extend({
     App.views.settings.show();
   },
 
+  showAbout: function () {
+//    if(App.views.about) {
+//      App.views.about.show();
+//    }
+  },
+
   hideAll: function() {
     window.scrollTo(0, 0);
     App.views.form_list.hide();
@@ -2789,6 +2829,7 @@ HeaderView = Backbone.View.extend({
     App.views.settings.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.hide();
+      //App.views.form = null;
     }
   },
 
@@ -2822,6 +2863,46 @@ HeaderView = Backbone.View.extend({
     }
   }
 });
+AlertView = Backbone.View.extend({
+  options:{el: $("#fh_wufoo_alerts_area")},
+
+  templates: {
+    alert: '<div class="fh_wufoo_alert <%= type %>"><%= message %></div>',
+    bar: '<div class="fh_wufoo_alert <%= type %>"><span class="small"><%= message %></span><progress max="100" value="<%= value %>"><strong><%= message %></strong></progress></div>',
+    ios_bar: '<div class="fh_wufoo_alert <%= type %>"><span class="small"><%= message %></span><div class="progress_bar_container" ><div class="progress_bar complete" style="width:<%=value%>%%"></div></div></div>'
+  },
+
+  initialize: function() {
+  },
+
+  render: function(opts) {
+    var self=this;
+    var template = this.templates.alert;
+    var value;
+    var type = opts.type;
+    var o = opts.o;
+    var message = o.text || '';
+    if(null != o.current ) {
+      value  = Math.floor((o.current * 100)/ o.total);
+      template = Utils.isIOS() ? this.templates.ios_bar : this.templates.bar;
+    }
+
+    this.$el.html(_.template(template, {message:message,value:value,type:type}));
+    this.$el.show();
+    clearTimeout(this.to);
+    this.to = setTimeout(function() {
+      self.$el.slideUp(function() {
+        $(self.$el).empty();
+      });
+    }, opts.timeout || 10000);
+    return this;
+  }
+});
+var alertView = new AlertView();//{o:o, type:type, timeout:timeout});
+
+AlertView.showAlert = function(o, type, timeout) {
+  alertView.render({o:o, type:type, timeout:timeout});
+};
 FieldView = Backbone.View.extend({
 
   className: 'field_container',
@@ -2864,8 +2945,21 @@ FieldView = Backbone.View.extend({
     $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
   },
 
+  getTopView: function(){
+    var view = this.options.parentView;
+    var parent;
+    do {
+      parent = view.options.parentView;
+      if(parent) {
+        view = parent;
+      }
+    }while(parent);
+    return view;
+  },
+
   contentChanged: function(e) {
     this.dumpContent();
+    this.getTopView().trigger('change:field');
     this.model.set({
       Value: this.value()
     });
@@ -3545,6 +3639,13 @@ FieldGeoView = FieldView.extend({
     this.show();
   },
 
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
+  },
+
   action: function(el) {
     var self = this;
     var ds = new moment().format('YYYY-MM-DD');
@@ -3610,7 +3711,15 @@ FieldGeoENView = FieldView.extend({
       }
     };
     return OsGridRef.latLongToOsGrid(params);
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
   }
+
 });
 FieldCameraView = FieldView.extend({
   events: {
@@ -3697,6 +3806,14 @@ FieldCameraView = FieldView.extend({
       this.fileData.fileBase64 = dataUri;
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
+
+      // TODO horrible temp hack
+      var clear = _.bind(function() {
+        this.$el.find("label[class=error]").remove();
+        this.$el.removeClass("error");
+        this.$el.find(".error").removeClass("error");
+      },this);
+      setTimeout(clear,1000);
     } else {
       target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');
@@ -3704,10 +3821,6 @@ FieldCameraView = FieldView.extend({
       this.$el.find('.uploaded').hide();
       delete this.fileData;
     }
-
-    // TODO horrible temp hack
-    this.$el.removeClass("error]");
-    this.$el.find("label[class=error]").remove();
 
     // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
     if (!dontCallContentChanged) {
@@ -3791,9 +3904,9 @@ FieldCameraView = FieldView.extend({
   addImage: function(fromLibrary) {
     // TODO: move this to cloud config, synced to client on startup
     var camOptions = {
-      quality: App.config.get('cam_quality'),
-      targetWidth: App.config.get('cam_targetWidth'),
-      targetHeight: App.config.get('cam_targetHeight')
+      quality: App.config.getValueOrDefault('cam_quality'),
+      targetWidth: App.config.getValueOrDefault('cam_targetWidth'),
+      targetHeight: App.config.getValueOrDefault('cam_targetHeight')
     };
 
     var options = this.parseCssClassCameraOptions();
@@ -4511,7 +4624,16 @@ FieldCustomDateView = FieldView.extend({
     var ds = new moment().format('YYYY-MM-DD');
     $('input', this.$el).val(ds).blur();
     this.contentChanged();
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
   }
+
+
 });
 StepsView = Backbone.View.extend({
   className: 'fh_steps clearfix',
@@ -4790,6 +4912,20 @@ DraftView = Backbone.View.extend({
     });
 
     this.pages = [];
+    this.on('change:field', this.notifyFieldChanged, this);
+
+  },
+
+  notifyFieldChanged: function () {
+    this.fieldChanged = true;
+  },
+
+  hasFieldChanged: function () {
+    return this.fieldChanged;
+  },
+
+  clearFieldChanged: function () {
+    this.fieldChanged = false;
   },
 
   render: function() {
@@ -4936,6 +5072,7 @@ DraftView = Backbone.View.extend({
     } else {
       this.focusValidation();
     }
+    this.clearFieldChanged();
   },
 
   focusValidation: function() {
@@ -4958,7 +5095,9 @@ DraftView = Backbone.View.extend({
       }
     });
 
+    this.clearFieldChanged();
     delete this.model.id;
+    this.model.unset("error",{silent:true});
     App.collections.drafts.create(this.model.toJSON());
     App.views.header.showDrafts();
   },
@@ -4973,6 +5112,7 @@ DraftView = Backbone.View.extend({
     });
 
     delete this.model.id;
+    this.clearFieldChanged();
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
   },
@@ -5014,6 +5154,10 @@ DraftView = Backbone.View.extend({
  * @type {*}
  */
 SentView = DraftView.extend({
+
+  hasFieldChanged: function () {
+    return false;
+  },
 
   /**
    * clone the current sent item but remove the id so that a
@@ -5066,15 +5210,17 @@ App.Router = Backbone.Router.extend({
     "*path": "form_list" // Default route
   },
 
+  initialize: function () {
+    _.bindAll(this);
+  },
+
   form_list: function() {
-    var self = this;
     $fh.logger.debug('route: form_list');
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
     App.views.sent_list = new SentListView();
     App.views.settings = new SettingsView();
-    var loadingView = new LoadingCollectionView();
     App.views.header = new HeaderView();
     App.views.header.showHome();
 
@@ -5088,79 +5234,29 @@ App.Router = Backbone.Router.extend({
       });
     });
 
-    // Kick things off by fetching when all stores are initialised
-    loadingView.show("Loading form list");
-    App.collections.forms.fetch();
-    App.collections.drafts.fetch();
-    App.collections.sent.fetch();
-    App.collections.pending_submitting.fetch();
-    App.collections.pending_waiting.fetch();
-    App.collections.pending_review.fetch();
+    $fh.ready(this.onReady);
+  },
 
-    $fh.ready(function() {
-//      // TODO , ask enterprise if they want to keep to old errors across restarts ?
-//      _(App.collections.pending_waiting.models).each(function(model) {
-//        model.unset('error');
-//      }, this);
+  onReady: function() {
+    $fh.env(this.onPropsRead);
+    App.config.loadConfig(this.onConfigLoaded);
 
-      // by default, allow fetching on resume event.
-      // Can be set to false when taking a pic so refetch doesn't happen on resume from that
-      App.resumeFetchAllowed = true;
-      document.addEventListener("resume", self.onResume, false);
-      var banner = false;
-      $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
-      $fh.logger.info(" ======================================================");
-      $('#fh_banner p').each(function(i , e) {
-        $fh.logger.info(" = " + $(e).text());
-        banner = true;
-      } );
-      if(!banner) {
-        $fh.logger.info(" = Dev Mode ");
-      }
-      $fh.logger.info(" ======================================================");
-    });
+    // by default, allow fetching on resume event.
+    // Can be set to false when taking a pic so refetch doesn't happen on resume from that
+    App.resumeFetchAllowed = true;
+    document.addEventListener("resume", self.onResume, false);
+    var banner = false;
+    $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
+    $fh.logger.info(" ======================================================");
+    $('#fh_wufoo_banner .list li').each(function(i , e) {
+      $fh.logger.info(" = " + $(e).text());
+      banner = true;
+    } );
+    if(!banner) {
+      $fh.logger.info(" = Dev Mode ");
+    }
 
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:debug_mode', function () {
-      if (App.config.get('debug_mode') === true) {
-        $('#debug_mode').removeClass('hidden');
-      } else {
-        $('#debug_mode').addClass('hidden');
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:logger', function () {
-      if (App.config.get('logger') === true) {
-        $('#logger').removeClass('hidden');
-      } else {
-        $('#logger').addClass('hidden');
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:max_retries', function () {
-      if (App.config.get('max_retries') <= 0) {
-        $fh.retry.disable();
-      } else {
-        $fh.retry.enable();
-      }
-    });
-
-    // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
-    App.config.on('change:default_timeout', function () {
-      var timeout = App.config.get('default_timeout');
-      if (_.isNumber(timeout)) {
-        $fh.ready({}, function(){
-          $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-          $fh.legacy.fh_timeout=timeout * 1000;
-        });
-      }
-    });
+    $fh.logger.info(" ======================================================");
   },
 
   onResume: function() {
@@ -5182,6 +5278,69 @@ App.Router = Backbone.Router.extend({
 
   pending: function() {
     $fh.logger.debug('route: pending');
+  },
+
+  onConfigLoaded: function() {
+    var loadingView = new LoadingCollectionView();
+    // to enable debug mode: App.config.set('debug_mode', true);
+    // or set config in client_config.js
+    App.config.on('change:debug_mode', this.onDebugModeChanged);
+    App.config.on('change:white_list', this.onWhitelistChanged);
+    App.config.on('change:logger', this.onLoggerChanged);
+    App.config.on('change:max_retries', this.onRetriesChanged);
+    App.config.on('change:defaults', this.onDefaultsChanged);
+    App.config.on('change:timeout', this.onTimeoutChanged);
+
+    loadingView.show("Loading form list");
+    App.collections.forms.fetch();
+    App.collections.drafts.fetch();
+    App.collections.sent.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
+    App.collections.pending_review.fetch();
+  },
+
+  onPropsRead: function(props) {
+    this.props = props;
+    App.views.about = new AboutView(props);
+  },
+
+  onTimeoutChanged: function() {
+    var timeout= App.config.getValueOrDefault("timeout");
+    if (_.isNumber(timeout)) {
+      $fh.ready({}, function(){
+        $fh.logger.debug("Setting timeout to " + timeout + " seconds");
+        $fh.legacy.fh_timeout=timeout * 1000;
+      });
+    }
+  },
+
+  onLoggerChanged: function() {
+    var logger = App.config.getValueOrDefault("logger");
+    $('#logger').toggle(logger);
+  },
+
+  onRetriesChanged: function() {
+    var max_retries = App.config.getValueOrDefault("max_retries");
+    $fh.retry.toggle(max_retries > 1);
+  },
+
+  onDebugModeChanged: function() {
+    var debug_mode = App.config.getValueOrDefault("debug_mode");
+    $('#debug_mode').toggle(debug_mode);
+  },
+
+  onWhitelistChanged: function() {
+    var white_list = App.config.getValueOrDefault("white_list") || [];
+    var listed = _.indexOf(white_list,this.props.uuid) !== -1;
+    // on start up the setting icon may not be rendered yet
+    setTimeout(function (){$('a.settings').toggle(listed);},500);
+  },
+
+  onDefaultsChanged: function() {
+    this.onLoggerChanged();
+    this.onTimeoutChanged();
+    this.onWhitelistChanged();
   }
 });
 
