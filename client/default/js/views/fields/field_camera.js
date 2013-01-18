@@ -11,6 +11,7 @@ FieldCameraView = FieldView.extend({
     FieldView.prototype.initialize.call(this);
     //Make sure 'this' is bound for setImageData, was incorrect on device!
     _.bindAll(this, 'setImageData', 'imageSelected');
+    this.on('visible',this.clearError);
   },
 
   render: function() {
@@ -31,6 +32,11 @@ FieldCameraView = FieldView.extend({
     this.options.parentEl.append(this.$el);
 
     this.show();
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.clearError();
   },
 
   addButton: function(input, img_file, label, classes, action) {
@@ -83,14 +89,6 @@ FieldCameraView = FieldView.extend({
       this.fileData.fileBase64 = dataUri;
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
-
-      // TODO horrible temp hack
-      var clear = _.bind(function() {
-        this.$el.find("label[class=error]").remove();
-        this.$el.removeClass("error");
-        this.$el.find(".error").removeClass("error");
-      },this);
-      setTimeout(clear,1000);
     } else {
       target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');

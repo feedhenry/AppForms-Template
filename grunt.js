@@ -3,7 +3,27 @@ var cheerio = require('cheerio');
 var _= require('underscore');
 var fs = require('fs');
 var child = require('child_process');
+var generateBanner= function ($,grunt ,sha, release){
+  var ul =$('#fh_wufoo_banner .list');
+  $(ul).empty();
 
+  // not actually camel case!
+  String.prototype.toCamelCase = function(){return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();};
+
+  var template = "\n\t<li class='<%= name.toLowerCase()%>'><span><%= name.toCamelCase() %></span>:<span class='value'><%= value %></span></li>";
+
+  var version = grunt.config("pkg.version");
+  if(release === false) {
+    version = "Candidate " + version;
+  }
+
+  $(ul).append(_.template(template, {name:"device", value:""}));
+  $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
+  $(ul).append(_.template(template, {name:"release", value:version}));
+  $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
+  $(ul).append(_.template(template, {name:"commit", value:sha}));
+
+};
 module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-copy');
 
@@ -25,7 +45,7 @@ module.exports = function(grunt) {
 
   grunt.task.registerHelper('adviseModels', function(name,models,done) {
     var $ = cheerio.load(fs.readFileSync(name + '/client/default/index.html'));
-    $.root().append("\n<script>\n  $fh.ready(\nfunction (){\n      Advice.adviseBackbone(" + models+ ");\n  });\n</script>\n");
+    $.root().append("\n<script>\n  $fh.ready({},\nfunction (){\n      Advice.adviseBackbone(" + models+ ");\n  });\n</script>\n");
     var html = $.root().html();
     fs.writeFileSync(name + '/client/default/index.html', html);
 
@@ -51,19 +71,20 @@ module.exports = function(grunt) {
       }
       var sha = stdout.trim();
 
-      var ul =$('#fh_wufoo_banner .list');
-      $(ul).empty();
-
-      // not actually camel case!
-      String.prototype.toCamelCase = function(){return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();};
-
-      var template = "\n\t<li class='<%= name.toLowerCase()%>'><span><%= name.toCamelCase() %></span>:<span><%= value %></span></li>";
-
-      $(ul).append(_.template(template, {name:"device", value:""}));
-      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
-      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
-      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
-      $(ul).append(_.template(template, {name:"commit", value:sha}));
+      generateBanner($,grunt ,sha, false);
+//      var ul =$('#fh_wufoo_banner .list');
+//      $(ul).empty();
+//
+//      // not actually camel case!
+//      String.prototype.toCamelCase = function(){return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();};
+//
+//      var template = "\n\t<li class='<%= name.toLowerCase()%>'><span><%= name.toCamelCase() %></span>:<span class='value'><%= value %></span></li>";
+//
+//      $(ul).append(_.template(template, {name:"device", value:""}));
+//      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
+//      $(ul).append(_.template(template, {name:"release", value:grunt.config("pkg.version")}));
+//      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
+//      $(ul).append(_.template(template, {name:"commit", value:sha}));
 
       var htmlDev = $.root().html();
 
@@ -184,16 +205,17 @@ module.exports = function(grunt) {
       }
       var sha = stdout.trim();
 
-      var ul =$('#fh_wufoo_banner .list');
-      $(ul).empty();
-
-      var template = "<li class='<%= name.toLowerCase()%>'><span><%= name.toUpperCase() %></span>:<span><%= value %></span></li>";
-
-      $(ul).append(_.template(template, {name:"device", value:""}));
-      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
-      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
-      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
-      $(ul).append(_.template(template, {name:"commit", value:sha}));
+      generateBanner($,grunt , sha, true);
+//      var ul =$('#fh_wufoo_banner .list');
+//      $(ul).empty();
+//
+//      var template = "<li class='<%= name.toLowerCase()%>'><span><%= name.toUpperCase() %></span>:<span><%= value %></span></li>";
+//
+//      $(ul).append(_.template(template, {name:"device", value:""}));
+//      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
+//      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
+//      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
+//      $(ul).append(_.template(template, {name:"commit", value:sha}));
 
       var htmlDev = $.root().html();
 
@@ -253,7 +275,7 @@ module.exports = function(grunt) {
 
     var tasks = [];
     tasks.push(function(done){
-      child.exec('git archive --worktree-attributes -o max.zip -v HEAD && unzip max.zip -d max', function (error, stdout, stderr) {
+      child.exec('git archive --worktree-attributes -o max.zip -v HEAD && unzip -o max.zip -d max', function (error, stdout, stderr) {
         if(grunt.option("verbose") && error) {
           grunt.log.writeln('exec error: ' + error);
         }

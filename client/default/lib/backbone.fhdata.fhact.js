@@ -12,7 +12,28 @@ function overrideFHData() {
 
   if(!overridden) {
     overridden = true;
-    /* Monkey Patch for $fh.data to use File backed storage */
+    /* Monkey Patch for $fh.data to use File backed storage
+     *
+     *              .-"""-.
+     *            _/-=-.   \
+     *           (_|a a/   |_
+     *            / "  \   ,_)
+     *       _    \`=' /__/
+     *      / \_  .;--'  `-.
+     *      \___)//      ,  \
+     *       \ \/;        \  \
+     *        \_.|         | |
+     *         .-\ '     _/_/
+     *       .'  _;.    (_  \
+     *      /  .'   `\   \\_/
+     *     |_ /       |  |\\
+     *    /  _)       /  / ||
+     *   /  /       _/  /  //
+     *   \_/       ( `-/  ||
+     *             /  /   \\ .-.
+     *             \_/     \'-'/
+     *                      `"`
+     */
 
     if (typeof(window.requestFileSystem) !== 'undefined') {
 
@@ -168,9 +189,7 @@ function overrideFHData() {
   }
 }
 
-$fh.ready(function() {
-  overrideFHData();
-});
+$fh.ready({},overrideFHData);
 
 
 // Generate four random hex digits (for GUIDs).
@@ -207,7 +226,7 @@ _.extend(FHBackboneDataActSync.prototype, {
 
     this.data = {};
 
-    $fh.ready(function() {
+    $fh.ready({},function() {
       $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
       $fh.data({
         key: self.name + self.localStoreVersion
