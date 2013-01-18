@@ -27,11 +27,11 @@
     <h3 class="title">App Forms</h3>
   </header>
   <ul class="list">
-      <li class="device"  ><span>Device</span>:<span>uuid</span></li>
-      <li class="name"    ><span>Name</span>:<span>name</span></li>
-      <li class="version" ><span>Version</span>:<span>version</span></li>
-      <li class="date"    ><span>Date</span>:<span>date</span></li>
-      <li class="commit"  ><span>Sha</span>:<span>sha</span></li>
+      <li class="device"  ><span>Device</span>:<span class="value">uuid</span></li>
+      <li class="name"    ><span>Name</span>:<span class="value">name</span></li>
+      <li class="release" ><span>Release</span>:<span class="value">Development</span></li>
+      <li class="date"    ><span>Date</span>:<span class="value">date</span></li>
+      <li class="commit"  ><span>Sha</span>:<span class="value">sha</span></li>
   </ul>
 </div>
 
@@ -55,13 +55,18 @@
 
 <div id="app_version"></div>
 <script>
-    $fh.ready(function (){
+    $fh.ready({},function (){
         if (typeof fh_app_version === 'undefined') {
             fh_app_version = 0;
         }
         jQuery(document).ready(function(){
-            jQuery('#app_version').html('Version: ' + fh_app_version);
-            jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
+            try {
+                jQuery('#app_version').html('Version: ' + fh_app_version + '(' + $(".release .value").text() + ')');
+                jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
+            } catch(e) {
+                console.error("load failed");
+                console.error(e);
+            }
         });
         //Utils.loadTouch();
     });

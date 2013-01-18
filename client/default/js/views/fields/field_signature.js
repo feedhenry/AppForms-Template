@@ -6,13 +6,17 @@ FieldSignatureView = FieldView.extend({
     signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton">Clear</button><button class="cap_sig_done_btn">Done</button>', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
   },
 
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
+  },
+
   dumpContent: function() {
     FieldFileView.prototype.dumpContent.call(this);
   },
 
   render: function() {
     var self = this;
-
     this.$el.append(_.template(this.templates.input, {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
@@ -23,7 +27,22 @@ FieldSignatureView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
+    $fh.logger.debug("render html=" + this.$el.html());
     this.show();
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.clearError();
+  },
+
+  // TODO horrible hack
+  clearError: function(){
+    var id = this.model.get('ID');
+    var val = this.model.get("Value");
+    if(val && val.hasOwnProperty(id) && !this.isEmptyImage(val[id].fileBase64)) {
+      FieldView.prototype.clearError.call(this);
+    }
   },
 
   action: function(el, e) {
@@ -43,6 +62,7 @@ FieldSignatureView = FieldView.extend({
       "canvasHeight": canvasHeight,
       "canvasWidth": canvasWidth
     }));
+    $fh.logger.debug("showSignatureCapture html=" + this.$el.html());
 
     var signaturePad = $('.sigPad', this.$el);
     signaturePad.css({
@@ -123,6 +143,7 @@ FieldSignatureView = FieldView.extend({
     if(this.fileData) {
       value[this.model.get('ID')] = this.fileData;
     }
+    $fh.logger.debug("value html=" + this.$el.html());
     return value;
   },
   dbgImage: function(msg,image) {

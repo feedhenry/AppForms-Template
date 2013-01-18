@@ -12,7 +12,7 @@ LoadingCollectionView = LoadingView.extend({
     App.collections.forms.on('error', function(collection, msg, options) {
       if (collection instanceof Backbone.Collection) {
         self.updateProgress(100);
-        self.updateMessage("Your forms couldn't be synced.");
+        self.updateMessage("<p>Your forms couldn't be synced.</p> <p>Please try again later<p>");
         self.addError();
 
         setTimeout(function() {

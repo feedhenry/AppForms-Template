@@ -1,4 +1,4 @@
-$fh.ready(function() {
+$fh.ready({},function() {
   $fh.retry= $fh.retry || {};
   if(!$fh.retry.disable) {
     $fh.retry.toggle = function (enable){

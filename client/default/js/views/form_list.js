@@ -55,6 +55,7 @@ FormListView = Backbone.View.extend({
     }, this);
 
     this.$el.append(this.templates.footer);
+    App.router.reload();
   },
 
   appendForm: function(form) {

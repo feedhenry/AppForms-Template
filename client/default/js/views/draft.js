@@ -220,6 +220,7 @@ DraftView = Backbone.View.extend({
     });
 
     delete this.model.id;
+    this.model.unset("error",{silent:true});
     this.clearFieldChanged();
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
