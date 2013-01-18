@@ -127,6 +127,7 @@ App.Router = Backbone.Router.extend({
 
   fetchTimeout: function() {
     clearTimeout(this.fetchTo);
+    this.fetchTo= null;
     this.loadingView.hide();
     App.resumeFetchAllowed = false;
     this.fullyLoaded = true;
