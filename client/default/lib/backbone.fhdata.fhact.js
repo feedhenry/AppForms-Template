@@ -12,7 +12,28 @@ function overrideFHData() {
 
   if(!overridden) {
     overridden = true;
-    /* Monkey Patch for $fh.data to use File backed storage */
+    /* Monkey Patch for $fh.data to use File backed storage
+     *
+     *              .-"""-.
+     *            _/-=-.   \
+     *           (_|a a/   |_
+     *            / "  \   ,_)
+     *       _    \`=' /__/
+     *      / \_  .;--'  `-.
+     *      \___)//      ,  \
+     *       \ \/;        \  \
+     *        \_.|         | |
+     *         .-\ '     _/_/
+     *       .'  _;.    (_  \
+     *      /  .'   `\   \\_/
+     *     |_ /       |  |\\
+     *    /  _)       /  / ||
+     *   /  /       _/  /  //
+     *   \_/       ( `-/  ||
+     *             /  /   \\ .-.
+     *             \_/     \'-'/
+     *                      `"`
+     */
 
     if (typeof(window.requestFileSystem) !== 'undefined') {
 
