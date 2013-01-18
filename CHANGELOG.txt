@@ -103,3 +103,13 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 ----------------------------------------------------------------------
  * 3026 : App Forms Phase II : onResume not working on iOS
  * 3025 : App Form Phase II : Default Values on radio button don't seem to work
+
+0.3.0 - 2012-01-18  - IR193 - Jim O'Leary
+----------------------------------------------------------------------
+* 3036 : App Form Phase II : saved forms can display validation errors in some cases
+* 3035 : App Form Phase II : Sumsung Galaxy mini progress bar
+* 3033 : App Form Phase II : add the release version to the build number on the main screen
+* 3032 : App Form Phase II : signature canvas on android fills screen even when empty
+* 3026 : ready/resume errors and added timeout to catch error
+* 3024 : signature errors
+* 3015 : App Form Phase II : strange validation error from Wufoo

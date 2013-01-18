@@ -1,7 +1,7 @@
 var editor; // use a global for the submit and return data rendering in the examples
 var entityTable;
 
-$fh.ready(function () {
+$fh.ready({},function () {
   $(document).ready(function() {
     entityTable = $('#entityTable');
 

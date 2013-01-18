@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.2.1 - 2013-01-17
+/*! FeedHenry-Wufoo-App-Generator - v0.3.0 - 2013-01-18
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -1117,7 +1117,7 @@ ConfigModel = Backbone.Model.extend({
       return null;
     }
   },
-  loadConfig: function (callback) {
+  loadConfig: function () {
     var self = this;
     // TODO : check if there is a better way of ensuring fh.data has been monkey patched
     overrideFHData();
@@ -1142,13 +1142,13 @@ ConfigModel = Backbone.Model.extend({
           $fh.logger.warn('No config in local storage. Using config defaults');
         }
       } finally {
-        callback();
+        self.trigger("config:loaded");
       }
     }, function (msg,err) {
       try {
         $fh.logger.info('ConfigModel :: error msg=' + msg, "err=" , err);
       } finally {
-        callback();
+        self.trigger("config:loaded");
       }
     } );
   }
@@ -1869,17 +1869,20 @@ LoadingView = Backbone.View.extend({
     this.$el.removeClass('error');
   },
 
-  show: function(message) {
+  show: function(message,progress) {
     this.reset();
 
     this.updateMessage(message);
-    this.updateProgress(50); // halfway straight away. only a single step process
+    if (!_.isNumber(progress)) {
+      progress =50;
+    }
+    this.updateProgress(progress); // halfway straight away. only a single step process
 
     this.$el.show();
   },
 
   updateMessage: function(message) {
-    $('.loading_container .message', this.el).text(message);
+    $('.loading_container .message', this.el).html(message);
   },
 
   updateProgress: function(progress) {
@@ -1928,7 +1931,7 @@ LoadingCollectionView = LoadingView.extend({
     App.collections.forms.on('error', function(collection, msg, options) {
       if (collection instanceof Backbone.Collection) {
         self.updateProgress(100);
-        self.updateMessage("Your forms couldn't be synced.");
+        self.updateMessage("<p>Your forms couldn't be synced.</p> <p>Please try again later<p>");
         self.addError();
 
         setTimeout(function() {
@@ -2118,6 +2121,7 @@ FormListView = Backbone.View.extend({
     }, this);
 
     this.$el.append(this.templates.footer);
+    App.router.reload();
   },
 
   appendForm: function(form) {
@@ -2916,7 +2920,7 @@ FieldView = Backbone.View.extend({
 
   // TODO: cache the input element lookup?
   initialize: function() {
-    _.bindAll(this, 'dumpContent');
+    _.bindAll(this, 'dumpContent', 'clearError');
 
     var nonFhClasses = this.model.getNonFhClasses();
     if (nonFhClasses) {
@@ -3100,7 +3104,15 @@ FieldView = Backbone.View.extend({
       value[$(this).attr('id')] = $(this).val();
     });
     return value;
+  } ,
+
+  // TODO horrible hack
+  clearError: function(){
+    this.$el.find("label[class=error]").remove();
+    this.$el.removeClass("error");
+    this.$el.find(".error").removeClass("error");
   }
+
 });
 FieldTextView = FieldView.extend({
   template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
@@ -3626,6 +3638,10 @@ FieldGeoView = FieldView.extend({
   templates: {
     input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text" disabled>'
   },
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
+  },
 
   render: function() {
     // construct field html
@@ -3644,9 +3660,7 @@ FieldGeoView = FieldView.extend({
 
   contentChanged: function(e) {
     FieldView.prototype.contentChanged.apply(this,arguments);
-    this.$el.find("label[class=error]").remove();
-    this.$el.removeClass("error");
-    this.$el.find(".error").removeClass("error");
+    this.clearError();
   },
 
   action: function(el) {
@@ -3669,6 +3683,11 @@ FieldGeoENView = FieldView.extend({
 
   templates: {
     input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text" disabled>'
+  },
+
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
   },
 
   render: function() {
@@ -3718,9 +3737,7 @@ FieldGeoENView = FieldView.extend({
 
   contentChanged: function(e) {
     FieldView.prototype.contentChanged.apply(this,arguments);
-    this.$el.find("label[class=error]").remove();
-    this.$el.removeClass("error");
-    this.$el.find(".error").removeClass("error");
+    this.clearError();
   }
 
 });
@@ -3737,6 +3754,7 @@ FieldCameraView = FieldView.extend({
     FieldView.prototype.initialize.call(this);
     //Make sure 'this' is bound for setImageData, was incorrect on device!
     _.bindAll(this, 'setImageData', 'imageSelected');
+    this.on('visible',this.clearError);
   },
 
   render: function() {
@@ -3757,6 +3775,11 @@ FieldCameraView = FieldView.extend({
     this.options.parentEl.append(this.$el);
 
     this.show();
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.clearError();
   },
 
   addButton: function(input, img_file, label, classes, action) {
@@ -3809,14 +3832,6 @@ FieldCameraView = FieldView.extend({
       this.fileData.fileBase64 = dataUri;
       this.fileData.filename = "photo";
       this.fileData.content_type = "image/jpeg";
-
-      // TODO horrible temp hack
-      var clear = _.bind(function() {
-        this.$el.find("label[class=error]").remove();
-        this.$el.removeClass("error");
-        this.$el.find(".error").removeClass("error");
-      },this);
-      setTimeout(clear,1000);
     } else {
       target.val(null);
       this.$el.find('.imageThumb').removeAttr('src');
@@ -3960,6 +3975,26 @@ FieldCameraView = FieldView.extend({
 });
 window.sampleImageNum = -1;
 FieldCameraGroupView = FieldCameraView.extend({
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    //Make sure 'this' is bound for setImageData, was incorrect on device!
+    // pass visible event down to all fields
+    var parent = this;
+    this.on('visible', function () {
+      // clear this
+      parent.clearError();
+      $fh.logger.debug('group visible');
+      var subviews = this.subviews;
+      _(subviews).forEach(function (fieldView) {
+        // this group is a camera view and contains itself
+        // we've already triggered visible on the group, so skip
+        if(parent !== fieldView){
+          fieldView.trigger('visible');
+        }
+      });
+    });
+  },
+
   render: function () {
     var self = this;
     // this view subclasses camera view, so render it for first camera item
@@ -4090,13 +4125,17 @@ FieldSignatureView = FieldView.extend({
     signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton">Clear</button><button class="cap_sig_done_btn">Done</button>', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
   },
 
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
+  },
+
   dumpContent: function() {
     FieldFileView.prototype.dumpContent.call(this);
   },
 
   render: function() {
     var self = this;
-
     this.$el.append(_.template(this.templates.input, {
       "id": this.model.get('ID'),
       "title": this.model.get('Title')
@@ -4107,7 +4146,22 @@ FieldSignatureView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
+    $fh.logger.debug("render html=" + this.$el.html());
     this.show();
+  },
+
+  contentChanged: function(e) {
+    FieldView.prototype.contentChanged.apply(this,arguments);
+    this.clearError();
+  },
+
+  // TODO horrible hack
+  clearError: function(){
+    var id = this.model.get('ID');
+    var val = this.model.get("Value");
+    if(val && val.hasOwnProperty(id) && !this.isEmptyImage(val[id].fileBase64)) {
+      FieldView.prototype.clearError.call(this);
+    }
   },
 
   action: function(el, e) {
@@ -4127,6 +4181,7 @@ FieldSignatureView = FieldView.extend({
       "canvasHeight": canvasHeight,
       "canvasWidth": canvasWidth
     }));
+    $fh.logger.debug("showSignatureCapture html=" + this.$el.html());
 
     var signaturePad = $('.sigPad', this.$el);
     signaturePad.css({
@@ -4207,6 +4262,7 @@ FieldSignatureView = FieldView.extend({
     if(this.fileData) {
       value[this.model.get('ID')] = this.fileData;
     }
+    $fh.logger.debug("value html=" + this.$el.html());
     return value;
   },
   dbgImage: function(msg,image) {
@@ -4588,6 +4644,10 @@ FieldCustomDateView = FieldView.extend({
   templates: {
     input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="date">'
   },
+  initialize: function() {
+    FieldView.prototype.initialize.call(this);
+    this.on('visible',this.clearError);
+  },
 
   render: function() {
     // construct field html
@@ -4631,9 +4691,7 @@ FieldCustomDateView = FieldView.extend({
 
   contentChanged: function(e) {
     FieldView.prototype.contentChanged.apply(this,arguments);
-    this.$el.find("label[class=error]").remove();
-    this.$el.removeClass("error");
-    this.$el.find(".error").removeClass("error");
+    this.clearError();
   }
 
 
@@ -5115,6 +5173,7 @@ DraftView = Backbone.View.extend({
     });
 
     delete this.model.id;
+    this.model.unset("error",{silent:true});
     this.clearFieldChanged();
     App.collections.pending_submitting.create(this.model.toJSON());
     App.views.header.showPending();
@@ -5218,7 +5277,11 @@ App.Router = Backbone.Router.extend({
   },
 
   form_list: function() {
+
     $fh.logger.debug('route: form_list');
+    this.loadingView = new LoadingCollectionView();
+    this.loadingView.show("App Starting");
+
     App.views.form_list = new FormListView();
     App.views.drafts_list = new DraftListView();
     App.views.pending_list = new PendingListView();
@@ -5237,12 +5300,15 @@ App.Router = Backbone.Router.extend({
       });
     });
 
-    $fh.ready(this.onReady);
+    $fh.ready({},this.onReady);
   },
 
   onReady: function() {
+    this.loadingView.show("App Ready, Loading form list");
+
     $fh.env(this.onPropsRead);
-    App.config.loadConfig(this.onConfigLoaded);
+    App.config.on('config:loaded', this.onConfigLoaded);
+    App.config.loadConfig();
 
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
@@ -5262,6 +5328,7 @@ App.Router = Backbone.Router.extend({
     $fh.logger.info(" ======================================================");
   },
 
+  // run App.router.onResume() to test this in browser
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
@@ -5284,9 +5351,9 @@ App.Router = Backbone.Router.extend({
   },
 
   onConfigLoaded: function() {
-    var loadingView = new LoadingCollectionView();
+    this.loadingView.show("Config Loaded , fetching forms");
     // to enable debug mode: App.config.set('debug_mode', true);
-    // or set config in client_config.js
+
     App.config.on('change:debug_mode', this.onDebugModeChanged);
     App.config.on('change:white_list', this.onWhitelistChanged);
     App.config.on('change:logger', this.onLoggerChanged);
@@ -5294,13 +5361,29 @@ App.Router = Backbone.Router.extend({
     App.config.on('change:defaults', this.onDefaultsChanged);
     App.config.on('change:timeout', this.onTimeoutChanged);
 
-    loadingView.show("Loading form list");
+    this.fetchTo = setTimeout(this.fetchTimeout,10000);
+
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
     App.collections.pending_review.fetch();
+  },
+
+  fetchTimeout: function() {
+    clearTimeout(this.fetchTo);
+    this.fetchTo= null;
+    this.loadingView.hide();
+    App.resumeFetchAllowed = false;
+    this.fullyLoaded = true;
+    this.onResume();
+  },
+
+  reload: function() {
+    if(this.fullyLoaded){
+      this.onDefaultsChanged();
+    }
   },
 
   onPropsRead: function(props) {
