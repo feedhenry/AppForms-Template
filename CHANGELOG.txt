@@ -113,3 +113,7 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 * 3026 : ready/resume errors and added timeout to catch error
 * 3024 : signature errors
 * 3015 : App Form Phase II : strange validation error from Wufoo
+
+0.3.1 - 2012-01-18  - IR193 - Jason Madigan
+----------------------------------------------------------------------
+* 3043 : App Form Phase II : Required photo field won't attach an image
