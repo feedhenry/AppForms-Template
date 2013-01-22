@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.0 - 2013-01-18
+/*! FeedHenry-Wufoo-App-Generator - v0.3.1 - 2013-01-22
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -3976,13 +3976,11 @@ FieldCameraView = FieldView.extend({
 window.sampleImageNum = -1;
 FieldCameraGroupView = FieldCameraView.extend({
   initialize: function() {
-    FieldView.prototype.initialize.call(this);
+    FieldCameraView.prototype.initialize.call(this);
     //Make sure 'this' is bound for setImageData, was incorrect on device!
     // pass visible event down to all fields
     var parent = this;
     this.on('visible', function () {
-      // clear this
-      parent.clearError();
       $fh.logger.debug('group visible');
       var subviews = this.subviews;
       _(subviews).forEach(function (fieldView) {
