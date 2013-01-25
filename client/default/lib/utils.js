@@ -43,6 +43,14 @@ var Utils = Utils || {};
     return false; // ?
   };
 
+  self.toRegExp= function(is) {
+    var match = is.match(new RegExp('^/(.*?)/(g?i?m?y?)$'));
+    if(match) {
+      return new RegExp(match[1], match[2]);
+    }
+    return is;
+  };
+
   self.loadTouch= function() {
     if(typeof device  === "undefined" ) {
       void(function(commit) {var scriptTag = document.createElement('script');scriptTag.type = 'text/javascript';scriptTag.src = 'https://raw.github.com/brian-c/phantom-limb/' + commit + '/phantom-limb.js';document.body.appendChild(scriptTag);}('v2.0.1'));

@@ -172,9 +172,9 @@ App.Router = Backbone.Router.extend({
 
   onWhitelistChanged: function() {
     var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.indexOf(white_list,this.props.uuid) !== -1;
+    var listed = _.find(white_list, function(m){ return this.props.uuid.match(Utils.toRegExp(m)); },this);
     // on start up the setting icon may not be rendered yet
-    setTimeout(function (){$('a.settings').toggle(listed);},500);
+    setTimeout(function (){$('a.settings').toggle(!!listed);},500);
   },
 
   onDefaultsChanged: function() {
