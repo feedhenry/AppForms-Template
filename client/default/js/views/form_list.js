@@ -3,18 +3,19 @@ FormListView = Backbone.View.extend({
 
   events: {
     'click .settings': 'showSettings',
-    'click .aboutXX': 'showAbout'
+    'click button.reload': 'reload'
   },
 
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
+    error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
     footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'appendForm', 'changed');
-    self.views = [];
+    _.bindAll(this, 'render', 'appendForm');
+    this.views = [];
 
     App.collections.forms.bind('reset', function (collection, options) {
       if (options == null || !options.noFetch) {
@@ -24,9 +25,13 @@ FormListView = Backbone.View.extend({
         });
       }
     });
-    App.collections.forms.bind('add remove reset', this.changed, this);
+    App.collections.forms.bind('add remove reset error', this.render, this);
+  },
 
-    this.render();
+  reload: function() {
+    var loadingView = new LoadingCollectionView();
+    loadingView.show("Attempting to reload forms");
+    App.router.reload();
   },
 
   show: function () {
@@ -38,31 +43,43 @@ FormListView = Backbone.View.extend({
     $(this.el).hide();
   },
 
-  changed: function() {
-    var self = this;
+  renderErrorHandler: function(msg) {
+    try {
+      if(msg == null || msg.match("error_ajaxfail")) {
+        msg = "An unexpected error occurred.";
+      }
+    } catch(e) {
+      msg = "An unexpected error occurred.";
+    }
+    var html = _.template(this.templates.error, {
+      name: msg + "<br/>Please Retry Later",
+      enabledClass: 'button-negative',
+      dataClass: 'fetched'
+    });
+    $('ul', this.el).append(html);
 
+  },
+
+  render: function() {
     // Empty our existing view
     $(this.el).empty();
 
     // Add list
     $(this.el).append(this.templates.list);
 
-    // Add header
-    $('ul', this.el).append(this.templates.header);
-
-    _(App.collections.forms.models).forEach(function(form) {
-      self.appendForm(form);
-    }, this);
-
+    if(App.collections.forms.models.length) {
+      // Add header
+      $('ul', this.el).append(this.templates.header);
+      _(App.collections.forms.models).forEach(function(form) {this.appendForm(form);}, this);
+    } else {
+      this.renderErrorHandler(arguments[1]);
+    }
     this.$el.append(this.templates.footer);
-    App.router.reload();
   },
 
   appendForm: function(form) {
-    var view = new ShowFormButtonView({
-      model: form
-    });
-    self.views.push(view);
+    var view = new ShowFormButtonView({model: form});
+    this.views.push(view);
     $('ul', this.el).append(view.render().el);
   },
 
