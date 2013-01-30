@@ -79,6 +79,11 @@ FieldView = Backbone.View.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
+
+    // force the element to be initially hidden
+    if (this.$el.hasClass("hide")) {
+      this.hide(true);
+    }
   },
 
   addRules: function() {
@@ -133,8 +138,9 @@ FieldView = Backbone.View.extend({
     this.$el.find('#' + this.model.get('ID')).rules('remove');
   },
 
-  hide: function() {
-    if (this.$el.is(':visible')) {
+  // force a hide , defaults to false
+  hide: function(force) {
+    if (force || this.$el.is(':visible')) {
       this.$el.hide();
       // remove rules too
       this.removeRules();
