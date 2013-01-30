@@ -88,7 +88,7 @@ FieldMapView = FieldView.extend({
       interval: 0
     }, function(geoRes) {
       // Override with geo, otherwise use defaults
-      var location ={lat:geoRes.lat,lon:geoRes.lon}
+      var location ={lat:geoRes.lat,lon:geoRes.lon};
 
       var matches;
       if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
