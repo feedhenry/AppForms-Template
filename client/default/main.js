@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.1 - 2013-01-22
+/*! FeedHenry-Wufoo-App-Generator - v0.3.2 - 2013-01-30
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -2069,18 +2069,19 @@ FormListView = Backbone.View.extend({
 
   events: {
     'click .settings': 'showSettings',
-    'click .aboutXX': 'showAbout'
+    'click button.reload': 'reload'
   },
 
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
+    error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
     footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
   },
 
   initialize: function() {
-    _.bindAll(this, 'render', 'appendForm', 'changed');
-    self.views = [];
+    _.bindAll(this, 'render', 'appendForm');
+    this.views = [];
 
     App.collections.forms.bind('reset', function (collection, options) {
       if (options == null || !options.noFetch) {
@@ -2090,9 +2091,13 @@ FormListView = Backbone.View.extend({
         });
       }
     });
-    App.collections.forms.bind('add remove reset', this.changed, this);
+    App.collections.forms.bind('add remove reset error', this.render, this);
+  },
 
-    this.render();
+  reload: function() {
+    var loadingView = new LoadingCollectionView();
+    loadingView.show("Attempting to reload forms");
+    App.router.reload();
   },
 
   show: function () {
@@ -2104,31 +2109,43 @@ FormListView = Backbone.View.extend({
     $(this.el).hide();
   },
 
-  changed: function() {
-    var self = this;
+  renderErrorHandler: function(msg) {
+    try {
+      if(msg == null || msg.match("error_ajaxfail")) {
+        msg = "An unexpected error occurred.";
+      }
+    } catch(e) {
+      msg = "An unexpected error occurred.";
+    }
+    var html = _.template(this.templates.error, {
+      name: msg + "<br/>Please Retry Later",
+      enabledClass: 'button-negative',
+      dataClass: 'fetched'
+    });
+    $('ul', this.el).append(html);
 
+  },
+
+  render: function() {
     // Empty our existing view
     $(this.el).empty();
 
     // Add list
     $(this.el).append(this.templates.list);
 
-    // Add header
-    $('ul', this.el).append(this.templates.header);
-
-    _(App.collections.forms.models).forEach(function(form) {
-      self.appendForm(form);
-    }, this);
-
+    if(App.collections.forms.models.length) {
+      // Add header
+      $('ul', this.el).append(this.templates.header);
+      _(App.collections.forms.models).forEach(function(form) {this.appendForm(form);}, this);
+    } else {
+      this.renderErrorHandler(arguments[1]);
+    }
     this.$el.append(this.templates.footer);
-    App.router.reload();
   },
 
   appendForm: function(form) {
-    var view = new ShowFormButtonView({
-      model: form
-    });
-    self.views.push(view);
+    var view = new ShowFormButtonView({model: form});
+    this.views.push(view);
     $('ul', this.el).append(view.render().el);
   },
 
@@ -2988,6 +3005,11 @@ FieldView = Backbone.View.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
+
+    // force the element to be initially hidden
+    if (this.$el.hasClass("hide")) {
+      this.hide(true);
+    }
   },
 
   addRules: function() {
@@ -3042,8 +3064,9 @@ FieldView = Backbone.View.extend({
     this.$el.find('#' + this.model.get('ID')).rules('remove');
   },
 
-  hide: function() {
-    if (this.$el.is(':visible')) {
+  // force a hide , defaults to false
+  hide: function(force) {
+    if (force || this.$el.is(':visible')) {
       this.$el.hide();
       // remove rules too
       this.removeRules();
@@ -4537,11 +4560,15 @@ FieldMapView = FieldView.extend({
       interval: 0
     }, function(geoRes) {
       // Override with geo, otherwise use defaults
+      var location ={lat:geoRes.lat,lon:geoRes.lon};
+
+      var matches;
+      if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
+        location= {lat:matches[1], lon:matches[2]};
+      }
+
       self.mapSettings = _.defaults({
-        location: {
-          lat: geoRes.lat,
-          lon: geoRes.lon
-        }
+        location: location
       }, self.mapSettings);
 
       $fh.map({
@@ -4558,16 +4585,8 @@ FieldMapView = FieldView.extend({
           animation: google.maps.Animation.DROP,
           title: "Drag this to set position"
         });
+        self.currentLocation = marker.getPosition().toString();
 
-        var matches;
-        if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
-          var latlon = new google.maps.LatLng(matches[1], matches[2]);
-          marker.setPosition(latlon);
-          self.map.setCenter(latlon);
-        } else {
-          // Set initial location
-          self.currentLocation = marker.getPosition().toString();
-        }
         google.maps.event.addListener(marker, "dragend", function() {
           self.currentLocation = marker.getPosition().toString();
           self.contentChanged();
@@ -5359,7 +5378,17 @@ App.Router = Backbone.Router.extend({
     App.config.on('change:defaults', this.onDefaultsChanged);
     App.config.on('change:timeout', this.onTimeoutChanged);
 
-    this.fetchTo = setTimeout(this.fetchTimeout,10000);
+    this.fetchCollections("Config Loaded , fetching forms");
+  },
+
+  reload: function() {
+    App.collections.forms.reset();
+    this.fetchCollections("reloading forms");
+  },
+
+  fetchCollections: function(msg,to) {
+    this.loadingView.show(msg);
+    this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
 
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
@@ -5376,12 +5405,6 @@ App.Router = Backbone.Router.extend({
     App.resumeFetchAllowed = false;
     this.fullyLoaded = true;
     this.onResume();
-  },
-
-  reload: function() {
-    if(this.fullyLoaded){
-      this.onDefaultsChanged();
-    }
   },
 
   onPropsRead: function(props) {
@@ -5416,9 +5439,9 @@ App.Router = Backbone.Router.extend({
 
   onWhitelistChanged: function() {
     var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.indexOf(white_list,this.props.uuid) !== -1;
+    var listed = _.find(white_list, function(m){ return this.props.uuid.match(Utils.toRegExp(m)); },this);
     // on start up the setting icon may not be rendered yet
-    setTimeout(function (){$('a.settings').toggle(listed);},500);
+    setTimeout(function (){$('a.settings').toggle(!!listed);},500);
   },
 
   onDefaultsChanged: function() {
