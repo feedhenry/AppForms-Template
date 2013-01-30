@@ -88,11 +88,15 @@ FieldMapView = FieldView.extend({
       interval: 0
     }, function(geoRes) {
       // Override with geo, otherwise use defaults
+      var location ={lat:geoRes.lat,lon:geoRes.lon};
+
+      var matches;
+      if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
+        location= {lat:matches[1], lon:matches[2]};
+      }
+
       self.mapSettings = _.defaults({
-        location: {
-          lat: geoRes.lat,
-          lon: geoRes.lon
-        }
+        location: location
       }, self.mapSettings);
 
       $fh.map({
@@ -109,16 +113,8 @@ FieldMapView = FieldView.extend({
           animation: google.maps.Animation.DROP,
           title: "Drag this to set position"
         });
+        self.currentLocation = marker.getPosition().toString();
 
-        var matches;
-        if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
-          var latlon = new google.maps.LatLng(matches[1], matches[2]);
-          marker.setPosition(latlon);
-          self.map.setCenter(latlon);
-        } else {
-          // Set initial location
-          self.currentLocation = marker.getPosition().toString();
-        }
         google.maps.event.addListener(marker, "dragend", function() {
           self.currentLocation = marker.getPosition().toString();
           self.contentChanged();
