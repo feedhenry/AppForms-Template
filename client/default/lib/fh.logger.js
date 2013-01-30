@@ -43,7 +43,7 @@
       if(_.isArray(arg)) {
         return _.collect(arg, function (v,k){
           return _stringify.call(self,v);
-        });
+        },this);
       }
       if(_.isFunction(arg)) {
         //return "<func>";
@@ -57,7 +57,7 @@
         }
       }
       return arg;
-    });
+    },this);
   };
 
   var _getLogsAsString = function () {
@@ -111,22 +111,22 @@
         });
       },
       trace : function (){
-        _dbg("trace",console,console.debug,arguments);
+        _dbg.call(this,"trace",console,console.debug,arguments);
       },
       silly : function (){
-        _dbg("silly",console,console.trace,arguments);
+        _dbg.call(this,"silly",console,console.trace,arguments);
       },
       debug : function (){
-        _dbg("debug",console,console.debug,arguments);
+        _dbg.call(this,"debug",console,console.debug,arguments);
       },
       info : function (){
-        _dbg("info",console,console.debug,arguments);
+        _dbg.call(this,"info",console,console.debug,arguments);
       },
       error : function (){
-        _dbg("error",console,console.error,arguments);
+        _dbg.call(this,"error",console,console.error,arguments);
       },
       warn : function (){
-        _dbg("warn",console,console.debug,arguments);
+        _dbg.call(this,"warn",console,console.debug,arguments);
       }
     };
   }

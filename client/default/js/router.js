@@ -115,7 +115,17 @@ App.Router = Backbone.Router.extend({
     App.config.on('change:defaults', this.onDefaultsChanged);
     App.config.on('change:timeout', this.onTimeoutChanged);
 
-    this.fetchTo = setTimeout(this.fetchTimeout,10000);
+    this.fetchCollections("Config Loaded , fetching forms");
+  },
+
+  reload: function() {
+    App.collections.forms.reset();
+    this.fetchCollections("reloading forms");
+  },
+
+  fetchCollections: function(msg,to) {
+    this.loadingView.show(msg);
+    this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
 
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
@@ -132,12 +142,6 @@ App.Router = Backbone.Router.extend({
     App.resumeFetchAllowed = false;
     this.fullyLoaded = true;
     this.onResume();
-  },
-
-  reload: function() {
-    if(this.fullyLoaded){
-      this.onDefaultsChanged();
-    }
   },
 
   onPropsRead: function(props) {
@@ -172,9 +176,9 @@ App.Router = Backbone.Router.extend({
 
   onWhitelistChanged: function() {
     var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.indexOf(white_list,this.props.uuid) !== -1;
+    var listed = _.find(white_list, function(m){ return this.props.uuid.match(Utils.toRegExp(m)); },this);
     // on start up the setting icon may not be rendered yet
-    setTimeout(function (){$('a.settings').toggle(listed);},500);
+    setTimeout(function (){$('a.settings').toggle(!!listed);},500);
   },
 
   onDefaultsChanged: function() {

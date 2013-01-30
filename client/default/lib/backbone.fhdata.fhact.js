@@ -503,7 +503,7 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
 
   // if we don't have data yet, initialise it before routing the method
-  if (store.data == null) {
+  if (_.isEmpty(store.data)) {
     store.init(model, function(err) {
       if (err) return options.error(err);
 
