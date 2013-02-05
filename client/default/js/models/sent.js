@@ -9,7 +9,7 @@ SentModel = FormModel.extend({
 
 SentCollection = Backbone.Collection.extend({
   model: SentModel,
-  store: new FHBackboneDataActSync("sent"),
+  store: new FHBackboneIndexedDataActSync("sent"),
   sync: FHBackboneDataActSyncFn,
 
   initialize: function() {

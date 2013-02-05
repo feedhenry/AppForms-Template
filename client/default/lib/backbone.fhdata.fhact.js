@@ -220,7 +220,9 @@ var FHBackboneDataActSync = function(name, actList, actRead, idField, versionFie
 _.extend(FHBackboneDataActSync.prototype, Backbone.Events);
 
 _.extend(FHBackboneDataActSync.prototype, {
-
+  key: function() {
+    return _.compact(_.toArray(arguments)).join("/");
+  },
   init: function(model, cb) {
     var self = this;
 
@@ -229,7 +231,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     $fh.ready({},function() {
       $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
       $fh.data({
-        key: self.name + self.localStoreVersion
+        key: self.key(self.name , self.localStoreVersion)
       }, function(res) {
         try {
           if (res.val && res.val !== '') {
@@ -352,7 +354,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     var self = this;
     $fh.data({
       act: 'save',
-      key: this.name + this.localStoreVersion,
+      key: this.key(this.name , this.localStoreVersion),
       val: JSON.stringify(this.data)
     }, function() {
       cb(null);
@@ -484,6 +486,9 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
   var store = model.store || model.collection.store;
 
+  if(store.name == "drafts") {
+    console.log("FHBackboneDataActSyncFn drafts");
+  }
   function storeCb(err, resp) {
     if (err || resp == null) return options.error("Record not found");
     return options.success(resp);
@@ -503,7 +508,7 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
 
   // if we don't have data yet, initialise it before routing the method
-  if (_.isEmpty(store.data)) {
+  if (store.data == null) {
     store.init(model, function(err) {
       if (err) return options.error(err);
 
@@ -513,3 +518,152 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
   return routeMethod();
 };
+
+
+
+var FHBackboneIndexedDataActSync = function(name, actList, actRead, idField, versionField) {
+  FHBackboneDataActSync.call(this,name, actList, actRead, idField, versionField);
+  _.bindAll(this);
+  this.index = {};
+  console.log("FHBackboneIndexedDataActSync", this);
+};
+
+_.extend(FHBackboneIndexedDataActSync.prototype,FHBackboneDataActSync.prototype);
+_.extend(FHBackboneIndexedDataActSync.prototype,{
+  /* Add a model, giving it a (hopefully) unique GUID, if it doesn't already
+   have an id of it's own. */
+  init: function(model, cb) {
+    var self = this;
+    FHBackboneDataActSync.prototype.init.call(this,model,function(err){
+      if(err){ return err;}
+      self.index = self.data;
+      self.data = {};
+      async.map(_.keys(self.index), self.loadObject,function(err, results){
+        if(err) { return cb(err);}
+        _.reduce(results, function(data,model){
+          data[model.id] = model;
+          return data;
+        }, self.data);
+
+        cb(null,self.data);
+      });
+    }) ;
+  },
+  loadObject: function(id,cb) {
+    var self = this;
+    $fh.data({
+      key: self.key(self.name, self.localStoreVersion, id)
+    }, function(res) {
+      var data;
+      try {
+        if (res.val && res.val !== '') {
+          data = JSON.parse(res.val);
+        }
+      } catch (e) {
+        // leave data as default
+      }
+      cb(null,data);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+  removeObject: function(name,cb) {
+    var self = this;
+    $fh.data({
+      act: 'remove',
+      key: name
+    }, function() {
+      cb(null);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+  saveObject: function(name,data,cb) {
+    var self = this;
+    $fh.data({
+      act: 'save',
+      key: name,
+      val: JSON.stringify(data)
+    }, function() {
+      cb(null);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+  save: function(cb) {
+    this.saveObject(this.key(this.name , this.localStoreVersion),this.index,cb);
+  },
+
+  _write: function(model, cb) {
+    this.index[model.id] = model.id;
+    this.data[model.id] = model;
+
+    var self = this;
+    this.saveObject(self.key(this.name, this.localStoreVersion, model.id),model,function (err){
+      if(err) {return cb(err, model);}
+      self.save(function(err) {
+        return cb(err, model);
+      });
+    });
+  },
+
+  create: function(model, cb) {
+    if (!model.id) model.set(model.idAttribute, guid());
+    this._write(model, cb);
+  },
+
+  // Update a model by replacing its copy in`this.data`.
+  update: function(model, cb) {
+    this._write(model, cb);
+  },
+
+  // Delete a model from `this.data`, returning it.
+  destroy: function(model, cb) {
+    delete this.index[model.id];
+    delete this.data[model.id];
+
+    var self = this;
+    this.removeObject(self.key(this.name, this.localStoreVersion, model.id),function (err){
+      if(err) {return cb(err, model);}
+      self.save(function(err) {
+        return cb(err, model);
+      });
+    });
+  },
+
+  // Retrieve a model from `this.this.this.data` by id.
+  find: function(modelToFind, cb) {
+    var self = this;
+    FHBackboneDataActSync.prototype.find.call(this,modelToFind,function (err,model) {
+      if(err) {return cb(err, null);}
+      self.index[modelToFind.id] = model.id;
+      return cb(null, model);
+    });
+  },
+
+  // Return the array of all models currently in storage as we're working with a collection
+  findAll: function(cb) {
+    var self = this;
+    FHBackboneDataActSync.prototype.findAll.call(this,function (err , data) {
+      if(err) {return cb(err, null);}
+      self.index={}
+      _.reduce(data, function(index,model){
+        index[model.id] = model.id;
+        return index;
+      }, self.index);
+      return cb(null, data);
+    });
+  }
+
+
+
+});

@@ -9,7 +9,7 @@ PendingModel = FormModel.extend({
 
 PendingWaitingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-waiting"),
+  store: new FHBackboneIndexedDataActSync("pending-waiting"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
@@ -20,7 +20,7 @@ PendingWaitingCollection = Backbone.Collection.extend({
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-review"),
+  store: new FHBackboneIndexedDataActSync("pending-review"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
@@ -31,7 +31,7 @@ PendingReviewCollection = Backbone.Collection.extend({
 
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-submitting"),
+  store: new FHBackboneIndexedDataActSync("pending-submitting"),
   sync: FHBackboneDataActSyncFn,
   initialize: function() {
     this.on('reset', function(collection, options) {
