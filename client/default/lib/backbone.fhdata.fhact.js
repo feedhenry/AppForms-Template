@@ -408,6 +408,10 @@ _.extend(FHBackboneDataActSync.prototype, {
       }
       Utils.isOnline(function(online) {
         if (online) {
+          // TODO : currently this is only called for the form meta data.
+          // this meta data at present can only be saved in a single file
+          // i.e. not indexed
+
           $fh.act(actParams, function(res) {
             if (res && res.error) {
               if (!dataLoaded) {
@@ -527,6 +531,9 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
 
 var FHBackboneIndexedDataActSync = function(name, actList, actRead, idField, versionField) {
+  if(actList) {
+    throw "TODO FIXME";
+  }
   FHBackboneDataActSync.call(this,name, actList, actRead, idField, versionField);
   _.bindAll(this);
   this.index = {};
