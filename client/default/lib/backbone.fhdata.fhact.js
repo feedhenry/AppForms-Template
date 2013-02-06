@@ -215,13 +215,17 @@ var FHBackboneDataActSync = function(name, actList, actRead, idField, versionFie
     this.actRead = actRead;
     this.idField = idField;
     this.versionField = versionField;
-  };
+    this.forceReload =false;
+};
 
 _.extend(FHBackboneDataActSync.prototype, Backbone.Events);
 
 _.extend(FHBackboneDataActSync.prototype, {
   key: function() {
     return _.compact(_.toArray(arguments)).join("/");
+  },
+  force: function() {
+    this.forceReload = true;
   },
   init: function(model, cb) {
     var self = this;
@@ -508,8 +512,9 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
 
   // if we don't have data yet, initialise it before routing the method
-  if (store.data == null) {
+  if (store.forceReload || store.data == null ) {
     store.init(model, function(err) {
+      store.forceReload  = false;
       if (err) return options.error(err);
 
       return routeMethod();

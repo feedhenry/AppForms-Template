@@ -92,6 +92,7 @@ App.Router = Backbone.Router.extend({
       //       Not any more. We'll let it happen in background so UI isn't blocking
       // var loadingView = new LoadingCollectionView();
       // loadingView.show("Loading form list");
+      App.collections.forms.store.force(); // do a clear to force a fetch
       App.collections.forms.fetch();
     } else {
       $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
