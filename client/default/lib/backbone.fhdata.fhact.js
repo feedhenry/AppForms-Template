@@ -538,7 +538,7 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       if(err){ return err;}
       self.index = self.data;
       self.data = {};
-      async.map(_.keys(self.index), self.loadObject,function(err, results){
+      async.map(_.keys(self.index), self._read,function(err, results){
         if(err) { return cb(err);}
         _.reduce(results, function(data,model){
           data[model.id] = model;
@@ -549,7 +549,9 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       });
     }) ;
   },
-  loadObject: function(id,cb) {
+
+  // low level CRUD
+  _read: function(id,cb) {
     var self = this;
     $fh.data({
       key: self.key(self.name, self.localStoreVersion, id)
@@ -570,7 +572,8 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       cb(err);
     });
   },
-  removeObject: function(name,cb) {
+
+  _delete: function(name,cb) {
     var self = this;
     $fh.data({
       act: 'remove',
@@ -584,7 +587,8 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       cb(err);
     });
   },
-  saveObject: function(name,data,cb) {
+
+  _write: function(name,data,cb) {
     var self = this;
     $fh.data({
       act: 'save',
@@ -599,18 +603,16 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       cb(err);
     });
   },
-  save: function(cb) {
-    this.saveObject(this.key(this.name , this.localStoreVersion),this.index,cb);
-  },
 
-  _write: function(model, cb) {
+  // compound method to save object and the update the index
+  _saveModelAndIndex: function(model, cb) {
     this.index[model.id] = model.id;
     this.data[model.id] = model;
 
     var self = this;
-    this.saveObject(self.key(this.name, this.localStoreVersion, model.id),model,function (err){
+    this._write(self.key(this.name, this.localStoreVersion, model.id),model,function (err){
       if(err) {return cb(err, model);}
-      self.save(function(err) {
+      self._write(self.key(self.name , self.localStoreVersion),self.index,function(err) {
         return cb(err, model);
       });
     });
@@ -618,12 +620,12 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
 
   create: function(model, cb) {
     if (!model.id) model.set(model.idAttribute, guid());
-    this._write(model, cb);
+    this._saveModelAndIndex(model, cb);
   },
 
   // Update a model by replacing its copy in`this.data`.
   update: function(model, cb) {
-    this._write(model, cb);
+    this._saveModelAndIndex(model, cb);
   },
 
   // Delete a model from `this.data`, returning it.
@@ -632,9 +634,9 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     delete this.data[model.id];
 
     var self = this;
-    this.removeObject(self.key(this.name, this.localStoreVersion, model.id),function (err){
+    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
       if(err) {return cb(err, model);}
-      self.save(function(err) {
+      self._write(self.key(self.name , self.localStoreVersion),self.index,function(err) {
         return cb(err, model);
       });
     });
@@ -656,10 +658,7 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     FHBackboneDataActSync.prototype.findAll.call(this,function (err , data) {
       if(err) {return cb(err, null);}
       self.index={}
-      _.reduce(data, function(index,model){
-        index[model.id] = model.id;
-        return index;
-      }, self.index);
+      _.each(data, function(index,model){ self.index[model.id] = model.id;});
       return cb(null, data);
     });
   }
