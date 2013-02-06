@@ -207,15 +207,15 @@ function guid() {
 // Our Store is represented by a single JS object in FeedHenry's data store.
 // Create it with a meaningful name, like the name you'd give a table.
 var FHBackboneDataActSync = function(name, actList, actRead, idField, versionField) {
-    var self = this;
-    this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
-    this.name = name;
-    this.data = null;
-    this.actList = actList;
-    this.actRead = actRead;
-    this.idField = idField;
-    this.versionField = versionField;
-    this.forceReload =false;
+  this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
+  this.name = name;
+  this.data = null;
+  this.actList = actList;
+  this.actRead = actRead;
+  this.idField = idField;
+  this.versionField = versionField;
+  this.forceReload =false;
+  _.bindAll(this);
 };
 
 _.extend(FHBackboneDataActSync.prototype, Backbone.Events);
@@ -536,31 +536,14 @@ var FHBackboneIndexedDataActSync = function(name, actList, actRead, idField, ver
   }
   FHBackboneDataActSync.call(this,name, actList, actRead, idField, versionField);
   _.bindAll(this);
-  this.index = {};
   console.log("FHBackboneIndexedDataActSync", this);
 };
 
 _.extend(FHBackboneIndexedDataActSync.prototype,FHBackboneDataActSync.prototype);
 _.extend(FHBackboneIndexedDataActSync.prototype,{
+
   /* Add a model, giving it a (hopefully) unique GUID, if it doesn't already
    have an id of it's own. */
-  init: function(model, cb) {
-    var self = this;
-    FHBackboneDataActSync.prototype.init.call(this,model,function(err){
-      if(err){ return err;}
-      self.index = self.data;
-      self.data = {};
-      async.map(_.keys(self.index), self._read,function(err, results){
-        if(err) { return cb(err);}
-        _.reduce(results, function(data,model){
-          data[model.id] = model;
-          return data;
-        }, self.data);
-
-        cb(null,self.data);
-      });
-    }) ;
-  },
 
   // low level CRUD
   _read: function(id,cb) {
@@ -615,23 +598,38 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
       cb(err);
     });
   },
+  // compound method to save object and the update the index
+  copy: function(model) {
+    var id = model.id;
+    var attrs = _.clone(model.attributes);
+    delete attrs.Pages;
+    delete attrs.Rules;
+    return new model.collection.model(attrs);
+  },
 
   // compound method to save object and the update the index
   _saveModelAndIndex: function(model, cb) {
-    this.index[model.id] = model.id;
-    this.data[model.id] = model;
-
+    var id = model.id;
+    var cpy = this.copy(model);
+    cpy.set("flyweight", true);
+    this.data[id] = cpy;
     var self = this;
-    this._write(self.key(this.name, this.localStoreVersion, model.id),model,function (err){
+
+    this._write(self.key(this.name, this.localStoreVersion, id),model,function (err){
       if(err) {return cb(err, model);}
-      self._write(self.key(self.name , self.localStoreVersion),self.index,function(err) {
+      self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
         return cb(err, model);
       });
     });
   },
 
   create: function(model, cb) {
-    if (!model.id) model.set(model.idAttribute, guid());
+    if (!model.id) {
+      model.set(model.idAttribute, guid());
+    } else {
+      $fh.logger.debug("WARNING backbond create called with object with id!!");
+      alert("WARNING backbond create called with object with id!!");
+    }
     this._saveModelAndIndex(model, cb);
   },
 
@@ -642,39 +640,15 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
 
   // Delete a model from `this.data`, returning it.
   destroy: function(model, cb) {
-    delete this.index[model.id];
     delete this.data[model.id];
 
     var self = this;
-    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
-      if(err) {return cb(err, model);}
-      self._write(self.key(self.name , self.localStoreVersion),self.index,function(err) {
+//    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
+//      if(err) {return cb(err, model);}
+      self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
         return cb(err, model);
       });
-    });
-  },
-
-  // Retrieve a model from `this.this.this.data` by id.
-  find: function(modelToFind, cb) {
-    var self = this;
-    FHBackboneDataActSync.prototype.find.call(this,modelToFind,function (err,model) {
-      if(err) {return cb(err, null);}
-      self.index[modelToFind.id] = model.id;
-      return cb(null, model);
-    });
-  },
-
-  // Return the array of all models currently in storage as we're working with a collection
-  findAll: function(cb) {
-    var self = this;
-    FHBackboneDataActSync.prototype.findAll.call(this,function (err , data) {
-      if(err) {return cb(err, null);}
-      self.index={}
-      _.each(data, function(index,model){ self.index[model.id] = model.id;});
-      return cb(null, data);
-    });
+//    });
   }
-
-
 
 });

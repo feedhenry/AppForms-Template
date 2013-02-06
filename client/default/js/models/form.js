@@ -21,6 +21,19 @@ FormModel = Backbone.Model.extend({
     });
   },
 
+  load: function (cb) {
+    if(this.get("flyweight")){
+      var ctor = this.model|| this.collection.model;
+      var store = this.store || this.collection.store;
+      store._read(this.id,function(err,resp){
+        var model =(err ? null :  new ctor(resp));
+        cb(err,model);
+      });
+    } else {
+      cb(null,this);
+    }
+  },
+
   reInitPages: function () {
     this.initPages();
   },
@@ -99,7 +112,7 @@ FormModel = Backbone.Model.extend({
     if(type === "network") {
       msg = "Network Error : " + (err || JSON.stringify(e));
       AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:type});
+      return cb({error:type, type:"network"});
     }
 
     msg = "Unknown Error : " + JSON.stringify(e);
@@ -187,9 +200,22 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"submitFormBody","req":form};
     req.total += JSON.stringify(data).length;
     var timeout = self.getTimeout(true);
+
     AlertView.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
     var start = Date.now();
+    req.to = setTimeout(function () {
+      $fh.logger.debug("submitFormBody timeout");
+      clearTimeout(req.to);
+      delete req.to;
+      req.error = {msg : "network",err:"timeout"};
+      callback({msg : "network",err:"timeout"});
+
+    }, timeout + 1000);
+
     $fh.act(data, function (res) {
+      clearTimeout(req.to);
+      delete req.to;
+
       var end = Date.now();
       $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
@@ -201,9 +227,13 @@ FormModel = Backbone.Model.extend({
         callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
     }, function (msg, err) {
+      clearTimeout(req.to);
+      delete req.to;
+
       $fh.logger.debug("submitFormBody failed : msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err,150)+ "'");
       callback({msg : msg,err:err});
     });
+
   },
 
   /**

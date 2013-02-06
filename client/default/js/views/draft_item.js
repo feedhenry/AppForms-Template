@@ -5,9 +5,9 @@ DraftItemView = ItemView.extend({
   },
 
   show: function() {
-    App.views.form = new DraftView({
-      model: new DraftModel(this.model.toJSON())
+    this.model.load(function (err,actual ){
+      App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
+      App.views.form.render();
     });
-    App.views.form.render();
   }
 });

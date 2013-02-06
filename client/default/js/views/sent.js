@@ -15,10 +15,13 @@ SentView = DraftView.extend({
    * new draft instance is created
    */
   saveDraft: function() {
-    var clone = this.model.toJSON();
-    delete clone.id;
-    App.collections.drafts.create(clone);
-    App.views.header.showDrafts();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.drafts.create(clone);
+      App.views.header.showDrafts();
+    });
   },
 
   /**
@@ -26,10 +29,13 @@ SentView = DraftView.extend({
    * new pending instance is created
    */
   savePending: function() {
-    var clone = this.model.toJSON();
-    delete clone.id;
-    App.collections.pending_submitting.create(clone);
-    App.views.header.showPending();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.pending_submitting.create(clone);
+      App.views.header.showPending();
+    });
   }
 
 });

@@ -30,7 +30,7 @@ ItemView = Backbone.View.extend({
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
     var template = this.templates.item;
-    if(error) {
+    if(error && this.templates.item_failed) {
       template = this.templates.item_failed;
     }
     var item = _.template(template, {
@@ -56,12 +56,15 @@ ItemView = Backbone.View.extend({
   },
 
   submit: function() {
-    var self = this;
-    var json = this.model.toJSON();
-    delete json.id;
-    //Delete the id, or it might not get re-created on failure
-    App.collections.pending_submitting.create(json);
-    this.model.destroy();
+    var model = this.model;
+    model.load(function (err,actual ){
+      var json = actual.toJSON();
+      delete json.id;
+      //Delete the id, or it might not get re-created on failure
+      App.collections.pending_submitting.create(json);
+      model.destroy();
+    });
+
     return false;
   },
 
@@ -70,10 +73,10 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    var draft = new DraftModel(this.model.toJSON());
-    App.views.form = new DraftView({
-      model: draft
+    this.model.load(function (err,actual ){
+      var draft = new DraftModel(actual.toJSON());
+      App.views.form = new DraftView({model: draft});
+      App.views.form.render();
     });
-    App.views.form.render();
   }
 });

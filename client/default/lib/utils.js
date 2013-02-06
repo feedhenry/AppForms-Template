@@ -1,6 +1,15 @@
 var Utils = Utils || {};
 (function (self) {
+  self.overrideOnline= function(online){
+    this.override = online;
+  },
+  self.clearOverride= function(){
+    delete this.override;
+  },
   self.isOnline = function(callback){
+    if(this.hasOwnProperty('override')){
+      return callback(this.override);
+    }
     var online = true;
     //first, check if navigator.online is available
     if(typeof navigator.onLine != "undefined"){
