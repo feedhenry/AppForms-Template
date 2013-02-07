@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.2 - 2013-01-30
+/*! FeedHenry-Wufoo-App-Generator - v0.3.3 - 2013-02-07
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -1248,6 +1248,19 @@ FormModel = Backbone.Model.extend({
     });
   },
 
+  load: function (cb) {
+    if(this.get("flyweight")){
+      var ctor = this.model|| this.collection.model;
+      var store = this.store || this.collection.store;
+      store._read(this.id,function(err,resp){
+        var model =(err ? null :  new ctor(resp));
+        cb(err,model);
+      });
+    } else {
+      cb(null,this);
+    }
+  },
+
   reInitPages: function () {
     this.initPages();
   },
@@ -1326,7 +1339,7 @@ FormModel = Backbone.Model.extend({
     if(type === "network") {
       msg = "Network Error : " + (err || JSON.stringify(e));
       AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:type});
+      return cb({error:type, type:"network"});
     }
 
     msg = "Unknown Error : " + JSON.stringify(e);
@@ -1414,9 +1427,22 @@ FormModel = Backbone.Model.extend({
     var data = {"act":"submitFormBody","req":form};
     req.total += JSON.stringify(data).length;
     var timeout = self.getTimeout(true);
+
     AlertView.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
     var start = Date.now();
+    req.to = setTimeout(function () {
+      $fh.logger.debug("submitFormBody timeout");
+      clearTimeout(req.to);
+      delete req.to;
+      req.error = {msg : "network",err:"timeout"};
+      callback({msg : "network",err:"timeout"});
+
+    }, timeout + 1000);
+
     $fh.act(data, function (res) {
+      clearTimeout(req.to);
+      delete req.to;
+
       var end = Date.now();
       $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
@@ -1428,9 +1454,13 @@ FormModel = Backbone.Model.extend({
         callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
       }
     }, function (msg, err) {
+      clearTimeout(req.to);
+      delete req.to;
+
       $fh.logger.debug("submitFormBody failed : msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err,150)+ "'");
       callback({msg : msg,err:err});
     });
+
   },
 
   /**
@@ -1672,7 +1702,7 @@ SentModel = FormModel.extend({
 
 SentCollection = Backbone.Collection.extend({
   model: SentModel,
-  store: new FHBackboneDataActSync("sent"),
+  store: new FHBackboneIndexedDataActSync("sent"),
   sync: FHBackboneDataActSyncFn,
 
   initialize: function() {
@@ -1707,7 +1737,7 @@ DraftModel = FormModel.extend({
 
 DraftsCollection = Backbone.Collection.extend({
   model: DraftModel,
-  store: new FHBackboneDataActSync("drafts"),
+  store: new FHBackboneIndexedDataActSync("drafts"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     $fh.logger.debug(attributes);
@@ -1728,7 +1758,7 @@ PendingModel = FormModel.extend({
 
 PendingWaitingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-waiting"),
+  store: new FHBackboneIndexedDataActSync("pending-waiting"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
@@ -1739,7 +1769,7 @@ PendingWaitingCollection = Backbone.Collection.extend({
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-review"),
+  store: new FHBackboneIndexedDataActSync("pending-review"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
@@ -1750,54 +1780,101 @@ PendingReviewCollection = Backbone.Collection.extend({
 
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-submitting"),
+  store: new FHBackboneIndexedDataActSync("pending-submitting"),
   sync: FHBackboneDataActSyncFn,
+
   initialize: function() {
     this.on('reset', function(collection, options) {
-      var models = [];
-      _(collection.models).forEach(function(model) {
-        // Remove and add any leftover models in here to the waiting collection
-        App.collections.pending_waiting.create(model.toJSON());
-        models.push(model);
-      });
+      $fh.logger.debug("reset called on: " + this.store.name);
 
-      _(models).forEach(function(model) {
-        model.destroy();
-      });
+      if(collection.models.length) {
+        var models = [];
+        var copy = function(model,callback){
+          model.load(function (err,actual){
+            var json = actual.toJSON();
+            delete json.id;
+            delete json.error;
+            App.collections.pending_waiting.create(json, {success : function onSuccess(){
+              models.push(model);
+              callback(null,model);
+            },error : function onError(err){
+              callback(err);
+            }});
+
+          });
+        };
+
+        async.map(collection.models, copy, function(err, results){
+          _(models).forEach(function(model) {
+            $fh.logger.debug("pending on reset destroy");
+            model.destroy();
+          });
+        });
+
+      }
     });
   },
   create: function(attributes, options,callback) {
     attributes.savedAt = new Date().getTime();
+    $fh.logger.debug("pending.create : attributes.Pages" + attributes.Pages.length);
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
+
+    $fh.logger.debug("pending.create : model.get(Pages)=" + model.get("Pages").length);
 
     if(callback == null) {
       callback = function (){};
     }
-    model.submit(function(err, res) {
-      var modelJson = model.toJSON();
-      if (err) {
-        // add error to model json
-        modelJson.error = {
-          "type": err.type || err.error,
-          "details": res
-        };
-        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+    $fh.logger.debug("pending create : before submit");
+//    model.load(function (err,actual ){
+      model.submit(function(err, res) {
+        $fh.logger.debug("pending create : after submit err=" , err);
+        $fh.logger.debug("pending create : after submit res=" , err);
+        $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
+        var modelJson = model.toJSON();
+        delete modelJson.id;
+        delete modelJson.error;
 
-        if (/\b(offline|network)\b/.test(err.type)) {
-          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
-          App.collections.pending_waiting.create(modelJson);
+        var option = {
+          success : function onSuccess(nextModel, resp){
+            $fh.logger.debug("pending create : options.onSuccess");
+            $fh.logger.debug("pending create success destroy");
+
+            $fh.logger.debug("pending create success         next ="+ nextModel.id);
+            $fh.logger.debug("pending create success destroy model="+ model.id);
+            model.destroy();
+            callback(err,res);
+          },
+          error : function onError(ferr){
+            $fh.logger.debug("pending create : options.onError=" + ferr);
+            $fh.logger.debug("pending create error destroy");
+            model.destroy();
+            callback(err,res);
+          }
+        };
+        if (err) {
+          // add error to model json
+          modelJson.error = {
+            "type": err.type || err.error,
+            "details": res
+          };
+          $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+
+          if (/\b(offline|network)\b/.test(err.type)) {
+            // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+            $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
+            App.collections.pending_waiting.create(modelJson,option);
+          } else {
+            // move to review as the form cannot be resubmitted without being modified
+            $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
+            App.collections.pending_review.create(modelJson,option);
+          }
         } else {
-          // move to review as the form cannot be resubmitted without being modified
-          App.collections.pending_review.create(modelJson);
+          $fh.logger.debug('Form submission: success :: ' ,res);
+          App.collections.sent.create(modelJson,option);
         }
-      } else {
-        $fh.logger.debug('Form submission: success :: ' ,res);
-        App.collections.sent.create(modelJson);
-      }
-      // model should added to another collection now. destroy it
-      model.destroy(); // TODO check double deletion
-      callback(err,res);
-    });
+      });
+//    });
+
 
     return model;
   }
@@ -2455,7 +2532,7 @@ ItemView = Backbone.View.extend({
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
     var template = this.templates.item;
-    if(error) {
+    if(error && this.templates.item_failed) {
       template = this.templates.item_failed;
     }
     var item = _.template(template, {
@@ -2481,12 +2558,15 @@ ItemView = Backbone.View.extend({
   },
 
   submit: function() {
-    var self = this;
-    var json = this.model.toJSON();
-    delete json.id;
-    //Delete the id, or it might not get re-created on failure
-    App.collections.pending_submitting.create(json);
-    this.model.destroy();
+    var model = this.model;
+    model.load(function (err,actual ){
+      var json = actual.toJSON();
+      delete json.id;
+      //Delete the id, or it might not get re-created on failure
+      App.collections.pending_submitting.create(json);
+      model.destroy();
+    });
+
     return false;
   },
 
@@ -2495,11 +2575,11 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    var draft = new DraftModel(this.model.toJSON());
-    App.views.form = new DraftView({
-      model: draft
+    this.model.load(function (err,actual ){
+      var draft = new DraftModel(actual.toJSON());
+      App.views.form = new DraftView({model: draft});
+      App.views.form.render();
     });
-    App.views.form.render();
   }
 });
 DraftItemView = ItemView.extend({
@@ -2509,10 +2589,10 @@ DraftItemView = ItemView.extend({
   },
 
   show: function() {
-    App.views.form = new DraftView({
-      model: new DraftModel(this.model.toJSON())
+    this.model.load(function (err,actual ){
+      App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
+      App.views.form.render();
     });
-    App.views.form.render();
   }
 });
 PendingReviewItemView = ItemView.extend({
@@ -2579,10 +2659,11 @@ PendingSubmittedItemView = ItemView.extend({
   } ,
 
   show: function() {
-    App.views.form = new SentView({
-      model: new DraftModel(this.model.toJSON())
+    this.model.load(function (err,actual ){
+      App.views.form = new SentView({model: new DraftModel(actual.toJSON())});
+      App.views.form.render();
     });
-    App.views.form.render();
+
   }
 
 });
@@ -2625,27 +2706,32 @@ PendingListView = Backbone.View.extend({
     var c = 1;
     var tasks = _.collect(App.collections.pending_waiting.models,function (model) {
       return function (callback){
+
         loadingView.updateProgress(c * 100 / tasks.length);
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+        model.load(function (err,actual){
+          var json = actual.toJSON();
+          delete json.id;
+          loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+          return App.collections.pending_submitting.create(json,{},function (err){
+            loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
+            c += 1;
+            loadingView.updateProgress(c * 100 / tasks.length);
+            if(!err) {
+              loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+              //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+              // to make sure it is re-created and not removed below by model.destroy.
+            } else {
+              loadingView.updateMessage("Submitting " + c + " failed");
+            }
 
-        var json = model.toJSON();
-        delete json.id;
-        model.destroy(); // TODO check double deletion
-        return App.collections.pending_submitting.create(json,{},function (err){
-           c += 1;
-          loadingView.updateProgress(c * 100 / tasks.length);
-          if(!err) {
-            loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
-            //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-            // to make sure it is re-created and not removed below by model.destroy.
-          } else {
-            loadingView.updateMessage("Submitting " + c + " failed");
-          }
-          callback.apply(self,arguments);
+            $fh.logger.debug("pending_list submitAll dstroy model="+ model.id );
+            model.destroy(); // TODO check double deletion
+            callback.apply(self,arguments);
+          });
         });
       };
-    });
-    // Kick things off by fetching when all stores are initialised
+    });    // Kick things off by fetching when all stores are initialised
 
     async.series(tasks, function (){
       loadingView.hide();
@@ -2922,6 +3008,7 @@ AlertView = Backbone.View.extend({
 var alertView = new AlertView();//{o:o, type:type, timeout:timeout});
 
 AlertView.showAlert = function(o, type, timeout) {
+  $fh.logger.debug("showAlert " ,o);
   alertView.render({o:o, type:type, timeout:timeout});
 };
 FieldView = Backbone.View.extend({
@@ -5174,10 +5261,13 @@ DraftView = Backbone.View.extend({
     });
 
     this.clearFieldChanged();
-    delete this.model.id;
-    this.model.unset("error",{silent:true});
-    App.collections.drafts.create(this.model.toJSON());
-    App.views.header.showDrafts();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.drafts.create(clone);
+      App.views.header.showDrafts();
+    });
   },
 
   savePending: function() {
@@ -5189,11 +5279,15 @@ DraftView = Backbone.View.extend({
       }
     });
 
-    delete this.model.id;
-    this.model.unset("error",{silent:true});
     this.clearFieldChanged();
-    App.collections.pending_submitting.create(this.model.toJSON());
-    App.views.header.showPending();
+
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.pending_submitting.create(clone);
+      App.views.header.showPending();
+    });
   },
 
   showAlert: function(message, type, timeout) {
@@ -5243,10 +5337,13 @@ SentView = DraftView.extend({
    * new draft instance is created
    */
   saveDraft: function() {
-    var clone = this.model.toJSON();
-    delete clone.id;
-    App.collections.drafts.create(clone);
-    App.views.header.showDrafts();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.drafts.create(clone);
+      App.views.header.showDrafts();
+    });
   },
 
   /**
@@ -5254,10 +5351,13 @@ SentView = DraftView.extend({
    * new pending instance is created
    */
   savePending: function() {
-    var clone = this.model.toJSON();
-    delete clone.id;
-    App.collections.pending_submitting.create(clone);
-    App.views.header.showPending();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.pending_submitting.create(clone);
+      App.views.header.showPending();
+    });
   }
 
 });
@@ -5355,6 +5455,7 @@ App.Router = Backbone.Router.extend({
       //       Not any more. We'll let it happen in background so UI isn't blocking
       // var loadingView = new LoadingCollectionView();
       // loadingView.show("Loading form list");
+      App.collections.forms.store.force(); // do a clear to force a fetch
       App.collections.forms.fetch();
     } else {
       $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
