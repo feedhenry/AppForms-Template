@@ -643,12 +643,12 @@ _.extend(FHBackboneIndexedDataActSync.prototype,{
     delete this.data[model.id];
 
     var self = this;
-//    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
-//      if(err) {return cb(err, model);}
+    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
+      if(err) {return cb(err, model);}
       self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
         return cb(err, model);
       });
-//    });
+    });
   }
 
 });
