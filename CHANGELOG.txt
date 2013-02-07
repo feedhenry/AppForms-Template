@@ -125,3 +125,9 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 * 3076 : App Form Phase II : change the config whitelist to accept regular expressions
 * 3080 : App Form Phase II : fhmap view elements don't remember old values for drafts or pending forms
 * 3078 : App Form Phase II : Initially Hidden Field not hidden
+
+
+
+0.3.3 - 2013-02-07-29 - IR194 - Jim O'Leary
+----------------------------------------------------------------------
+* 3103 : App Forms Phase II : If the pending and saved form data in the application is too large then the application will hang on application startup.
