@@ -207,20 +207,26 @@ function guid() {
 // Our Store is represented by a single JS object in FeedHenry's data store.
 // Create it with a meaningful name, like the name you'd give a table.
 var FHBackboneDataActSync = function(name, actList, actRead, idField, versionField) {
-    var self = this;
-    this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
-    this.name = name;
-    this.data = null;
-    this.actList = actList;
-    this.actRead = actRead;
-    this.idField = idField;
-    this.versionField = versionField;
-  };
+  this.localStoreVersion = '0.3'; // versioning to force a nuke of local store DANGER!!!
+  this.name = name;
+  this.data = null;
+  this.actList = actList;
+  this.actRead = actRead;
+  this.idField = idField;
+  this.versionField = versionField;
+  this.forceReload =false;
+  _.bindAll(this);
+};
 
 _.extend(FHBackboneDataActSync.prototype, Backbone.Events);
 
 _.extend(FHBackboneDataActSync.prototype, {
-
+  key: function() {
+    return _.compact(_.toArray(arguments)).join("/");
+  },
+  force: function() {
+    this.forceReload = true;
+  },
   init: function(model, cb) {
     var self = this;
 
@@ -229,7 +235,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     $fh.ready({},function() {
       $fh.logger.debug('FHBackboneDataActSync  :: init data for:"'+self.name+ '"');
       $fh.data({
-        key: self.name + self.localStoreVersion
+        key: self.key(self.name , self.localStoreVersion)
       }, function(res) {
         try {
           if (res.val && res.val !== '') {
@@ -352,7 +358,7 @@ _.extend(FHBackboneDataActSync.prototype, {
     var self = this;
     $fh.data({
       act: 'save',
-      key: this.name + this.localStoreVersion,
+      key: this.key(this.name , this.localStoreVersion),
       val: JSON.stringify(this.data)
     }, function() {
       cb(null);
@@ -402,6 +408,10 @@ _.extend(FHBackboneDataActSync.prototype, {
       }
       Utils.isOnline(function(online) {
         if (online) {
+          // TODO : currently this is only called for the form meta data.
+          // this meta data at present can only be saved in a single file
+          // i.e. not indexed
+
           $fh.act(actParams, function(res) {
             if (res && res.error) {
               if (!dataLoaded) {
@@ -484,6 +494,9 @@ FHBackboneDataActSyncFn = function(method, model, options) {
 
   var store = model.store || model.collection.store;
 
+  if(store.name == "drafts") {
+    console.log("FHBackboneDataActSyncFn drafts");
+  }
   function storeCb(err, resp) {
     if (err || resp == null) return options.error("Record not found");
     return options.success(resp);
@@ -503,8 +516,9 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
 
   // if we don't have data yet, initialise it before routing the method
-  if (_.isEmpty(store.data)) {
+  if (store.forceReload || store.data == null ) {
     store.init(model, function(err) {
+      store.forceReload  = false;
       if (err) return options.error(err);
 
       return routeMethod();
@@ -513,3 +527,128 @@ FHBackboneDataActSyncFn = function(method, model, options) {
   }
   return routeMethod();
 };
+
+
+
+var FHBackboneIndexedDataActSync = function(name, actList, actRead, idField, versionField) {
+  if(actList) {
+    throw "TODO FIXME";
+  }
+  FHBackboneDataActSync.call(this,name, actList, actRead, idField, versionField);
+  _.bindAll(this);
+  console.log("FHBackboneIndexedDataActSync", this);
+};
+
+_.extend(FHBackboneIndexedDataActSync.prototype,FHBackboneDataActSync.prototype);
+_.extend(FHBackboneIndexedDataActSync.prototype,{
+
+  /* Add a model, giving it a (hopefully) unique GUID, if it doesn't already
+   have an id of it's own. */
+
+  // low level CRUD
+  _read: function(id,cb) {
+    var self = this;
+    $fh.data({
+      key: self.key(self.name, self.localStoreVersion, id)
+    }, function(res) {
+      var data;
+      try {
+        if (res.val && res.val !== '') {
+          data = JSON.parse(res.val);
+        }
+      } catch (e) {
+        // leave data as default
+      }
+      cb(null,data);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+
+  _delete: function(name,cb) {
+    var self = this;
+    $fh.data({
+      act: 'remove',
+      key: name
+    }, function() {
+      cb(null);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+
+  _write: function(name,data,cb) {
+    var self = this;
+    $fh.data({
+      act: 'save',
+      key: name,
+      val: JSON.stringify(data)
+    }, function() {
+      cb(null);
+    }, function(msg, err) {
+      var errMsg = 'ERROR saving data :: msg:' + msg + ' err:' + err;
+      self.trigger('error', errMsg);
+      $fh.logger.error(errMsg);
+      cb(err);
+    });
+  },
+  // compound method to save object and the update the index
+  copy: function(model) {
+    var id = model.id;
+    var attrs = _.clone(model.attributes);
+    delete attrs.Pages;
+    delete attrs.Rules;
+    return new model.collection.model(attrs);
+  },
+
+  // compound method to save object and the update the index
+  _saveModelAndIndex: function(model, cb) {
+    var id = model.id;
+    var cpy = this.copy(model);
+    cpy.set("flyweight", true);
+    this.data[id] = cpy;
+    var self = this;
+
+    this._write(self.key(this.name, this.localStoreVersion, id),model,function (err){
+      if(err) {return cb(err, model);}
+      self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
+        return cb(err, model);
+      });
+    });
+  },
+
+  create: function(model, cb) {
+    if (!model.id) {
+      model.set(model.idAttribute, guid());
+    } else {
+      $fh.logger.debug("WARNING backbond create called with object with id!!");
+      alert("WARNING backbond create called with object with id!!");
+    }
+    this._saveModelAndIndex(model, cb);
+  },
+
+  // Update a model by replacing its copy in`this.data`.
+  update: function(model, cb) {
+    this._saveModelAndIndex(model, cb);
+  },
+
+  // Delete a model from `this.data`, returning it.
+  destroy: function(model, cb) {
+    delete this.data[model.id];
+
+    var self = this;
+    this._delete(self.key(this.name, this.localStoreVersion, model.id),function (err){
+      if(err) {return cb(err, model);}
+      self._write(self.key(self.name , self.localStoreVersion),self.data,function(err) {
+        return cb(err, model);
+      });
+    });
+  }
+
+});

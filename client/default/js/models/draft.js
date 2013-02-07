@@ -11,7 +11,7 @@ DraftModel = FormModel.extend({
 
 DraftsCollection = Backbone.Collection.extend({
   model: DraftModel,
-  store: new FHBackboneDataActSync("drafts"),
+  store: new FHBackboneIndexedDataActSync("drafts"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     $fh.logger.debug(attributes);

@@ -204,10 +204,13 @@ DraftView = Backbone.View.extend({
     });
 
     this.clearFieldChanged();
-    delete this.model.id;
-    this.model.unset("error",{silent:true});
-    App.collections.drafts.create(this.model.toJSON());
-    App.views.header.showDrafts();
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.drafts.create(clone);
+      App.views.header.showDrafts();
+    });
   },
 
   savePending: function() {
@@ -219,11 +222,15 @@ DraftView = Backbone.View.extend({
       }
     });
 
-    delete this.model.id;
-    this.model.unset("error",{silent:true});
     this.clearFieldChanged();
-    App.collections.pending_submitting.create(this.model.toJSON());
-    App.views.header.showPending();
+
+    this.model.load(function (err,actual){
+      var clone = actual.toJSON();
+      delete clone.id;
+      delete clone.error;
+      App.collections.pending_submitting.create(clone);
+      App.views.header.showPending();
+    });
   },
 
   showAlert: function(message, type, timeout) {

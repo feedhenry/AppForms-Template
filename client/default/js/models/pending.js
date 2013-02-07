@@ -9,7 +9,7 @@ PendingModel = FormModel.extend({
 
 PendingWaitingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-waiting"),
+  store: new FHBackboneIndexedDataActSync("pending-waiting"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.savedAt = new Date().getTime();
@@ -20,7 +20,7 @@ PendingWaitingCollection = Backbone.Collection.extend({
 
 PendingReviewCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-review"),
+  store: new FHBackboneIndexedDataActSync("pending-review"),
   sync: FHBackboneDataActSyncFn,
   create: function(attributes, options) {
     attributes.submittedAt = new Date().getTime();
@@ -31,54 +31,101 @@ PendingReviewCollection = Backbone.Collection.extend({
 
 PendingSubmittingCollection = Backbone.Collection.extend({
   model: PendingModel,
-  store: new FHBackboneDataActSync("pending-submitting"),
+  store: new FHBackboneIndexedDataActSync("pending-submitting"),
   sync: FHBackboneDataActSyncFn,
+
   initialize: function() {
     this.on('reset', function(collection, options) {
-      var models = [];
-      _(collection.models).forEach(function(model) {
-        // Remove and add any leftover models in here to the waiting collection
-        App.collections.pending_waiting.create(model.toJSON());
-        models.push(model);
-      });
+      $fh.logger.debug("reset called on: " + this.store.name);
 
-      _(models).forEach(function(model) {
-        model.destroy();
-      });
+      if(collection.models.length) {
+        var models = [];
+        var copy = function(model,callback){
+          model.load(function (err,actual){
+            var json = actual.toJSON();
+            delete json.id;
+            delete json.error;
+            App.collections.pending_waiting.create(json, {success : function onSuccess(){
+              models.push(model);
+              callback(null,model);
+            },error : function onError(err){
+              callback(err);
+            }});
+
+          });
+        };
+
+        async.map(collection.models, copy, function(err, results){
+          _(models).forEach(function(model) {
+            $fh.logger.debug("pending on reset destroy");
+            model.destroy();
+          });
+        });
+
+      }
     });
   },
   create: function(attributes, options,callback) {
     attributes.savedAt = new Date().getTime();
+    $fh.logger.debug("pending.create : attributes.Pages" + attributes.Pages.length);
     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
+
+    $fh.logger.debug("pending.create : model.get(Pages)=" + model.get("Pages").length);
 
     if(callback == null) {
       callback = function (){};
     }
-    model.submit(function(err, res) {
-      var modelJson = model.toJSON();
-      if (err) {
-        // add error to model json
-        modelJson.error = {
-          "type": err.type || err.error,
-          "details": res
-        };
-        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+    $fh.logger.debug("pending create : before submit");
+//    model.load(function (err,actual ){
+      model.submit(function(err, res) {
+        $fh.logger.debug("pending create : after submit err=" , err);
+        $fh.logger.debug("pending create : after submit res=" , err);
+        $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
+        var modelJson = model.toJSON();
+        delete modelJson.id;
+        delete modelJson.error;
 
-        if (/\b(offline|network)\b/.test(err.type)) {
-          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
-          App.collections.pending_waiting.create(modelJson);
+        var option = {
+          success : function onSuccess(nextModel, resp){
+            $fh.logger.debug("pending create : options.onSuccess");
+            $fh.logger.debug("pending create success destroy");
+
+            $fh.logger.debug("pending create success         next ="+ nextModel.id);
+            $fh.logger.debug("pending create success destroy model="+ model.id);
+            model.destroy();
+            callback(err,res);
+          },
+          error : function onError(ferr){
+            $fh.logger.debug("pending create : options.onError=" + ferr);
+            $fh.logger.debug("pending create error destroy");
+            model.destroy();
+            callback(err,res);
+          }
+        };
+        if (err) {
+          // add error to model json
+          modelJson.error = {
+            "type": err.type || err.error,
+            "details": res
+          };
+          $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+
+          if (/\b(offline|network)\b/.test(err.type)) {
+            // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+            $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
+            App.collections.pending_waiting.create(modelJson,option);
+          } else {
+            // move to review as the form cannot be resubmitted without being modified
+            $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
+            App.collections.pending_review.create(modelJson,option);
+          }
         } else {
-          // move to review as the form cannot be resubmitted without being modified
-          App.collections.pending_review.create(modelJson);
+          $fh.logger.debug('Form submission: success :: ' ,res);
+          App.collections.sent.create(modelJson,option);
         }
-      } else {
-        $fh.logger.debug('Form submission: success :: ' ,res);
-        App.collections.sent.create(modelJson);
-      }
-      // model should added to another collection now. destroy it
-      model.destroy(); // TODO check double deletion
-      callback(err,res);
-    });
+      });
+//    });
+
 
     return model;
   }

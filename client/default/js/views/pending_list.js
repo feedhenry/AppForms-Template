@@ -37,27 +37,32 @@ PendingListView = Backbone.View.extend({
     var c = 1;
     var tasks = _.collect(App.collections.pending_waiting.models,function (model) {
       return function (callback){
+
         loadingView.updateProgress(c * 100 / tasks.length);
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+        model.load(function (err,actual){
+          var json = actual.toJSON();
+          delete json.id;
+          loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+          return App.collections.pending_submitting.create(json,{},function (err){
+            loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
+            c += 1;
+            loadingView.updateProgress(c * 100 / tasks.length);
+            if(!err) {
+              loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+              //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+              // to make sure it is re-created and not removed below by model.destroy.
+            } else {
+              loadingView.updateMessage("Submitting " + c + " failed");
+            }
 
-        var json = model.toJSON();
-        delete json.id;
-        model.destroy(); // TODO check double deletion
-        return App.collections.pending_submitting.create(json,{},function (err){
-           c += 1;
-          loadingView.updateProgress(c * 100 / tasks.length);
-          if(!err) {
-            loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
-            //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-            // to make sure it is re-created and not removed below by model.destroy.
-          } else {
-            loadingView.updateMessage("Submitting " + c + " failed");
-          }
-          callback.apply(self,arguments);
+            $fh.logger.debug("pending_list submitAll dstroy model="+ model.id );
+            model.destroy(); // TODO check double deletion
+            callback.apply(self,arguments);
+          });
         });
       };
-    });
-    // Kick things off by fetching when all stores are initialised
+    });    // Kick things off by fetching when all stores are initialised
 
     async.series(tasks, function (){
       loadingView.hide();
