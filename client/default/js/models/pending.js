@@ -43,7 +43,6 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         var copy = function(model,callback){
           model.load(function (err,actual){
             var json = actual.toJSON();
-            delete json.id;
             delete json.error;
             App.collections.pending_waiting.create(json, {success : function onSuccess(){
               models.push(model);
@@ -76,55 +75,52 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       callback = function (){};
     }
     $fh.logger.debug("pending create : before submit");
-//    model.load(function (err,actual ){
-      model.submit(function(err, res) {
-        $fh.logger.debug("pending create : after submit err=" , err);
-        $fh.logger.debug("pending create : after submit res=" , err);
-        $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
-        var modelJson = model.toJSON();
-        delete modelJson.id;
-        delete modelJson.error;
+    model.submit(function(err, res) {
+      $fh.logger.debug("pending create : after submit err=" , err);
+      $fh.logger.debug("pending create : after submit res=" , err);
+      $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
+      var modelJson = model.toJSON();
+      delete modelJson.error;
 
-        var option = {
-          success : function onSuccess(nextModel, resp){
-            $fh.logger.debug("pending create : options.onSuccess");
-            $fh.logger.debug("pending create success destroy");
+      var option = {
+        success : function onSuccess(nextModel, resp){
+          $fh.logger.debug("pending create : options.onSuccess");
+          $fh.logger.debug("pending create success destroy");
 
-            $fh.logger.debug("pending create success         next ="+ nextModel.id);
-            $fh.logger.debug("pending create success destroy model="+ model.id);
-            model.destroy();
-            callback(err,res);
-          },
-          error : function onError(ferr){
-            $fh.logger.debug("pending create : options.onError=" + ferr);
-            $fh.logger.debug("pending create error destroy");
-            model.destroy();
-            callback(err,res);
-          }
-        };
-        if (err) {
-          // add error to model json
-          modelJson.error = {
-            "type": err.type || err.error,
-            "details": res
-          };
-          $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
-
-          if (/\b(offline|network)\b/.test(err.type)) {
-            // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
-            $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
-            App.collections.pending_waiting.create(modelJson,option);
-          } else {
-            // move to review as the form cannot be resubmitted without being modified
-            $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
-            App.collections.pending_review.create(modelJson,option);
-          }
-        } else {
-          $fh.logger.debug('Form submission: success :: ' ,res);
-          App.collections.sent.create(modelJson,option);
+          $fh.logger.debug("pending create success         next ="+ nextModel.id);
+          $fh.logger.debug("pending create success destroy model="+ model.id);
+          model.destroy();
+          callback(err,res);
+        },
+        error : function onError(ferr){
+          $fh.logger.debug("pending create : options.onError=" + ferr);
+          $fh.logger.debug("pending create error destroy");
+          model.destroy();
+          callback(err,res);
         }
-      });
-//    });
+      };
+      if (err) {
+        // add error to model json
+        modelJson.error = {
+          "type": err.type || err.error,
+          "details": res
+        };
+        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+
+        if (/\b(offline|network)\b/.test(err.type)) {
+          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+          $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
+          App.collections.pending_waiting.create(modelJson,option);
+        } else {
+          // move to review as the form cannot be resubmitted without being modified
+          $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
+          App.collections.pending_review.create(modelJson,option);
+        }
+      } else {
+        $fh.logger.debug('Form submission: success :: ' ,res);
+        App.collections.sent.create(modelJson,option);
+      }
+    });
 
 
     return model;
