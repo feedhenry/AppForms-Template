@@ -68,13 +68,13 @@ ItemView = Backbone.View.extend({
 
   submit: function() {
     var model = this.model;
-    var idField = _.find(model.fields)(function (field) {return field.isIdField();});
+    //var idField = _.find(model.fields)(function (field) {return field.isIdField();});
     model.load(function (err,actual ){
       var json = actual.toJSON();
       delete json.idValue;
-      if(idField) {
-        json.idValue = idField.value();
-      }
+//      if(idField) {
+//        json.idValue = idField.value();
+//      }
       //Delete the id, or it might not get re-created on failure
       App.collections.pending_submitting.create(json);
       model.destroy();
