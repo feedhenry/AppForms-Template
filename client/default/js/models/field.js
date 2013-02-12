@@ -7,7 +7,7 @@ FieldModel = Backbone.Model.extend({
   // Determine field type from special classes
   getType: function() {
     var type = this.attributes.Type;
-    var cnames =  _.reject(this.attributes.ClassNames.split(" "),function (val){return val == "fhid";})
+    var cnames =  _.reject(this.attributes.ClassNames.split(" "),function (val){return val == "fhid";});
     if(cnames.length == 1 && cnames[0] == "fh") {
       cnames = [];
 
@@ -31,7 +31,7 @@ FieldModel = Backbone.Model.extend({
   },
 
   isIdField: function () {
-    return _.find(this.attributes.ClassNames.split(" "),function (val){return val === "fhid";})
+    return _.find(this.attributes.ClassNames.split(" "),function (val){return val === "fhid";});
   },
 
   //Returns the serialised field value, ready for submission to wuffoo
