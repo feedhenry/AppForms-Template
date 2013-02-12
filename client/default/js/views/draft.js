@@ -35,6 +35,15 @@ DraftView = Backbone.View.extend({
   clearFieldChanged: function () {
     this.fieldChanged = false;
   },
+  renderId: function() {
+    if(this.model.idValue) {
+      return this.model.idValue;
+    }
+    if(this.model.id) {
+      return this.model.id.split(/-/)[0];
+    }
+    return "new";
+  },
 
   render: function() {
     var self = this;
@@ -61,7 +70,7 @@ DraftView = Backbone.View.extend({
 
     // Add form heading
     var heading = _.template(this.templates.heading, {
-      "form_title": this.model.get('Name')
+      "form_title": this.model.get('Name') + "(" + this.renderId() + ")"
     });
     form.append(heading);
 
@@ -206,7 +215,6 @@ DraftView = Backbone.View.extend({
     this.clearFieldChanged();
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
-      delete clone.id;
       delete clone.error;
       App.collections.drafts.create(clone);
       App.views.header.showDrafts();
@@ -226,7 +234,6 @@ DraftView = Backbone.View.extend({
 
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
-      delete clone.id;
       delete clone.error;
       App.collections.pending_submitting.create(clone);
       App.views.header.showPending();
