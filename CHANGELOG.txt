@@ -128,6 +128,13 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 
 
 
-0.3.3 - 2013-02-07-29 - IR194 - Jim O'Leary
+0.3.3 - 2013-02-07 - IR194 - Jim O'Leary
 ----------------------------------------------------------------------
 * 3103 : App Forms Phase II : If the pending and saved form data in the application is too large then the application will hang on application startup.
+
+
+0.3.4 - 2013-02-12 - IR195 - Jim O'Leary
+----------------------------------------------------------------------
+* 3173 : App Forms Phase II : expose the form id in the ui
+* 3146 : App Forms Phase II : iOS 5.1.1 is unable to parse date format
+* 3135 : App Forms Phase II : support the new endpoint/key pair in the cloud config

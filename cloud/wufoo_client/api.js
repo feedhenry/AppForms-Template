@@ -234,9 +234,15 @@ function doPost(end_point, data, callback) {
     }
     var domain = wufoo_config.wufoo_config.api_domain;
     var api_key = wufoo_config.wufoo_config.api_key;
+    var url = wufoo_config.wufoo_config.post_url;
+    var url;
+    if(!url){
+      url = "https://" + domain + "/api/v3/";
+    }
+    url = url + end_point + ".json";
 
-    var url = "https://" + domain + "/api/v3/" + end_point + ".json";
-
+    console.log("POSTING TO " + url);
+    
     var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
     var headers = {
       'content-type' : 'multipart/form-data',

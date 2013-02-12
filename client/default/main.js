@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.3 - 2013-02-07
+/*! FeedHenry-Wufoo-App-Generator - v0.3.4 - 2013-02-12
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -1164,8 +1164,13 @@ FieldModel = Backbone.Model.extend({
   // Determine field type from special classes
   getType: function() {
     var type = this.attributes.Type;
-    if (this.attributes.ClassNames) {
-      var special_type = this.attributes.ClassNames.split(" ");
+    var cnames =  _.reject(this.attributes.ClassNames.split(" "),function (val){return val == "fhid";});
+    if(cnames.length == 1 && cnames[0] == "fh") {
+      cnames = [];
+
+    }
+    if (cnames.length) {
+      var special_type = cnames;
       if (special_type.length > 1 && special_type[1].indexOf('fh') === 0) {
         type = special_type[1];
       }
@@ -1180,6 +1185,10 @@ FieldModel = Backbone.Model.extend({
   getNonFhClasses: function () {
     // return all classnames that don't start with fh
     return this.attributes && this.attributes.ClassNames ? this.attributes.ClassNames.replace(/\bfh.*?\s/g, '') : '';
+  },
+
+  isIdField: function () {
+    return _.find(this.attributes.ClassNames.split(" "),function (val){return val === "fhid";});
   },
 
   //Returns the serialised field value, ready for submission to wuffoo
@@ -1792,7 +1801,6 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         var copy = function(model,callback){
           model.load(function (err,actual){
             var json = actual.toJSON();
-            delete json.id;
             delete json.error;
             App.collections.pending_waiting.create(json, {success : function onSuccess(){
               models.push(model);
@@ -1825,55 +1833,52 @@ PendingSubmittingCollection = Backbone.Collection.extend({
       callback = function (){};
     }
     $fh.logger.debug("pending create : before submit");
-//    model.load(function (err,actual ){
-      model.submit(function(err, res) {
-        $fh.logger.debug("pending create : after submit err=" , err);
-        $fh.logger.debug("pending create : after submit res=" , err);
-        $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
-        var modelJson = model.toJSON();
-        delete modelJson.id;
-        delete modelJson.error;
+    model.submit(function(err, res) {
+      $fh.logger.debug("pending create : after submit err=" , err);
+      $fh.logger.debug("pending create : after submit res=" , err);
+      $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
+      var modelJson = model.toJSON();
+      delete modelJson.error;
 
-        var option = {
-          success : function onSuccess(nextModel, resp){
-            $fh.logger.debug("pending create : options.onSuccess");
-            $fh.logger.debug("pending create success destroy");
+      var option = {
+        success : function onSuccess(nextModel, resp){
+          $fh.logger.debug("pending create : options.onSuccess");
+          $fh.logger.debug("pending create success destroy");
 
-            $fh.logger.debug("pending create success         next ="+ nextModel.id);
-            $fh.logger.debug("pending create success destroy model="+ model.id);
-            model.destroy();
-            callback(err,res);
-          },
-          error : function onError(ferr){
-            $fh.logger.debug("pending create : options.onError=" + ferr);
-            $fh.logger.debug("pending create error destroy");
-            model.destroy();
-            callback(err,res);
-          }
-        };
-        if (err) {
-          // add error to model json
-          modelJson.error = {
-            "type": err.type || err.error,
-            "details": res
-          };
-          $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
-
-          if (/\b(offline|network)\b/.test(err.type)) {
-            // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
-            $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
-            App.collections.pending_waiting.create(modelJson,option);
-          } else {
-            // move to review as the form cannot be resubmitted without being modified
-            $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
-            App.collections.pending_review.create(modelJson,option);
-          }
-        } else {
-          $fh.logger.debug('Form submission: success :: ' ,res);
-          App.collections.sent.create(modelJson,option);
+          $fh.logger.debug("pending create success         next ="+ nextModel.id);
+          $fh.logger.debug("pending create success destroy model="+ model.id);
+          model.destroy();
+          callback(err,res);
+        },
+        error : function onError(ferr){
+          $fh.logger.debug("pending create : options.onError=" + ferr);
+          $fh.logger.debug("pending create error destroy");
+          model.destroy();
+          callback(err,res);
         }
-      });
-//    });
+      };
+      if (err) {
+        // add error to model json
+        modelJson.error = {
+          "type": err.type || err.error,
+          "details": res
+        };
+        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+
+        if (/\b(offline|network)\b/.test(err.type)) {
+          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+          $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
+          App.collections.pending_waiting.create(modelJson,option);
+        } else {
+          // move to review as the form cannot be resubmitted without being modified
+          $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
+          App.collections.pending_review.create(modelJson,option);
+        }
+      } else {
+        $fh.logger.debug('Form submission: success :: ' ,res);
+        App.collections.sent.create(modelJson,option);
+      }
+    });
 
 
     return model;
@@ -2510,8 +2515,8 @@ ItemView = Backbone.View.extend({
   },
 
   templates: {
-    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type <%= error_type %>"><%= error_message %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
+    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type <%= error_type %>"><%= error_message %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
   },
 
   errorTypes: {
@@ -2528,6 +2533,16 @@ ItemView = Backbone.View.extend({
     this.model.bind('remove', this.unrender);
   },
 
+  renderId: function() {
+    if(this.model.idValue) {
+      return this.model.idValue;
+    }
+    if(this.model.id) {
+      return this.model.id.split(/-/)[0];
+    }
+    return "new";
+  },
+
   render: function() {
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
@@ -2537,6 +2552,7 @@ ItemView = Backbone.View.extend({
     }
     var item = _.template(template, {
       name: this.model.get('Name'),
+      id: this.renderId(),
       timestamp: time,
       error_type: (error && error.type ) ? error.type : null,
       error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
@@ -2559,9 +2575,13 @@ ItemView = Backbone.View.extend({
 
   submit: function() {
     var model = this.model;
+    //var idField = _.find(model.fields)(function (field) {return field.isIdField();});
     model.load(function (err,actual ){
       var json = actual.toJSON();
-      delete json.id;
+      delete json.idValue;
+//      if(idField) {
+//        json.idValue = idField.value();
+//      }
       //Delete the id, or it might not get re-created on failure
       App.collections.pending_submitting.create(json);
       model.destroy();
@@ -2585,7 +2605,7 @@ ItemView = Backbone.View.extend({
 DraftItemView = ItemView.extend({
 
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
   },
 
   show: function() {
@@ -2597,7 +2617,7 @@ DraftItemView = ItemView.extend({
 });
 PendingReviewItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
   },
   errorTypes: {
     "validation": "Validation Error. Please review for details.",
@@ -2612,6 +2632,7 @@ PendingReviewItemView = ItemView.extend({
     var error = this.model.get('error');
     var item = _.template(this.templates.item, {
       name: this.model.get('Name'),
+      id: this.renderId(),
       timestamp: time,
       error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
@@ -2622,7 +2643,7 @@ PendingReviewItemView = ItemView.extend({
 });
 PendingSubmittingItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Saved: <%= timestamp %></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Saved: <%= timestamp %></span>'
   },
   //Added submit button for test only, remove after
 
@@ -2630,6 +2651,7 @@ PendingSubmittingItemView = ItemView.extend({
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
       name: this.model.get('Name'),
+      id: this.renderId(),
       timestamp: time
     });
 
@@ -2644,13 +2666,14 @@ PendingSubmittingItemView = ItemView.extend({
 });
 PendingSubmittedItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main delete-item second_button">Dismiss</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main delete-item second_button">Dismiss</button><span class="chevron"></span>'
   },
 
   render: function() {
     var time = new moment(this.model.get('submittedAt')).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
       name: this.model.get('Name'),
+      id: this.renderId(),
       timestamp: time
     });
 
@@ -2711,7 +2734,6 @@ PendingListView = Backbone.View.extend({
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
         model.load(function (err,actual){
           var json = actual.toJSON();
-          delete json.id;
           loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
           return App.collections.pending_submitting.create(json,{},function (err){
             loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
@@ -5092,6 +5114,15 @@ DraftView = Backbone.View.extend({
   clearFieldChanged: function () {
     this.fieldChanged = false;
   },
+  renderId: function() {
+    if(this.model.idValue) {
+      return this.model.idValue;
+    }
+    if(this.model.id) {
+      return this.model.id.split(/-/)[0];
+    }
+    return "new";
+  },
 
   render: function() {
     var self = this;
@@ -5118,7 +5149,7 @@ DraftView = Backbone.View.extend({
 
     // Add form heading
     var heading = _.template(this.templates.heading, {
-      "form_title": this.model.get('Name')
+      "form_title": this.model.get('Name') + "(" + this.renderId() + ")"
     });
     form.append(heading);
 
@@ -5263,7 +5294,6 @@ DraftView = Backbone.View.extend({
     this.clearFieldChanged();
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
-      delete clone.id;
       delete clone.error;
       App.collections.drafts.create(clone);
       App.views.header.showDrafts();
@@ -5283,7 +5313,6 @@ DraftView = Backbone.View.extend({
 
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
-      delete clone.id;
       delete clone.error;
       App.collections.pending_submitting.create(clone);
       App.views.header.showPending();
