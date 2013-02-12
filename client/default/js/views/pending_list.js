@@ -42,7 +42,6 @@ PendingListView = Backbone.View.extend({
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
         model.load(function (err,actual){
           var json = actual.toJSON();
-          delete json.id;
           loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
           return App.collections.pending_submitting.create(json,{},function (err){
             loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));

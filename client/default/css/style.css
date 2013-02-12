@@ -438,8 +438,16 @@ table.likert {
 #fh_wufoo_pending .list.inset .ts,
 #fh_wufoo_drafts .list.inset .ts,
 #fh_wufoo_sent .list.inset .ts {
+  font-size: 10px;
+  font-style: italic;
+}
+
+#fh_wufoo_pending .list.inset .title,
+#fh_wufoo_drafts .list.inset .title,
+#fh_wufoo_sent .list.inset .title {
   font-size: 12px;
   font-style: italic;
+  font-weight: bold;
 }
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
