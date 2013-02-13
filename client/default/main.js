@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.4 - 2013-02-12
+/*! FeedHenry-Wufoo-App-Generator - v0.3.5 - 2013-02-13
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -2575,16 +2575,10 @@ ItemView = Backbone.View.extend({
 
   submit: function() {
     var model = this.model;
-    //var idField = _.find(model.fields)(function (field) {return field.isIdField();});
     model.load(function (err,actual ){
       var json = actual.toJSON();
-      delete json.idValue;
-//      if(idField) {
-//        json.idValue = idField.value();
-//      }
-      //Delete the id, or it might not get re-created on failure
-      App.collections.pending_submitting.create(json);
       model.destroy();
+      App.collections.pending_submitting.create(json);
     });
 
     return false;
@@ -2735,6 +2729,9 @@ PendingListView = Backbone.View.extend({
         model.load(function (err,actual){
           var json = actual.toJSON();
           loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+          $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
+          model.destroy();
+
           return App.collections.pending_submitting.create(json,{},function (err){
             loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
             c += 1;
@@ -2747,8 +2744,6 @@ PendingListView = Backbone.View.extend({
               loadingView.updateMessage("Submitting " + c + " failed");
             }
 
-            $fh.logger.debug("pending_list submitAll dstroy model="+ model.id );
-            model.destroy(); // TODO check double deletion
             callback.apply(self,arguments);
           });
         });
