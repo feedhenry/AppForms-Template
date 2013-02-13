@@ -1,6 +1,6 @@
 {
   "name": "FeedHenry-Wufoo-App-Generator",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "dependencies": {
     "cheerio": "*",
     "wrench": "*",

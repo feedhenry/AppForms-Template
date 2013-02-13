@@ -138,3 +138,7 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 * 3173 : App Forms Phase II : expose the form id in the ui
 * 3146 : App Forms Phase II : iOS 5.1.1 is unable to parse date format
 * 3135 : App Forms Phase II : support the new endpoint/key pair in the cloud config
+
+0.3.5 - 2013-02-13 - IR195 - Jim O'Leary
+----------------------------------------------------------------------
+* 3187 : App Forms Phase II : pressing "Submitting All Pending Forms" when offline incorrectly deletes form
