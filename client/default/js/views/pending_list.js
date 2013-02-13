@@ -43,6 +43,9 @@ PendingListView = Backbone.View.extend({
         model.load(function (err,actual){
           var json = actual.toJSON();
           loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+          $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
+          model.destroy();
+
           return App.collections.pending_submitting.create(json,{},function (err){
             loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
             c += 1;
@@ -55,8 +58,6 @@ PendingListView = Backbone.View.extend({
               loadingView.updateMessage("Submitting " + c + " failed");
             }
 
-            $fh.logger.debug("pending_list submitAll dstroy model="+ model.id );
-            model.destroy(); // TODO check double deletion
             callback.apply(self,arguments);
           });
         });
