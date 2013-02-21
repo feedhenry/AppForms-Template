@@ -79,19 +79,32 @@ FieldRadioView = FieldView.extend({
       }
     };
 
-    // also apply any special rules
     _(this.model.get('Rules') || []).each(function(rule, index) {
-      var ruleConfig = _.clone(rule);
-      ruleConfig.pageView = self.options.parentView;
-      ruleConfig.fn = rules[rule.Type];
-      self.$el.find('#Field' + rule.condition.FieldName + '_' + index).wufoo_rules('add', ruleConfig);
+      var value  = rule.condition ? rule.condition.Value : null;
+      var field;
+      if(value) {
+        field = $("input[type=radio][value= '" + value +"']", this.$el);
+      }
+      if(field) {
+        var ruleConfig = _.clone(rule);
+        ruleConfig.pageView = self.options.parentView;
+        ruleConfig.fn = rules[rule.Type];
+        $(field).wufoo_rules('add', ruleConfig);
+      }
     });
   },
 
   removeRules: function() {
     // also apply any special rules
     _(this.model.get('Rules') || []).each(function(rule, index) {
-      self.$el.find('#Field' + rule.condition.FieldName + '_' + index).rules('remove');
+        var value  = rule.condition ? rule.condition.Value : null;
+        var field;
+        if(value) {
+          field = $("input[type=radio][value= '" + value +"']", this.$el);
+        }
+        if(field) {
+          field.rules('remove');
+        }
     });
   },
 
