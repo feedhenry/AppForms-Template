@@ -42,12 +42,13 @@ FieldMapView = FieldView.extend({
     return options;
   },
 
-  initialize: function() {
-    var self = this;
-    FieldView.prototype.initialize.call(this);
-    this.on('visible', function() {
-      self.show();
-    });
+  onPageVisible: function (){
+    // force the element to be initially hidden
+    if (this.$el.hasClass("hide")) {
+      this.hide(true);
+    } else {
+      this.show();
+    }
   },
 
   render: function() {

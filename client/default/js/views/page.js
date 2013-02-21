@@ -39,6 +39,9 @@ PageView = Backbone.View.extend({
     this.on('visible', function () {
       $fh.logger.debug('page visible');
       _(self.fieldViews).forEach(function (fieldView) {
+        fieldView.trigger('page:visible');
+      });
+      _(self.fieldViews).forEach(function (fieldView) {
         fieldView.trigger('visible');
       });
     });

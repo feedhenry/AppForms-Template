@@ -56,5 +56,47 @@ FieldRadioView = FieldView.extend({
       value[self.model.get('ID')] = $(this).val();
     });
     return value;
+  } ,
+  addSpecialRules: function() {
+    var self = this;
+
+    var rules = {
+      'Show': function(rulePasses, params) {
+        var fieldId = 'Field' + params.Setting.FieldName;
+        if (rulePasses) {
+          App.views.form.showField(fieldId);
+        } else {
+          App.views.form.hideField(fieldId);
+        }
+      },
+      'Hide': function(rulePasses, params) {
+        var fieldId = 'Field' + params.Setting.FieldName;
+        if (rulePasses) {
+          App.views.form.hideField(fieldId);
+        } else {
+          App.views.form.showField(fieldId);
+        }
+      }
+    };
+
+    // also apply any special rules
+    _(this.model.get('Rules') || []).each(function(rule, index) {
+      var ruleConfig = _.clone(rule);
+      ruleConfig.pageView = self.options.parentView;
+      ruleConfig.fn = rules[rule.Type];
+      self.$el.find('#Field' + rule.condition.FieldName + '_' + index).wufoo_rules('add', ruleConfig);
+    });
+  },
+
+  removeRules: function() {
+    // also apply any special rules
+    _(this.model.get('Rules') || []).each(function(rule, index) {
+      self.$el.find('#Field' + rule.condition.FieldName + '_' + index).rules('remove');
+    });
+  },
+
+  checkRules: function () {
+    $("input[type=radio]:checked", this.$el).click();
   }
+
 });

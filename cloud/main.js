@@ -163,6 +163,14 @@ exports.getForm = function (params, callback) {
           if (tempFieldRules[field.ID] != null) {
             field.Rules = tempFieldRules[field.ID];
           }
+          var rules = _.collect(field.SubFields, function(f){
+            return f.ID != field.ID ? tempFieldRules[f.ID] : null;
+          });
+          rules = _.compact(rules);
+
+          if(rules.length) {
+            field.Rules  = _.flatten([field.Rules , rules])
+          }
 
           // add fields to matching page, ensuring page exists on form object
           var page = form.Pages[pageNum] = form.Pages[pageNum] || {};

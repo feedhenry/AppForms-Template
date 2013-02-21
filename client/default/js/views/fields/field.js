@@ -18,9 +18,13 @@ FieldView = Backbone.View.extend({
       this.$el.addClass(nonFhClasses);
     }
 
+    this.on('page:visible', this.onPageVisible,this);
+
     this.on('visible', function () {
-      //$fh.logger.debug('field visible');
-    });
+      $fh.logger.debug('field visible');
+      this.checkRules();
+    },this);
+
 
     if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
       this.model.set({
@@ -34,6 +38,15 @@ FieldView = Backbone.View.extend({
 
     // only call render once. model will never update
     this.render();
+  },
+
+  // handle onPageVisible once only to check if we need to hide
+  onPageVisible: function() {
+    this.off('page:visible', this.onPageVisible);
+    // force the element to be initially hidden
+    if (this.$el.hasClass("hide")) {
+      this.hide(true);
+    }
   },
 
   dumpContent: function() {
@@ -79,11 +92,6 @@ FieldView = Backbone.View.extend({
     // add to dom
     this.options.parentEl.append(this.$el);
     this.show();
-
-    // force the element to be initially hidden
-    if (this.$el.hasClass("hide")) {
-      this.hide(true);
-    }
   },
 
   addRules: function() {
@@ -134,8 +142,16 @@ FieldView = Backbone.View.extend({
     });
   },
 
+  checkRules: function () {
+  },
+
   removeRules: function() {
-    this.$el.find('#' + this.model.get('ID')).rules('remove');
+    var e = this.$el.find('#' + this.model.get('ID'));
+    if(e.length) {
+      this.$el.find('#' + this.model.get('ID')).rules('remove');
+    } else {
+      console.log("remove rules : warning no elements for #" + this.model.get('ID'));
+    }
   },
 
   // force a hide , defaults to false

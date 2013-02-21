@@ -121,8 +121,21 @@
 
   function eventHandler(rules) {
     var jqEl = $(this);
-    rules = rules || (jqEl.data('wufoo_rules') || []);
+    var self  = this;
+    if($(jqEl).attr('type') == 'radio'){
+      _.each($(jqEl).parent().find("input[type=radio]"), function (e){
+        var r = rules || ($(e).data('wufoo_rules') || []);
+        processRule($(e), r);
+      });
+    } else {
+      rules = rules || (jqEl.data('wufoo_rules') || []);
+      processRule(jqEl, rules);
+    }
 
+  }
+
+  function processRule(jqEl,rules) {
+    rules = rules || (jqEl.data('wufoo_rules') || []);
     var value = jqEl.is(typeSelector.text) ? jqEl.val() : jqEl.is(':checked');
     $.each(rules, function (index, rule) {
       check(value, jqEl, rule);
