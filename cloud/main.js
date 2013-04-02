@@ -7,6 +7,16 @@ var wufoo_admin = require('./wufoo_client/admin.js');
 var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
 var _ = require('underscore');
+
+var CACHE_EXPIRY;
+try {
+  CACHE_EXPIRY=parseInt(wufoo_config.wufoo_config.cache_expiry)
+} catch(e) {
+}
+if(_.isNaN(CACHE_EXPIRY) || CACHE_EXPIRY < 60 * 30) {
+  CACHE_EXPIRY= 28800
+}
+console.log("CACHE_EXPIRY=" + CACHE_EXPIRY);
 function getMinFormData(form) {
   return {
     "Name": form.Name,
@@ -225,7 +235,8 @@ exports.cacheForm= function (form, callback) {
     $fh.cache({
       act: "save",
       key: key,
-      value: str
+      value: str,
+      expire: CACHE_EXPIRY
     }, function(err, res) {
       if (err) {
         logger.onError(memo,err);
