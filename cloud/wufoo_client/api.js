@@ -4,17 +4,23 @@ var wufoo_config = require('../wufoo_config.js');
 var cheerio = require('cheerio');
 var async = require('async');
 var _ = require('underscore');
+var logger = require('logger').logger;
 
 //http://www.wufoo.com/docs/api/v3/forms/
 exports.getForms = function (cb) {
+  var memo = logger.onStart("api.getForms");
   var end_point = "forms";
   doApiGet(end_point, function (err, body) {
-    if (err) {return cb(err);}
+    if (err) {
+      logger.onError(memo,err);
+      return cb(err);
+    }
     try {
-      return cb(null,
-        JSON.parse(body)
-      );
+      var j =JSON.parse(body);
+      logger.onStop(memo);
+      return cb(null,j);
     } catch(e){
+      logger.onException(memo,e);
       return cb({"error":e, "msg":body});
     }
   });
@@ -22,14 +28,20 @@ exports.getForms = function (cb) {
 
 //http://www.wufoo.com/docs/api/v3/forms/
 exports.getForm = function(form_hash, cb) {
+  var memo = logger.onStart("api.getForm",form_hash);
   var end_point = "forms/" + form_hash;
   doApiGet(end_point, function (err, body) {
-    if (err) {return cb(err);}
+    if (err) {
+      logger.onError(memo,err);
+      return cb(err);
+    }
     try {
       var json = JSON.parse(body);
       var form = json.Forms[0];
+      logger.onStop(memo);
       return cb(null, form);
     } catch (e) {
+      logger.onException(memo,e);
       return cb({"error":e, "msg":body});
     }
   });
@@ -37,13 +49,19 @@ exports.getForm = function(form_hash, cb) {
 
 //http://www.wufoo.com/docs/api/v3/fields/
 exports.getFormFields = function (form_hash, cb) {
+  var memo = logger.onStart("api.getFormFields",form_hash);
   var end_point = "forms/" + form_hash + "/fields";
   doApiGet(end_point, function (err, body) {
-    if (err) {return cb(err);}
+    if (err) {
+      logger.onError(memo,err);
+      return cb(err);
+    }
     try {
       var json = JSON.parse(body);
+      logger.onStop(memo);
       return cb(null, json.Fields);
     } catch (e) {
+      logger.onException(memo,e);
       return cb({"error":e, "msg":body});
     }
   });
@@ -52,17 +70,26 @@ exports.getFormFields = function (form_hash, cb) {
 //https://feedhenry.wufoo.eu/docs/api/v3/entries/post/
 exports.postFormEntries = function(form_hash, data, cb) {
   //ToDo parse the data to remove any default fields i.e. EntryId, http://www.wufoo.com/docs/api/v3/entries/get/#default
+  var memo = logger.onStart("api.postFormEntries",form_hash);
   var end_point = "forms/" + form_hash + "/entries";
   doPost(end_point, data, cb);
 };
 
 //Returns the page titles for the given form if any
 exports.getFormPages = function (form_hash, cb) {
+  var memo = logger.onStart("api.getFormPages",form_hash);
   var end_point = "/forms/" + form_hash;
   doGet(end_point, function (err, html) {
-    if (err) {return cb(err);}
+    if (err) {
+      logger.onError(memo,err);
+      return cb(err);
+    }
     return getPages(html, function (err, res) {
-      if (err) {return cb(err);}
+      if (err) {
+        logger.onError(memo,err);
+        return cb(err);
+      }
+      logger.onStop(memo,form_hash);
       return cb(null, res);
     });
   });
@@ -70,17 +97,26 @@ exports.getFormPages = function (form_hash, cb) {
 
 //Returns any custom css for the given form if any
 exports.getFormTheme = function (form_hash, cb) {
+  var memo = logger.onStart("api.getFormTheme",form_hash);
   var end_point = "/forms/" + form_hash;
   doGet(end_point, function (err, html) {
-    if (err) {return cb(err);}
+    if (err) {
+      logger.onError(memo,err);
+      return cb(err);
+    }
     return getTheme(html, function (err, res) {
-      if (err) {return cb(err);}
+      if (err) {
+        logger.onError(memo,err);
+        return cb(err);
+      }
+      logger.onStop(memo,form_hash);
       return cb(null, res);
     });
   });
 };
 
 function getPages(html, cb) {
+  var memo = logger.onStart("api.getPages");
   try {
     var pages = {PaginationType:'tab', Pages:[]};
     var $ = cheerio.load(html);
@@ -98,14 +134,17 @@ function getPages(html, cb) {
       });
     }
     pages.Pages = pageTitles;
+    logger.onStop(memo);
     return cb(null, pages);
   } catch(e) {
+    logger.onException(memo,e);
     return cb({"error" : e, "msg" : html});
 
   }
 }
 
 function getTheme(html, cb) {
+  var memo = logger.onStart("api.getTheme");
   try {
     var $ = cheerio.load(html);
     var links = $('link[rel=stylesheet]');
@@ -126,19 +165,25 @@ function getTheme(html, cb) {
       }
     }, function(err) {
       if (err != null) {
-        console.error('error loading remote script:' + err.message);
+        logger.warn('error loading remote script:' + err.message);
       }
       inlineImages(theme, function(err, css) {
-        if (err) {return cb(err);}
+        if (err) {
+          logger.onError(memo,err);
+          return cb(err);
+        }
+        logger.onStop(memo);
         return cb(null, css);
       });
     });
   } catch(e) {
+    logger.onException(memo,e);
     return cb({"error" : e, "msg" : html});
   }
 }
 
 function inlineImages(css, cb) {
+  var memo = logger.onStart("api.inlineImages");
   var r = new RegExp(/url\(\s*['"]?(.*?)['"]?\s*\)/g);
   var matches = [];
   while (match = r.exec(css)) { // apply regex and check if defined all in one go
@@ -157,9 +202,11 @@ function inlineImages(css, cb) {
     }, true);
   }, function (err) {
     if (err != null) {
+      logger.onError(memo,err);
       console.error('error inlining image reference:' + err.message);
     }
     // all images inlined as base64, set the full style text
+    logger.onStop(memo);
     cb(null, css);
   });
 }
@@ -178,8 +225,10 @@ function doApiGet(end_point, callback) {
 }
 
 function doGet(end_point, callback, isBinary) {
+  var memo = logger.onStart("api.doGet",end_point);
   getConfig(function (err, wufoo_config) {
     if (err != null) {
+      logger.onError(memo,err);
       return callback(err, err);
     }
     var domain = wufoo_config.wufoo_config.api_domain;
@@ -207,14 +256,14 @@ function doGet(end_point, callback, isBinary) {
     }
     return request.get(options, function (err, res, body) {
       if (err != null) {
-        console.log("doGet: " + url + " :: error : " + err);
+        logger.onError(memo,err);
         return callback(err, err);
       }
 
-      console.log('got response for link:' + url + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
+      //console.log('got response for link:' + url + ' res.statusCode:' + res.statusCode + ' body.length:' + body.length);
       if (res.statusCode != 200) {
-        console.log("doGet : " + url + " :: error : " + body);
         var error = {error:body};
+        logger.onError(memo,error);
         return callback(error, error);
       }
 
@@ -222,14 +271,17 @@ function doGet(end_point, callback, isBinary) {
         body = body.toString('base64');
       }
 
+      logger.onStop(memo,end_point);
       return callback(null, body);
     });
   });
 }
 
 function doPost(end_point, data, callback) {
+  var memo = logger.onStart("api.doPost",end_point);
   getConfig(function (err, wufoo_config) {
     if (err != null) {
+      logger.onError(memo,err);
       return callback(err, err);
     }
     var domain = wufoo_config.wufoo_config.api_domain;
@@ -241,8 +293,6 @@ function doPost(end_point, data, callback) {
     }
     url = url + end_point + ".json";
 
-    console.log("POSTING TO " + url);
-    
     var auth = 'Basic ' + new Buffer(api_key + ':' + 'foostatic').toString('base64');
     var headers = {
       'content-type' : 'multipart/form-data',
@@ -257,12 +307,11 @@ function doPost(end_point, data, callback) {
       multipart:multipart_data,
       preambleCRLF: true
     }, function (err, res, body) {
-      console.log(JSON.stringify(body));
       if (err != null) {
-        console.log("doPost: " + url + " :: error : " + err);
+        logger.onError(memo,err);
         return callback(err, err);
       }
-      console.log("doPost : " + url + " :: statusCode : " + res.statusCode);
+      logger.onStop(memo,url + " :: statusCode : " + res.statusCode);
       return callback(null, body);
     });
 
