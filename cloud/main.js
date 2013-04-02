@@ -320,6 +320,9 @@ exports.doRemoteFormSubmission = function (params, callback) {
     }
     var data = form.data;
     var form_hash = form.form_hash;
+    try {
+      form.stat.res = JSON.parse(res);
+    } catch(e) {}
     return wufoo_api.postFormEntries(form_hash, data, function (err, res) {
       form.stat.completedAt = Date.now();
       form.stat.err = err;
@@ -450,22 +453,6 @@ if(wufoo_config.wufoo_config.logger) {
   });
 
 }
-//if (mock_fails) {
-//  var meld = require("meld");
-//  var self = this;
-//  var count = 0;
-//  meld.around(this, ['submitFormBody' , 'submitChunk', 'validateFormTransmission','doRemoteFormSubmission','pollRemoteFormSubmissionComplete'], function(methodCall) {
-//    console.log("BEFORE " + methodCall.method + "( " + truncate(methodCall.args,150) + ")");
-//    count = 0;
-//    var timeout = 30000;
-//    setTimeout(function(){
-//      methodCall.proceed();
-//    }, timeout);
-//  });
-//
-//}
-
-
 
 // fh.logger endpoints
 exports.fh_logger_store = function (params, callback) {

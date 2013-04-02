@@ -118,6 +118,10 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         }
       } else {
         $fh.logger.debug('Form submission: success :: ' ,res);
+        try {
+          modelJson.Entry = {EntryId:res.stat.res.EntryId, EntryLink :res.stat.res.EntryLink};
+        } catch(e) {
+        }
         App.collections.sent.create(modelJson,option);
       }
     });
