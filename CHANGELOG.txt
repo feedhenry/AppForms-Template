@@ -142,3 +142,9 @@ NOTE : if the android phone has no sdcard the sandboxed directory will be create
 0.3.5 - 2013-02-13 - IR195 - Jim O'Leary
 ----------------------------------------------------------------------
 * 3187 : App Forms Phase II : pressing "Submitting All Pending Forms" when offline incorrectly deletes form
+
+0.3.6 - 2013-04-03 - IR198 - Jim O'Leary
+----------------------------------------------------------------------
+* 3494 : Improve the console.log statements
+* 3493 : App Forms Phase II : Entry Id from WuFoo should be shown in sent items on device
+* 3459 : No cache expiry time being set on App Forms II apps

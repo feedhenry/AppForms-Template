@@ -121,6 +121,7 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         try {
           modelJson.Entry = {EntryId:res.stat.res.EntryId, EntryLink :res.stat.res.EntryLink};
         } catch(e) {
+          $fh.logger.warn("Error accessing EntryId", e);
         }
         App.collections.sent.create(modelJson,option);
       }
