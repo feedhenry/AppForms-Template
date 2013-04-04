@@ -36,6 +36,9 @@ DraftView = Backbone.View.extend({
     this.fieldChanged = false;
   },
   renderId: function() {
+    if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
+      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+    }
     if(this.model.idValue) {
       return this.model.idValue;
     }
