@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.5 - 2013-02-13
+/*! FeedHenry-Wufoo-App-Generator - v0.3.6 - 2013-04-04
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -1876,6 +1876,11 @@ PendingSubmittingCollection = Backbone.Collection.extend({
         }
       } else {
         $fh.logger.debug('Form submission: success :: ' ,res);
+        try {
+          modelJson.Entry = {EntryId:res.stat.res.EntryId, EntryLink :res.stat.res.EntryLink};
+        } catch(e) {
+          $fh.logger.warn("Error accessing EntryId", e);
+        }
         App.collections.sent.create(modelJson,option);
       }
     });
@@ -2534,6 +2539,9 @@ ItemView = Backbone.View.extend({
   },
 
   renderId: function() {
+    if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
+      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+    }
     if(this.model.idValue) {
       return this.model.idValue;
     }
@@ -5110,6 +5118,9 @@ DraftView = Backbone.View.extend({
     this.fieldChanged = false;
   },
   renderId: function() {
+    if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
+      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+    }
     if(this.model.idValue) {
       return this.model.idValue;
     }
@@ -5364,6 +5375,7 @@ SentView = DraftView.extend({
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
       delete clone.id;
+      delete clone.Entry;
       delete clone.error;
       App.collections.drafts.create(clone);
       App.views.header.showDrafts();
