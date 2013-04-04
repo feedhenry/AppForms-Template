@@ -9,7 +9,7 @@ var timestamp = function(){
 var config = {
   transports: [
     //    new (winston.transports.Console)({ level: 'info' ,timestamp:timestamp})
-    new (winston.transports.Console)({ timestamp:timestamp})
+    new (winston.transports.Console)({ timestamp:timestamp, stream:process.stdout})
     //new (winston.transports.File)({ filename: 'somefile.log' })
   ]};
 
