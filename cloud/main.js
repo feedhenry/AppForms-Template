@@ -1,12 +1,16 @@
+
+var logger = require('logger').logger;
+// crappy work around to give app time to flush stdout, in case wufoo config is missing
+logger.info("attempting to load config");
+
 var util = require('util');
 var request = require('request');
-var logger = require('logger').logger;
 var url = require("url");
 var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_admin = require('./wufoo_client/admin.js');
-var wufoo_config = require('./wufoo_config.js');
 var async = require('async');
 var _ = require('underscore');
+var wufoo_config = require('./wufoo_config.js');
 
 var CACHE_EXPIRY;
 try {
