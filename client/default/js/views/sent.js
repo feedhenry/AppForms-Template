@@ -18,6 +18,7 @@ SentView = DraftView.extend({
     this.model.load(function (err,actual){
       var clone = actual.toJSON();
       delete clone.id;
+      delete clone.Entry;
       delete clone.error;
       App.collections.drafts.create(clone);
       App.views.header.showDrafts();
