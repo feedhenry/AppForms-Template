@@ -9,7 +9,7 @@ var timestamp = function(){
 var config = {
   transports: [
     //    new (winston.transports.Console)({ level: 'info' ,timestamp:timestamp})
-    new (winston.transports.Console)({ timestamp:timestamp, stream:process.stdout})
+    new (winston.transports.Console)({ timestamp:timestamp})
     //new (winston.transports.File)({ filename: 'somefile.log' })
   ]};
 
@@ -46,7 +46,7 @@ var logger = function() {
           }
         }
         memo.title = "(" + memo.req + ") " + memo.name + " " + memo.device ;
-        this.debug(memo.title + "starting " + (msg ? msg : ""));
+        this.info(memo.title + "starting " + (msg ? msg : ""));
       }catch(e) {
         console.error("error logging onStart",e);
       }
@@ -54,7 +54,7 @@ var logger = function() {
     },
     onStop : function (memo,msg) {
       try {
-        this.debug(memo.title + "completed " + (msg ? ": " + msg : "") + memo.took());
+        this.info(memo.title + "completed " + (msg ? ": " + msg : "") + memo.took());
       }catch(e) {
         console.error("error logging onStop");
       }

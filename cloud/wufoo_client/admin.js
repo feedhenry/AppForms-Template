@@ -112,7 +112,7 @@ exports.getRules = function (form_hash, cb) {
       var cookieName = Object.keys(item)[0];
       cookieString += cookieName + '=' + item[cookieName] + ';';
     });
-    logger.debug('cookieString:', cookieString);
+    logger.silly('cookieString:', cookieString);
 
     var req = https.request({
       "host": wufoo_config.api_domain,

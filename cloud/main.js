@@ -20,7 +20,6 @@ try {
 if(_.isNaN(CACHE_EXPIRY) || CACHE_EXPIRY < 60 * 30) {
   CACHE_EXPIRY= 28800
 }
-console.log("CACHE_EXPIRY=" + CACHE_EXPIRY);
 function getMinFormData(form) {
   return {
     "Name": form.Name,
