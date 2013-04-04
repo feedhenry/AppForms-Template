@@ -227,7 +227,7 @@ exports.getForm = function (params, callback) {
 };
 
 exports.cacheForm= function (form, callback) {
-  var memo = logger.onStart("cacheForm");
+  var memo = logger.onStart("cacheForm",truncate(JSON.stringify(form),256));
   var str = JSON.stringify(form);
   var key = form.form_id;
   var data = form.data;
@@ -253,7 +253,7 @@ exports.cacheForm= function (form, callback) {
 };
 
 exports.loadForm= function (key, callback) {
-  var memo = logger.onStart("loadForm");
+  var memo = logger.onStart("loadForm",truncate(key,256));
   $fh.cache({
     act: "load",
     key: key
@@ -280,7 +280,7 @@ exports.formComplete= function (form) {
 };
 
 exports.submitFormBody = function (params, callback) {
-  var memo = logger.onStart("submitFormBody",null,params);
+  var memo = logger.onStart("submitFormBody",truncate(JSON.stringify(params),256),params);
   var self = this;
   var form_hash = params.form_hash;
   if (form_hash == null) {
@@ -300,7 +300,7 @@ exports.submitFormBody = function (params, callback) {
 };
 
 exports.validateFormTransmission = function (params, callback) {
-  var memo = logger.onStart("validateFormTransmission",null,params);
+  var memo = logger.onStart("validateFormTransmission",truncate(JSON.stringify(params),256),params);
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -322,7 +322,7 @@ exports.validateFormTransmission = function (params, callback) {
   });
 };
 exports.doRemoteFormSubmission = function (params, callback) {
-  var memo = logger.onStart("doRemoteFormSubmission",null,params);
+  var memo = logger.onStart("doRemoteFormSubmission",truncate(JSON.stringify(params),256),params);
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -334,12 +334,14 @@ exports.doRemoteFormSubmission = function (params, callback) {
     }
     var data = form.data;
     var form_hash = form.form_hash;
-    try {
-      form.stat.res = JSON.parse(res);
-    } catch(e) {}
     return wufoo_api.postFormEntries(form_hash, data, function (err, res) {
       form.stat.completedAt = Date.now();
       form.stat.err = err;
+      try {
+        form.stat.res = JSON.parse(res);
+      } catch(e) {
+        logger.warn("error parsing res", e);
+      }
       process.nextTick(function () {
         self.cacheForm(form, function (){});
       });
@@ -356,7 +358,7 @@ exports.doRemoteFormSubmission = function (params, callback) {
 };
 
 exports.pollRemoteFormSubmissionComplete= function (params, callback) {
-  var memo = logger.onStart("pollRemoteFormSubmissionComplete",null,params);
+  var memo = logger.onStart("pollRemoteFormSubmissionComplete",truncate(JSON.stringify(params),256),params);
   var self = this;
   var form_id = params.form_id ;
   if (form_id  === null) return callback(null, {"error": "form_id  is required"});
@@ -371,9 +373,10 @@ exports.pollRemoteFormSubmissionComplete= function (params, callback) {
     return callback(null, {"Success": 1, stat: form.stat});
   });
 };
+
 // params = {form_id:form_id, "name":name,"value":value , "size":value.length};
 exports.submitChunk= function (params, callback) {
-  var memo = logger.onStart("submitChunk",null, params);
+  var memo = logger.onStart("submitChunk",truncate(JSON.stringify(params),256), params);
   var self = this;
   var form_id = params.form_id ;
   var name = params.name;
