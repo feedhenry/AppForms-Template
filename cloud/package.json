@@ -5,9 +5,9 @@
     "request": "2.11.4",
     "cheerio" : "0.9.0",
     "async": "0.1.22",
-    "underscore": "*",
     "fh-nodeapp": "*",
-    "moment": "*",
-    "winston": "*"
+    "underscore": "1.4.4",
+    "moment": "2.0.0",
+    "winston": "0.6.2"
   }
 }
