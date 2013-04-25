@@ -14,7 +14,7 @@ Produces a dist folder and dist.zip. To copy to dist branch:
     git checkout phase2-dist
     git pull origin phase2-dist
     cp -r dist/* ./
-    git commit -am "Merging phase2 changes"
+    # git commit the changed files
     git push origin phase2-dist
 
 NOTE: make sure that you have added all files you need and not added any 
