@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.6 - 2013-04-04
+/*! FeedHenry-Wufoo-App-Generator - v0.3.7 - 2013-04-25
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
