@@ -14,11 +14,11 @@ var wufoo_config = require('./wufoo_config.js');
 
 var CACHE_EXPIRY;
 try {
-  CACHE_EXPIRY=parseInt(wufoo_config.wufoo_config.cache_expiry)
+  CACHE_EXPIRY=parseInt(wufoo_config.wufoo_config.cache_expiry);
 } catch(e) {
 }
 if(_.isNaN(CACHE_EXPIRY) || CACHE_EXPIRY < 60 * 30) {
-  CACHE_EXPIRY= 28800
+  CACHE_EXPIRY= 28800;
 }
 function getMinFormData(form) {
   return {
