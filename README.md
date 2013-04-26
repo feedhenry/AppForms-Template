@@ -30,3 +30,8 @@ To test a release candidate run the following :
    zip candidate cloud/wufoo_config.js
 
 Then import the candidate.zip into the studio, build and test it.
+
+To run some/all of the buster cloud tests :
+
+   reset && clear && buster test --node
+   reset && clear && buster test --test cloud/spec/GetFormSpec.js 
