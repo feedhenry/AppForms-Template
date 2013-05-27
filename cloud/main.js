@@ -3,7 +3,12 @@ var request = require('request');
 var url = require("url");
 var cheerio = require("cheerio");
 var inline = require('./inline.js');
-var wufoo_config = require('./wufoo_config.js');
+try {
+   var wufoo_config = require('./wufoo_config.js');
+} catch(e)
+{
+  console.log("Error loading wufoo_config.js");
+}
 
 function cacheable() {
   // Should page fragments be cached?
