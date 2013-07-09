@@ -71,6 +71,8 @@ function login(email, password, cb) {
       "Content-Type": "application/x-www-form-urlencoded"
     }
   }, function(res) {
+    res.on('data', function(d) {});
+    
     res.on('end', function() {
       // successful login if status 302 & have the correct cookies being set
       var cookies = res.headers['set-cookie'];
