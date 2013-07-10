@@ -1,10 +1,20 @@
 var https = require('https');
 var request = require('request');
-var wufoo_config = require('../wufoo_config.js');
 var cheerio = require('cheerio');
 var async = require('async');
 var _ = require('underscore');
 var logger = require('logger').logger;
+
+var wufoo_config_module;
+
+try {
+  wufoo_config_module = require('../wufoo_config.js');
+}
+catch (e) {
+  console.log('Could not resolve wufoo_config.js module');
+}
+
+var wufoo_config = wufoo_config_module ? wufoo_config_module : {wufoo_config:{}};
 
 //http://www.wufoo.com/docs/api/v3/forms/
 exports.getForms = function (cb) {

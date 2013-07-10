@@ -1,7 +1,17 @@
 var https = require('https');
 var querystring = require('querystring');
-var wufoo_config = require('../wufoo_config.js').wufoo_config;
 var logger = require('logger').logger;
+
+var wufoo_config_module;
+
+try {
+  wufoo_config_module = require('../wufoo_config.js');
+}
+catch (e) {
+  console.log('Could not resolve wufoo_config.js module');
+}
+
+var wufoo_config = wufoo_config_module ? wufoo_config_module.wufoo_config : {wufoo_config:{}};
 
 var api_config = {
   "login_host": "secure.wufoo.eu",
