@@ -10,7 +10,16 @@ var wufoo_api = require('./wufoo_client/api.js');
 var wufoo_admin = require('./wufoo_client/admin.js');
 var async = require('async');
 var _ = require('underscore');
-var wufoo_config = require('./wufoo_config.js');
+var wufoo_config_module;
+
+try {
+  wufoo_config_module = require('./wufoo_config.js');
+}
+catch (e) {
+  console.log('Could not resolve wufoo_config.js module');
+}
+
+var wufoo_config = wufoo_config_module ? wufoo_config_module : {};
 
 var CACHE_EXPIRY;
 try {
