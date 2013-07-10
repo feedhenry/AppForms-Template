@@ -19,7 +19,7 @@ catch (e) {
   console.log('Could not resolve wufoo_config.js module');
 }
 
-var wufoo_config = wufoo_config_module ? wufoo_config_module : {};
+var wufoo_config = wufoo_config_module ? wufoo_config_module : {wufoo_config:{}};
 
 var CACHE_EXPIRY;
 try {

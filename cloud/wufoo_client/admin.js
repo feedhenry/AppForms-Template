@@ -11,7 +11,7 @@ catch (e) {
   console.log('Could not resolve wufoo_config.js module');
 }
 
-var wufoo_config = wufoo_config_module ? wufoo_config_module.wufoo_config : {};
+var wufoo_config = wufoo_config_module ? wufoo_config_module.wufoo_config : {wufoo_config:{}};
 
 var api_config = {
   "login_host": "secure.wufoo.eu",
