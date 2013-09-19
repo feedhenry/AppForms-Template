@@ -4,7 +4,8 @@
   "dependencies": {
     "cheerio": "0.10.8",
     "wrench": "1.4.4",
-    "async" : "0.2.6"
+    "async" : "0.2.6",
+    "grunt": "0.3.17"
   },
   "devDependencies"  : {
     "underscore" : "1.4.4",
