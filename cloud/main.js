@@ -139,6 +139,7 @@ exports.getForm = function (params, callback) {
 
     // update dates are different, get full form data
     var form = res || {};
+    form["Hash"] = form_hash;
     async.parallel([function (cb) {
       wufoo_api.getFormFields(form_hash, cb); // essential data, let async pass error to main callback
     }, function (cb) {
@@ -423,30 +424,72 @@ exports.getForms = function (params, callback) {
   var memo = logger.onStart("getForms",null, params);
   // can't filter forms list endpoint by hash, so get all and filter them by hash here
   var hashes = wufoo_config.wufoo_config.form_hashes || (wufoo_config.wufoo_config.form_hash ? [wufoo_config.wufoo_config.form_hash] : []);
-  wufoo_api.getForms(function (err, results) {
-    if (err) {
-      logger.onError(memo,err);
-      return callback(null, err);
-    }
-    // filter out forms we want if certain form hashes are configured
-    var forms = results.Forms;
-    if (hashes != null && hashes.length > 0) {
-      forms = _(forms).filter(function (form) {
-        return hashes.indexOf(form.Hash) > -1;
-      });
-    }
-    forms.map(function (form) {
-      // minimum amount required
-      return getMinFormData(form);
-    });
 
-    logger.onStop(memo);
-    return callback(null, {
-      data: forms,
-      config: require('./client_config.js').config
+  var forms = [];
+  if( hashes != null && hashes.length > 0 ) {
+    var itemCallback = function(err, res) {
+      console.log('ItemCallback for async Series to get Forms : ', res);
+    }
+
+    async.forEachSeries(hashes, function(hash, itemCallback) {
+
+      wufoo_api.getForm(hash, function (err, result) {
+        if (err) {
+          logger.onError(memo,err);
+          return callback(null, err);
+        }
+
+        // HACK for Wufo having changed their form hashes...
+        // Update the hash in the result to match the one we are using
+        result["Hash"] = hash;
+
+        forms.push(result);
+        itemCallback(err, result);
+      });
+    }, function(err) {
+      if (err) {
+        logger.onError(memo,err);
+        return callback(null, err);
+      }
+
+      forms.map(function (form) {
+        // minimum amount required
+        return getMinFormData(form);
+      });
+
+      logger.onStop(memo);
+      return callback(null, {
+        data: forms,
+        config: require('./client_config.js').config
+      });
+     });
+  } else {
+    wufoo_api.getForms(function (err, results) {
+      if (err) {
+        logger.onError(memo,err);
+        return callback(null, err);
+      }
+      // filter out forms we want if certain form hashes are configured
+      var forms = results.Forms;
+      if (hashes != null && hashes.length > 0) {
+        forms = _(forms).filter(function (form) {
+          return hashes.indexOf(form.Hash) > -1;
+        });
+      }
+      forms.map(function (form) {
+        // minimum amount required
+        return getMinFormData(form);
+      });
+
+      logger.onStop(memo);
+      return callback(null, {
+        data: forms,
+        config: require('./client_config.js').config
+      });
     });
-  });
+  }
 };
+
 var truncate=function(o,len, chars) {
   if(o=== null || o === undefined) {
     return "";
@@ -536,7 +579,7 @@ exports.fh_logger_store = function (params, callback) {
       }
     }, function(err, data) {
       if (err) return cb(err);
-      
+
       logger.info('data=', data);
       return cb(null, data);
     });

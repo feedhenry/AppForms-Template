@@ -2,6 +2,10 @@
 Component: AppForms Phase II
 ----------------------------------------------------------------------
 
+0.3.9 - 2013-10-01 - IR211 - Damian Beresford
+----------------------------------------------------------------------
+* #4864 - Zendesk #2305 WuFoo have changed their form hashes 
+
 0.3.7 - 2013-04-25 - IR200 - Jim O'Leary
 ----------------------------------------------------------------------
 * 3793 : App Form Phase II : fix cloud package.json versions
