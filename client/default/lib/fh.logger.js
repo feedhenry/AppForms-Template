@@ -80,7 +80,7 @@
           $fh.send({
             "type": "email",
             "to": App.config.getValueOrDefault('log_email') || 'test@example.com',
-            "subject": "Wufoo App Logs",
+            "subject": "App Forms App Logs",
             "body": "Device Environment:\n" + JSON.stringify(env, null, 2) + "\n\nApp Logs:\n" + str
           }, function () {
             $fh.logger.debug('LOGS SENT OK');

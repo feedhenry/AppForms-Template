@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget id="com.feedhenry.wufoo.integration" version="" width="320" height="480" start="index.html">
-<title>WuFoo App</title>
-<description>Wufoo App</description>
+<widget id="com.feedhenry.appforms.integration" version="" width="320" height="480" start="index.html">
+<title>App Forms App</title>
+<description>App Forms App</description>
 <author name="" email="" url=""></author>
 <license></license>
 </widget>

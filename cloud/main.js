@@ -418,7 +418,7 @@ exports.submitChunk= function (params, callback) {
 
 
 /*
- * Here we get a list of available Wufoo forms
+ * Here we get a list of available App Forms forms
  */
 exports.getForms = function (params, callback) {
   var memo = logger.onStart("getForms",null, params);

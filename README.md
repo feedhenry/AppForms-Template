@@ -1,4 +1,4 @@
-FedHenry Wufoo Template App v2
+FedHenry App Forms Template App v2
 -------------------------------
 This template app is automatically configured via the App Studio.
 

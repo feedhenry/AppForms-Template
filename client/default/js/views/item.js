@@ -28,7 +28,7 @@ ItemView = Backbone.View.extend({
 
   renderId: function() {
     if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
-      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+      return "App Forms Id : " + this.model.get("Entry").EntryId;
     }
     if(this.model.idValue) {
       return this.model.idValue;
