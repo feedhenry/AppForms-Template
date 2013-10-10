@@ -1,4 +1,4 @@
-/*! FeedHenry-Wufoo-App-Generator - v0.3.9 - 2013-10-01
+/*! FeedHenry-App-Forms-App-Generator - v0.3.9 - 2013-10-10
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -2540,7 +2540,7 @@ ItemView = Backbone.View.extend({
 
   renderId: function() {
     if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
-      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+      return "App Forms Id : " + this.model.get("Entry").EntryId;
     }
     if(this.model.idValue) {
       return this.model.idValue;
@@ -5119,7 +5119,7 @@ DraftView = Backbone.View.extend({
   },
   renderId: function() {
     if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
-      return "Wufoo Id : " + this.model.get("Entry").EntryId;
+      return "App Forms Id : " + this.model.get("Entry").EntryId;
     }
     if(this.model.idValue) {
       return this.model.idValue;
