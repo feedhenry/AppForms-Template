@@ -2,10 +2,11 @@ FieldCustomDateView = FieldView.extend({
   extension_type: 'fhdate',
 
   templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="date">'
+    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="fhdate">'
   },
   initialize: function() {
     FieldView.prototype.initialize.call(this);
+    this.default_date_format = "DD-MM-YYYY";
     this.on('visible',this.clearError);
   },
 
@@ -21,7 +22,7 @@ FieldCustomDateView = FieldView.extend({
 
     // add to dom
     this.options.parentEl.append(this.$el);
-    this.$el.find('input[type="date"]').mobiscroll().date({theme:'android',display:'bottom',dateOrder : "ddmmyy"});
+    this.$el.find('input[type="fhdate"]').mobiscroll().date({theme:'android',display:'bottom',dateOrder : "ddmmyy"});
     this.show();
   },
 
@@ -29,7 +30,7 @@ FieldCustomDateView = FieldView.extend({
     if (value && !_.isEmpty(value)) {
       $.each(value, function(id, val) {
         if (val && !_.isEmpty(val)) {
-          var formated = new moment(val,"DD-MM-YYYY").format("YYYY-MM-DD");
+          var formated = new moment(val, this.default_date_format).format("YYYY-MM-DD");
           $("#" + id).val(formated);
         }
       });
@@ -38,7 +39,7 @@ FieldCustomDateView = FieldView.extend({
 
     value = {};
     if(val !== "") {
-      value[this.model.get('ID')] = new moment(val).format('DD-MM-YYYY');
+      value[this.model.get('ID')] = new moment(val).format(this.default_date_format);
     }
     return value;
   },
@@ -53,6 +54,5 @@ FieldCustomDateView = FieldView.extend({
     FieldView.prototype.contentChanged.apply(this,arguments);
     this.clearError();
   }
-
 
 });
