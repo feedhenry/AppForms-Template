@@ -40,27 +40,36 @@ PendingListView = Backbone.View.extend({
 
         loadingView.updateProgress(c * 100 / tasks.length);
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
-        model.load(function (err,actual){
-          var json = actual.toJSON();
-          loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
-          $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
-          model.destroy();
-
-          return App.collections.pending_submitting.create(json,{},function (err){
-            loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
-            c += 1;
-            loadingView.updateProgress(c * 100 / tasks.length);
-            if(!err) {
-              loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
-              //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-              // to make sure it is re-created and not removed below by model.destroy.
-            } else {
-              loadingView.updateMessage("Submitting " + c + " failed");
-            }
-
-            callback.apply(self,arguments);
-          });
+        model.coreModel.upload(function(){});
+        model.coreModel.on("submitted",function(err){
+          if (!err){
+            loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+          }else{
+            loadingView.updateMessage("Submitting " + c + " failed");
+          }
+          callback(null);
         });
+        // model.load(function (err,actual){
+        //   var json = actual.toJSON();
+        //   loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+        //   $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
+        //   model.destroy();
+
+        //   return App.collections.pending_submitting.create(json,{},function (err){
+        //     loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
+        //     c += 1;
+        //     loadingView.updateProgress(c * 100 / tasks.length);
+        //     if(!err) {
+        //       loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+        //       //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+        //       // to make sure it is re-created and not removed below by model.destroy.
+        //     } else {
+        //       loadingView.updateMessage("Submitting " + c + " failed");
+        //     }
+
+        //     callback.apply(self,arguments);
+        //   });
+        // });
       };
     });    // Kick things off by fetching when all stores are initialised
 
@@ -119,7 +128,7 @@ PendingListView = Backbone.View.extend({
   },
 
   appendWaitingForm: function(form) {
-    var view = new ItemView({
+    var view = new PendingWaitingView({
       model: form
     });
     $('.pending_waiting_list', this.el).append(view.render().el);

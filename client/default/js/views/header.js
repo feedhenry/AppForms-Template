@@ -63,11 +63,11 @@ HeaderView = Backbone.View.extend({
           return func.call(self,args);
         } finally {
           if(clear && App.views.form){
-            App.views.form.clearFieldChanged();
+            App.views.form=null;
           }
         }
       };
-      if(skip || App.views.form == null|| (App.views.form && !App.views.form.hasFieldChanged())) {
+      if(skip || App.views.form == null || App.views.form.readonly) {
         return proceed();
       } else {
         var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
@@ -125,7 +125,7 @@ HeaderView = Backbone.View.extend({
     App.views.sent_list.hide();
     App.views.settings.hide();
     if (_.isObject(App.views.form)) {
-      App.views.form.hide();
+      App.views.form.el.hide();
       //App.views.form = null;
     }
   },

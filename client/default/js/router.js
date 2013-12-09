@@ -26,7 +26,7 @@ App.Router = Backbone.Router.extend({
     "*path": "form_list" // Default route
   },
 
-  initialize: function () {
+  initialize: function() {
     _.bindAll(this);
   },
 
@@ -45,19 +45,28 @@ App.Router = Backbone.Router.extend({
     App.views.header.showHome();
 
     // store error handling
-    _(App.collections).forEach(function (collection) {
-      collection.on('error', function (collection, msg , options) {
+    _(App.collections).forEach(function(collection) {
+      collection.on('error', function(collection, msg, options) {
         $fh.logger.error('collection error:\"' + msg + '\"');
       });
-      collection.store.on('error', function (msg) {
+      collection.store.on('error', function(msg) {
         $fh.logger.error('collection store error: msg=\"' + msg + '\"');
       });
     });
-
-    $fh.ready({},this.onReady);
+    var self=this;
+    $fh.ready({}, function() {
+      $fh.forms.init({
+        "config": {
+          "cloudHost": "http://127.0.0.1:3001"
+        }
+      }, function() {
+        self.onReady()
+      });
+    });
   },
 
   onReady: function() {
+
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
@@ -71,11 +80,11 @@ App.Router = Backbone.Router.extend({
     var banner = false;
     $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
     $fh.logger.info(" ======================================================");
-    $('#fh_wufoo_banner .list li').each(function(i , e) {
+    $('#fh_wufoo_banner .list li').each(function(i, e) {
       $fh.logger.info(" = " + $(e).text());
       banner = true;
-    } );
-    if(!banner) {
+    });
+    if (!banner) {
       $fh.logger.info(" = Dev Mode ");
     }
 
@@ -124,21 +133,20 @@ App.Router = Backbone.Router.extend({
     this.fetchCollections("reloading forms");
   },
 
-  fetchCollections: function(msg,to) {
+  fetchCollections: function(msg, to) {
     this.loadingView.show(msg);
-    this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
-
+    // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
     App.collections.forms.fetch();
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
-    App.collections.pending_review.fetch();
+    // App.collections.pending_review.fetch();
   },
 
   fetchTimeout: function() {
     clearTimeout(this.fetchTo);
-    this.fetchTo= null;
+    this.fetchTo = null;
     this.loadingView.hide();
     App.resumeFetchAllowed = false;
     this.fullyLoaded = true;
@@ -151,11 +159,11 @@ App.Router = Backbone.Router.extend({
   },
 
   onTimeoutChanged: function() {
-    var timeout= App.config.getValueOrDefault("timeout");
+    var timeout = App.config.getValueOrDefault("timeout");
     if (_.isNumber(timeout)) {
-      $fh.ready({}, function(){
+      $fh.ready({}, function() {
         $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-        $fh.legacy.fh_timeout=timeout * 1000;
+        $fh.legacy.fh_timeout = timeout * 1000;
       });
     }
   },
@@ -177,9 +185,13 @@ App.Router = Backbone.Router.extend({
 
   onWhitelistChanged: function() {
     var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.find(white_list, function(m){ return this.props.uuid.match(Utils.toRegExp(m)); },this);
+    var listed = _.find(white_list, function(m) {
+      return this.props.uuid.match(Utils.toRegExp(m));
+    }, this);
     // on start up the setting icon may not be rendered yet
-    setTimeout(function (){$('a.settings').toggle(!!listed);},500);
+    setTimeout(function() {
+      $('a.settings').toggle( !! listed);
+    }, 500);
   },
 
   onDefaultsChanged: function() {

@@ -5,9 +5,24 @@ DraftItemView = ItemView.extend({
   },
 
   show: function() {
-    this.model.load(function (err,actual ){
-      App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
-      App.views.form.render();
+    App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
     });
+    
+    // this.model.load(function (err,actual ){
+    //   App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
+    //   App.views.form.render();
+    // });
+  },
+  getItemTime:function(){
+    return "Saved: "+this.model.get("saveDate");
+  },
+  getIdText:function(){
+    return "FormId: "+this.model.get("formId");
   }
 });

@@ -4,10 +4,10 @@ PendingSubmittedItemView = ItemView.extend({
   },
 
   render: function() {
-    var time = new moment(this.model.get('submittedAt')).format('HH:mm:ss DD/MM/YYYY');
+    var time = new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
+      name: this.model.get('formName'),
+      id: this.model.get("formId"),
       timestamp: time
     });
 
@@ -16,10 +16,15 @@ PendingSubmittedItemView = ItemView.extend({
   } ,
 
   show: function() {
-    this.model.load(function (err,actual ){
-      App.views.form = new SentView({model: new DraftModel(actual.toJSON())});
-      App.views.form.render();
+    App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
     });
+    App.views.form.readOnly();
 
   }
 
