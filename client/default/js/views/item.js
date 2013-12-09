@@ -47,9 +47,9 @@ ItemView = Backbone.View.extend({
       template = this.templates.item_failed;
     }
     var item = _.template(template, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
-      timestamp: time,
+      name: this.model.get('formName'),
+      id: this.getIdText(),
+      timestamp: this.getItemTime(),
       error_type: (error && error.type ) ? error.type : null,
       error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
@@ -71,11 +71,13 @@ ItemView = Backbone.View.extend({
 
   submit: function() {
     var model = this.model;
-    model.load(function (err,actual ){
-      var json = actual.toJSON();
-      model.destroy();
-      App.collections.pending_submitting.create(json);
+    model.coreModel.upload(function(){
     });
+    // model.load(function (err,actual ){
+    //   var json = actual.toJSON();
+    //   model.destroy();
+    //   App.collections.pending_submitting.create(json);
+    // });
 
     return false;
   },

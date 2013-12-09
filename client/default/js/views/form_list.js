@@ -17,10 +17,10 @@ FormListView = Backbone.View.extend({
     _.bindAll(this, 'render', 'appendForm');
     this.views = [];
 
-    App.collections.forms.bind('reset', function (collection, options) {
+    App.collections.forms.bind('reset', function(collection, options) {
       if (options == null || !options.noFetch) {
         $fh.logger.debug('reset forms collection');
-        App.collections.forms.each(function (form) {
+        App.collections.forms.each(function(form) {
           form.fetch();
         });
       }
@@ -34,21 +34,21 @@ FormListView = Backbone.View.extend({
     App.router.reload();
   },
 
-  show: function () {
+  show: function() {
     App.views.header.markActive('.fh_wufoo_home');
     $(this.el).show();
   },
 
-  hide: function () {
+  hide: function() {
     $(this.el).hide();
   },
 
   renderErrorHandler: function(msg) {
     try {
-      if(msg == null || msg.match("error_ajaxfail")) {
+      if (msg == null || msg.match("error_ajaxfail")) {
         msg = "An unexpected error occurred.";
       }
-    } catch(e) {
+    } catch (e) {
       msg = "An unexpected error occurred.";
     }
     var html = _.template(this.templates.error, {
@@ -67,10 +67,12 @@ FormListView = Backbone.View.extend({
     // Add list
     $(this.el).append(this.templates.list);
 
-    if(App.collections.forms.models.length) {
+    if (App.collections.forms.models.length) {
       // Add header
       $('ul', this.el).append(this.templates.header);
-      _(App.collections.forms.models).forEach(function(form) {this.appendForm(form);}, this);
+      _(App.collections.forms.models).forEach(function(form) {
+        this.appendForm(form);
+      }, this);
     } else {
       this.renderErrorHandler(arguments[1]);
     }
@@ -78,16 +80,18 @@ FormListView = Backbone.View.extend({
   },
 
   appendForm: function(form) {
-    var view = new ShowFormButtonView({model: form});
+    var view = new ShowFormButtonView({
+      model: form
+    });
     this.views.push(view);
     $('ul', this.el).append(view.render().el);
   },
 
-  showSettings: function () {
+  showSettings: function() {
     App.views.header.showSettings();
   },
 
-  showAbout: function () {
+  showAbout: function() {
     App.views.header.showAbout();
   }
 });

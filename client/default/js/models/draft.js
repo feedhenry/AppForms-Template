@@ -1,23 +1,10 @@
-DraftModel = FormModel.extend({
-  idAttribute: 'id',
-  sync: FHBackboneDataActSyncFn,
-
-  reInitPages: function () {
-    // Do Nothing
-  }
-
+DraftModel = SubmissionModel.extend({
 });
 
-
-DraftsCollection = Backbone.Collection.extend({
+DraftsCollection = SubmissionCollection.extend({
   model: DraftModel,
-  store: new FHBackboneIndexedDataActSync("drafts"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    $fh.logger.debug(attributes);
-    attributes.savedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
+  status:"draft",
+  store: new FHBackboneIndexedDataActSync("drafts")
 });
 
 App.collections.drafts = new DraftsCollection();

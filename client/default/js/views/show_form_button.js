@@ -22,7 +22,7 @@ ShowFormButtonView = Backbone.View.extend({
     var errorLoading = this.model.get('fh_error_loading');
     var enabled = fullyLoaded || !errorLoading;
     html = _.template(this.templates.form_button, {
-      name: this.model.get("Name"),
+      name: this.model.get("name"),
       enabledClass: enabled ? 'button-main' : '',
       dataClass: errorLoading ? 'fetch_error' : fullyLoaded ? 'fetched' : 'fetching'
     });
@@ -38,14 +38,16 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   show: function() {
-    var draft = new DraftModel(this.model.toJSON());
-    App.views.form = new DraftView({
-      model: draft
+    App.views.header.hideAll();
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "form":this.model.coreModel,
+      "autoShow":true
     });
-    App.views.form.render();
+   
   },
 
-  fetch: function () {
+  fetch: function() {
     // show loading view
     var loadingView = new LoadingView(this.model);
     loadingView.show('Syncing form');
