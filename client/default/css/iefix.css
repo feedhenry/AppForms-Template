@@ -1,0 +1,7 @@
+/** IE10 removed support for conditional comment, to target css for IE10, see http://www.impressivewebs.com/ie10-css-hacks/ **/
+@media screen and (min-width:0\0) {
+  .segmented-controller li {
+    width: 24% !important;
+    float: left !important;
+  }
+}

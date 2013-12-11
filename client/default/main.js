@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2013-10-31
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2013-12-11
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2013 FeedHenry */
 
@@ -3803,8 +3803,8 @@ FieldGeoView = FieldView.extend({
     var ds = new moment().format('YYYY-MM-DD');
     var input = $('input', this.$el);
 
-    $fh.geo(function(res) {
-      var location = '(' + res.lat + ', ' + res.lon + ')';
+    navigator.geolocation.getCurrentPosition(function(res) {
+      var location = '(' + res.coords.latitude + ', ' + res.coords.longitude + ')';
       input.val(location);
       self.contentChanged();
     }, function(msg, err) {
@@ -3845,7 +3845,7 @@ FieldGeoENView = FieldView.extend({
     var ds = new moment().format('YYYY-MM-DD');
     var input = $('input', this.$el);
 
-    $fh.geo(function(res) {
+    navigator.geolocation.getCurrentPosition(function(res) {
       var en_location = self.convertLocation(res);
       var location = '(' + en_location.easting + ', ' + en_location.northing + ')';
       input.val(location);
@@ -3857,8 +3857,8 @@ FieldGeoENView = FieldView.extend({
   },
 
   convertLocation: function(location) {
-    var lat = location.lat;
-    var lon = location.lon;
+    var lat = location.coords.latitude;
+    var lon = location.coords.longitude;
     var params = {
       lat: function() {
         return lat;
@@ -4065,6 +4065,11 @@ FieldCameraView = FieldView.extend({
     var options = this.parseCssClassCameraOptions();
     // Merge
     camOptions = _.defaults(options, camOptions);
+
+    //wp8 need to use data URL
+    if(window.device && window.device.platform && window.device.platform.indexOf("Win32NT") > -1){
+      camOptions.destinationType = Camera.DestinationType.DATA_URL;
+    }
 
     if (typeof navigator.camera === 'undefined') {
       this.imageSelected(this.sampleImage());
@@ -4668,11 +4673,9 @@ FieldMapView = FieldView.extend({
     // Merge
     this.mapSettings = _.defaults(options, this.mapSettings);
 
-    $fh.geo({
-      interval: 0
-    }, function(geoRes) {
+    navigator.geolocation.getCurrentPosition(function(geoRes) {
       // Override with geo, otherwise use defaults
-      var location ={lat:geoRes.lat,lon:geoRes.lon};
+      var location ={lat:geoRes.coords.latitude,lon:geoRes.coords.longitude};
 
       var matches;
       if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
