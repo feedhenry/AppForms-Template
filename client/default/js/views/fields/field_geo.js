@@ -34,8 +34,8 @@ FieldGeoView = FieldView.extend({
     var ds = new moment().format('YYYY-MM-DD');
     var input = $('input', this.$el);
 
-    $fh.geo(function(res) {
-      var location = '(' + res.lat + ', ' + res.lon + ')';
+    navigator.geolocation.getCurrentPosition(function(res) {
+      var location = '(' + res.coords.latitude + ', ' + res.coords.longitude + ')';
       input.val(location);
       self.contentChanged();
     }, function(msg, err) {

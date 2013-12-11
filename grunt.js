@@ -114,19 +114,22 @@ module.exports = function(grunt) {
         // NOTE : current match is src not starting with lib (a simpler /^js\// would also work),
         // TODO : minifying mobiscroll seems to cause a problem so I'm adding it to main.js for the moment
         // TODO : minifying jquery-aop seems to cause a problem on samsung galaxy mini so I'm adding it to main.js for the moment
+        
 //        src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll|jquery-aop)/)),
         src: ['<banner>'].concat(grunt.helper('matchFiles', /^(?!lib\/)|(mobiscroll)/)),
         dest: 'dist-dev/client/default/main.js'
       },
       lib: {
-        src: ['<banner>'].concat(grunt.helper('matchFiles', /^lib\//)),
+        //jpeg_encoder_basic.js cause problem on wp8, load it separately
+        src: ['<banner>'].concat(grunt.helper('matchFiles', /^lib\/(?!jpeg)/)),
         dest: 'dist-dev/client/default/lib.js'
       }
     },
     copy: {
       dist: {
         files: {
-          'dist/client/default/' : './dist-dev/client/default/main.js'
+          'dist/client/default/' : './dist-dev/client/default/main.js',
+          'dist/client/default/jpeg_encoder_basic.js' :  './client/default/lib/jpeg_encoder/jpeg_encoder_basic.js'
         }
       }
     },
@@ -196,8 +199,9 @@ module.exports = function(grunt) {
 
 
     // add the tags and make a dev copy of the html
-    $.root().append('<script src="lib.js"></script>\n');
-    $.root().append('<script src="main.js"></script>\n');
+    $.root().append('<script src="jpeg_encoder_basic.js" type="text/javascript" charset="utf-8"></script>\n');
+    $.root().append('<script src="lib.js" type="text/javascript" charset="utf-8"></script>\n');
+    $.root().append('<script src="main.js" type="text/javascript" charset="utf-8"></script>\n');
     require('child_process').exec(' git rev-parse --short  --verify HEAD', function (error, stdout, stderr) {
       if(grunt.option("verbose")) {
         grunt.log.writeln('stdout: ' + stdout);

@@ -30,7 +30,7 @@ FieldGeoENView = FieldView.extend({
     var ds = new moment().format('YYYY-MM-DD');
     var input = $('input', this.$el);
 
-    $fh.geo(function(res) {
+    navigator.geolocation.getCurrentPosition(function(res) {
       var en_location = self.convertLocation(res);
       var location = '(' + en_location.easting + ', ' + en_location.northing + ')';
       input.val(location);
@@ -42,8 +42,8 @@ FieldGeoENView = FieldView.extend({
   },
 
   convertLocation: function(location) {
-    var lat = location.lat;
-    var lon = location.lon;
+    var lat = location.coords.latitude;
+    var lon = location.coords.longitude;
     var params = {
       lat: function() {
         return lat;

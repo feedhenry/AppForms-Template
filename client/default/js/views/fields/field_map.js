@@ -84,11 +84,9 @@ FieldMapView = FieldView.extend({
     // Merge
     this.mapSettings = _.defaults(options, this.mapSettings);
 
-    $fh.geo({
-      interval: 0
-    }, function(geoRes) {
+    navigator.geolocation.getCurrentPosition(function(geoRes) {
       // Override with geo, otherwise use defaults
-      var location ={lat:geoRes.lat,lon:geoRes.lon};
+      var location ={lat:geoRes.coords.latitude,lon:geoRes.coords.longitude};
 
       var matches;
       if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {

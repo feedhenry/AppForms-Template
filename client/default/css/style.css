@@ -1,4 +1,18 @@
 /* Phase2 styles */
+.clearfix {
+  *zoom: 1;
+}
+
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  line-height: 0;
+  content: "";
+}
+
+.clearfix:after {
+  clear: both;
+}
 
 * {
   padding: 0;
@@ -546,22 +560,90 @@ div.loading_spinner div {
   -webkit-animation: fade 1s linear infinite;
   -webkit-border-radius: 50px;
   -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  animation: fade 1s linear infinite;
+  border-radius: 50px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
 
-div.loading_spinner div.bar1 {-webkit-transform:rotate(0deg) translate(0, -142%); -webkit-animation-delay: 0s;}
-div.loading_spinner div.bar2 {-webkit-transform:rotate(30deg) translate(0, -142%); -webkit-animation-delay: -0.9167s;}
-div.loading_spinner div.bar3 {-webkit-transform:rotate(60deg) translate(0, -142%); -webkit-animation-delay: -0.833s;}
-div.loading_spinner div.bar4 {-webkit-transform:rotate(90deg) translate(0, -142%); -webkit-animation-delay: -0.75s;}
-div.loading_spinner div.bar5 {-webkit-transform:rotate(120deg) translate(0, -142%); -webkit-animation-delay: -0.667s;}
-div.loading_spinner div.bar6 {-webkit-transform:rotate(150deg) translate(0, -142%); -webkit-animation-delay: -0.5833s;}
-div.loading_spinner div.bar7 {-webkit-transform:rotate(180deg) translate(0, -142%); -webkit-animation-delay: -0.5s;}
-div.loading_spinner div.bar8 {-webkit-transform:rotate(210deg) translate(0, -142%); -webkit-animation-delay: -0.41667s;}
-div.loading_spinner div.bar9 {-webkit-transform:rotate(240deg) translate(0, -142%); -webkit-animation-delay: -0.333s;}
-div.loading_spinner div.bar10 {-webkit-transform:rotate(270deg) translate(0, -142%); -webkit-animation-delay: -0.25s;}
-div.loading_spinner div.bar11 {-webkit-transform:rotate(300deg) translate(0, -142%); -webkit-animation-delay: -0.1667s;}
-div.loading_spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -142%); -webkit-animation-delay: -0.0833s;}
+div.loading_spinner div.bar1 {
+  -webkit-transform:rotate(0deg) translate(0, -142%); 
+  -webkit-animation-delay: 0s;
+  transform:rotate(0deg) translate(0, -142%); 
+  animation-delay: 0s;
+}
+div.loading_spinner div.bar2 {
+  -webkit-transform:rotate(30deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.9167s;
+  transform:rotate(30deg) translate(0, -142%); 
+  animation-delay: -0.9167s;
+}
+div.loading_spinner div.bar3 {
+  -webkit-transform:rotate(60deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.833s;
+  transform:rotate(60deg) translate(0, -142%); 
+  animation-delay: -0.833s;
+}
+div.loading_spinner div.bar4 {
+  -webkit-transform:rotate(90deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.75s;
+  transform:rotate(90deg) translate(0, -142%); 
+  animation-delay: -0.75s;
+}
+div.loading_spinner div.bar5 {
+  -webkit-transform:rotate(120deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.667s;
+  transform:rotate(120deg) translate(0, -142%); 
+  animation-delay: -0.667s;
+}
+div.loading_spinner div.bar6 {
+  -webkit-transform:rotate(150deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.5833s;
+  transform:rotate(150deg) translate(0, -142%); 
+  animation-delay: -0.5833s;
+}
+div.loading_spinner div.bar7 {
+  -webkit-transform:rotate(180deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.5s;
+  transform:rotate(180deg) translate(0, -142%); 
+  animation-delay: -0.5s;
+}
+div.loading_spinner div.bar8 {
+  -webkit-transform:rotate(210deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.41667s;
+  transform:rotate(210deg) translate(0, -142%); 
+  animation-delay: -0.41667s;
+}
+div.loading_spinner div.bar9 {
+  -webkit-transform:rotate(240deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.333s;
+  transform:rotate(240deg) translate(0, -142%); 
+  animation-delay: -0.333s;
+}
+div.loading_spinner div.bar10 {
+  -webkit-transform:rotate(270deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.25s;
+  transform:rotate(270deg) translate(0, -142%); 
+  animation-delay: -0.25s;
+}
+div.loading_spinner div.bar11 {
+  -webkit-transform:rotate(300deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.1667s;
+  transform:rotate(300deg) translate(0, -142%); 
+  animation-delay: -0.1667s;
+}
+div.loading_spinner div.bar12 {
+  -webkit-transform:rotate(330deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.0833s;
+  transform:rotate(330deg) translate(0, -142%); 
+  animation-delay: -0.0833s;
+}
 
 @-webkit-keyframes fade {
+  from {opacity: 1;}
+  to {opacity: 0.25;}
+}
+
+@keyframes fade {
   from {opacity: 1;}
   to {opacity: 0.25;}
 }
