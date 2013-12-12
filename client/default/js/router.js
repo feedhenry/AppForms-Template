@@ -55,11 +55,10 @@ App.Router = Backbone.Router.extend({
     });
     var self=this;
     $fh.ready({}, function() {
-      $fh.forms.init({
-        "config": {
-        }
-      }, function() {
-        self.onReady()
+      $fh.init({}, function() {
+        $fh.forms.init({}, function() {
+          self.onReady();
+        });
       });
     });
   },
