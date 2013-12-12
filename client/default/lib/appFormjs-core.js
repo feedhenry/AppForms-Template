@@ -2460,7 +2460,7 @@ appForm.models.Field = (function(module) {
     module.prototype.getCheckBoxOptions = function() {
         var def = this.getFieldDefinition();
         if (def["options"]) {
-            return def["checkboxChoices"];
+            return def["options"];
         } else {
             throw ("checkbox choice definition is not found in field definition");
         }
