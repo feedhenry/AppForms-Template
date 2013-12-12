@@ -15,7 +15,7 @@ $fh.ready({}, function() {
                     App.views.form = null;
                     App.collections.drafts.fetch();
                     App.collections.pending_waiting.fetch();
-                    setTimout(function() {
+                    setTimeout(function() {
                         self.submission.upload(function(err, ut) {
                             if (err) {
                                 alert(err);
