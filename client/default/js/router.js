@@ -57,7 +57,6 @@ App.Router = Backbone.Router.extend({
     $fh.ready({}, function() {
       $fh.forms.init({
         "config": {
-          "cloudHost": "http://127.0.0.1:3001"
         }
       }, function() {
         self.onReady()
