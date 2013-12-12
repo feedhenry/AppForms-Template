@@ -1,1 +1,1 @@
-/Users/kxiang/work/appFormJSSDK/dist/appFormjs-core.js
+/Users/kxiang/work/fhjssdk/src/appforms/dist/appFormjs-core.js
