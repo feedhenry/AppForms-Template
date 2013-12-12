@@ -54,9 +54,9 @@ App.Router = Backbone.Router.extend({
       });
     });
     var self=this;
-      $fh.forms.init({
-      }, function() {
-        self.onReady()
+    $fh.init({}, function() {
+      $fh.forms.init({}, function() {
+        self.onReady();
       });
     });
   },
