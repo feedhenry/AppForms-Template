@@ -634,7 +634,9 @@ FormsCollection = Backbone.Collection.extend({
   sync: function(method, collection, options) {
     var self = this;
     if (method == "read") {
-      $fh.forms.getForms({}, function(err, formList) {
+      $fh.forms.getForms({
+        fromRemote:true
+      }, function(err, formList) {
         if (err) {
           self.trigger("error", err.getMessage());
           options.error(err);

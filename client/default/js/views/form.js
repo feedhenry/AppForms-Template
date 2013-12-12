@@ -15,7 +15,11 @@ $fh.ready({}, function() {
                     App.views.form = null;
                     App.collections.drafts.fetch();
                     App.collections.pending_waiting.fetch();
-
+                    self.submission.upload(function(err,ut){
+                        if (err){
+                            alert(err);
+                        }
+                    });
                 });
                 self.trigger("loaded");
                 if (params.autoShow) {
