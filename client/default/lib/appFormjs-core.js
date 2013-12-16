@@ -2003,6 +2003,11 @@ appForm.models = (function(module) {
                     cb(err);
                 } else {
                     var validation = res.validation;
+
+                    ///// DEBUG ONLY TODO: REMOVE THIS
+                    validation = true;
+                    ///// DEBUG ONLY TODO: REMOVE THIS
+
                     if (validation.valid) {
                         that.set("submitDate", new Date());
                         that.changeStatus(targetStatus, function(error) {
