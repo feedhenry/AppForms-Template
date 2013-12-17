@@ -27,13 +27,13 @@ ItemView = Backbone.View.extend({
   },
 
   renderId: function() {
-    if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
+    if (this.model.get("Entry") && this.model.get("Entry").EntryId) {
       return "App Forms Id : " + this.model.get("Entry").EntryId;
     }
-    if(this.model.idValue) {
+    if (this.model.idValue) {
       return this.model.idValue;
     }
-    if(this.model.id) {
+    if (this.model.id) {
       return this.model.id.split(/-/)[0];
     }
     return "new";
@@ -43,14 +43,14 @@ ItemView = Backbone.View.extend({
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
     var template = this.templates.item;
-    if(error && this.templates.item_failed) {
+    if (error && this.templates.item_failed) {
       template = this.templates.item_failed;
     }
     var item = _.template(template, {
       name: this.model.get('formName'),
       id: this.getIdText(),
       timestamp: this.getItemTime(),
-      error_type: (error && error.type ) ? error.type : null,
+      error_type: (error && error.type) ? error.type : null,
       error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
 
@@ -68,11 +68,9 @@ ItemView = Backbone.View.extend({
 
     return false;
   },
-
   submit: function() {
     var model = this.model;
-    model.coreModel.upload(function(){
-    });
+    model.coreModel.upload(function() {});
     // model.load(function (err,actual ){
     //   var json = actual.toJSON();
     //   model.destroy();
@@ -87,9 +85,11 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    this.model.load(function (err,actual ){
+    this.model.load(function(err, actual) {
       var draft = new DraftModel(actual.toJSON());
-      App.views.form = new DraftView({model: draft});
+      App.views.form = new DraftView({
+        model: draft
+      });
       App.views.form.render();
     });
   }

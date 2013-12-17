@@ -1575,17 +1575,17 @@ appForm.models = (function(module) {
         } else {
             var formDefinition = this.getProps();
             this.rulesEngine = new appForm.RulesEngine(formDefinition);
-            //DEBUG ONLY  BY PASS VALIDATE FORM
+            // //DEBUG ONLY  BY PASS VALIDATE FORM
             
-            this.rulesEngine.validateForm=function(a,cb){
-                cb(null,{
-                    validation:{
-                        valid:true    
-                    }
+            // this.rulesEngine.validateForm=function(a,cb){
+            //     cb(null,{
+            //         validation:{
+            //             valid:true    
+            //         }
                     
-                });
-            }
-            //END OF DEBUG
+            //     });
+            // }
+            // //END OF DEBUG
 
             return this.rulesEngine;
         }
@@ -1880,7 +1880,7 @@ appForm.models = (function(module) {
         "pending": ["inprogress"],
         "inprogress": ["submitted", "pending", "error", "inprogress"],
         "submitted": [],
-        "error": ["draft","pending"]
+        "error": ["draft","pending","inprogress"]
     };
 
     function newInstance(form) {
