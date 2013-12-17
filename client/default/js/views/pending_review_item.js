@@ -9,18 +9,20 @@ PendingReviewItemView = ItemView.extend({
     "timeout": "Form Submission timeout. Please try again later",
     "defaults": "Unknown Error. Please review for details"
   },
-
+  getIdText:function(){
+    return "FormId: "+this.model.get("formId");
+  },
+  getItemTime:function(){
+    return "Submit: "+this.model.get("submitDate");
+  },
   render: function() {
-    var time = new moment(this.model.get('submittedAt')).format('HH:mm:ss DD/MM/YYYY');
-    var error = this.model.get('error');
-    var item = _.template(this.templates.item, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
-      timestamp: time,
-      error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
+    App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
     });
-
-    $(this.el).html(item);
-    return this;
   }
 });
