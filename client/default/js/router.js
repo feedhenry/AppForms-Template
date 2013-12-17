@@ -139,7 +139,7 @@ App.Router = Backbone.Router.extend({
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
     App.collections.pending_waiting.fetch();
-    // App.collections.pending_review.fetch();
+    App.collections.pending_review.fetch();
   },
 
   fetchTimeout: function() {

@@ -11,14 +11,9 @@ PendingSubmittingCollection = SubmissionCollection.extend({
   store: new FHBackboneIndexedDataActSync("pending-waiting")
 });
 
-PendingReviewCollection = Backbone.Collection.extend({
-  model: PendingModel,
-  store: new FHBackboneIndexedDataActSync("pending-review"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    attributes.submittedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
+PendingReviewCollection = SubmissionCollection.extend({
+  status: "error",
+  store: new FHBackboneIndexedDataActSync("pending-waiting")
 });
 
 
