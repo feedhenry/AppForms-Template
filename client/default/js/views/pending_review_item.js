@@ -34,5 +34,7 @@ PendingReviewItemView = ItemView.extend({
       timestamp: time,
       error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
+    $(this.el).html(item);
+    return this;
   }
 });
