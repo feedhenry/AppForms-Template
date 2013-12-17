@@ -60,11 +60,7 @@ SubmissionModel = Backbone.Model.extend({
         });
     },
     refreshAllCollections: function() {
-        App.collections.drafts.fetch();
-        App.collections.sent.fetch();
-        App.collections.pending_submitting.fetch();
-        App.collections.pending_waiting.fetch();
-        App.collections.pending_review.fetch();
+        refreshSubmissionCollections();
     },
     get: function(key) {
         var res = Backbone.Model.prototype.get.apply(this, arguments);
@@ -119,3 +115,11 @@ SubmissionCollection = Backbone.Collection.extend({
         }
     }
 });
+
+function refreshSubmissionCollections() {
+    App.collections.drafts.fetch();
+    App.collections.sent.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
+    App.collections.pending_review.fetch();
+}

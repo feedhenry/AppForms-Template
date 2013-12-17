@@ -8,13 +8,12 @@ $fh.ready({}, function() {
                 self.submission.on("savedraft", function(submission) {
                     App.views.header.showDrafts(true);
                     App.views.form = null;
-                    App.collections.drafts.fetch();
+                    refreshSubmissionCollections();
                 });
                 self.submission.on("submit", function() {
                     App.views.header.showPending(true);
                     App.views.form = null;
-                    App.collections.drafts.fetch();
-                    App.collections.pending_waiting.fetch();
+                    refreshSubmissionCollections();
                     setTimeout(function() {
                         self.submission.upload(function(err, ut) {
                             if (err) {
