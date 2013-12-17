@@ -2561,7 +2561,7 @@ appForm.models.Field = (function(module) {
             "fileName": file.name,
             "fileSize": file.size,
             "fileType": file.type,
-            "fileUpdateTime": file.lastModifiedDate,
+            "fileUpdateTime": file.lastModifiedDate.getTime(),
             "hashName": "",
             "contentType":"binary"
         };
@@ -2571,6 +2571,7 @@ appForm.models.Field = (function(module) {
             if (err) {
                 hashName = name;
             }
+            hashName = "filePlaceHolder" + hashName;
             rtnJSON.hashName = hashName;
             if (isStore) {
                 appForm.utils.fileSystem.save(hashName, file, function(err, res) {
@@ -5236,6 +5237,10 @@ function rulesEngine (formDef) {
           if (err) return cb(err);
           var fieldDefinition = fieldMap[fieldId];
 
+          // Check if the array index is within the required range
+          // This means either a single required field (i.e. not repeating & index = 0
+          // OR, a repeating field & index < minRepeat
+
           getValidatorFunction(fieldDefinition.type, function (err, validator) {
             if (err) return cb(err);
 
@@ -5589,6 +5594,12 @@ function rulesEngine (formDef) {
       }
 
       function validatorFile (fieldValue, fieldDefinition, previousFieldValues, cb) {
+
+        if( fieldValue instanceof HTMLInputElement || fieldValue instanceof File ) {
+          // Happy Days!!!!
+          return cb();
+        }
+
         if(typeof(fieldValue) !== "object"){
           return cb(new Error("Expected object but got" + typeof(fieldValue)));
         }
