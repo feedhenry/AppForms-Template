@@ -2938,6 +2938,11 @@ FieldFileView = FieldView.extend({
     this.fileObjs=[];
     FieldView.prototype.initialize.apply(this,arguments);
   },
+  validate: function(e) {
+    if (App.config.validationOn) {
+      this.trigger("checkrules");
+    }
+  },
   contentChanged: function(e) {
 
     var self = this;
@@ -3365,6 +3370,11 @@ FieldSignatureView = FieldView.extend({
     html.on("click", function() {
       self.showSignatureCapture(index);
     });
+  },
+  validate: function(e) {
+    if (App.config.validationOn) {
+      this.trigger("checkrules");
+    }
   },
   // render: function() {
   //   var self = this;
@@ -4258,7 +4268,7 @@ var FromJsonView = BaseView.extend({
       rawMode : true,
       rawData : jsonData
     }
-    var formView=new FormView({parentEl:$("#backbone #resultArea")});
+    var formView=new FormView({parentEl:"#backbone #resultArea"});
     formView.loadForm(params,function(err){
       formView.render();
     });
