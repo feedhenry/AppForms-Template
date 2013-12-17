@@ -15,7 +15,7 @@ PendingReviewItemView = ItemView.extend({
   getItemTime:function(){
     return "Submit: "+this.model.get("submitDate");
   },
-  render: function() {
+  show: function() {
     App.views.header.hideAll();
     var submission=this.model.coreModel;
     App.views.form=new FormView({
