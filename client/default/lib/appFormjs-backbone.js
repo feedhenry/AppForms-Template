@@ -3371,6 +3371,11 @@ FieldSignatureView = FieldView.extend({
       self.showSignatureCapture(index);
     });
   },
+  validate: function(e) {
+    if (App.config.validationOn) {
+      this.trigger("checkrules");
+    }
+  },
   // render: function() {
   //   var self = this;
   //   this.$el.append(_.template(this.templates.input, {
