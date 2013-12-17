@@ -3554,7 +3554,7 @@ appForm.models = (function(module) {
                         if (err) {
                             cb(err);
                         } else {
-                            if (res.status == "ok") {
+                            if (res.status == 200) {
                                 fileTask.updateDate = appForm.utils.getTime();
 
                                 var curTask = progress;
