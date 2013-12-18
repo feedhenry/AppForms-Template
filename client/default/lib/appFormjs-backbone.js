@@ -1953,7 +1953,7 @@ FieldView = Backbone.View.extend({
     var title=name;
     var required="";
     var helpText="";
-    if (this.model.isRepeating()){
+    if (this.model.isRepeating() && index < this.curRepeat){
       title+=" (" + (index+1) + ") ";
     }
     // if (this.model.isRequired()){
@@ -4125,6 +4125,7 @@ var FormView = BaseView.extend({
     this.rebindButtons();
     this.pageViews[0].show();
     this.checkPages();
+    this.checkRules();
   },
   nextPage: function() {
     this.hideAllPages();
@@ -4268,7 +4269,7 @@ var FromJsonView = BaseView.extend({
       rawMode : true,
       rawData : jsonData
     }
-    var formView=new FormView({parentEl:"#backbone #resultArea"});
+    var formView=new FormView({parentEl:$("#backbone #resultArea")});
     formView.loadForm(params,function(err){
       formView.render();
     });
