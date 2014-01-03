@@ -5,7 +5,7 @@ PendingSubmittingItemView = ItemView.extend({
   //Added submit button for test only, remove after
 
   render: function() {
-    var time = new moment(this.model.get('uploadStartDate')).format('HH:mm:ss DD/MM/YYYY');
+    var time = new moment(this.model.get('uploadStartDate') || new Date()).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
       name: this.model.get('formName'),
       id: this.model.get("formId"),

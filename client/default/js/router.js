@@ -135,11 +135,7 @@ App.Router = Backbone.Router.extend({
     this.loadingView.show(msg);
     // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
     App.collections.forms.fetch();
-    App.collections.drafts.fetch();
-    App.collections.sent.fetch();
-    App.collections.pending_submitting.fetch();
-    App.collections.pending_waiting.fetch();
-    // App.collections.pending_review.fetch();
+    refreshSubmissionCollections();
   },
 
   fetchTimeout: function() {

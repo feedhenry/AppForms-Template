@@ -30,8 +30,7 @@ SubmissionModel = Backbone.Model.extend({
         var coreModel = this.coreModel;
         var self = this;
         coreModel.on("inprogress", function(ut) {
-            App.collections.pending_waiting.fetch();
-            App.collections.pending_submitting.fetch();
+            self.refreshAllCollections();
             AlertView.showAlert({
                 "text": "Form submission started."
             }, "success", 5000);
@@ -49,20 +48,19 @@ SubmissionModel = Backbone.Model.extend({
                 AlertView.showAlert({
                     "text": "Form submission submitted."
                 }, "success", 5000);
-                App.collections.pending_submitting.fetch();
-                App.collections.sent.fetch();
             } else {
                 AlertView.showAlert({
                     "text": "Failed:" + err
                 }, "success", 5000);
-                App.collections.pending_submitting.fetch();
-                App.collections.pending_review.fetch();
             }
+            self.refreshAllCollections();
         });
         coreModel.on("submit", function() {
-            App.collections.drafts.fetch();
-            App.collections.pending_waiting.fetch();
+            self.refreshAllCollections();
         });
+    },
+    refreshAllCollections: function() {
+        refreshSubmissionCollections();
     },
     get: function(key) {
         var res = Backbone.Model.prototype.get.apply(this, arguments);
@@ -117,3 +115,11 @@ SubmissionCollection = Backbone.Collection.extend({
         }
     }
 });
+
+function refreshSubmissionCollections() {
+    App.collections.drafts.fetch();
+    App.collections.sent.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
+    App.collections.pending_review.fetch();
+}
