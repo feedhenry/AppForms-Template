@@ -3609,15 +3609,25 @@ appForm.models = (function(module) {
         if(that.getRetryAttempts() <= appForm.config.get("submissionRetryAttempts")){
           that.setRetryNeeded(true);
           console.log(err);
-          cb();
+          that.saveLocal(function(err){
+            if(err) console.log(err);
+            cb();
+          });
         } else { //The number of retry attempts exceeds the maximum number of retry attempts allowed, flag the upload as an error.
           that.setRetryNeeded(false);
           that.error(err, function() {
           });
-          cb(err);
+          that.saveLocal(function(_err){
+            if(_err) console.log(_err);
+            cb(err);
+          });
         }
       }else{//no error.
         that.setRetryNeeded(false);
+
+        that.saveLocal(function(_err){
+          if(_err) console.log(_err);
+        });
         that.submissionModel(function(err,submission){
           if (err){
             cb(err);
