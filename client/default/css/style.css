@@ -259,10 +259,10 @@ td.active .page_title {
   margin-bottom: 0px;
 }
 
-.field_container.required label:first-child:after {
-  color: #e32;
-  content: ' *';
-  display: inline;
+.field_container .required:first-child:after{
+    color: #e32;
+    content: ' *';
+    display: inline;
 }
 
 .likert_subfield {

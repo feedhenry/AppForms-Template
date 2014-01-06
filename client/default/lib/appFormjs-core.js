@@ -27,10 +27,7 @@ var appForm = (function(module) {
         var count=0;
         function _handle(){
             setTimeout(function(){
-
-
-                    cb();
-
+              cb();
             },1);
         }
         //init config module
@@ -2457,7 +2454,7 @@ appForm.models = (function(module) {
         return this.get("name", "unknown name");
     }
     Field.prototype.getHelpText = function() {
-        return this.get("helpText", "");
+        return this.getFieldDefinition()["helpText"] || "";
     }
     /**
      * Process an input value. convert to submission format. run field.validate before this
@@ -3697,8 +3694,9 @@ appForm.models = (function(module) {
     }
     var remoteStore = this.getRemoteStore();
     var completeSubmission = new appForm.models.FormSubmissionComplete(this);
-    remoteStore.completeSubmission(completeSubmission, function(err, res) {
+    remoteStore.create(completeSubmission, function(err, res) {
       //if status is not "completed", then handle the completion err
+      res = res || {};
       if (res.status !== "complete") {
         return that.handleCompletionError(err, res, cb);
       }
