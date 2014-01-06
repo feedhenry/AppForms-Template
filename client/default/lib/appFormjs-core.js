@@ -3625,17 +3625,18 @@ appForm.models = (function(module) {
 
     function _handler(err) {
       if (err) {
+        console.log("Err, retrying:", err);
         //If the upload has encountered an error -- flag the submission as needing a retry on the next tick -- User should be insulated from an error until the retries are finished.
         that.increRetryAttempts();
         if(that.getRetryAttempts() <= appForm.config.get("submissionRetryAttempts")){
           that.setRetryNeeded(true);
-          console.log(err);
           that.saveLocal(function(err){
             if(err) console.log(err);
             cb();
           });
         } else { //The number of retry attempts exceeds the maximum number of retry attempts allowed, flag the upload as an error.
-          that.setRetryNeeded(false);
+          that.setRetryNeeded(true);
+          that.resetRetryAttempts();
           that.error(err, function() {
             cb(err);
           });
