@@ -3960,7 +3960,7 @@ var FormView = BaseView.extend({
         if (firstView==null){
           firstView=fieldView;
         }
-        var errorMsgs = res[fieldId].errorMessages;
+        var errorMsgs = res[fieldId].fieldErrorMessage;
         for (var i = 0; i < errorMsgs.length; i++) {
           if (errorMsgs[i]) {
             fieldView.setErrorText(i, errorMsgs[i]);
