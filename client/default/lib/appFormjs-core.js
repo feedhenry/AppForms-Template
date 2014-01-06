@@ -540,6 +540,7 @@ appForm.web.ajax = (function(module) {
         _ajax({
             "url":url,
             "type":"GET",
+            "timeout" : 5000, //TODO config
             "success":function(data,text){
                 cb(null,data);
             },
@@ -567,6 +568,7 @@ appForm.web.ajax = (function(module) {
             "url":url,
             "type":"POST",
             "data":body,
+            "timeout" : 5000,// TODO Config
             "dataType":"json",
             "success":function(data,text){
                 cb(null,data);
@@ -2915,13 +2917,17 @@ appForm.models = (function(module) {
 
     function UploadManager() {
         Model.call(this, {
-            "_type": "uploadManager"
+            "_type": "uploadManager",
+            "_ludid": "uploadManager_queue"
         });
         this.set("taskQueue", []);
-        this.timeOut = 60; //60 seconds. TODO: defin in config
+        this.timeOut = 60; //60 seconds. TODO: define in config
         this.sending = false;
         this.timerInterval = 200;
         this.sendingStart = appForm.utils.getTime();
+        this.loadLocal(function(err){
+          if(err) console.log(err);
+        });
     }
     appForm.utils.extend(UploadManager, Model);
     /**
@@ -2987,6 +2993,9 @@ appForm.models = (function(module) {
                     }
                 }
             });
+            this.saveLocal(function(err){
+              if(err) console.log(err);
+            });
         } else {
             cb(null, null);
         }
@@ -3038,9 +3047,16 @@ appForm.models = (function(module) {
     }
     UploadManager.prototype.push = function(uploadTaskId) {
         this.get("taskQueue").push(uploadTaskId);
+        this.saveLocal(function(err){
+          if(err) console.log(err);
+        });
     }
     UploadManager.prototype.shift = function() {
-        return this.get("taskQueue").shift();
+        var shiftedTask = this.get("taskQueue").shift();
+        this.saveLocal(function(err){
+          if(err) console.log(err);
+        });
+        return shiftedTask;
     }
     UploadManager.prototype.rollTask = function() {
         this.push(this.shift());
@@ -3616,9 +3632,6 @@ appForm.models = (function(module) {
         } else { //The number of retry attempts exceeds the maximum number of retry attempts allowed, flag the upload as an error.
           that.setRetryNeeded(false);
           that.error(err, function() {
-          });
-          that.saveLocal(function(_err){
-            if(_err) console.log(_err);
             cb(err);
           });
         }
