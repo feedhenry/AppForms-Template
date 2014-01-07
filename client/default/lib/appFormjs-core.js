@@ -206,10 +206,10 @@ appForm.utils = (function(module) {
                     }
 
                     function _onTruncated() {
-                        writer.onwrite = _onFinished;
+                        writer.onwriteend = _onFinished;
                         writer.write(saveObj); //write method can take a blob or file object according to html5 standard.
                     }
-                    writer.onwrite = _onTruncated;
+                    writer.onwriteend = _onTruncated;
                     //truncate the file first.
                     writer.truncate(0);
                 }, function(e) {
@@ -2451,7 +2451,7 @@ appForm.models = (function(module) {
         return this.get("name", "unknown name");
     }
     Field.prototype.getHelpText = function() {
-        return this.getFieldDefinition()["helpText"] || "";
+        return this.get("helpText", "");
     }
     /**
      * Process an input value. convert to submission format. run field.validate before this
