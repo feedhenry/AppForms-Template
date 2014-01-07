@@ -2252,7 +2252,7 @@ appForm.models = (function(module) {
     Submission.prototype.clearLocalSubmissionFiles = function(cb){
       var fileEntries = this.getFileInputValues();
 
-      for(var fileEntry in fileEntries){
+      for (var i = 0, fileEntry; fileEntry = fileEntries[i]; i++) {
         var fileHashName = fileEntry.hashName;
         if(fileHashName){
           appForm.utils.fileSystem.remove(fileHashName, function(err){
