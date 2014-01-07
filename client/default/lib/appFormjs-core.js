@@ -1953,6 +1953,7 @@ appForm.models = (function(module) {
         this.set("uploadStartDate", null);
         this.set("submittedDate", null);
         this.set("userId", null);
+        this.set("filesInSubmission", {});
         this.set("deviceId", appForm.models.config.get("deviceId"));
         this.transactionMode = false;
         this.genLocalId();
@@ -2076,8 +2077,6 @@ appForm.models = (function(module) {
             }
         });
 
-
-
     }
     //joint form id and submissions timestamp.
     Submission.prototype.genLocalId = function() {
@@ -2179,6 +2178,14 @@ appForm.models = (function(module) {
             }
         }
     }
+
+    Submission.prototype.addSubmissionFile = function(fileHash){
+      var filesInSubmission = this.get("filesInSubmission", {});
+      filesInSubmission[fileHash] = true;
+      this.set("filesInSubmission", filesInSubmission);
+      this.saveLocal(function(err){if(err) console.error(err)});
+    }
+
     /**
      * Add a value to submission.
      * This will not cause the field been validated.
@@ -2211,6 +2218,10 @@ appForm.models = (function(module) {
                             that.tmpFields[fieldId].push(result);
                         }
 
+                        if(result.hashName){
+                          that.addSubmissionFile(result.hashName);
+                        }
+
                         cb(null, result);
                     }
                 });
@@ -2224,6 +2235,10 @@ appForm.models = (function(module) {
                             target.fieldValues[index] = result;
                         } else {
                             target.fieldValues.push(result);
+                        }
+
+                        if(result.hashName){
+                          that.addSubmissionFile(result.hashName);
                         }
 
                         cb(null, result);
@@ -2246,24 +2261,16 @@ appForm.models = (function(module) {
      * @return {[type]} [description]
      */
     Submission.prototype.reset = function(cb) {
-        var self = this;
-        this.clearLocalSubmissionFiles(function(err){
-          if(err) console.error(err);
-          self.set("formFields", []);
-          if(cb && typeof cb === "function") cb();
-        });
+        this.set("formFields", []);
     }
 
     Submission.prototype.clearLocalSubmissionFiles = function(cb){
-      var fileEntries = this.getFileInputValues();
+      var filesInSubmission = this.get("filesInSubmission", {});
 
-      for (var i = 0, fileEntry; fileEntry = fileEntries[i]; i++) {
-        var fileHashName = fileEntry.hashName;
-        if(fileHashName){
-          appForm.utils.fileSystem.remove(fileHashName, function(err){
-            if(err) console.error(err);
-          });
-        }
+      for (var fileHashName in filesInSubmission) {
+        appForm.utils.fileSystem.remove(fileHashName, function(err){
+          if(err) console.error(err);
+        });
       }
 
       cb();
@@ -2408,7 +2415,7 @@ appForm.models = (function(module) {
                 return cb(err);
               }
 
-              self.reset(function(){
+              self.clearLocalSubmissionFiles(function(){
                 Model.prototype.clearLocal.call(self, function(err) {
                   if (err) {
                     console.error(err);
