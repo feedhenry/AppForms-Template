@@ -151,6 +151,7 @@ appForm.utils = (function(module) {
     function isFileSystemAvailable() {
         return fileSystemAvailable;
     }
+
     //convert a file object to base64 encoded.
     function fileToBase64(file, cb) {
         if (!file instanceof File) {
@@ -227,16 +228,20 @@ appForm.utils = (function(module) {
     function remove(fileName, cb) {
         _getFileEntry(fileName, 0, {}, function(err, fileEntry) {
             if (err) {
-                console.error(err);
-                cb(err);
-            } else {
-                fileEntry.remove(function() {
-                    cb(null, null);
-                }, function(e) {
-                    // console.error(e);
-                    cb("Failed to remove file" + e);
-                });
+                if(!(err.name == "NotFoundError" || err.code == 1)){
+                  return cb(err);
+                } else {
+                  return cb(null, null);
+                }
             }
+
+            fileEntry.remove(function() {
+                cb(null, null);
+            }, function(e) {
+                // console.error(e);
+                cb("Failed to remove file" + e);
+            });
+
         });
     }
     /**
