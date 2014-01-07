@@ -548,7 +548,7 @@ appForm.web.ajax = (function(module) {
             "error":function(xhr,status,err){
                 cb(xhr);
             }
-        })
+        });
     }
     function post(url,body,cb){
         var file=false;
@@ -2240,10 +2240,30 @@ appForm.models = (function(module) {
      * Reset submission
      * @return {[type]} [description]
      */
-    Submission.prototype.reset = function() {
-        this.set("formFields", []);
-        //TODO need to clear local storage like files etc.
+    Submission.prototype.reset = function(cb) {
+        var self = this;
+        this.clearLocalSubmissionFiles(function(err){
+          if(err) console.error(err);
+          self.set("formFields", []);
+          if(cb && typeof cb === "function") cb();
+        });
     }
+
+    Submission.prototype.clearLocalSubmissionFiles = function(cb){
+      var fileEntries = this.getFileInputValues();
+
+      for(var fileEntry in fileEntries){
+        var fileHashName = fileEntry.hashName;
+        if(fileHashName){
+          appForm.utils.fileSystem.remove(fileHashName, function(err){
+            if(err) console.error(err);
+          });
+        }
+      }
+
+      cb();
+    }
+
     Submission.prototype.startInputTransaction = function() {
         this.transactionMode = true;
         this.tmpFields = {};
@@ -2368,20 +2388,33 @@ appForm.models = (function(module) {
 
     Submission.prototype.clearLocal = function(cb) {
         var self = this;
-        Model.prototype.clearLocal.call(this, function(err) {
-            if (err) {
-                return cb(err);
+
+        //remove from uploading list
+        appForm.models.uploadManager.cancelSubmission(self, function(err, uploadTask){
+            if(err){
+              console.error(err);
+              return cb(err);
             }
+
             //remove from submission list
             appForm.models.submissions.removeSubmission(self.getLocalId(), function(err) {
-                if (err) {
+              if (err) {
+                console.err(err);
+                return cb(err);
+              }
+
+              self.reset(function(){
+                Model.prototype.clearLocal.call(self, function(err) {
+                  if (err) {
+                    console.error(err);
                     return cb(err);
-                }
-                //remove from uploading list
-                appForm.models.uploadManager.cancelSubmission(self, cb);
-                //TODO reset submission
+                  }
+
+                  cb(null, null);
+                });
+              });
             });
-        });
+          });
     }
 
     return module;
@@ -2985,7 +3018,7 @@ appForm.models = (function(module) {
             this.getTaskById(uploadTId, function(err, task) {
                 if (err) {
                     console.error(err);
-                    cb(task);
+                    cb(err, task);
                 } else {
                     if (task) {
                         task.clearLocal(cb);
