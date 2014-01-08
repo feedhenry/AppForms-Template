@@ -57,7 +57,13 @@ App.Router = Backbone.Router.extend({
     $fh.ready({}, function() {
       $fh.init({}, function() {
         $fh.forms.init({}, function() {
-          $fh.forms.getTheme({"fromRemote" : true}, function(err){
+          $fh.forms.getTheme({"fromRemote" : true, "css" : true}, function(err, themeCSS){
+
+            if($('#fh_appform_style').length > 0){
+              $('#fh_appform_style').html(themeCSS);
+            } else {
+              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+            }
             if(err) console.error(err);
             self.onReady();
           });
