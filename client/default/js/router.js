@@ -57,7 +57,10 @@ App.Router = Backbone.Router.extend({
     $fh.ready({}, function() {
       $fh.init({}, function() {
         $fh.forms.init({}, function() {
-          self.onReady();
+          $fh.forms.getTheme({"fromRemote" : true}, function(err){
+            if(err) console.error(err);
+            self.onReady();
+          });
         });
       });
     });
