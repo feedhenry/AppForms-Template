@@ -2199,7 +2199,7 @@ FieldView = Backbone.View.extend({
   },
   renderButton: function(index, label, extension_type) {
     var button = $('<button>');
-    button.addClass('special_button');
+    button.addClass('special_button fh_appform_button_action');
     button.addClass(extension_type);
     button.attr("data-index", index);
     button.text(' ' + label);
@@ -2214,7 +2214,7 @@ FieldView = Backbone.View.extend({
   addButton: function(input, extension_type, label) {
     var self = this;
     var button = $('<button>');
-    button.addClass('special_button');
+    button.addClass('special_button fh_appform_button_action');
     button.addClass(extension_type);
     button.text(' ' + label);
     var img = $('<img>');
