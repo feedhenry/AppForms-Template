@@ -76,7 +76,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 }
 
 #fh_wufoo_content .field_container:hover {
-  background: #e8f8fc;
+  /*background: #e8f8fc;*/
   -webkit-transition: background 0.3s linear;
   -moz-transition: background 0.3s linear;
   -o-transition: background 0.3s linear;
