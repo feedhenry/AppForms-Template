@@ -84,7 +84,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 }
 
 #fh_wufoo_content input, #fh_wufoo_content select, #fh_wufoo_content textarea {
-  font-size: 24px;
+  /*font-size: 24px;*/
 }
 
 #fh_wufoo_sent select {
