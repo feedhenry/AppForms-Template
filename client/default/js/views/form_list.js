@@ -1,5 +1,5 @@
 
-Backbone.View.extend({
+var FormListView = Backbone.View.extend({
   el: $('#fh_wufoo_form_list'),
 
   events: {
