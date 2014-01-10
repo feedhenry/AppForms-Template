@@ -1759,7 +1759,7 @@ var FormListView = BaseView.extend({
   },
 
   templates: {
-    list: '<ul class="form_list"></ul>',
+    list: '<ul class="form_list fh_appform_body"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
     error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %><div class="loading"></div></button></li>'
   },
@@ -1909,7 +1909,7 @@ FieldView = Backbone.View.extend({
   fieldWrapper: "<div />",
   wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
-  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
+  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   instructions: '<p class="instruct fh_appform_field_instructions"><%= helpText %></p>',
   fieldActionBar: "<div class='fieldActionBar'><button class='addInputBtn special_button two_button fh_appform_button_action'>Add Input</button><button class='special_button two_button removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
   events: {
@@ -3707,7 +3707,7 @@ FieldTextView = FieldView.extend({
   template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
 });
 FieldTextareaView = FieldView.extend({
-    input:"<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input:"<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   renderEle:function(){
@@ -3818,7 +3818,7 @@ PageView=BaseView.extend({
     var self = this;
     this.fieldViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('page hidden');
+    this.$el.empty().addClass('page fh_appform_body hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 
@@ -3908,7 +3908,7 @@ var FormView = BaseView.extend({
   "submission": null,
   "fieldValue": [],
   templates: {
-    buttons: '<div id="buttons" class="fh_action_bar"><button class="saveDraft hidden button button-main fh_appform_button_action">Save Draft</button><button class="previous hidden button fh_appform_button_navigation">Previous</button><button class="next hidden button">Next</button><button class="submit hidden button button-positive fh_appform_button_action">Submit</button></div>'
+    buttons: '<div id="buttons" class="fh_action_bar fh_appform_navigation"><button class="saveDraft hidden button button-main fh_appform_button_action">Save Draft</button><button class="previous hidden button fh_appform_button_navigation">Previous</button><button class="next hidden button">Next</button><button class="submit hidden button button-positive fh_appform_button_action">Submit</button></div>'
   },
   events: {
     "click button.next": "nextPage",
