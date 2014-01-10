@@ -640,17 +640,17 @@ select {
 
 /* Positive button  */
 .button-positive {
-  background-color: #34ba15;
-  background-image: -webkit-linear-gradient(top, #34ba15 0, #2da012 100%);
-  background-image: linear-gradient(to bottom, #34ba15 0, #2da012 100%);
+  /*background-color: #34ba15;*/
+  /*background-image: -webkit-linear-gradient(top, #34ba15 0, #2da012 100%);*/
+  /*background-image: linear-gradient(to bottom, #34ba15 0, #2da012 100%);*/
   border: 1px solid #278f0f;
 }
 
 /* Negative button  */
 .button-negative {
-  background-color: #e71e1e;
-  background-image: -webkit-linear-gradient(top, #e71e1e 0,#c71a1a 100%);
-  background-image: linear-gradient(to bottom, #e71e1e 0, #c71a1a 100%);
+  /*background-color: #e71e1e;*/
+  /*background-image: -webkit-linear-gradient(top, #e71e1e 0,#c71a1a 100%);*/
+  /*background-image: linear-gradient(to bottom, #e71e1e 0, #c71a1a 100%);*/
   border: 1px solid #b51a1a;
 }
 
