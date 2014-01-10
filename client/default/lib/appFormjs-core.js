@@ -2241,7 +2241,7 @@ appForm.models = (function(module) {
                             target.fieldValues.push(result);
                         }
 
-                        if(typeof result == "object" && result.hashName){
+                        if(result != null && typeof result == "object" && result.hashName != null){
                           that.addSubmissionFile(result.hashName);
                         }
 
