@@ -104,7 +104,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 .fh_action_bar {
   color: #444;
-  background: #F4FCE8;
+  /*background: #F4FCE8;*/
   border-top: 1px solid #EDEDED;
   -webkit-border-radius: 0 0 5px 5px;
   -moz-border-radius: 0 0 5px 5px;
@@ -167,7 +167,7 @@ textarea {
 
 .special_button {
   padding: 4px;
-  font-size: 16px;
+  /*font-size: 16px;*/
   width: 100%;
   margin-top: 10px;
   line-height: 28px;
@@ -247,7 +247,7 @@ td.active .page_title {
 
 /* Custom field styling */
 .field_container label:first-child {
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .field_container span label:first-child {
@@ -370,7 +370,7 @@ table.likert {
 
 .instruct {
   margin-bottom: 10px;
-  font-size: 13px;
+  /*font-size: 13px;*/
   padding: 5px;
 }
 

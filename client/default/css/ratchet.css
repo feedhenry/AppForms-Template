@@ -594,9 +594,9 @@ select {
   display: inline-block;
   padding: 4px 12px;
   margin: 0;
-  font-weight: bold;
+  /*font-weight: bold;*/
   line-height: 18px;
-  color: #333;
+  /*color: #333;*/
   text-align: center;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);
   vertical-align: top;
@@ -626,15 +626,15 @@ select {
 .button-main,
 .button-positive,
 .button-negative {
-  color: #fff;
+  /*color: #fff;*/
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
 }
 
 /* Main button */
 .button-main {
   background-color: #1eafe7;
-  background-image: -webkit-linear-gradient(top, #1eafe7 0, #1a97c8 100%);
-  background-image: linear-gradient(to bottom, #1eafe7 0, #1a97c8 100%);
+  /*background-image: -webkit-linear-gradient(top, #1eafe7 0, #1a97c8 100%);*/
+  /*background-image: linear-gradient(to bottom, #1eafe7 0, #1a97c8 100%);*/
   border: 1px solid #117aaa;
 }
 
