@@ -1761,7 +1761,7 @@ var FormListView = BaseView.extend({
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
-    error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>'
+    error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %><div class="loading"></div></button></li>'
   },
 
   initialize: function() {
@@ -1905,7 +1905,7 @@ var FormListView = BaseView.extend({
 });
 FieldView = Backbone.View.extend({
 
-  className: 'field_container',
+  className: 'field_container fh_appform_field_area',
   fieldWrapper: "<div />",
   wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
