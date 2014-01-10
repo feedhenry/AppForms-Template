@@ -34,15 +34,19 @@ var appForm = (function(module) {
             if(err) console.error(err);
 
             //init forms module
-            if (def.updateForms==true){
-              appForm.models.forms.refresh(true,function(err){
-                if(err) console.error(err);
+            appForm.models.theme.refresh(true, function(err){
+              if(err) console.error(err);
 
+              if (def.updateForms==true){
+                appForm.models.forms.refresh(true,function(err){
+                  if(err) console.error(err);
+
+                  cb();
+                });
+              } else {
                 cb();
-              });
-            } else {
-              cb();
-            }
+              }
+            });
           });
         });
     }
@@ -2218,7 +2222,7 @@ appForm.models = (function(module) {
                             that.tmpFields[fieldId].push(result);
                         }
 
-                        if(typeof result == "object" && result.hashName){
+                        if(result != null && typeof result == "object" && result.hashName != null){
                           that.addSubmissionFile(result.hashName);
                         }
 
@@ -3919,6 +3923,10 @@ appForm.api = (function(module) {
 
     var _submissions = null;
 
+    function checkParams(){
+
+    }
+
     /**
      * Retrieve forms model. It contains forms list. check forms model usage
      * @param  {[type]}   params {fromRemote:boolean}
@@ -3926,10 +3934,21 @@ appForm.api = (function(module) {
      * @return {[type]}          [description]
      */
     function getForms(params, cb) {
-      var fromRemote = params.fromRemote;
-      if (fromRemote == undefined) {
-        fromRemote = false;
+
+      var fromRemote = false;
+      if(typeof(params) === "function"){
+        cb = params;
       }
+
+      if(cb == null){
+        console.error("No callback to getForms");
+        return;
+      }
+
+      if(params && params.fromRemote == true){
+        fromRemote = params.fromRemote;
+      }
+
       appForm.models.forms.refresh(fromRemote, cb);
     }
 
@@ -3940,6 +3959,15 @@ appForm.api = (function(module) {
      * @return {[type]}          [description]
      */
     function getForm(params, cb) {
+
+        if(typeof(params) === "function"){
+          cb = params;
+        }
+
+        if(cb == null){
+          console.error("No callback to getForms");
+          return;
+        }
         new appForm.models.Form(params, cb);
     }
 
@@ -3980,12 +4008,12 @@ appForm.api = (function(module) {
       var submissions = appForm.models.submissions;
 
       if (_submissions==null){
-        appForm.models.submissions.loadLocal(function(err){
+        submissions.loadLocal(function(err){
           if (err){
             console.error(err);
             cb(err);
           }else{
-            _submissions=appForm.models.submissions;
+            _submissions=submissions;
             cb(null,_submissions);
           }
         });
