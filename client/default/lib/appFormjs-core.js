@@ -2222,7 +2222,7 @@ appForm.models = (function(module) {
                             that.tmpFields[fieldId].push(result);
                         }
 
-                        if(result != null && typeof result == "object" && result.hashName != null){
+                        if(result != null && typeof result == "object" && result.hashName){
                           that.addSubmissionFile(result.hashName);
                         }
 
@@ -2241,7 +2241,7 @@ appForm.models = (function(module) {
                             target.fieldValues.push(result);
                         }
 
-                        if(result != null && typeof result == "object" && result.hashName != null){
+                        if(result != null && typeof result == "object" && result.hashName){
                           that.addSubmissionFile(result.hashName);
                         }
 
@@ -3923,10 +3923,6 @@ appForm.api = (function(module) {
 
     var _submissions = null;
 
-    function checkParams(){
-
-    }
-
     /**
      * Retrieve forms model. It contains forms list. check forms model usage
      * @param  {[type]}   params {fromRemote:boolean}
@@ -3934,21 +3930,10 @@ appForm.api = (function(module) {
      * @return {[type]}          [description]
      */
     function getForms(params, cb) {
-
-      var fromRemote = false;
-      if(typeof(params) === "function"){
-        cb = params;
+      var fromRemote = params.fromRemote;
+      if (fromRemote == undefined) {
+        fromRemote = false;
       }
-
-      if(cb == null){
-        console.error("No callback to getForms");
-        return;
-      }
-
-      if(params && params.fromRemote == true){
-        fromRemote = params.fromRemote;
-      }
-
       appForm.models.forms.refresh(fromRemote, cb);
     }
 
@@ -3959,15 +3944,6 @@ appForm.api = (function(module) {
      * @return {[type]}          [description]
      */
     function getForm(params, cb) {
-
-        if(typeof(params) === "function"){
-          cb = params;
-        }
-
-        if(cb == null){
-          console.error("No callback to getForms");
-          return;
-        }
         new appForm.models.Form(params, cb);
     }
 
@@ -4008,12 +3984,12 @@ appForm.api = (function(module) {
       var submissions = appForm.models.submissions;
 
       if (_submissions==null){
-        submissions.loadLocal(function(err){
+        appForm.models.submissions.loadLocal(function(err){
           if (err){
             console.error(err);
             cb(err);
           }else{
-            _submissions=submissions;
+            _submissions=appForm.models.submissions;
             cb(null,_submissions);
           }
         });

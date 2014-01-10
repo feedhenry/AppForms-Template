@@ -1907,11 +1907,11 @@ FieldView = Backbone.View.extend({
 
   className: 'field_container',
   fieldWrapper: "<div />",
-  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" class ="fh_appform_field_area" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
-  title: '<label class="<%= required %>" class="fh_appform_field_title"><%= title %> </label><%= helpText %>',
-  input: "<input data-field='<%= fieldId %>'  data-index='<%= index %>' class='fh_appform_field_input' type='<%= inputType %>'/> ",
-  instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
-  fieldActionBar: "<div class='fieldActionBar'><button class='fh_appform_button_action'>Add Input</button><button class='fh_appform_button_action'>Remove Input</button></div>",
+  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
+  title: '<label class="<%= required %>"><%= title %> </label><%= helpText %>',
+  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
+  instructions: '<p class="instruct"><%= helpText %></p>',
+  fieldActionBar: "<div class='fieldActionBar'><button class='addInputBtn special_button two_button'>Add Input</button><button class='special_button two_button removeInputBtn'>Remove Input</button></div>",
   events: {
     "change": "contentChanged",
     "blur input,select,textarea": "validate",
@@ -2200,7 +2200,7 @@ FieldView = Backbone.View.extend({
   },
   renderButton: function(index, label, extension_type) {
     var button = $('<button>');
-    button.addClass('fh_appform_button_action');
+    button.addClass('special_button');
     button.addClass(extension_type);
     button.attr("data-index", index);
     button.text(' ' + label);
@@ -2215,7 +2215,7 @@ FieldView = Backbone.View.extend({
   addButton: function(input, extension_type, label) {
     var self = this;
     var button = $('<button>');
-    button.addClass('fh_appform_button_action');
+    button.addClass('special_button');
     button.addClass(extension_type);
     button.text(' ' + label);
     var img = $('<img>');
@@ -2310,8 +2310,8 @@ FieldView = Backbone.View.extend({
 FieldCameraView = FieldView.extend({
   input: '<img class="imageThumb" width="100%" data-field="<%= fieldId %>" data-index="<%= index %>">',
   html5Cam: '<div class="html5Cam">' +
-    '<div class="camActionBar"><button class="fh_appform_button_cancel">Cancel</button><button class="fh_appform_button_action">Ok</button></div>' +
-    '<div class="fh_appform_button_action"></div>' +
+    '<div class="camActionBar"><button class="camCancel camBtn">Cancel</button><button class="camOk camBtn">Ok</button></div>' +
+    '<div class="cam"></div>' +
     '</div>',
   // initialize: function() {
   //   FieldView.prototype.initialize.call(this);
@@ -2838,7 +2838,7 @@ FieldCameraGroupView = FieldCameraView.extend({
   }
 });
 FieldCheckboxView = FieldView.extend({
-  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="fh_appform_field_input" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
+  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
 
   // contentChanged: function(e) {
   //   var self = this;
@@ -2926,7 +2926,7 @@ FieldEmailView = FieldView.extend({
   // }
 });
 FieldFileView = FieldView.extend({
-  input: "<button style='display:none' data-field='<%= fieldId %>' class='fh_appform_button_action' data-index='<%= index %>'></button>" +
+  input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button' data-index='<%= index %>'></button>" +
     "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   type: "file",
   // dumpContent: function() {
@@ -3015,7 +3015,7 @@ FieldFileView = FieldView.extend({
   }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input data-field='<%= fieldId %>' class='fh_appform_field_input' data-index='<%= index %>' type='<%= inputType %>' disabled/> ",
+  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/> ",
   type: "text",
   initialize: function() {
     this.geoValues=[];
@@ -3295,8 +3295,8 @@ FieldPhoneView = FieldView.extend({
   type:"tel"
 });
 FieldRadioView = FieldView.extend({
-  hidden_field: '<input id="radio<%= id %>" type="hidden" class="fh_appform_field_input" value="" data-type="radio">',
-  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="fh_appform_field_input" value="<%= value %>" ><label class="fh_appform_field_input" ><%= choice %></label><br/>',
+  hidden_field: '<input id="radio<%= id %>" type="hidden" value="" data-type="radio">',
+  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
     var self = this;
@@ -3335,8 +3335,8 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>' class='fh_appform_field_input'><%= options %></select>",
-  option: '<option value="<%= value %>" class="fh_appform_field_input" <%= selected %>><%= value %></option>',
+  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
   renderInput: function(index) {
     var fieldId=this.model.getFieldId();
     var choices = this.model.get('fieldOptions');
@@ -3359,7 +3359,7 @@ FieldSelectView = FieldView.extend({
 FieldSignatureView = FieldView.extend({
   extension_type: 'fhsig',
 
-  input: "<img class='sigImage' data-field='<%= fieldId %>' class='fh_appform_field_input' data-index='<%= index %>'/>",
+  input: "<img class='sigImage' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
   signaturePadStyle: "@font-face{font-family:Journal;src:url(journal.eot);src:url(journal.eot?#iefix) format('embedded-opentype'),url(journal.woff) format('woff'),url(journal.ttf) format('truetype'),url(journal.svg#JournalRegular) format('svg');font-weight:400;font-style:normal}.sigPad{margin:0;padding:0;width:250px;height:200px}.sigPad label{display:block;margin:0 0 .515em;padding:0;color:#000;font:italic normal 1em/1.375 Georgia,Times,serif}.sigPad label.error{color:#f33}.sigPad input{margin:0;padding:.2em 0;width:198px;border:1px solid #666;font-size:1em}.sigPad input.error{border-color:#f33}.sigPad button{margin:1em 0 0;padding:.6em .6em .7em;background-color:#ccc;border:0;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;cursor:pointer;color:#555;font:700 1em/1.375 sans-serif;text-align:left}.sigPad button:hover{background-color:#333;color:#fff}.sig{display:none}.sigNav{display:none;height:2.25em;margin:0;padding:0;position:relative;list-style-type:none}.sigNav li{display:inline;float:left;margin:0;padding:0}.sigNav a,.sigNav a:link,.sigNav a:visited{display:block;margin:0;padding:0 .6em;border:0;color:#333;font-weight:700;line-height:2.25em;text-decoration:underline}.sigNav a.current,.sigNav a.current:link,.sigNav a.current:visited{background-color:#666;-moz-border-radius-topleft:8px;-moz-border-radius-topright:8px;-webkit-border-top-left-radius:8px;-webkit-border-top-right-radius:8px;border-radius:8px 8px 0 0;color:#fff;text-decoration:none}.sigNav .typeIt a.current,.sigNav .typeIt a.current:link,.sigNav .typeIt a.current:visited{background-color:#ccc;color:#555}.sigWrapper{clear:both;height:100px;border:1px solid #ccc}.sigWrapper.current{border-color:#666}.signed .sigWrapper{border:0}.pad{position:relative}.typed{height:55px;margin:0;padding:0 5px;position:absolute;z-index:90;cursor:default;color:#145394;font:400 1.875em/50px Journal,Georgia,Times,serif}.drawItDesc,.typeItDesc{display:none;margin:.75em 0 .515em;padding:.515em 0 0;border-top:3px solid #ccc;color:#000;font:italic normal 1em/1.375 Georgia,Times,serif}",
   templates: {
     signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton">Clear</button><button class="cap_sig_done_btn">Done</button>', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
@@ -3704,12 +3704,10 @@ FieldSignatureView = FieldView.extend({
 
 });
 FieldTextView = FieldView.extend({
-  //template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
-  type: "text"
+  template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
 });
 FieldTextareaView = FieldView.extend({
-    input:"<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>",
-    type: "textarea"
+    input:"<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   renderEle:function(){
@@ -3718,9 +3716,9 @@ FieldSectionBreak = FieldView.extend({
 });
 FieldDateTimeView = FieldView.extend({
   extension_type: 'fhdate',
-  inputTime:"<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='time'>",
-  inputDate:"<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='date'>",
-  inputDateTime:"<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='text'>",
+  inputTime:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='time'>",
+  inputDate:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='date'>",
+  inputDateTime:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='text'>",
 
   renderInput:function(index){
     var fieldId = this.model.getFieldId();
@@ -3820,7 +3818,7 @@ PageView=BaseView.extend({
     var self = this;
     this.fieldViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('fh_appform_form hidden');
+    this.$el.empty().addClass('page hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 
@@ -3910,9 +3908,9 @@ var FormView = BaseView.extend({
   "submission": null,
   "fieldValue": [],
   templates: {
-    buttons: '<div id="buttons" class="fh_action_bar"><button class="fh_appform_button_action">Save Draft</button><button class="fh_appform_button_navigation">Previous</button><button class="fh_appform_button_navigation">Next</button><button class="fh_appform_button_action">Submit</button></div>'
+    buttons: '<div id="buttons" class="fh_action_bar"><button class="saveDraft hidden button button-main">Save Draft</button><button class="previous hidden button">Previous</button><button class="next hidden button">Next</button><button class="submit hidden button button-positive">Submit</button></div>'
   },
-  events: {//TODO, these buttons are linked to events -- need to be populated or changed.
+  events: {
     "click button.next": "nextPage",
     "click button.previous": "prevPage",
     "click button.saveDraft": "saveToDraft",
