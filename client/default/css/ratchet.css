@@ -632,7 +632,7 @@ select {
 
 /* Main button */
 .button-main {
-  background-color: #1eafe7;
+  /*background-color: #1eafe7;*/
   /*background-image: -webkit-linear-gradient(top, #1eafe7 0, #1a97c8 100%);*/
   /*background-image: linear-gradient(to bottom, #1eafe7 0, #1a97c8 100%);*/
   border: 1px solid #117aaa;

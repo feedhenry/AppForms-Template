@@ -1768,15 +1768,16 @@ var FormListView = BaseView.extend({
     _.bindAll(this, 'render', 'appendForm');
     this.views = [];
 
-    // App.collections.forms.bind('reset', function (collection, options) {
-    //   if (options == null || !options.noFetch) {
-    //     $fh.logger.debug('reset forms collection');
-    //     App.collections.forms.each(function (form) {
-    //       form.fetch();
-    //     });
-    //   }
-    // });
-    // App.collections.forms.bind('add remove reset error', this.render, this);
+    App.collections.forms.bind('reset', function (collection, options) {
+       if (options == null || !options.noFetch) {
+         $fh.logger.debug('reset forms collection');
+         App.collections.forms.each(function (form) {
+           form.fetch();
+         });
+       }
+    });
+
+    App.collections.forms.bind('add remove reset error', this.render, this);
     this.model.on("updated",this.render);
   },
 
@@ -1851,8 +1852,6 @@ var FormListView = BaseView.extend({
     });
   }
 });
-// $fh.forms.getForms({fromRemote:false},)
-// var formListView=new FormListView();
  var FormListItemView=BaseView.extend({
   events: {
     'click button.show.fetched': 'show',
@@ -4335,6 +4334,7 @@ $fh.forms.renderFormList = function(params, cb) {
 
 $fh.forms.backbone={};
 $fh.forms.backbone.FormView=FormView;
+$fh.forms.backbone.FormListView=FormListView;
 
 
 //end  module;
