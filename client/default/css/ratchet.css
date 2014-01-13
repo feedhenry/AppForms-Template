@@ -208,11 +208,11 @@ a {
   z-index: 10; /* Places buttons over full width title */
   font-size: 12px;
   line-height: 23px;
-  color: #fff;
+  /*color: #fff;*/
   text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
-  background-color: #1eb0e9;
-  background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);
-  background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);
+  /*background-color: #1eb0e9;*/
+  /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
+  /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
   border: 1px solid #0e5895;
   box-shadow: 0 1px rgba(255, 255, 255, .25);
   -webkit-box-flex: 0;
@@ -379,7 +379,7 @@ a {
 
 /* Set color of links to white */
 .bar-title .segmented-controller li > a {
-  color: #fff;
+  /*color: #fff;*/
 }
 
 
@@ -787,8 +787,8 @@ select {
   display: box;
   margin-bottom: 10px;
   overflow: hidden;
-  font-size: 12px;
-  font-weight: bold;
+  /*font-size: 12px;*/
+  /*font-weight: bold;*/
   text-shadow: 0 1px rgba(255, 255, 255, .5);
   list-style: none;
   /*background-color: #f8f8f8;*/
@@ -818,7 +818,7 @@ select {
   padding: 8px 16px;
   overflow: hidden;
   line-height: 15px;
-  color: #333;
+  /*color: #333;*/
   text-overflow: ellipsis;
 }
 
