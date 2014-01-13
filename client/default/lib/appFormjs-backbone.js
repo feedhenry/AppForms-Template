@@ -3974,6 +3974,7 @@ var FormView = BaseView.extend({
 
     self.el.empty();
     self.model = form;
+    this.el.append(this.templates.formContainer);
 
     if (!params.submission) {
       params.submission = self.model.newSubmission();
@@ -3990,7 +3991,7 @@ var FormView = BaseView.extend({
 
       var pageView = new PageView({
         model: pageModel,
-        parentEl: self.el,
+        parentEl: self.el.find("#fh_appform_container.fh_appform_body"),
         formView: self
       });
       pageViews.push(pageView);
