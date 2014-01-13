@@ -3990,7 +3990,7 @@ var FormView = BaseView.extend({
 
       var pageView = new PageView({
         model: pageModel,
-        parentEl: self.el.find('#fh_appform_container'),
+        parentEl: $('#fh_appform_container'),
         formView: self
       });
       pageViews.push(pageView);
