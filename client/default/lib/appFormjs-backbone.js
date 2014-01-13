@@ -3932,7 +3932,7 @@ var FormView = BaseView.extend({
     var self = this;
 
     $fh.forms.getTheme({fromRemote: false}, function(err, theme){
-      this.logoBase64 = theme.getLogo();
+      self.logoBase64 = theme.getLogo();
 
       if (params.formId) {
         this.onLoad();
@@ -3988,7 +3988,7 @@ var FormView = BaseView.extend({
 
     //Page views are always added before anything else happens, need to render the form title first
     this.el.append(this.templates.formContainer);
-    self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {logoBase64: this.logoBase64}));
+    self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {logoBase64: self.logoBase64}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {title: this.model.getName()}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formDescription, {description: this.model.getDescription()}));
 
@@ -4120,24 +4120,28 @@ var FormView = BaseView.extend({
       this.el.find("button.next").hide();
       this.el.find("button.saveDraft").show();
       this.el.find(" button.submit").show();
+      this.el.find("button").removeClass('three_button');
       this.el.find("button").addClass('two_button');
     } else if (this.pageNum === 0) {
       this.el.find(" button.previous").hide();
       this.el.find("button.next").show();
       this.el.find("button.saveDraft").show();
       this.el.find(" button.submit").hide();
+      this.el.find("button").removeClass('three_button');
       this.el.find("button").addClass('two_button');
     } else if (this.pageNum === this.pageCount - 1) {
       this.el.find(" button.previous").show();
       this.el.find(" button.next").hide();
       this.el.find(" button.saveDraft").show();
       this.el.find(" button.submit").show();
+      this.el.find("button").removeClass('two_button');
       this.el.find("button").addClass('three_button');
     } else {
       this.el.find(" button.previous").show();
       this.el.find(" button.next").show();
       this.el.find(" button.saveDraft").show();
       this.el.find(" button.submit").hide();
+      this.el.find("button").removeClass('two_button');
       this.el.find("button").addClass('three_button');
     }
     if (this.readonly) {
