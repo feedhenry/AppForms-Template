@@ -3920,7 +3920,6 @@ var FormView = BaseView.extend({
     this.el = this.options.parentEl;
     this.fieldModels = [];
     this.el.empty();
-    this.el.append(this.templates.formContainer);
   },
   loadForm: function(params, cb) {
     var self = this;
@@ -3991,7 +3990,7 @@ var FormView = BaseView.extend({
 
       var pageView = new PageView({
         model: pageModel,
-        parentEl: $('#fh_appform_container'),
+        parentEl: self.el,
         formView: self
       });
       pageViews.push(pageView);
@@ -4133,8 +4132,7 @@ var FormView = BaseView.extend({
   render: function() {
 
     // this.initWithForm(this.form, this.params);
-    this.el.append(this.templates.formContainer);
-    this.el.find('#fh_appform_container').append(this.templates.buttons);
+    this.el.append(this.templates.buttons);
     this.rebindButtons();
     this.pageViews[0].show();
     this.checkPages();
