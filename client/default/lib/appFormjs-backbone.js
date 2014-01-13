@@ -3918,6 +3918,7 @@ var FormView = BaseView.extend({
   initialize: function() {
     _.bindAll(this, "checkRules", "onValidateError");
     this.el = this.options.parentEl;
+    this.el.append(this.templates.formContainer);
     this.fieldModels = [];
     this.el.empty();
   },
