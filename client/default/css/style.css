@@ -1,14 +1,18 @@
 /* Phase2 styles */
 
+
+/*Used by template..*/
 * {
   padding: 0;
   margin: 0;
 }
 
+/*Not used by template*/
 .left {
   float: left;
 }
 
+/*Not used by template*/
 .right {
   float: right;
 }
@@ -41,7 +45,7 @@ label.choice { display: inline; }
 input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
-  background: #fff;
+  /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
   width: 97%;
   margin: 0 auto;
   -webkit-border-radius: 5px;
