@@ -9,7 +9,7 @@ HeaderView = Backbone.View.extend({
   },
   
   templates: {
-    list: '<ul class="segmented-controller"></ul>',
+    list: '<ul class="segmented-controller fh_appform_navigation"></ul>',
     forms_button: '<li class="fh_wufoo_home"><a href="#">Forms</a></li>',
     drafts_button: '<li class="fh_wufoo_drafts"><a href="#">Drafts<span class="count"></span></a></li>',
     pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>',

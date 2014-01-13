@@ -344,9 +344,9 @@ a {
 .bar-title .segmented-controller {
   line-height: 18px;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
-  background-color: #1eb0e9;
-  background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);
-  background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);
+  /*background-color: #1eb0e9;*/
+  /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
+  /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
   border: 1px solid #0e5895;
   border-radius: 3px;
   box-shadow: 0 1px rgba(255, 255, 255, .25);
