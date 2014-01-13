@@ -12,9 +12,9 @@ body {
   color: #222;
 }
 
-/* Universal link styling */
+/* Universal link styling  This should be configured by the theme*/
 a {
-  color: #0882f0;
+  /*color: #0882f0;*/
   text-decoration: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Removes the dark touch outlines on links */
 }
