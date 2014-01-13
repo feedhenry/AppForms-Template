@@ -3988,7 +3988,7 @@ var FormView = BaseView.extend({
 
     //Page views are always added before anything else happens, need to render the form title first
     this.el.append(this.templates.formContainer);
-    self.el.find(this.elementNames.formContainer).append(this.templates.formLogo);
+    self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {logoBase64: this.logoBase64}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {title: this.model.getName()}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formDescription, {description: this.model.getDescription()}));
 
