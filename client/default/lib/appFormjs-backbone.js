@@ -4133,7 +4133,7 @@ var FormView = BaseView.extend({
   render: function() {
 
     // this.initWithForm(this.form, this.params);
-    this.el.append(this.templates.buttons);
+    self.el.find("#fh_appform_container.fh_appform_body").append(this.templates.buttons);
     this.rebindButtons();
     this.pageViews[0].show();
     this.checkPages();
