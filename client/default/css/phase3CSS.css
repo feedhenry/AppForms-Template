@@ -1,0 +1,122 @@
+/* Phase3 Placeholder styles */
+
+.fh_appform_logo {
+    text-align: center;
+    background-image: none; /*TODO Needs to be taken out of generated css as a background image. Should be an image tag within a div*/
+}
+
+.fh_appform_title {
+    text-align: center;
+}
+
+.fh_appform_description {
+    text-align: center;
+}
+
+.fh_appform_field_area {
+    padding: 20px;
+}
+
+.fh_appform_field_title {
+
+}
+
+.fh_appform_field_instructions {
+
+}
+
+.fh_appform_field_input {
+    background: #ddea04;
+}
+
+select.fh_appform_field_input {
+    background: #ddea04;
+}
+
+select.fh_appform_field_input option {
+    background: #ddea04;
+}
+
+input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_field_input { /*TODO Needs to be added to theme generation. inherits values from fh_appform_field_input*/
+    background: #ddea04;
+    font-size: 18pt;
+    font-family: georgia;
+    color: #0000FF;
+    font-weight: bold;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b5bf16;
+}
+
+.fh_appform_field_area:first-child {
+
+}
+
+.fh_appform_field_area:last-child { /*TODO Needs to be generated in theme generation. Inherits border data from fh_appform_field_area*/
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b0ce31;
+}
+
+.fh_appform_field_area {
+    padding: 20px;
+    border-bottom: none;
+}
+
+.fh_appform_body {
+
+}
+
+.fh_appform_form {
+
+}
+
+.fh_appform_field_area {
+
+}
+
+.fh_appform_logo {
+
+}
+
+.fh_appform_button_navigation {
+
+}
+
+.fh_appform_button_action {
+
+}
+
+.fh_appform_button_cancel {
+
+}
+
+.fh_appform_navigation {
+
+}
+
+.fh_appform_header {
+
+}
+
+.fh_appform_error {  /*Needs to be added to the theme generation process.*/
+    background-color: #ea172b;
+    font-size: 18pt;
+    font-family: georgia;
+    color: #1519ff;
+    font-weight: bold;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #fc0312;
+}
+
+.segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
+    background-color: #14d822;
+    font-size: 14pt;
+    font-family: georgia;
+    color: #FF0000;
+    font-weight: bold;
+    font-style: normal;
+}
