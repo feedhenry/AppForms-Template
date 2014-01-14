@@ -83,7 +83,7 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 }
 
 .fh_appform_button_navigation {
-
+    border-radius: 10px;
 }
 
 .fh_appform_button_action {
@@ -179,3 +179,65 @@ textarea.fh_appform_field_input {
     width: 33.3%;
 }
 
+.fh_appform_page_title { /*TODO page title could be separate or use fh_appform_title*/
+    font-size: 18pt;
+    font-family: arial;
+    color: #123F00;
+    font-weight: bold;
+    font-style: normal;
+    text-align:center;
+}
+
+.fh_appform_page_description { /*TODO page description could be separate or use fh_appform_description*/
+    font-size: 12pt;
+    font-family: arial;
+    color: #123F00;
+    font-weight: bold;
+    font-style: normal;
+    text-align:center;
+}
+
+/* Steps */
+.progress_steps {
+    width: 100%;
+}
+
+.progress_wrapper {
+    padding-top: 20px;
+}
+
+.progress_steps td {
+    text-align: center;
+}
+
+.progress_steps .number_container {
+    border: 1px solid #c3c3c3;
+    display: inline-block;
+    height: 24px;
+    width: 24px;
+    text-align: center;
+    border-radius: 13px;
+}
+
+.progress_steps .active .number_container {
+    background: black;
+    color: #fff;
+    border: 1px solid #000;
+}
+
+.progress_steps .page_title {
+    padding-left: 10px;
+    font-weight: bold;
+}
+
+.progress_steps .number {
+    padding-top: 4px;
+}
+
+td .page_title {
+    display: none;
+}
+
+td.active .page_title {
+    display: inline;
+}
