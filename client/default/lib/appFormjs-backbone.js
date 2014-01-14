@@ -3710,8 +3710,11 @@ FieldTextareaView = FieldView.extend({
     input:"<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
+  templates: {
+    sectionBreak: '<div class="fh_appform_field_area fh_appform_section_break"><%= sectionTitle %><hr/><%= sectionDescription%></div>'
+  },
   renderEle:function(){
-    return "<hr/>";
+    return _.template(this.templates.sectionBreak, {sectionTitle: this.model.getName(), sectionDescription: this.model.getHelpText()});
   }
 });
 FieldDateTimeView = FieldView.extend({
@@ -3798,6 +3801,10 @@ PageView=BaseView.extend({
     "dateTime":FieldDateTimeView,
     "sectionBreak":FieldSectionBreak
   },
+  templates : {
+    pageTitle : '<div class="fh_appform_page_title"><%= pageTitle %></div>',
+    pageDescription: '<div class="fh_appform_page_description"><%= pageDescription%></div>'
+  },
 
   initialize: function() {
     var self = this;
@@ -3819,6 +3826,11 @@ PageView=BaseView.extend({
     this.fieldViews = {};
     // all pages hidden initially
     this.$el.empty().addClass('page hidden');
+
+    //Need to add the page title and description
+    this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));
+    this.$el.append(_.template(this.templates.pageTitle, {pageDescription: this.model.getDescription()}));
+
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 
