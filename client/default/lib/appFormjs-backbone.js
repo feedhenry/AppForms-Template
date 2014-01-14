@@ -2303,7 +2303,7 @@ FieldView = Backbone.View.extend({
   clearError: function(index) {
     var wrapperObj = this.getWrapper(index);
     wrapperObj.find(this.errMessageLabelClass).hide();
-    wrapperObj.find(".error").removeClass(this.errorClassName);
+    wrapperObj.find("." + this.errorClassName).removeClass(this.errorClassName);
   }
 
 });
@@ -2321,7 +2321,7 @@ FieldCameraView = FieldView.extend({
   // },
 
   onElementShow: function(index) {
-    var captureBtn = $(this.renderButton(index, "Capture Signature", "fhcam"));
+    var captureBtn = $(this.renderButton(index, "Capture Photo From Camera", "fhcam"));
     var libBtn = $(this.renderButton(index, "Choose Photo from Library", "fhcam_lib"));
     var rmBtn = $(this.renderButton(index, "Remove Photo", "remove"));
 
