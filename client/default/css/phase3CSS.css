@@ -15,6 +15,7 @@
 
 .fh_appform_field_area {
     padding: 20px;
+    border-radius: 10px;
 }
 
 .fh_appform_field_title {
@@ -61,7 +62,8 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 
 .fh_appform_field_area {
     padding: 20px;
-    border-bottom: none;
+    margin-top: 5px;
+    border-radius: 10px;
 }
 
 .fh_appform_body {
@@ -69,7 +71,7 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 }
 
 .fh_appform_form {
-
+    padding: 5px;
 }
 
 .fh_appform_field_area {
@@ -85,11 +87,12 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 }
 
 .fh_appform_button_action {
-
+    border-radius: 10px;
 }
 
 .fh_appform_button_action.special_button { /*TODO Needs to be added to theme generation - static*/
     width: 100%;
+    border-radius: 20px;
 }
 
 .fh_appform_button_cancel {
