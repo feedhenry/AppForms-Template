@@ -14,9 +14,7 @@
 }
 
 .fh_appform_field_area {
-    margin-left: 20px;
     padding: 20px;
-    margin-right: 20px;
 }
 
 .fh_appform_field_title {
@@ -28,15 +26,42 @@
 }
 
 .fh_appform_field_input {
+    background: #ddea04;
+}
+
+select.fh_appform_field_input {
+    background: #ddea04;
+}
+
+select.fh_appform_field_input option {
+    background: #ddea04;
+}
+
+input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_field_input { /*TODO Needs to be added to theme generation. inherits values from fh_appform_field_input*/
+    background: #ddea04;
+    font-size: 18pt;
+    font-family: georgia;
+    color: #0000FF;
+    font-weight: bold;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b5bf16;
+}
+
+.fh_appform_field_area:first-child {
 
 }
 
-#fh_appform_container .fh_appform_field_area:first-child {
-    margin-top: 20px;
+.fh_appform_field_area:last-child { /*TODO Needs to be generated in theme generation. Inherits border data from fh_appform_field_area*/
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b0ce31;
 }
 
-#fh_appform_container .fh_appform_field_area:last-child {
-    margin-bottom: 20px;
+.fh_appform_field_area {
+    padding: 20px;
+    border-bottom: none;
 }
 
 .fh_appform_body {
@@ -73,6 +98,27 @@
 
 .fh_appform_header {
 
+}
+
+.fh_appform_error {  /*Needs to be added to the theme generation process.*/
+    background-color: #ea172b;
+    font-size: 18pt;
+    font-family: georgia;
+    color: #1519ff;
+    font-weight: bold;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #fc0312;
+}
+
+.segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
+    background-color: #14d822;
+    font-size: 14pt;
+    font-family: georgia;
+    color: #FF0000;
+    font-weight: bold;
+    font-style: normal;
 }
 
 
@@ -118,7 +164,7 @@ html {
 }
 
 label { display: block; margin-bottom: 10px; font-size: 18px; }
-label.error { display: inline; }
+/*label.error { display: inline; }*/
 label.choice { display: inline; }
 input[type="radio"], input[type="checkbox"] { width: inherit; }
 
@@ -127,9 +173,9 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
   /*width: 97%;*/
   margin: 0 auto;
   margin-top: 50px;/*TODO -- this may have to be calculated */
-  -webkit-border-radius: 5px;
-  -moz-border-radius: 5px;
-  border-radius: 5px;
+  /*-webkit-border-radius: 5px;*/
+  /*-moz-border-radius: 5px;*/
+  /*border-radius: 5px;*/
   padding: 10px 0 10px 0;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;

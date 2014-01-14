@@ -1905,6 +1905,7 @@ var FormListView = BaseView.extend({
 FieldView = Backbone.View.extend({
 
   className: 'fh_appform_field_area',
+  errMessageLabelClass: "label.errorMsg",
   fieldWrapper: "<div />",
   wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
@@ -2117,10 +2118,10 @@ FieldView = Backbone.View.extend({
   },
   setErrorText: function(index, text) {
     var wrapperObj = this.getWrapper(index);
-    wrapperObj.find("label.errorMsg").text(text);
-    wrapperObj.find("label.errorMsg").show();
-    wrapperObj.find("label.errorMsg").addClass("error");
-    wrapperObj.find("input,textarea,select").addClass("error"); //TODO Error to be added to css.
+    wrapperObj.find(this.errMessageLabelClass).text(text);
+    wrapperObj.find(this.errMessageLabelClass).show();
+    wrapperObj.find(this.errMessageLabelClass).addClass("error");
+    wrapperObj.find("input,textarea,select").addClass("error"); //TODO Error to be added to css for appforms.
   },
   contentChanged: function(e) {
     var target = $(e.currentTarget);
@@ -2299,7 +2300,7 @@ FieldView = Backbone.View.extend({
 
   clearError: function(index) {
     var wrapperObj = this.getWrapper(index);
-    wrapperObj.find("label.errorMsg").hide();
+    wrapperObj.find(this.errMessageLabelClass).hide();
     wrapperObj.find(".error").removeClass("error");
   }
 
