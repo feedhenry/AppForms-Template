@@ -2,6 +2,7 @@
 
 .fh_appform_logo {
     text-align: center;
+    background-image: none; /*TODO Needs to be taken out of generated css as a background image. Should be an image tag within a div*/
 }
 
 .fh_appform_title {
@@ -125,7 +126,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
   /*width: 97%;*/
   margin: 0 auto;
-    margin-top: 50px;/*TODO -- this may have to be calculated */
+  margin-top: 50px;/*TODO -- this may have to be calculated */
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   border-radius: 5px;
