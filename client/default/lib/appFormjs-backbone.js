@@ -3829,7 +3829,7 @@ PageView=BaseView.extend({
 
     //Need to add the page title and description
     this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));
-    this.$el.append(_.template(this.templates.pageTitle, {pageDescription: this.model.getDescription()}));
+    this.$el.append(_.template(this.templates.pageDescription, {pageDescription: this.model.getDescription()}));
 
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
