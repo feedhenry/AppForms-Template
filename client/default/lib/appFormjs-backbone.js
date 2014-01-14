@@ -1761,7 +1761,7 @@ var FormListView = BaseView.extend({
   templates: {
     list: '<ul class="form_list fh_appform_body"></ul>',
     header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
-    error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %><div class="loading"></div></button></li>'
+    error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_navigation"><%= name %><div class="loading"></div></button></li>'
   },
 
   initialize: function() {
@@ -1859,7 +1859,7 @@ var FormListView = BaseView.extend({
   },
 
   templates: {
-    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %><div class="loading"></div></button></li>'
+    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_navigation"><%= name %><div class="loading"></div></button></li>'
   },
 
   render: function() {
@@ -1906,8 +1906,10 @@ FieldView = Backbone.View.extend({
 
   className: 'fh_appform_field_area',
   errMessageLabelClass: "label.errorMsg",
+  requiredClassName: "fh_appform_required",
+  errorClassName: "fh_appform_error",
   fieldWrapper: "<div />",
-  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="error errorMsg"></label></div>',
+  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="errorMsg"></label></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   instructions: '<p class="instruct fh_appform_field_instructions"><%= helpText %></p>',
@@ -1958,15 +1960,15 @@ FieldView = Backbone.View.extend({
     }
     if (this.initialRepeat > 1) {
       if (index < this.initialRepeat) {
-        required = "required";
+        required = this.requiredClassName;
       }
     } else {
       if (this.model.isRequired()) {
-        required = "required";
+        required = this.requiredClassName;
       }
     }
     if (this.model.isRequired() && index < this.initialRepeat) {
-      required = "required";
+      required = this.requiredClassName;
     }
     if (index == 0) {
       helpText = this.renderHelpText();
@@ -2120,8 +2122,8 @@ FieldView = Backbone.View.extend({
     var wrapperObj = this.getWrapper(index);
     wrapperObj.find(this.errMessageLabelClass).text(text);
     wrapperObj.find(this.errMessageLabelClass).show();
-    wrapperObj.find(this.errMessageLabelClass).addClass("error");
-    wrapperObj.find("input,textarea,select").addClass("error"); //TODO Error to be added to css for appforms.
+    wrapperObj.find(this.errMessageLabelClass).addClass(this.errorClassName);
+    wrapperObj.find("input,textarea,select").addClass(this.errorClassName);
   },
   contentChanged: function(e) {
     var target = $(e.currentTarget);
@@ -2301,7 +2303,7 @@ FieldView = Backbone.View.extend({
   clearError: function(index) {
     var wrapperObj = this.getWrapper(index);
     wrapperObj.find(this.errMessageLabelClass).hide();
-    wrapperObj.find(".error").removeClass("error");
+    wrapperObj.find(".error").removeClass(this.errorClassName);
   }
 
 });

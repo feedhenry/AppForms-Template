@@ -100,6 +100,21 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 
 }
 
+input[type="text"].fh_appform_field_input {
+    width: 100%;
+}
+
+textarea.fh_appform_field_input {
+    min-width: 100%;
+    min-height: 100px;
+}
+
+.fh_appform_field_required:first-child:after{ /*TODO Needs to be generated as part of css. Also, the color needs to be selectable.*/
+    color: #e32;
+    content: ' *';
+    display: inline;
+}
+
 .fh_appform_error {  /*Needs to be added to the theme generation process.*/
     background-color: #ea172b;
     font-size: 18pt;
@@ -119,4 +134,40 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
     color: #FF0000;
     font-weight: bold;
     font-style: normal;
+}
+
+.segmented-controller.fh_appform_navigation li > a:active { /*TODO Active state buttons needs to be added to css generation. This is for the header in the Appform-Template-App*/
+    background-color: blue;
+}
+
+.fh_appform_button_action:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+}
+
+
+.fh_appform_button_cancel:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+}
+
+.fh_appform_button_navigation:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+}
+
+.hidden {
+    display: none;
+}
+
+.fh_action_bar {
+    padding: 18px 20px 18px 20px;
+}
+
+.fh_action_bar button.two_button {
+    width: 50%;
+}
+
+.fh_action_bar button.three_button {
+    width: 33.3%;
 }
