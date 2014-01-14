@@ -3815,7 +3815,7 @@ PageView=BaseView.extend({
     var self = this;
     this.fieldViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('page fh_appform_body hidden');
+    this.$el.empty().addClass('page fh_appform_form hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 

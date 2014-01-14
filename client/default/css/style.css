@@ -1,3 +1,80 @@
+/* Phase3 Placeholder styles */
+
+.fh_appform_logo {
+    text-align: center;
+}
+
+.fh_appform_title {
+    text-align: center;
+}
+
+.fh_appform_description {
+    text-align: center;
+}
+
+.fh_appform_field_area {
+    margin-left: 20px;
+    padding: 20px;
+    margin-right: 20px;
+}
+
+.fh_appform_field_title {
+
+}
+
+.fh_appform_field_instructions {
+
+}
+
+.fh_appform_field_input {
+
+}
+
+#fh_appform_container .fh_appform_field_area:first-child {
+    margin-top: 20px;
+}
+
+#fh_appform_container .fh_appform_field_area:last-child {
+    margin-bottom: 20px;
+}
+
+.fh_appform_body {
+
+}
+
+.fh_appform_form {
+
+}
+
+.fh_appform_field_area {
+
+}
+
+.fh_appform_logo {
+
+}
+
+.fh_appform_button_navigation {
+
+}
+
+.fh_appform_button_action {
+
+}
+
+.fh_appform_button_cancel {
+
+}
+
+.fh_appform_navigation {
+
+}
+
+.fh_appform_header {
+
+}
+
+
 /* Phase2 styles */
 
 
@@ -46,7 +123,7 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
-  width: 97%;
+  /*width: 97%;*/
   margin: 0 auto;
     margin-top: 50px;/*TODO -- this may have to be calculated */
   -webkit-border-radius: 5px;
