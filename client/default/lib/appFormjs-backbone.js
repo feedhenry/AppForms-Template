@@ -3818,7 +3818,7 @@ PageView=BaseView.extend({
     var self = this;
     this.fieldViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('page fh_appform_form hidden');
+    this.$el.empty().addClass('page hidden');
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
 
@@ -3912,7 +3912,7 @@ var FormView = BaseView.extend({
     formLogo: '<div class="fh_appform_logo"><img src="data:image/png;base64,<%= logoBase64 %>"/></div>',
     formTitle: '<div class="fh_appform_title"><%= title %></div>',
     formDescription: '<div class="fh_appform_description"><%= description %></div>',
-    formContainer: '<div id="fh_appform_container" class="fh_appform_body"></div>',
+    formContainer: '<div id="fh_appform_container" class="fh_appform_form"></div>',
     buttons: '<div id="buttons" class="fh_action_bar"><button class="saveDraft hidden button button-main fh_appform_button_action">Save Draft</button><button class="previous hidden button fh_appform_button_navigation">Previous</button><button class="next hidden button fh_appform_button_navigation">Next</button><button class="submit hidden button button-positive fh_appform_button_action">Submit</button></div>'
   },
   events: {
