@@ -4363,7 +4363,7 @@ StepsView = Backbone.View.extend({
 
     this.model.pages.forEach(function(page, index) {
       var item = $(_.template(self.templates.step, {
-        step_name: page.get('Title'),
+        step_name: page.getName(),
         step_num: index + 1
       }));
       item.css('width', width + '%');
