@@ -3718,7 +3718,7 @@ FieldTextareaView = FieldView.extend({
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
-    sectionBreak: '<div><div class="fh_appform_field_section_title"><%= sectionTitle %></div><hr/><div class="fh_appform_field_section_description"><%= sectionDescription%></div></div>'
+    sectionBreak: '<div><div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><hr/><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div></div>'
   },
   renderEle:function(){
     this.$el.addClass("fh_appform_field_section_break");
