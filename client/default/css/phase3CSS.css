@@ -54,6 +54,7 @@ select.fh_appform_field_input option {
     /*margin-top: 5px; TODO My addition for testing. Can remove*/
     padding: 20px;
     /*border-radius: 10px; TODO My addition for testing. Looked nice, might add later.*/
+    border-bottom: none;
 }
 
 .fh_appform_body {
@@ -211,7 +212,7 @@ textarea.fh_appform_field_input {
     text-align:center;
 }
 
-/* Steps TODO Theme definition for the app Probably a rename also*/
+/* Steps TODO Theme definition for the app Probably a rename also to the fh_appform namespace*/
 .progress_steps {
     width: 100%;
 }

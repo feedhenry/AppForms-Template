@@ -1,6 +1,8 @@
 /* Phase2 styles */
 
 
+/*TODO All the pending, drafts, sent screens need to be customised*/
+
 /*Used by template..*/
 * {
   padding: 0;
@@ -242,16 +244,16 @@ textarea {
   border: 1px solid #aaa;
 }
 
-/* Error highlighting */
-.field_container.error input, .field_container.error textarea, .field_container.error select, .shortname.error input.error, .address.error input.error, .address.error textarea.error, .address.error select.error {
-  border: 2px solid red;
-}
-.shortname.error input, .address.error input, .address.error textarea, .address.error select {
-  border: 1px solid #999;
-}
-.field_container.error .error {
-  color: red;
-}
+/* Error highlighting Moved to phase3 theme definition*/
+/*.field_container.error input, .field_container.error textarea, .field_container.error select, .shortname.error input.error, .address.error input.error, .address.error textarea.error, .address.error select.error {*/
+  /*border: 2px solid red;*/
+/*}*/
+/*.shortname.error input, .address.error input, .address.error textarea, .address.error select {*/
+  /*border: 1px solid #999;*/
+/*}*/
+/*.field_container.error .error {*/
+  /*color: red;*/
+/*}*/
 
 /* Custom field styling */
 .field_container label:first-child {
@@ -267,145 +269,145 @@ textarea {
   margin-bottom: 0px;
 }
 
-.field_container .required:first-child:after{
-    color: #e32;
-    content: ' *';
-    display: inline;
-}
+/*.field_container .required:first-child:after{*/
+    /*color: #e32;*/
+    /*content: ' *';*/
+    /*display: inline;*/
+/*}*/
 
-.likert_subfield {
-  margin-bottom: 10px;
-}
+/*.likert_subfield {*/
+  /*margin-bottom: 10px;*/
+/*}*/
 
-.sigImage {
-  width: 100%;
-  max-height: 100%;
-}
+/*.sigImage {*/
+  /*width: 100%;*/
+  /*max-height: 100%;*/
+/*}*/
 
-.sigNav {
-  border-bottom: 1px solid #ccc;
-}
+/*.sigNav {*/
+  /*border-bottom: 1px solid #ccc;*/
+/*}*/
 
-.sigWrapper.current {
-  border: none;
-}
+/*.sigWrapper.current {*/
+  /*border: none;*/
+/*}*/
 
-.sigNav .clearButton {
-  bottom: 0.2em;
-  position: absolute;
-  font-size: 0.75em;
-  line-height: 1.375;
-  right: 86px;
-}
+/*.sigNav .clearButton {*/
+  /*bottom: 0.2em;*/
+  /*position: absolute;*/
+  /*font-size: 0.75em;*/
+  /*line-height: 1.375;*/
+  /*right: 86px;*/
+/*}*/
 
-.sigNav .cap_sig_done_btn {
-  bottom: 0.2em;
-  position: absolute;
-  right: 10px;
-  font-size: 0.75em;
-  line-height: 1.375;
-}
+/*.sigNav .cap_sig_done_btn {*/
+  /*bottom: 0.2em;*/
+  /*position: absolute;*/
+  /*right: 10px;*/
+  /*font-size: 0.75em;*/
+  /*line-height: 1.375;*/
+/*}*/
 
-.fancy_name input {
-  width: 100%;
-  display: block;
-}
+/*.fancy_name input {*/
+  /*width: 100%;*/
+  /*display: block;*/
+/*}*/
 
-.fancy_name label {
-  padding-top: 5px;
-}
+/*.fancy_name label {*/
+  /*padding-top: 5px;*/
+/*}*/
 
-table.likert {
-  width: 100%;
-}
+/*table.likert {*/
+  /*width: 100%;*/
+/*}*/
 
-.likert table {
-  background: #fff;
-  border: 1px solid #dedede;
-  border-bottom: none;
-  margin: 0 0 .9em 0;
-  width: 100%;
-}
+/*.likert table {*/
+  /*background: #fff;*/
+  /*border: 1px solid #dedede;*/
+  /*border-bottom: none;*/
+  /*margin: 0 0 .9em 0;*/
+  /*width: 100%;*/
+/*}*/
 
-.likert input {
-  margin: 2px 0;
-  padding: 0;
-}
+/*.likert input {*/
+  /*margin: 2px 0;*/
+  /*padding: 0;*/
+/*}*/
 
-.likert tbody td label {
-  color: #565656;
-  display: block;
-  font-size: 85%;
-}
+/*.likert tbody td label {*/
+  /*color: #565656;*/
+  /*display: block;*/
+  /*font-size: 85%;*/
+/*}*/
 
-.likert thead td,.likert thead th {
-  background-color: #e6e6e6;
-}
+/*.likert thead td,.likert thead th {*/
+  /*background-color: #e6e6e6;*/
+/*}*/
 
-.likert td {
-  border-left: 1px solid #ccc;
-  padding: 4px 6px;
-  text-align: center;
-}
+/*.likert td {*/
+  /*border-left: 1px solid #ccc;*/
+  /*padding: 4px 6px;*/
+  /*text-align: center;*/
+/*}*/
 
-.likert thead td {
-  font-size: 85%;
-  padding: 10px 6px;
-}
+/*.likert thead td {*/
+  /*font-size: 85%;*/
+  /*padding: 10px 6px;*/
+/*}*/
 
-.likert th,.likert td {
-  border-bottom: 1px solid #dedede;
-}
+/*.likert th,.likert td {*/
+  /*border-bottom: 1px solid #dedede;*/
+/*}*/
 
-.likert tbody th {
-  padding: 8px 8px;
-  text-align: left;
-}
+/*.likert tbody th {*/
+  /*padding: 8px 8px;*/
+  /*text-align: left;*/
+/*}*/
 
-.likert tbody th label {
-  color: #222;
-  font-size: 95%;
-  font-weight: bold;
-}
+/*.likert tbody th label {*/
+  /*color: #222;*/
+  /*font-size: 95%;*/
+  /*font-weight: bold;*/
+/*}*/
 
-.likert tbody tr.alt td,.likert tbody tr.alt th {
-  background-color: #f5f5f5;
-}
+/*.likert tbody tr.alt td,.likert tbody tr.alt th {*/
+  /*background-color: #f5f5f5;*/
+/*}*/
 
-.likert tbody tr:hover td,.likert tbody tr:hover th {
-  background-color: #FFFFCF;
-}
+/*.likert tbody tr:hover td,.likert tbody tr:hover th {*/
+  /*background-color: #FFFFCF;*/
+/*}*/
 
-.instruct {
-  margin-bottom: 10px;
+/*.instruct {*/
+  /*margin-bottom: 10px;*/
   /*font-size: 13px;*/
-  padding: 5px;
-}
+  /*padding: 5px;*/
+/*}*/
 
-#logo {
-  margin: 0;
-  padding: 10px 0 10px 20px;
-  min-height: 0;
-  background-color: #DEDEDE;
-  text-indent: -9000px;
-  text-decoration: none;
-  -webkit-border-top-left-radius: 5px;
-  -webkit-border-top-right-radius: 5px;
-  -moz-border-radius-topleft: 5px;
-  -moz-border-radius-topright: 5px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-}
+/*#logo {*/
+  /*margin: 0;*/
+  /*padding: 10px 0 10px 20px;*/
+  /*min-height: 0;*/
+  /*background-color: #DEDEDE;*/
+  /*text-indent: -9000px;*/
+  /*text-decoration: none;*/
+  /*-webkit-border-top-left-radius: 5px;*/
+  /*-webkit-border-top-right-radius: 5px;*/
+  /*-moz-border-radius-topleft: 5px;*/
+  /*-moz-border-radius-topright: 5px;*/
+  /*border-top-left-radius: 5px;*/
+  /*border-top-right-radius: 5px;*/
+/*}*/
 
-#logo a {
-  min-height: 40px;
-  height: 40px;
-  display: block;
-  background: url(../img/wflogo.png) no-repeat left top;
-  overflow: hidden;
-}
+/*#logo a {*/
+  /*min-height: 40px;*/
+  /*height: 40px;*/
+  /*display: block;*/
+  /*background: url(../img/wflogo.png) no-repeat left top;*/
+  /*overflow: hidden;*/
+/*}*/
 
-.form_list li button {
+.form_list li button { /*Form list specific --> Needs to be customised by theme*/
   width: 100%;
   /*font-size: 125%;*/
   margin-bottom: 10px;
@@ -574,6 +576,8 @@ div.loading_spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -14
   to {opacity: 0.25;}
 }
 
+
+/*Loading container is related to the LoadingView Backbone View. Not included in the appform-js-sdk.*/
 div.loading_container {
   display: inline-block;
   padding: 1.5em 1.5em 1.25em;
@@ -638,11 +642,13 @@ div.loading_container div.loading_spinner div { background: #fff; }
   border-radius: 10px;
 }
 
-.dismiss-all {
+/*END OVERLAY LOADING VIEW*/
+
+.dismiss-all { /*Part of*/
   width: 100%;
 }
 
-
+/*TODO AlertView is an appform-template base view. Should be theme customized? */
 .fh_wufoo_alert {
   font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
   font-size: 13px;
@@ -685,12 +691,16 @@ div.loading_container div.loading_spinner div { background: #fff; }
   border-color: #57a957 #57a957 #3d773d;
   border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
-#app_version {
+
+#app_version { /*TODO Font should be customised for the version in the bottom?*/
   padding-top: 10px;
   text-align: center;
   font-size: 10px;
   font-family: Verdana;
 }
+
+
+
 #fh_wufoo_alerts_area span.small {
   max-width: 30%;
   white-space: nowrap;
@@ -730,6 +740,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
   display: none;
 }
 
+/*END ALERT*/
+
 
 @media only screen and (orientation : portrait) {
   li span.name {
@@ -764,14 +776,15 @@ div.loading_container div.loading_spinner div { background: #fff; }
   font-size: 14px;
 }
 
-#fh_wufoo_settings .button-negative {
-  width: 40%;
-}
+/*Button positive and button negative are replaced by fh_appform_button_cancel and fh_appform_button_action*/
+/*#fh_wufoo_settings .button-negative {*/
+  /*width: 40%;*/
+/*}*/
 
-#fh_wufoo_settings .button-positive {
-  width: 40%;
-  float: right;
-}
+/*#fh_wufoo_settings .button-positive {*/
+  /*width: 40%;*/
+  /*float: right;*/
+/*}*/
 
 .hidden, #fh_wufoo_header .count.hidden {
   display: none;
@@ -792,6 +805,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
   border: 0;
 }
 
+
+/*Form submission progress bar.*/
 .progress_bar_container {
   height: 1em;
   position: relative;
@@ -807,6 +822,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
   display:block;
 }
 
+/*Settigns related to the templated-app*/
 .settings img ,.about img {
   position: relative;
   width: 16px;

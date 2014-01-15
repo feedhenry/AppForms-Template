@@ -1809,7 +1809,7 @@ var FormListView = BaseView.extend({
     }
     var html = _.template(this.templates.error, {
       name: msg + "<br/>Please Retry Later",
-      enabledClass: 'button-negative',
+      enabledClass: 'fh_appform_button_cancel',//TODO May not be this class. Double check
       dataClass: 'fetched'
     });
     $('ul', this.el).append(html);
@@ -3933,7 +3933,7 @@ var FormView = BaseView.extend({
     formTitle: '<div class="fh_appform_title"><%= title %></div>',
     formDescription: '<div class="fh_appform_description"><%= description %></div>',
     formContainer: '<div id="fh_appform_container" class="fh_appform_form"></div>',
-    buttons: '<div id="buttons" class="fh_action_bar"><button class="saveDraft hidden button button-main fh_appform_button_action">Save Draft</button><button class="previous hidden button fh_appform_button_navigation">Previous</button><button class="next hidden button fh_appform_button_navigation">Next</button><button class="submit hidden button button-positive fh_appform_button_action">Submit</button></div>'
+    buttons: '<div id="buttons" class="fh_action_bar"><button class="saveDraft hidden button button-main fh_appform_button_action">Save Draft</button><button class="previous hidden button fh_appform_button_navigation">Previous</button><button class="next hidden button fh_appform_button_navigation">Next</button><button class="submit hidden button fh_appform_button_action">Submit</button></div>'
   },
   events: {
     "click button.next": "nextPage",
