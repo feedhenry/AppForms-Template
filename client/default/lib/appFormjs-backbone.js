@@ -3856,6 +3856,7 @@ PageView=BaseView.extend({
 
   show: function () {
     var self = this;
+    this.trigger('change:active_page');
     this.$el.removeClass('hidden');
   },
 
