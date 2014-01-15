@@ -2838,7 +2838,7 @@ FieldCameraGroupView = FieldCameraView.extend({
   }
 });
 FieldCheckboxView = FieldView.extend({
-  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice fh_appform_field_input" ><%= choice %></label><br/>',
+  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
 
   // contentChanged: function(e) {
   //   var self = this;
@@ -2858,7 +2858,7 @@ FieldCheckboxView = FieldView.extend({
     var subfields = this.model.getCheckBoxOptions();
     var fieldId=this.model.getFieldId();
     var self=this;
-    var html="";
+    var html="<div class='fh_appform_field_input'>";
     $.each(subfields, function(i, subfield) {
       html+= _.template(self.choice, {
         "fieldId": fieldId,
@@ -2868,6 +2868,7 @@ FieldCheckboxView = FieldView.extend({
         "checked": (subfield.selected) ? "checked='checked'" : ""
       });
     });
+    html+="</div>";
     return html;
   },
   // addValidationRules: function() {
@@ -3296,11 +3297,14 @@ FieldPhoneView = FieldView.extend({
 });
 FieldRadioView = FieldView.extend({
   hidden_field: '<input id="radio<%= id %>" type="hidden" value="" data-type="radio">',
-  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio fh_appform_field_input" value="<%= value %>" ><label class="choice fh_appform_field_input" ><%= choice %></label><br/>',
+  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
     var self = this;
     var html = "";
+
+    html += "</div class='fh_appform_field_input'>";
+
     var fieldId = this.model.getFieldId();
     $.each(choices, function(i, choice) {
       var jQObj = $(_.template(self.choice, {
@@ -3315,6 +3319,9 @@ FieldRadioView = FieldView.extend({
       }
       html += self.htmlFromjQuery(jQObj);
     });
+
+    html+= "</div>";
+
     return html;
   },
   // addValidationRules: function() {
@@ -3825,7 +3832,7 @@ PageView=BaseView.extend({
     var self = this;
     this.fieldViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('page hidden');
+    this.$el.empty().addClass('fh_appform_page hidden');
 
     //Need to add the page title and description
 //    this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));

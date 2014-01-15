@@ -27,7 +27,9 @@
 }
 
 .fh_appform_field_input {
-    background: #ddea04;
+    /*background: #ddea04;*/
+    width: 100%;
+    padding: 6px 0 6px 0;
 }
 
 select.fh_appform_field_input {
@@ -241,3 +243,7 @@ td .page_title {
 td.active .page_title {
     display: inline;
 }
+
+
+/*Field Title margin stuff label*/
+label.fh_appform_field_title { display: block; margin-bottom: 10px; }

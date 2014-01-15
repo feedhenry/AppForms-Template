@@ -8,26 +8,26 @@
 }
 
 /*Not used by template*/
-.left {
-  float: left;
-}
+/*.left {*/
+  /*float: left;*/
+/*}*/
 
 /*Not used by template*/
-.right {
-  float: right;
-}
+/*.right {*/
+  /*float: right;*/
+/*}*/
 
-.clear {
-  clear: both;
-}
+/*.clear {*/
+  /*clear: both;*/
+/*}*/
 
-.italic {
-  font-style: italic;
-}
+/*.italic {*/
+  /*font-style: italic;*/
+/*}*/
 
-.form_list {
-  list-style: none;
-}
+/*.form_list {*/
+  /*list-style: none;*/
+/*}*/
 
 /*html, body {*/
   /*font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;*/
@@ -35,14 +35,16 @@
   /*padding-top: 50px; Top padding removed -- added to body only*/
 /*}*/
 
+
+/* TODO Should possibly inherit the background color from the fh_appform_body class? */
 html {
   background: #EEE;
 }
 
-label { display: block; margin-bottom: 10px; font-size: 18px; }
+/*label { display: block; margin-bottom: 10px; font-size: 18px; }  Moved to themeCSS. Needs to be independent*/
 /*label.error { display: inline; }*/
-label.choice { display: inline; }
-input[type="radio"], input[type="checkbox"] { width: inherit; }
+/*label.choice { display: inline; }*/
+/*input[type="radio"], input[type="checkbox"] { width: inherit; }*/
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
@@ -134,12 +136,12 @@ input[type="radio"], input[type="checkbox"] { width: inherit; }
 }
 
 input { /* Field input borders and font is defined in the theme definition fh_appform_field_input */
-  width: 100%;
+  /*width: 100%;*/
   /*font-family: inherit;*/
-  line-height: 1.4em;/* Line height does not make much of a difference. Possibly can be taken out*/
+  /*line-height: 1.4em;*//* Line height does not make much of a difference. Possibly can be taken out*/
   /*border: 0;*/
   /*outline: none;*/
-  padding: 6px 0 6px 0; /* Padding for input stuff should probably be set in the theme.*/
+  /*padding: 6px 0 6px 0; *//* Padding for input stuff should probably be set in the theme.*/
   /*border: 1px solid #999;*/
   /*-webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;*/
   /*-moz-box-shadow: rgba(0, 0, 0, 0.2) 0 1px 2px 0 inset;*/
