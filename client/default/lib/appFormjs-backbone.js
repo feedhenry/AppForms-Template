@@ -4348,10 +4348,10 @@ var FromJsonView = BaseView.extend({
 
 });
 StepsView = Backbone.View.extend({
-  className: 'fh_steps clearfix',
+  className: 'fh_appform_steps',
 
   templates: {
-    table: '<div class="progress_wrapper"><table class="progress_steps" cellspacing="0"><tr></tr></table></div>',
+    table: '<div class="fh_appform_progress_wrapper"><table class="fh_appform_progress_steps" cellspacing="0"><tr></tr></table></div>',
     step: '<td><span class="number_container"><div class="number"><%= step_num %></div></span><span class="page_title"><%= step_name %></span></td>'
   },
 

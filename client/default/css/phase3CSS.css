@@ -213,20 +213,20 @@ textarea.fh_appform_field_input {
 }
 
 /* Steps TODO Theme definition for the app Probably a rename also to the fh_appform namespace*/
-.progress_steps {
+.fh_appform_progress_steps {
     width: 100%;
 }
 
-.progress_wrapper {
+.fh_appform_progress_wrapper {
     padding-top: 20px;
     padding-bottom: 10px;
 }
 
-.progress_steps td {
+.fh_appform_progress_steps td {
     text-align: center;
 }
 
-.progress_steps .number_container {
+.fh_appform_progress_steps .number_container {
     border: 1px solid #c3c3c3;
     display: inline-block;
     height: 24px;
@@ -235,26 +235,26 @@ textarea.fh_appform_field_input {
     border-radius: 13px;
 }
 
-.progress_steps .active .number_container {
+.fh_appform_progress_steps .active .number_container {
     background: black;
     color: #fff;
     border: 1px solid #000;
 }
 
-.progress_steps .page_title {
+.fh_appform_progress_steps .page_title {
     padding-left: 10px;
     font-weight: bold;
 }
 
-.progress_steps .number {
+.fh_appform_progress_steps .number {
     padding-top: 4px;
 }
 
-td .page_title {
+.fh_appform_progress_steps td .page_title {
     display: none;
 }
 
-td.active .page_title {
+.fh_appform_progress_steps td.active .page_title {
     display: inline;
 }
 
