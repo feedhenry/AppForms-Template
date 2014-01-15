@@ -3303,7 +3303,7 @@ FieldRadioView = FieldView.extend({
     var self = this;
     var html = "";
 
-    html += "</div class='fh_appform_field_input'>";
+    html += "<div class='fh_appform_field_input'>";
 
     var fieldId = this.model.getFieldId();
     $.each(choices, function(i, choice) {
