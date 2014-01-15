@@ -66,7 +66,10 @@ select.fh_appform_field_input option {
 }
 
 .fh_appform_field_area.fh_appform_field_section_break {
-    border:none;
+    background-color: #7518d2;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b0ce31;
 }
 
 .fh_appform_field_section_break_title {
