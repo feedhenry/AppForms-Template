@@ -3951,7 +3951,7 @@ var FormView = BaseView.extend({
       self.logoBase64 = theme.getLogo();
 
       if (params.formId) {
-        this.onLoad();
+        self.onLoad();
         $fh.forms.getForm(params, function(err, form) {
           if (err) {
             throw (err.body);
