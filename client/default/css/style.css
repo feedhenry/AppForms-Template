@@ -184,49 +184,49 @@ textarea {
 }
 
 /* Steps */
-.progress_steps {
-  width: 100%;
-}
+/*.progress_steps {*/
+  /*width: 100%;*/
+/*}*/
 
-.progress_wrapper {
-  padding-top: 20px;
-}
+/*.progress_wrapper {*/
+  /*padding-top: 20px;*/
+/*}*/
 
-.progress_steps td {
-  text-align: center;
-}
+/*.progress_steps td {*/
+  /*text-align: center;*/
+/*}*/
 
-.progress_steps .number_container {
-  border: 1px solid #c3c3c3;
-  display: inline-block;
-  height: 24px;
-  width: 24px;
-  text-align: center;
-  border-radius: 13px;
-}
+/*.progress_steps .number_container {*/
+  /*border: 1px solid #c3c3c3;*/
+  /*display: inline-block;*/
+  /*height: 24px;*/
+  /*width: 24px;*/
+  /*text-align: center;*/
+  /*border-radius: 13px;*/
+/*}*/
 
-.progress_steps .active .number_container {
-  background: black;
-  color: #fff;
-  border: 1px solid #000;
-}
+/*.progress_steps .active .number_container {*/
+  /*background: black;*/
+  /*color: #fff;*/
+  /*border: 1px solid #000;*/
+/*}*/
 
-.progress_steps .page_title {
-  padding-left: 10px;
-  font-weight: bold;
-}
+/*.progress_steps .page_title {*/
+  /*padding-left: 10px;*/
+  /*font-weight: bold;*/
+/*}*/
 
-.progress_steps .number {
-  padding-top: 4px;
-}
+/*.progress_steps .number {*/
+  /*padding-top: 4px;*/
+/*}*/
 
-td .page_title {
-  display: none;
-}
+/*td .page_title {*/
+  /*display: none;*/
+/*}*/
 
-td.active .page_title {
-  display: inline;
-}
+/*td.active .page_title {*/
+  /*display: inline;*/
+/*}*/
 
 /* Form List */
 .form_list {
