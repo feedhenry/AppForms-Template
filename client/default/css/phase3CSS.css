@@ -186,15 +186,15 @@ textarea.fh_appform_field_input {
     display: none;
 }
 
-.fh_action_bar {
+.fh_appform_action_bar {
     padding: 18px 20px 18px 20px;
 }
 
-.fh_action_bar button.fh_appform_two_button {
+.fh_appform_action_bar button.fh_appform_two_button {
     width: 50%;
 }
 
-.fh_action_bar button.fh_appform_three_button {
+.fh_appform_action_bar button.fh_appform_three_button {
     width: 33.3%;
 }
 
