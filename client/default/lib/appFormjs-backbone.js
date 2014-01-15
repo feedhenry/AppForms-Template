@@ -3856,7 +3856,6 @@ PageView=BaseView.extend({
 
   show: function () {
     var self = this;
-    this.trigger('change:active_page');
     this.$el.removeClass('hidden');
   },
 
@@ -4181,6 +4180,7 @@ var FormView = BaseView.extend({
     this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
     this.rebindButtons();
     this.pageViews[0].show();
+    this.steps.activePageChange(null, 0);
     this.checkPages();
     this.checkRules();
   },
@@ -4188,12 +4188,14 @@ var FormView = BaseView.extend({
     this.hideAllPages();
     this.pageViews[this.pageNum + 1].show();
     this.pageNum = this.pageNum + 1;
+    this.steps.activePageChange(null, this.pageNum);
     this.checkPages();
   },
   prevPage: function() {
     this.hideAllPages();
     this.pageViews[this.pageNum - 1].show();
     this.pageNum = this.pageNum - 1;
+    this.steps.activePageChange(null, this.pageNum);
     this.checkPages();
   },
   hideAllPages: function() {
@@ -4349,9 +4351,6 @@ StepsView = Backbone.View.extend({
     var self = this;
 
     _.bindAll(this, 'render');
-    this.model.on('change:active_page', function(model, page) {
-      self.activePageChange.call(self, model, page);
-    });
     this.render();
   },
 
