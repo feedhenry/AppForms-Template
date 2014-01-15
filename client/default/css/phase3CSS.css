@@ -35,16 +35,8 @@ select.fh_appform_field_input option {
     background: #ddea04;
 }
 
-input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_field_input { /*TODO Needs to be added to theme generation. inherits values from fh_appform_field_input*/
-    background: #ddea04;
-    font-size: 18pt;
-    font-family: georgia;
-    color: #0000FF;
-    font-weight: bold;
-    font-style: normal;
-    border-width: thick;
-    border-style: dotted;
-    border-color: #b5bf16;
+.fh_appform_field_input > .radio, .fh_appform_field_input > .checkbox {
+    margin-right:10px;
 }
 
 .fh_appform_field_area:first-child {
@@ -59,10 +51,9 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 
 .fh_appform_field_area {
     padding: 20px;
-    margin-top: 5px;
-    border-radius: 10px;
+    /*margin-top: 5px; TODO My addition for testing. Can remove*/
     padding: 20px;
-    border-radius: 10px;
+    /*border-radius: 10px; TODO My addition for testing. Looked nice, might add later.*/
 }
 
 .fh_appform_body {
@@ -108,6 +99,14 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 .fh_appform_button_action.special_button { /*TODO Needs to be added to theme generation - static*/
     width: 100%;
     border-radius: 20px;
+    padding: 4px;
+    /*font-size: 16px;*/
+    margin-top: 10px;
+    line-height: 28px;
+}
+
+.special_button img {
+    min-height: 20px;
 }
 
 .fh_appform_button_cancel {
@@ -212,13 +211,14 @@ textarea.fh_appform_field_input {
     text-align:center;
 }
 
-/* Steps TODO Theme definition for the app*/
+/* Steps TODO Theme definition for the app Probably a rename also*/
 .progress_steps {
     width: 100%;
 }
 
 .progress_wrapper {
     padding-top: 20px;
+    padding-bottom: 10px;
 }
 
 .progress_steps td {
