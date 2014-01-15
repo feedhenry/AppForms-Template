@@ -3942,13 +3942,6 @@ var FormView = BaseView.extend({
     _.bindAll(this, "checkRules", "onValidateError");
     this.el = this.options.parentEl;
     this.fieldModels = [];
-    if (this.model.pages.length > 1) {
-      self.steps = new StepsView({
-        parentEl: this.$el,
-        parentView: self,
-        model: this.model
-      });
-    }
     this.el.empty();
   },
   loadForm: function(params, cb) {
@@ -4014,6 +4007,14 @@ var FormView = BaseView.extend({
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {logoBase64: self.logoBase64}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {title: this.model.getName()}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formDescription, {description: this.model.getDescription()}));
+
+    if (this.model.pages.length > 1) {
+      self.steps = new StepsView({
+        parentEl: self.el.find(this.elementNames.formContainer),
+        parentView: self,
+        model: self.model
+      });
+    }
 
     if (!params.submission) {
       params.submission = self.model.newSubmission();
@@ -4359,7 +4360,7 @@ StepsView = Backbone.View.extend({
 
     var width = 100 / this.model.pages.length;
 
-    this.model.pages.each(function(page, index) {
+    this.model.pages.forEach(function(page, index) {
       var item = $(_.template(self.templates.step, {
         step_name: page.get('Title'),
         step_num: index + 1
