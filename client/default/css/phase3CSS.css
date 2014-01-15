@@ -97,7 +97,7 @@ select.fh_appform_field_input option {
     border-radius: 10px;
 }
 
-.fh_appform_button_action.special_button { /*TODO Needs to be added to theme generation - static*/
+.fh_appform_button_action.fh_appform_special_button { /*TODO Needs to be added to theme generation - static*/
     width: 100%;
     border-radius: 20px;
     padding: 4px;
@@ -106,7 +106,7 @@ select.fh_appform_field_input option {
     line-height: 28px;
 }
 
-.special_button img {
+.fh_appform_special_button img {
     min-height: 20px;
 }
 
