@@ -4154,29 +4154,29 @@ var FormView = BaseView.extend({
       this.el.find("button.next").hide();
       this.el.find("button.saveDraft").show();
       this.el.find(" button.submit").show();
-      this.el.find("button").removeClass('three_button');
-      this.el.find("button").addClass('two_button');
+      this.el.find(".fh_action_bar button").removeClass('fh_appform_three_button');
+      this.el.find(".fh_action_bar button").addClass('fh_appform_two_button');
     } else if (this.pageNum === 0) {
       this.el.find(" button.previous").hide();
       this.el.find("button.next").show();
       this.el.find("button.saveDraft").show();
       this.el.find(" button.submit").hide();
-      this.el.find("button").removeClass('three_button');
-      this.el.find("button").addClass('two_button');
+      this.el.find(".fh_action_bar button").removeClass('fh_appform_three_button');
+      this.el.find(".fh_action_bar button").addClass('fh_appform_two_button');
     } else if (this.pageNum === this.pageCount - 1) {
       this.el.find(" button.previous").show();
       this.el.find(" button.next").hide();
       this.el.find(" button.saveDraft").show();
       this.el.find(" button.submit").show();
-      this.el.find("button").removeClass('two_button');
-      this.el.find("button").addClass('three_button');
+      this.el.find(".fh_action_bar button").removeClass('fh_appform_two_button');
+      this.el.find(".fh_action_bar button").addClass('fh_appform_three_button');
     } else {
       this.el.find(" button.previous").show();
       this.el.find(" button.next").show();
       this.el.find(" button.saveDraft").show();
       this.el.find(" button.submit").hide();
-      this.el.find("button").removeClass('two_button');
-      this.el.find("button").addClass('three_button');
+      this.el.find(".fh_action_bar button").removeClass('fh_appform_two_button');
+      this.el.find(".fh_action_bar button").addClass('fh_appform_three_button');
     }
     if (this.readonly) {
       this.el.find("button.saveDraft").hide();
