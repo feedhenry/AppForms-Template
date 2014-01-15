@@ -78,11 +78,19 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
 }
 
 .fh_appform_field_section_break_title {
-
+    font-size: 18pt;
+    font-family: arial;
+    color: #00FF00;
+    font-weight: bold;
+    font-style: normal;
 }
 
 .fh_appform_field_section_break_description {
-
+    font-size: 12pt;
+    font-family: arial;
+    color: #A9302A;
+    font-weight: normal;
+    font-style: normal;
 }
 
 .fh_appform_logo {
