@@ -1905,11 +1905,11 @@ var FormListView = BaseView.extend({
 FieldView = Backbone.View.extend({
 
   className: 'fh_appform_field_area',
-  errMessageLabelClass: "label.fh_appform_errorMsg",
+  errMessageContainer: ".fh_appform_errorMsg",
   requiredClassName: "fh_appform_required",
   errorClassName: "fh_appform_error",
   fieldWrapper: "<div />",
-  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_error hidden"><label class="fh_appform_errorMsg"></label></div></div>',
+  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_errorMsg hidden"></div></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   instructions: '<p class="instruct fh_appform_field_instructions"><%= helpText %></p>',
@@ -2120,9 +2120,9 @@ FieldView = Backbone.View.extend({
   },
   setErrorText: function(index, text) {
     var wrapperObj = this.getWrapper(index);
-    wrapperObj.find(this.errMessageLabelClass).text(text);
-    wrapperObj.find(this.errMessageLabelClass).show();
-    wrapperObj.find(this.errMessageLabelClass).addClass(this.errorClassName);
+    wrapperObj.find(this.errMessageContainer).text(text);
+    wrapperObj.find(this.errMessageContainer).show();
+    wrapperObj.find(this.errMessageContainer).addClass(this.errorClassName);
     wrapperObj.find("input,textarea,select").addClass(this.errorClassName);
   },
   contentChanged: function(e) {
@@ -2302,7 +2302,7 @@ FieldView = Backbone.View.extend({
 
   clearError: function(index) {
     var wrapperObj = this.getWrapper(index);
-    wrapperObj.find(this.errMessageLabelClass).hide();
+    wrapperObj.find(this.errMessageContainer).hide();
     wrapperObj.find("." + this.errorClassName).removeClass(this.errorClassName);
   }
 
