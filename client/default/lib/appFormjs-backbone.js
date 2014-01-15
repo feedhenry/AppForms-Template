@@ -1915,7 +1915,7 @@ FieldView = Backbone.View.extend({
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
-  fieldActionBar: "<div class='fieldActionBar'><button class='fh_appform_addInputBtn special_button fh_appform_button_action'>Add Input</button><button class='special_button fh_appform_removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
+  fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_addInputBtn special_button fh_appform_button_action'>Add Input</button><button class='special_button fh_appform_removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
   events: {
     "change": "contentChanged",
     "blur input,select,textarea": "validate",
@@ -1935,15 +1935,15 @@ FieldView = Backbone.View.extend({
     var maxRepeat = this.maxRepeat;
     var minRepeat = this.initialRepeat;
     if (curNum < maxRepeat) {
-      this.$fieldActionBar.find(this.addInputButtonClass).show();
+      this.$fh_appform_fieldActionBar.find(this.addInputButtonClass).show();
     } else {
-      this.$fieldActionBar.find(this.addInputButtonClass).hide();
+      this.$fh_appform_fieldActionBar.find(this.addInputButtonClass).hide();
     }
 
     if (curNum > minRepeat) {
-      this.$fieldActionBar.find(this.removeInputButtonClass).show();
+      this.$fh_appform_fieldActionBar.find(this.removeInputButtonClass).show();
     } else {
-      this.$fieldActionBar.find(this.removeInputButtonClass).hide();
+      this.$fh_appform_fieldActionBar.find(this.removeInputButtonClass).hide();
     }
   },
   removeElement: function() {
@@ -2040,7 +2040,7 @@ FieldView = Backbone.View.extend({
     }
 
     this.$el.append(this.$fieldWrapper);
-    this.$el.append(this.$fieldActionBar);
+    this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
 
     // add to dom
@@ -2075,7 +2075,7 @@ FieldView = Backbone.View.extend({
     //   this.$el.addClass('required');
     // }
     this.$fieldWrapper = $(this.fieldWrapper);
-    this.$fieldActionBar = $(this.fieldActionBar);
+    this.$fh_appform_fieldActionBar = $(this.fh_appform_fieldActionBar);
     // only call render once. model will never update
     this.render();
   },
