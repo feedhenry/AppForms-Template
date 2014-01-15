@@ -4371,7 +4371,8 @@ StepsView = Backbone.View.extend({
     });
 
     this.$el.append(table);
-    $('#fh_appform_container', this.options.parentEl).after(self.$el);
+    this.options.parentEl.append(this.$el);
+    //$('#fh_appform_container', this.options.parentEl).after(self.$el);
   },
 
   activePageChange: function(model, pageIndex) {
