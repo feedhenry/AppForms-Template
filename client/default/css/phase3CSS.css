@@ -136,7 +136,7 @@ textarea.fh_appform_field_input {
 
 .segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
     background-color: #14d822;
-    font-size: 14pt;
+    font-size: 11pt;
     font-family: georgia;
     color: #FF0000;
     font-weight: bold;
