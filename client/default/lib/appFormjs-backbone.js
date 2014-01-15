@@ -1905,11 +1905,11 @@ var FormListView = BaseView.extend({
 FieldView = Backbone.View.extend({
 
   className: 'fh_appform_field_area',
-  errMessageLabelClass: "label.errorMsg",
+  errMessageLabelClass: "label.fh_appform_errorMsg",
   requiredClassName: "fh_appform_required",
   errorClassName: "fh_appform_error",
   fieldWrapper: "<div />",
-  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><label class="errorMsg"></label></div>',
+  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_error hidden"><label class="fh_appform_errorMsg"></label></div></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
   instructions: '<p class="instruct fh_appform_field_instructions"><%= helpText %></p>',
