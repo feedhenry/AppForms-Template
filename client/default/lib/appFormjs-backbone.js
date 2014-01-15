@@ -1908,12 +1908,14 @@ FieldView = Backbone.View.extend({
   errMessageContainer: ".fh_appform_errorMsg",
   requiredClassName: "fh_appform_required",
   errorClassName: "fh_appform_error",
+  addInputButtonClass: ".addInputBtn",
+  removeInputButtonClass: ".removeInputBtn",
   fieldWrapper: "<div />",
   wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_errorMsg hidden"></div></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
-  instructions: '<p class="instruct fh_appform_field_instructions"><%= helpText %></p>',
-  fieldActionBar: "<div class='fieldActionBar'><button class='addInputBtn special_button two_button fh_appform_button_action'>Add Input</button><button class='special_button two_button removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
+  instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
+  fieldActionBar: "<div class='fieldActionBar'><button class='addInputBtn special_button fh_appform_button_action'>Add Input</button><button class='special_button removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
   events: {
     "change": "contentChanged",
     "blur input,select,textarea": "validate",
@@ -1933,15 +1935,15 @@ FieldView = Backbone.View.extend({
     var maxRepeat = this.maxRepeat;
     var minRepeat = this.initialRepeat;
     if (curNum < maxRepeat) {
-      this.$fieldActionBar.find(".addInputBtn").show();
+      this.$fieldActionBar.find(this.addInputButtonClass).show();
     } else {
-      this.$fieldActionBar.find(".addInputBtn").hide();
+      this.$fieldActionBar.find(this.addInputButtonClass).hide();
     }
 
     if (curNum > minRepeat) {
-      this.$fieldActionBar.find(".removeInputBtn").show();
+      this.$fieldActionBar.find(this.removeInputButtonClass).show();
     } else {
-      this.$fieldActionBar.find(".removeInputBtn").hide();
+      this.$fieldActionBar.find(this.removeInputButtonClass).hide();
     }
   },
   removeElement: function() {
