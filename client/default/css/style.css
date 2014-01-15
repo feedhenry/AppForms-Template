@@ -261,13 +261,13 @@ textarea {
 }
 
 .field_container span label:first-child {
-  font-weight: normal;
+  /*font-weight: normal;*/
 }
 
-.likert_subfield label.font-normal {
-  font-weight: normal;
-  margin-bottom: 0px;
-}
+/*.likert_subfield label.font-normal {*/
+  /*font-weight: normal;*/
+  /*margin-bottom: 0px;*/
+/*}*/
 
 /*.field_container .required:first-child:after{*/
     /*color: #e32;*/
