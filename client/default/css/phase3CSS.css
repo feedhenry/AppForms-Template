@@ -13,11 +13,6 @@
     text-align: center;
 }
 
-.fh_appform_field_area {
-    padding: 20px;
-    border-radius: 10px;
-}
-
 .fh_appform_field_title {
 
 }
@@ -66,6 +61,8 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
     padding: 20px;
     margin-top: 5px;
     border-radius: 10px;
+    padding: 20px;
+    border-radius: 10px;
 }
 
 .fh_appform_body {
@@ -76,7 +73,15 @@ input[type="radio"].fh_appform_field_input, input[type="checkbox"].fh_appform_fi
     padding: 5px;
 }
 
-.fh_appform_field_area {
+.fh_appform_field_area.fh_appform_field_section_break {
+    border:none;
+}
+
+.fh_appform_field_section_break_title {
+
+}
+
+.fh_appform_field_section_break_description {
 
 }
 
