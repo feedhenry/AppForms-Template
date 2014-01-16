@@ -14,15 +14,16 @@
 }
 
 .fh_appform_field_title {
-
+    display: block; margin-bottom: 10px;
 }
 
 .fh_appform_field_instructions {
     margin-bottom: 10px;
 }
 
+/* FIELD INPUT STATIC CSS */
+
 .fh_appform_field_input {
-    /*background: #ddea04;*/
     width: 100%;
     padding: 6px 0 6px 0;
 }
@@ -35,13 +36,17 @@ select.fh_appform_field_input option {
     background: #ddea04;
 }
 
+textarea.fh_appform_field_input {
+    min-height: 100px;
+}
+
 .fh_appform_field_input > .radio, .fh_appform_field_input > .checkbox {
     margin-right:10px;
 }
 
-.fh_appform_field_area:first-child {
 
-}
+/*FIELD AREA CSS*/
+
 
 .fh_appform_field_area:last-child { /*TODO Needs to be generated in theme generation. Inherits border data from fh_appform_field_area*/
     border-width: thick;
@@ -51,23 +56,17 @@ select.fh_appform_field_input option {
 
 .fh_appform_field_area {
     padding: 20px;
-    /*margin-top: 5px; TODO My addition for testing. Can remove*/
-    padding: 20px;
-    /*border-radius: 10px; TODO My addition for testing. Looked nice, might add later.*/
     border-bottom: none;
 }
 
-.fh_appform_body {
-
+.fh_appform_field_area.fh_appform_field_section_break { /*TODO Needs to be generated*/
+    border:none;
 }
 
 .fh_appform_form {
     padding: 5px;
 }
 
-.fh_appform_field_area.fh_appform_field_section_break { /*TODO Needs to be generated*/
-     border:none;
- }
 
 .fh_appform_field_section_break_title {/*TODO Needs to be generated*/
     font-size: 18pt;
@@ -89,8 +88,18 @@ select.fh_appform_field_input option {
     border-radius: 10px;
 }
 
+.fh_appform_button_navigation:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+}
+
 .fh_appform_button_action {
     border-radius: 10px;
+}
+
+.fh_appform_button_action:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
 }
 
 .fh_appform_button_action.fh_appform_special_button { /*TODO Needs to be added to theme generation - static*/
@@ -110,26 +119,31 @@ select.fh_appform_field_input option {
 
 }
 
+.fh_appform_button_cancel:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
+    background: green;
+    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+}
+
 .fh_appform_navigation {
 
 }
 
-.fh_appform_header {
-
+.segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
+    background-color: #14d822;
+    font-size: 11pt;
+    font-family: georgia;
+    color: #FF0000;
+    font-weight: bold;
+    font-style: normal;
 }
 
-input[type="text"].fh_appform_field_input {
-    width: 100%;
-}
-
-textarea.fh_appform_field_input {
-    min-width: 100%;
-    min-height: 100px;
+.segmented-controller.fh_appform_navigation li > a:active { /*TODO Active state buttons needs to be added to css generation. This is for the header in the Appform-Template-App*/
+    background-color: blue;
 }
 
 .fh_appform_field_required:first-child:after{ /*TODO Needs to be generated as part of css. Also, the color needs to be selectable.*/
     color: #e32;
-    content: ' *';
+    content: '*';
     display: inline;
 }
 
@@ -149,34 +163,14 @@ textarea.fh_appform_field_input {
     margin-top: 10px;
 }
 
-.segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
-    background-color: #14d822;
-    font-size: 11pt;
-    font-family: georgia;
-    color: #FF0000;
-    font-weight: bold;
-    font-style: normal;
-}
-
-.segmented-controller.fh_appform_navigation li > a:active { /*TODO Active state buttons needs to be added to css generation. This is for the header in the Appform-Template-App*/
-    background-color: blue;
-}
-
-.fh_appform_button_action:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
-}
 
 
-.fh_appform_button_cancel:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
-}
 
-.fh_appform_button_navigation:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
-}
+
+
+
+
+
 
 .hidden {
     display: none;
@@ -272,6 +266,3 @@ textarea.fh_appform_field_input {
     display: inline;
 }
 
-
-/*Field Title margin stuff label*/
-label.fh_appform_field_title { display: block; margin-bottom: 10px; }

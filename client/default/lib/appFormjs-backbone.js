@@ -1913,7 +1913,7 @@ FieldView = Backbone.View.extend({
   fieldWrapper: "<div />",
   wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_errorMsg hidden"></div></div>',
   title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
-  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
+  input: "<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/></div>",
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_addInputBtn fh_appform_special_button fh_appform_button_action'>Add Input</button><button class='fh_appform_special_button fh_appform_removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
   events: {
@@ -2929,8 +2929,8 @@ FieldEmailView = FieldView.extend({
   // }
 });
 FieldFileView = FieldView.extend({
-  input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'></button>" +
-    "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/> ",
+  input: "<div class='fh_appform_field_input'><button style='display:none' data-field='<%= fieldId %>' class='fh_appform_special_button fh_appform_button_action' data-index='<%= index %>'></button>" +
+    "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/></div> ",
   type: "file",
   // dumpContent: function() {
   //   var tmp = "<empty>";
@@ -3018,7 +3018,7 @@ FieldFileView = FieldView.extend({
   }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/> ",
+  input: "<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/></div> ",
   type: "text",
   initialize: function() {
     this.geoValues=[];
@@ -3305,7 +3305,7 @@ FieldRadioView = FieldView.extend({
     var self = this;
     var html = "";
 
-    html += "<div class='fh_appform_field_input'>";
+    html += "<div class='fh_appform_field_input'>";//TODO Move to template.
 
     var fieldId = this.model.getFieldId();
     $.each(choices, function(i, choice) {
@@ -3344,7 +3344,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  select: "<div class='fh_appform_field_input'><select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select></div>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
   renderInput: function(index) {
     var fieldId=this.model.getFieldId();
@@ -3713,10 +3713,10 @@ FieldSignatureView = FieldView.extend({
 
 });
 FieldTextView = FieldView.extend({
-  template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
+  template: ['<div class="fh_appform_field_input"><label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>"></div>']
 });
 FieldTextareaView = FieldView.extend({
-    input:"<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input:"<div class='fh_appform_field_input'><textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea></div>"
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
@@ -3729,9 +3729,9 @@ FieldSectionBreak = FieldView.extend({
 });
 FieldDateTimeView = FieldView.extend({
   extension_type: 'fhdate',
-  inputTime:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='time'>",
-  inputDate:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='date'>",
-  inputDateTime:"<input data-field='<%= fieldId %>' data-index='<%= index %>' type='text'>",
+  inputTime:"<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='time'></div>",
+  inputDate:"<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='date'></div>",
+  inputDateTime:"<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='text'></div>",
 
   renderInput:function(index){
     var fieldId = this.model.getFieldId();
