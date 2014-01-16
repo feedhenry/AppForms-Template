@@ -23,25 +23,28 @@
 
 /* FIELD INPUT STATIC CSS */
 
-.fh_appform_field_input {
+
+.fh_appform_field_input > input[type="number"],
+.fh_appform_field_input > input[type="text"],
+.fh_appform_field_input > input[type="email"],
+.fh_appform_field_input > input[type="date"],
+.fh_appform_field_input > input[type="time"],
+.fh_appform_field_input > select,
+.fh_appform_field_input > textarea,
+.fh_appform_field_input > .radio
+.fh_appform_field_input > .checkbox
+{
     width: 100%;
+    background: #ddea04;
+    font-size: 14pt;
+    font-family: georgia;
+    color: #0000FF;
+    font-weight: bold;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #b5bf16;
     padding: 6px 0 6px 0;
-}
-
-select.fh_appform_field_input {
-    background: #ddea04;
-}
-
-select.fh_appform_field_input option {
-    background: #ddea04;
-}
-
-textarea.fh_appform_field_input {
-    min-height: 100px;
-}
-
-.fh_appform_field_input > .radio, .fh_appform_field_input > .checkbox {
-    margin-right:10px;
 }
 
 

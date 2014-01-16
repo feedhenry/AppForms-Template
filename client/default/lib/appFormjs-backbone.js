@@ -2861,6 +2861,8 @@ FieldCheckboxView = FieldView.extend({
     var fieldId=this.model.getFieldId();
     var self=this;
     var html="<div class='fh_appform_field_input'>";
+
+    html += "<div class='checkboxes'>"
     $.each(subfields, function(i, subfield) {
       html+= _.template(self.choice, {
         "fieldId": fieldId,
@@ -2870,6 +2872,7 @@ FieldCheckboxView = FieldView.extend({
         "checked": (subfield.selected) ? "checked='checked'" : ""
       });
     });
+    html+="</div>";
     html+="</div>";
     return html;
   },
@@ -3306,6 +3309,7 @@ FieldRadioView = FieldView.extend({
     var html = "";
 
     html += "<div class='fh_appform_field_input'>";//TODO Move to template.
+    html += "<div class='radio'>"
 
     var fieldId = this.model.getFieldId();
     $.each(choices, function(i, choice) {
@@ -3322,6 +3326,7 @@ FieldRadioView = FieldView.extend({
       html += self.htmlFromjQuery(jQObj);
     });
 
+    html+= "</div>";
     html+= "</div>";
 
     return html;
