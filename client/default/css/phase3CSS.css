@@ -65,11 +65,11 @@ select.fh_appform_field_input option {
     padding: 5px;
 }
 
-.fh_appform_field_area.fh_appform_field_section_break {
+.fh_appform_field_area.fh_appform_field_section_break { /*TODO Needs to be generated*/
      border:none;
  }
 
-.fh_appform_field_section_break_title {
+.fh_appform_field_section_break_title {/*TODO Needs to be generated*/
     font-size: 18pt;
     font-family: arial;
     color: #00FF00;
@@ -77,16 +77,12 @@ select.fh_appform_field_input option {
     font-style: normal;
 }
 
-.fh_appform_field_section_break_description {
+.fh_appform_field_section_break_description {/*TODO Needs to be generated*/
     font-size: 12pt;
     font-family: arial;
     color: #A9302A;
     font-weight: normal;
     font-style: normal;
-}
-
-.fh_appform_logo {
-
 }
 
 .fh_appform_button_navigation {
@@ -219,6 +215,14 @@ textarea.fh_appform_field_input {
 /* Steps TODO Theme definition for the app Probably a rename also to the fh_appform namespace*/
 .fh_appform_progress_steps {
     width: 100%;
+    font-size: 12pt;
+    font-family: times;
+    color: #a6d62b;
+    font-weight: normal;
+    font-style: normal;
+    border-width: thick;
+    border-style: dotted;
+    border-color: #fc0312;
 }
 
 .fh_appform_progress_wrapper {
@@ -237,17 +241,23 @@ textarea.fh_appform_field_input {
     width: 24px;
     text-align: center;
     border-radius: 13px;
+    background: blue;
+    color: white;
+    border: 1px solid #000;
+    border-width: 1px;
+    border-style: solid;
+    border-color: purple;
 }
 
 .fh_appform_progress_steps .active .number_container {
-    background: black;
-    color: #fff;
+    background: #a6d62b;
+    color: blue;
     border: 1px solid #000;
 }
 
 .fh_appform_progress_steps .page_title {
     padding-left: 10px;
-    font-weight: bold;
+    /*font-weight: bold; Should inherit from fh_appform_progres_steps*/
 }
 
 .fh_appform_progress_steps .number {
