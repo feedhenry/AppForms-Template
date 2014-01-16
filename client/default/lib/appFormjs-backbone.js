@@ -3344,7 +3344,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<div class='fh_appform_field_input'><select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select></div>",
+  select: "<div class='fh_appform_field_input'><select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select></div>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
   renderInput: function(index) {
     var fieldId=this.model.getFieldId();
