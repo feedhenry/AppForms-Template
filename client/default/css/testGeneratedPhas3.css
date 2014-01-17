@@ -1,136 +1,82 @@
-.fh_appform_button_navigation {
-    background-color:#579501;
-    font-size:17pt;
-    font-family:arial;
-    color:#516aa0;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_button_navigation:active {
-    background-color:#b12b4a;
-    font-size:17pt;
-    font-family:arial;
-    color:#9b333a;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_button_action {
-    background-color:#b478aa;
-    font-size:17pt;
-    font-family:arial;
-    color:#516aa0;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_button_action:active {
-    background-color:#c5a0a4;
-    font-size:17pt;
-    font-family:arial;
-    color:#516aa0;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_button_action.special_button {
+.fh_appform_button_action_active.special_button.special_button {
     width:100in;
 }
 
-.fh_appform_button_cancel {
-    background-color:#a63c84;
-    font-size:17pt;
-    font-family:arial;
-    color:#516aa0;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_button_cancel:active {
-    background-color:#3c0b82;
-    font-size:17pt;
-    font-family:arial;
-    color:#516aa0;
-    font-weight:bold;
-    font-style:normal;
-}
-
 .fh_appform_navigation {
-    background-color:#844b82;
+    background-color:red;
 }
 
 .fh_appform_header {
-    background-color:#15a47c;
+    background-color:#FF7800;
 }
 
 .fh_appform_body {
-    background-color:#6a2f55;
+    background-color:#FD0000;
 }
 
 .fh_appform_form {
-    background-color:#9ae46f;
-    border-width:medium;
+    background-color:#FF0400;
+    border-color:#FF2000;
     border-style:solid;
-    border-color:#08fc2c;
+    border-width:medium;
     padding:5px;
 }
 
 .fh_appform_field_title {
     font-size:14pt;
     font-family:arial;
-    color:#8bf27a;
-    font-weight:bold;
+    color:red;
+    font-weight:700;
     font-style:normal;
     display:block;
     margin-bottom:10px;
 }
 
 .fh_appform_field_area {
-    background-color:#bda17a;
-    border-width:thin;
-    border-style:dotted;
-    border-color:#d53160;
-    padding:20px;
+    background-color:red;
     border-bottom:none;
-}
-
-.fh_appform_field_area:last-child {
-    border-width:thin;
+    border-color:#4c53dd;
     border-style:dotted;
-    border-color:#d53160;
+    border-width:thin;
+    padding:20px;
 }
 
-.fh_appform_field_input.fh_appform_field_input > input[type='number'],.fh_appform_field_input > input[type='text'],.fh_appform_field_input > input[type='email'],.fh_appform_field_input > input[type='date'],.fh_appform_field_input > input[type='time'],.fh_appform_field_input > select,.fh_appform_field_input > textarea,.fh_appform_field_input > .radio,.fh_appform_field_input > .checkboxes {
-    background-color:#d7cad3;
+.fh_appform_field_area:last-child:last-child {
+    border-color:#4c53dd;
+    border-style:dotted;
+    border-width:thin;
+}
+
+.fh_appform_field_input {
+    background-color:#FF0508;
     font-size:15pt;
     font-family:arial;
-    color:#770238;
+    color:red;
     font-style:italic;
-    font-weight:normal;
-    border-width:medium;
+    font-weight:400;
+    border-color:#FF4200;
     border-style:double;
-    border-color:#a72921;
+    border-width:medium;
 }
 
 .fh_appform_field_instructions {
-    background-color:#2edc3b;
+    background-color:red;
     font-size:16pt;
     font-family:arial;
-    color:#53841e;
-    font-weight:normal;
+    color:#EF0000;
+    font-weight:400;
     font-style:normal;
-    border-width:thick;
-    border-style:dotted;
-    border-color:#59089e;
     margin-bottom:10px;
+    border-color:#FF0010;
+    border-style:dotted;
+    border-width:thick;
 }
 
 .fh_appform_title {
     font-size:12pt;
     font-family:arial;
-    color:#34cf75;
-    font-weight:bold;
+    color:red;
+    font-weight:700;
     font-style:normal;
     text-align:center;
 }
@@ -138,55 +84,39 @@
 .fh_appform_description {
     font-size:13pt;
     font-family:arial;
-    color:#058df6;
+    color:red;
     font-style:italic;
-    font-weight:normal;
+    font-weight:400;
     text-align:center;
 }
 
 .fh_appform_error {
     font-size:17pt;
     font-family:arial;
-    color:#141d7b;
-    font-weight:bold;
+    color:red;
+    font-weight:700;
     font-style:normal;
-    background-color:#b33265;
-    border-width:thick;
-    border-style:dotted;
-    border-color:#65e116;
+    background-color:red;
     margin-top:10px;
-}
-
-.fh_appform_field_section_break_title {
-    font-size:17pt;
-    font-family:arial;
-    color:#20411a;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_field_section_break_description {
-    font-size:17pt;
-    font-family:arial;
-    color:#890608;
-    font-weight:bold;
-    font-style:normal;
+    border-color:#FF0010;
+    border-style:dotted;
+    border-width:thick;
 }
 
 .fh_appform_page_title {
     font-size:12pt;
     font-family:arial;
-    color:#64f53c;
-    font-weight:bold;
+    color:red;
+    font-weight:700;
     font-style:normal;
 }
 
 .fh_appform_page_description {
     font-size:13pt;
     font-family:arial;
-    color:#4e921d;
+    color:red;
     font-style:italic;
-    font-weight:normal;
+    font-weight:400;
 }
 
 .fh_appform_progress_wrapper {
@@ -195,65 +125,33 @@
 }
 
 .fh_appform_progress_steps {
-    background-color:#0f87ae;
-    border-width:thick;
+    background-color:red;
+    border-color:#FF0010;
     border-style:dotted;
-    border-color:#f05444;
+    border-width:thick;
 }
 
-.fh_appform_progress_steps td {
-    text-align:center;
-}
-
-.fh_appform_progress_steps td .active .page_title {
-    text-align:center;
-}
-
-.fh_appform_progress_steps .page_title {
+.fh_appform_progress_steps .page_title .page_title {
     padding-left:10px;
 }
 
-.fh_appform_progress_steps .number {
+.fh_appform_progress_steps .number .number {
     padding-top:4px;
 }
 
-.fh_appform_progress_steps .number_container {
-    background-color:#6f824f;
-    border-width:thick;
-    border-style:dotted;
-    border-color:#bdeaa2;
-    font-size:17pt;
-    font-family:arial;
-    color:#cd706d;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_progress_steps td.active .number_container {
-    background-color:#b10b77;
-    border-width:thick;
-    border-style:dotted;
-    border-color:#5363c1;
-    font-size:17pt;
-    font-family:arial;
-    color:#de3791;
-    font-weight:bold;
-    font-style:normal;
-}
-
-.fh_appform_field_required:first-child:after {
-    background-color:#92b37a;
+.fh_appform_field_required {
+    background-color:#e32;
 }
 
 .fh_appform_action_bar {
     padding:18px 20px;
 }
 
-.fh_appform_action_bar button.fh_appform_two_button {
+.fh_appform_action_bar button.fh_appform_two_button button.fh_appform_two_button {
     width:50%;
 }
 
-.fh_appform_action_bar button.fh_appform_three_button {
+.fh_appform_action_bar button.fh_appform_three_button button.fh_appform_three_button {
     width:33.3%;
 }
 
@@ -263,4 +161,55 @@
     width:37px;
     background-position:center;
     background-repeat:no-repeat;
+}
+
+.fh_appform_button_navigation,.fh_appform_button_navigation_active {
+    background-color:#FF0002;
+    font-size:17pt;
+    font-family:arial;
+    color:red;
+    font-weight:700;
+    font-style:normal;
+}
+
+.fh_appform_button_action,.fh_appform_button_action_active {
+    background-color:red;
+    font-size:17pt;
+    font-family:arial;
+    color:red;
+    font-weight:700;
+    font-style:normal;
+}
+
+.fh_appform_button_cancel,.fh_appform_button_cancel_active {
+    background-color:#FF0230;
+    font-size:17pt;
+    font-family:arial;
+    color:red;
+    font-weight:700;
+    font-style:normal;
+}
+
+.fh_appform_field_section_break_title,.fh_appform_field_section_break_description {
+    font-size:17pt;
+    font-family:arial;
+    color:red;
+    font-weight:700;
+    font-style:normal;
+}
+
+.fh_appform_progress_steps td td,.fh_appform_progress_steps td .active .page_title td .active .page_title {
+    text-align:center;
+}
+
+.fh_appform_progress_steps_number_container,.fh_appform_progress_steps_number_container_active {
+    background-color:red;
+    font-size:17pt;
+    font-family:arial;
+    color:red;
+    font-weight:700;
+    font-style:normal;
+    border-color:#FF0010;
+    border-style:dotted;
+    border-width:thick;
 }
