@@ -2043,9 +2043,9 @@ FieldView = Backbone.View.extend({
       this.addElement();
     }
 
-    this.$el.append(this.$fieldWrapper);
     this.$fieldWrapper.append(this.renderTitle());
     this.$fieldWrapper.append(this.renderHelpText());
+    this.$el.append(this.$fieldWrapper);
     this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
 
