@@ -2878,9 +2878,7 @@ FieldCheckboxView = FieldView.extend({
 
     checkboxesHtml = _.template(this.checkboxes, {"choices": choicesHtml});
 
-    html = _.template(this.inputTemplate, {"index" : index, "required" : required, "fieldInputHtml": checkboxesHtml});
-
-    return html;
+    return checkboxesHtml;
   },
   // addValidationRules: function() {
   //   if (this.model.get('IsRequired') === '1') {
@@ -3043,8 +3041,6 @@ FieldGeoView = FieldView.extend({
     });
     html += this.renderButton(index, btnLabel, "fhgeo");
 
-    html = _.template(this.inputTemplate, {"index" : index, "required" : this.getFieldRequired(index), "fieldInputHtml": html});
-
     return html;
   },
   onRender: function() {
@@ -3160,13 +3156,11 @@ FieldMapView = FieldView.extend({
     var required = this.getFieldRequired(index);
     var inputContent = "";
 
-    inputContent =  _.template(this.input, {
+    return _.template(this.input, {
       width: this.mapSettings.mapWidth,
       height: this.mapSettings.mapHeight,
       "index": index
     });
-
-    return _.template(this.inputTemplate, {"index" : index, "required" : this.getFieldRequired(index), "fieldInputHtml": inputContent});
   },
   onMapInit: function(index) {
     this.mapInited++;
@@ -3340,9 +3334,7 @@ FieldRadioView = FieldView.extend({
       radioChoicesHtml += self.htmlFromjQuery(jQObj);
     });
 
-    fullRadioHtml = _.template(this.radio, {"radioChoices": radioChoicesHtml});
-
-    return _.template(this.inputTemplate, {"index" : index, "required" : this.getFieldRequired(index), "fieldInputHtml": fullRadioHtml});
+    return _.template(this.radio, {"radioChoices": radioChoicesHtml});
   },
   // addValidationRules: function() {
   //   // first radio is always initially checked, so no need to do 'required' validation on this field
@@ -3381,13 +3373,11 @@ FieldSelectView = FieldView.extend({
       });
     });
 
-    selectHtml = _.template(this.select, {
+    return _.template(this.select, {
       "fieldId":fieldId,
       "index":index,
       "options":options
     });
-
-    return _.template(this.inputTemplate, {"index" : index, "required" : this.getFieldRequired(index), "fieldInputHtml": selectHtml});
   }
 });
 FieldSignatureView = FieldView.extend({
@@ -3778,9 +3768,7 @@ FieldDateTimeView = FieldView.extend({
     });
     html+=this.renderButton(index,buttonLabel,"fhdate");
 
-
-
-    return _.template(this.inputTemplate, {"index" : index, "required" : this.getFieldRequired(index), "fieldInputHtml": html});
+    return html;
   },
   getUnit:function(){
     var def=this.model.getFieldDefinition();
