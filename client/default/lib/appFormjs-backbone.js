@@ -3040,7 +3040,8 @@ FieldGeoView = FieldView.extend({
     var html = _.template(this.input, {
       "fieldId": this.model.getFieldId(),
       "index": index,
-      "inputType": "text"
+      "inputType": "text",
+      "required": this.getFieldRequired(index)
     });
     html += this.renderButton(index, btnLabel, "fhgeo");
     return html;
