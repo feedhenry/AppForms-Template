@@ -2001,7 +2001,7 @@ FieldView = Backbone.View.extend({
       "fieldId": fieldId,
       "index": index,
       "title": titleHtml,
-      "input": inputHtml
+      "inputHtml": inputHtml
     });
   },
   renderHelpText: function() {
