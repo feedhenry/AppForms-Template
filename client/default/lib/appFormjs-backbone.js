@@ -1910,8 +1910,8 @@ FieldView = Backbone.View.extend({
   errorClassName: "fh_appform_error",
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
-  fieldWrapper: "<div />",
-  wrapper: '<table id="wrapper_<%= fieldId %>_<%= index %>"><%= input %> </table><div class="fh_appform_errorMsg hidden"></div>',
+  fieldWrapper: '<div class="fh_appform_field_wrapper"/>',
+  wrapper: '<table id="wrapper_<%= fieldId %>_<%= index %>" syle="width: 100%"><%= input %> </table><div class="fh_appform_errorMsg hidden"></div>',
   title: '<label class="fh_appform_field_title"><%= title %> </label>',
   input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   inputTemplate: "<tr><td class='<%= required %> fh_appform_field_title'><%= index + 1 %>.</td> <td class='fh_appform_field_input'> <%= fieldInputHtml %></td> </tr>",
