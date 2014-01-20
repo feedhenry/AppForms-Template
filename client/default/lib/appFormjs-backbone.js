@@ -1910,11 +1910,11 @@ FieldView = Backbone.View.extend({
   errorClassName: "fh_appform_error",
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
-  fieldWrapper: '<div class="fh_appform_field_wrapper"/>',
-  wrapper: '<table id="wrapper_<%= fieldId %>_<%= index %>" syle="width: 100%"><%= input %> </table><div class="fh_appform_errorMsg hidden"></div>',
+  fieldWrapper: '<table style="width: 100%"><%= input %> </table>',
   title: '<label class="fh_appform_field_title"><%= title %> </label>',
   input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<tr><td class='<%= required %> fh_appform_field_title'><%= index + 1 %>.</td> <td class='fh_appform_field_input'> <%= fieldInputHtml %></td> </tr>",
+  inputTemplate: "<td class='<%= required %> fh_appform_field_title'><%= index + 1 %>.</td> <td class='fh_appform_field_input'> <%= fieldInputHtml %></td>",
+  wrapperTemplate: "<tr id='wrapper_<%= fieldId %>_<%= index %>'> <%= inputHtml %></tr><tr><div class='fh_appform_errorMsg hidden'></div></tr>",
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
   events: {
@@ -1997,10 +1997,9 @@ FieldView = Backbone.View.extend({
     var helpText = this.model.getHelpText();
     var fieldId = this.model.getFieldId();
 
-    return _.template(this.wrapper, {
+    return _.template(this.wrapperTemplate, {
       "fieldId": fieldId,
       "index": index,
-      "helpText": helpText,
       "title": titleHtml,
       "input": inputHtml
     });
