@@ -2044,7 +2044,11 @@ FieldView = Backbone.View.extend({
     this.$el.attr("data-field", this.model.getFieldId());
 
     // add to dom
-    this.options.parentEl.append(this.$el);
+    if(this.options.sectionView){
+      this.options.sectionView.append(this.$el)
+    } else {
+      this.options.parentEl.append(this.$el);
+    }
 
     this.show();
 
@@ -3734,7 +3738,7 @@ FieldTextareaView = FieldView.extend({
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
-    sectionBreak: '<div><div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><hr/><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div></div>'
+    sectionBreak: '<div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><hr/><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div>'
   },
   renderEle:function(){
     this.$el.addClass("fh_appform_field_section_break");
@@ -3848,6 +3852,7 @@ PageView=BaseView.extend({
   render: function() {
     var self = this;
     this.fieldViews = {};
+    this.sectionViews = {};
     // all pages hidden initially
     this.$el.empty().addClass('fh_appform_page hidden');
 
@@ -3859,23 +3864,47 @@ PageView=BaseView.extend({
     this.options.parentEl.append(this.$el);
 
     var fieldModelList=this.model.getFieldModelList();
-    
-    fieldModelList.forEach(function (field, index) {
-      var fieldType = field.getType();
-      if (self.viewMap[fieldType]) {
 
-        console.log("*- "+fieldType);
+    var sections = this.model.getSections();
 
-        self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+    if(sections == null){ // No sections, just render the page of fields
+      fieldModelList.forEach(function (field, index) {
+        var fieldType = field.getType();
+        if (self.viewMap[fieldType]) {
+
+          console.log("*- "+fieldType);
+
+          self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+            parentEl: self.$el,
+            parentView: self,
+            model: field,
+            formView: self.options.formView
+          });
+        } else {
+          console.warn('FIELD NOT SUPPORTED:' + fieldType);
+        }
+      });
+    } else {
+      for(var sectionKey in sections){
+        this.sectionViews[sectionKey] = new SectionView({
           parentEl: self.$el,
           parentView: self,
-          model: field,
           formView: self.options.formView
         });
-      } else {
-        console.warn('FIELD NOT SUPPORTED:' + fieldType);
+        for(var i = 0; i < sections[sectionKey]; i++){
+          var field = sections[sectionKey][i];
+          var fieldType = field.getType();
+          self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+            parentEl: self.$el,
+            parentView: self,
+            model: field,
+            formView: self.options.formView,
+            sectionView: this.sectionViews[sectionKey]
+          });
+        }
       }
-    });
+    }
+
   },
 
   show: function () {
@@ -4356,6 +4385,13 @@ var FromJsonView = BaseView.extend({
     formView.loadForm(params,function(err){
       formView.render();
     });
+  }
+
+});
+SectionView=BaseView.extend({
+
+  initialize: function() {
+    this.$el.addClass("fh_appform_section");
   }
 
 });
