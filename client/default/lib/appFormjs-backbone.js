@@ -1912,7 +1912,7 @@ FieldView = Backbone.View.extend({
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
   input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>'>  <div class='<%= required %> fh_appform_page_title'> <%= index + 1 %>  </div> <div class='fh_appform_field_input'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div>",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>'>  <div class='<%= required %> fh_appform_field_title'> <%= index + 1 %>  </div> <div class='fh_appform_field_input'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
