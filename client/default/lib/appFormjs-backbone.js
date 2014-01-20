@@ -2019,7 +2019,7 @@ FieldView = Backbone.View.extend({
   },
   addElement: function() {
     var index = this.curRepeat;
-    var titleHtml = this.renderTitle(index);
+    //var titleHtml = this.renderTitle(index);
     var inputHtml = this.renderInput(index);
     var eleHtml = this.renderEle(titleHtml, inputHtml, index);
     this.$fieldWrapper.append(eleHtml);
@@ -2035,6 +2035,10 @@ FieldView = Backbone.View.extend({
     this.initialRepeat = 1;
     this.maxRepeat = 1;
     this.curRepeat = 0;
+
+    this.$fieldWrapper.append(this.renderTitle());
+    this.$fieldWrapper.append(this.renderHelpText());
+
     if (this.model.isRepeating()) {
       this.initialRepeat = this.model.getMinRepeat();
       this.maxRepeat = this.model.getMaxRepeat();
@@ -2043,8 +2047,6 @@ FieldView = Backbone.View.extend({
       this.addElement();
     }
 
-    this.$fieldWrapper.append(this.renderTitle());
-    this.$fieldWrapper.append(this.renderHelpText());
     this.$el.append(this.$fieldWrapper);
     this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
