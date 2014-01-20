@@ -1953,7 +1953,7 @@ FieldView = Backbone.View.extend({
     this.getWrapper(lastIndex).remove();
     this.curRepeat--;
   },
-  renderTitle: function(index) {
+  renderTitle: function() {
     var name = this.model.getName();
     var title = name;
     return _.template(this.title, {
@@ -2019,9 +2019,8 @@ FieldView = Backbone.View.extend({
   },
   addElement: function() {
     var index = this.curRepeat;
-    //var titleHtml = this.renderTitle(index);
     var inputHtml = this.renderInput(index);
-    var eleHtml = this.renderEle(titleHtml, inputHtml, index);
+    var eleHtml = this.renderEle("", inputHtml, index);
     this.$fieldWrapper.append(eleHtml);
     this.curRepeat++;
     this.onElementShow(index);
