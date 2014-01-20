@@ -1910,13 +1910,14 @@ FieldView = Backbone.View.extend({
   errorClassName: "fh_appform_error",
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
-  fieldWrapper: '<table style="width: 100%"><%= input %> </table>',
-  title: '<label class="fh_appform_field_title"><%= title %> </label>',
+  fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
   input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<td class='<%= required %> fh_appform_field_title'><%= index + 1 %>.</td> <td class='fh_appform_field_input'> <%= fieldInputHtml %></td>",
-  wrapperTemplate: "<tr id='wrapper_<%= fieldId %>_<%= index %>'> <%= inputHtml %></tr><tr><div class='fh_appform_errorMsg hidden'></div></tr>",
-  instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>'>  <div class='<%= required %> fh_appform_page_title'> <%= index + 1 %>  </div> <div class='fh_appform_field_input'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div>",
+
+
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
+  title: '<label class="fh_appform_field_title"><%= title %> </label>',
+  instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
   events: {
     "change": "contentChanged",
     "blur input,select,textarea": "validate",
@@ -1964,17 +1965,10 @@ FieldView = Backbone.View.extend({
     var fieldId = this.model.getFieldId();
     var type = this.type || "text";
     var required = required = this.getFieldRequired(index);
-    var fieldInputHtml = _.template(this.input, {
+    return _.template(this.input, {
       "fieldId": fieldId,
       "index": index,
       "inputType": type
-    });
-
-
-    return _.template(this.inputTemplate, {
-      "required" : required,
-      "index": index,
-      "fieldInputHtml" : fieldInputHtml
     });
   },
   "getFieldRequired" : function(index){
@@ -1997,10 +1991,9 @@ FieldView = Backbone.View.extend({
     var helpText = this.model.getHelpText();
     var fieldId = this.model.getFieldId();
 
-    return _.template(this.wrapperTemplate, {
+    return _.template(this.inputTemplate, {
       "fieldId": fieldId,
       "index": index,
-      "title": titleHtml,
       "inputHtml": inputHtml
     });
   },
