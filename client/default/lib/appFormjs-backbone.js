@@ -3369,7 +3369,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<div><select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select></div>",
+  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
   renderInput: function(index) {
