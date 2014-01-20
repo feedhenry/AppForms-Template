@@ -1916,7 +1916,7 @@ FieldView = Backbone.View.extend({
   input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   inputTemplate: "<tr><td class='<%= required %> fh_appform_field_title'><%= index + 1 %>.</td> <td class='fh_appform_field_input'> <%= fieldInputHtml %></td> </tr>",
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
-  fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_addInputBtn special_button fh_appform_button_action'>Add Input</button><button class='special_button fh_appform_removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
+  fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
   events: {
     "change": "contentChanged",
     "blur input,select,textarea": "validate",
@@ -3747,7 +3747,7 @@ FieldTextView = FieldView.extend({
 //  template: ['<div class="fh_appform_field_input"><label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>"></div>']
 });
 FieldTextareaView = FieldView.extend({
-    input: "<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input: "<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
