@@ -1962,7 +1962,7 @@ FieldView = Backbone.View.extend({
   renderInput: function(index) {
     var fieldId = this.model.getFieldId();
     var type = this.type || "text";
-    var required = required = this.getFieldRequired();
+    var required = required = this.getFieldRequired(index);
 
     return _.template(this.input, {
       "fieldId": fieldId,
@@ -1971,7 +1971,7 @@ FieldView = Backbone.View.extend({
       "required" : required
     });
   },
-  "getFieldRequired" : function(){
+  "getFieldRequired" : function(index){
     var required = "";
     if (this.initialRepeat > 1) {
       if (index < this.initialRepeat) {
@@ -2863,7 +2863,7 @@ FieldCheckboxView = FieldView.extend({
     var choicesHtml = "";
     var checkboxesHtml = "";
     var html = "";
-    var required = this.getFieldRequired();
+    var required = this.getFieldRequired(index);
     var self=this;
 
 
@@ -3155,7 +3155,7 @@ FieldMapView = FieldView.extend({
     FieldView.prototype.initialize.apply(this, arguments);
   },
   renderInput: function(index) {
-    var required = this.getFieldRequired();
+    var required = this.getFieldRequired(index);
     return _.template(this.input, {
       width: this.mapSettings.mapWidth,
       height: this.mapSettings.mapHeight,
@@ -3339,7 +3339,7 @@ FieldRadioView = FieldView.extend({
     fullRadioHtml = _.template(this.radio, {"radioChoices": radioChoicesHtml});
 
     html = _.template(this.input, {
-      "required" : this.getFieldRequired(),
+      "required" : this.getFieldRequired(index),
       "index": index,
       "fullRadio": fullRadioHtml
     });
@@ -3394,7 +3394,7 @@ FieldSelectView = FieldView.extend({
     });
 
     html = _.template(this.input, {
-      "required": this.getFieldRequired(),
+      "required": this.getFieldRequired(index),
       "index": index,
       "fullSelectInput": selectHtml
     });
@@ -3793,7 +3793,7 @@ FieldDateTimeView = FieldView.extend({
     html+=this.renderButton(index,buttonLabel,"fhdate");
 
     html = _.template(this.input, {
-      "required" : this.getFieldRequired(),
+      "required" : this.getFieldRequired(index),
       "index": index,
       "dateTimeInputHTML": html
     });
