@@ -39,9 +39,9 @@
 
 
 /* TODO Should possibly inherit the background color from the fh_appform_body class? */
-html {
-  background: #EEE;
-}
+/*html {*/
+  /*background: #EEE;*/
+/*}*/
 
 /*label { display: block; margin-bottom: 10px; font-size: 18px; }  Moved to themeCSS. Needs to be independent*/
 /*label.error { display: inline; }*/

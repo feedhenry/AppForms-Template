@@ -1911,9 +1911,9 @@ FieldView = Backbone.View.extend({
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: "<div />",
-  wrapper: '<div id="wrapper_<%= fieldId %>_<%= index %>" title="<%= helpText %>"><%= title %><%= input %><div class="fh_appform_errorMsg hidden"></div></div>',
-  title: '<label class="<%= required %> fh_appform_field_title"><%= title %> </label><%= helpText %>',
-  input: "<div class='fh_appform_field_input'><input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/></div>",
+  wrapper: '<table id="wrapper_<%= fieldId %>_<%= index %>"><%= input %> </table><div class="fh_appform_errorMsg hidden"></div>',
+  title: '<label class="fh_appform_field_title"><%= title %> </label>',
+  input: "<tr> <td class='<%= required %> fh_appform_field_title'><%= index %>. </td> <td class='fh_appform_field_input'> <input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/></td> </tr>",
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_addInputBtn special_button fh_appform_button_action'>Add Input</button><button class='special_button fh_appform_removeInputBtn fh_appform_button_action'>Remove Input</button></div>",
   events: {
@@ -1955,11 +1955,15 @@ FieldView = Backbone.View.extend({
   renderTitle: function(index) {
     var name = this.model.getName();
     var title = name;
+    return _.template(this.title, {
+      "title": title
+    });
+  },
+  renderInput: function(index) {
+    var fieldId = this.model.getFieldId();
+    var type = this.type || "text";
     var required = "";
-    var helpText = "";
-    if (this.model.isRepeating()) {
-      title += " (" + (index + 1) + ") ";
-    }
+
     if (this.initialRepeat > 1) {
       if (index < this.initialRepeat) {
         required = this.requiredClassName;
@@ -1972,27 +1976,18 @@ FieldView = Backbone.View.extend({
     if (this.model.isRequired() && index < this.initialRepeat) {
       required = this.requiredClassName;
     }
-    if (index == 0) {
-      helpText = this.renderHelpText();
-    }
-    return _.template(this.title, {
-      "title": title,
-      "helpText": helpText,
-      "required": required
-    });
-  },
-  renderInput: function(index) {
-    var fieldId = this.model.getFieldId();
-    var type = this.type || "text";
+
     return _.template(this.input, {
       "fieldId": fieldId,
       "index": index,
-      "inputType": type
+      "inputType": type,
+      "required" : required
     });
   },
   renderEle: function(titleHtml, inputHtml, index) {
     var helpText = this.model.getHelpText();
     var fieldId = this.model.getFieldId();
+
     return _.template(this.wrapper, {
       "fieldId": fieldId,
       "index": index,
@@ -2040,6 +2035,8 @@ FieldView = Backbone.View.extend({
     }
 
     this.$el.append(this.$fieldWrapper);
+    this.$fieldWrapper.append(this.renderTitle());
+    this.$fieldWrapper.append(this.renderHelpText());
     this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
 
