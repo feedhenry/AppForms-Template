@@ -1994,7 +1994,8 @@ FieldView = Backbone.View.extend({
     return _.template(this.inputTemplate, {
       "fieldId": fieldId,
       "index": index,
-      "inputHtml": inputHtml
+      "inputHtml": inputHtml,
+      "required": this.getFieldRequired(index)
     });
   },
   renderHelpText: function() {
