@@ -2317,9 +2317,9 @@ FieldCameraView = FieldView.extend({
   // },
 
   onElementShow: function(index) {
-    var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>Capture Photo From Camera", "fhcam"));
-    var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>Choose Photo from Library", "fhcam_lib"));
-    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i> Remove Photo", "remove"));
+    var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>&nbspCapture Photo From Camera", "fhcam"));
+    var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>&nbspChoose Photo from Library", "fhcam_lib"));
+    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i>&nbspRemove Photo", "remove"));
 
     this.getWrapper(index).append(captureBtn);
     this.getWrapper(index).append(libBtn);
@@ -3020,7 +3020,7 @@ FieldFileView = FieldView.extend({
 });
 FieldGeoView = FieldView.extend({
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/>",
-  buttonHtml: "<i class='fa fa-map-marker'></i><%= buttonText %>",
+  buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
   type: "text",
   initialize: function() {
     this.geoValues=[];
@@ -3394,7 +3394,7 @@ FieldSignatureView = FieldView.extend({
   //   FieldFileView.prototype.dumpContent.call(this);
   // },
   onElementShow: function(index) {
-    var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>Capture Signature", this.extension_type));
+    var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>&nbspCapture Signature", this.extension_type));
     this.getWrapper(index).append(html);
     var self = this;
     html.on("click", function() {
@@ -3757,13 +3757,13 @@ FieldDateTimeView = FieldView.extend({
     var buttonLabel="";
     if (unit=="dateTime"){
       template=this.inputDateTime;
-      buttonLabel="<i class='fa fa-calendar'></i> <i class='fa fa-clock-o'></i>Get Current Date & Time";
+      buttonLabel="<i class='fa fa-calendar'></i> <i class='fa fa-clock-o'></i>&nbspGet Current Date & Time";
     }else if (unit=="date"){
       template=this.inputDate;
-      buttonLabel="<i class='fa fa-calendar'></i> Get Current Date";
+      buttonLabel="<i class='fa fa-calendar'></i>&nbspGet Current Date";
     }else if (unit=="time"){
       template=this.inputTime;
-      buttonLabel="<i class='fa fa-clock-o'></i> Get Current Time";
+      buttonLabel="<i class='fa fa-clock-o'></i>&nbspGet Current Time";
     }
     var html=_.template(template,{
       "fieldId":fieldId,
