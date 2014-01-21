@@ -432,8 +432,8 @@ textarea {
 }
 
 #fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
-  margin-left: 5px;
-  margin-right: 5px;
+  /*margin-left: 5px;*/
+  /*margin-right: 5px;*/
 }
 
 .list.inset .first_button {
