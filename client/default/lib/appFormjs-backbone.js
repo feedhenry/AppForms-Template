@@ -3027,7 +3027,7 @@ FieldFileView = FieldView.extend({
   }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/>",
+  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/>",
   type: "text",
   initialize: function() {
     this.geoValues=[];
@@ -3736,7 +3736,7 @@ FieldTextareaView = FieldView.extend({
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
-    sectionBreak: '<div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><hr/><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div>'
+    sectionBreak: '<hr/><div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div>'
   },
   renderEle:function(){
     this.$el.addClass("fh_appform_field_section_break");
