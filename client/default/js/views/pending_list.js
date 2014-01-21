@@ -6,13 +6,13 @@ PendingListView = Backbone.View.extend({
   },
 
   templates: {
-    pending_waiting_list: '<ul class="list inset pending_waiting_list"></ul>',
-    pending_waiting_header: '<li class="list-divider">Forms Awaiting Submission</li>',
+    pending_waiting_list: '<ul class="fh_appform_field_area list inset pending_waiting_list"></ul>',
+    pending_waiting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms Awaiting Submission</div></li>',
     pending_waiting_submitall: '<li><button class="submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
-    pending_submitting_list: '<ul class="list inset pending_submitting_list"></ul>',
-    pending_submitting_header: '<li class="list-divider">Forms currently being submitted<div class="loading hidden"></div></li>',
-    pending_review_list: '<ul class="list inset pending_review_list"></ul>',
-    pending_review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
+    pending_submitting_list: '<ul class="fh_appform_field_area list inset pending_submitting_list"></ul>',
+    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div><div class="loading hidden"></div></li>',
+    pending_review_list: '<ul class="fh_appform_field_area list inset pending_review_list"></ul>',
+    pending_review_header: '<li class="list-divider"><div class="fh_appform_field_title">These submissions need to be reviewed</div></li>'
   },
 
   initialize: function() {

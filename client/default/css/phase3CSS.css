@@ -271,3 +271,7 @@
     border-radius: 5px;
     margin-top: 5px;
 }
+
+.fh_appform_field_input.pending_submission{
+    width:auto;
+}

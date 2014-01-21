@@ -3,6 +3,9 @@
 
 /*TODO All the pending, drafts, sent screens need to be customised*/
 
+
+
+
 /*Used by template..*/
 * {
   padding: 0;
@@ -158,7 +161,7 @@ select {
 }
 
 textarea {
-  width: 100%;
+  /*width: 100%;*/
   min-height: 100px;
   /*font-family: inherit;*/
   /*border: 0;*/

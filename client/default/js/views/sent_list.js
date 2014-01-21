@@ -7,10 +7,10 @@ SentListView = Backbone.View.extend({
   },
 
   templates: {
-    sent_list: '<ul class="list inset sent_list"></ul>',
-    sent_header: '<li class="list-divider">Sent Submissions</li>',
-    dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>',
-    save_max: '<li><label for="sentSaveMax" class="sentSaveMaxLabel">Number of sent items to keep</label><select id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></li>'
+    sent_list: '<ul class="fh_appform_field_area list inset sent_list"></ul>',
+    sent_header: '<li class="list-divider fh_appform_field_title">Sent Submissions</li>',
+    dismiss_all: '<li><button class="fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button></li>',
+    save_max: '<li><label for="sentSaveMax" class="fh_appform_field_title">Number of sent items to keep</label><select class="fh_appform_field_input" id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></li>'
   },
 
   initialize: function() {

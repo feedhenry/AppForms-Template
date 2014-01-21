@@ -127,7 +127,7 @@ a {
   line-height: 44px;
   color: #fff;
   text-align: center;
-  text-shadow: 0 -1px rgba(0, 0, 0, .5);
+  /*text-shadow: 0 -1px rgba(0, 0, 0, .5);*/
   white-space: nowrap;
 }
 
@@ -196,7 +196,7 @@ a {
   font-size: 10px;
   font-weight: bold;
   color: #fff;
-  text-shadow: 0 1px rgba(0, 0, 0, .3);
+  /*text-shadow: 0 1px rgba(0, 0, 0, .3);*/
 }
 
 /* Buttons in title bars
@@ -343,7 +343,7 @@ a {
 
 .bar-title .segmented-controller {
   line-height: 18px;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);*/
   /*background-color: #1eb0e9;*/
   /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
   /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
@@ -397,7 +397,7 @@ a {
 .list {
   margin-bottom: 10px;
   list-style: none;
-  background-color: #fff;
+  /*background-color: #fff;*/
 }
 
 /* Pad each list item and add dividers */
@@ -426,10 +426,10 @@ a {
 
 .list.inset {
   width: auto;
-  margin-right: 10px;
-  margin-left: 10px;
+  /*margin-right: 10px;*/
+  /*margin-left: 10px;*/
   border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 6px;
+  border-radius: 5px;
   box-sizing: border-box;
 }
 
@@ -450,13 +450,13 @@ a {
   top: -1px;
   padding-top: 6px;
   padding-bottom: 6px;
-  font-size: 12px;
-  font-weight: bold;
-  line-height: 18px;
-  text-shadow: 0 1px 0 rgba(255, 255, 255, .5);
-  background-color: #f8f8f8;
-  background-image: -webkit-linear-gradient(top, #f8f8f8 0, #eee 100%);
-  background-image: linear-gradient(to bottom, #f8f8f8 0, #eee 100%);
+  /*font-size: 12px;*/
+  /*font-weight: bold;*/
+  /*line-height: 18px;*/
+  /*text-shadow: 0 1px 0 rgba(255, 255, 255, .5);*/
+  /*background-color: #f8f8f8;*/
+  /*background-image: -webkit-linear-gradient(top, #f8f8f8 0, #eee 100%);*/
+  /*background-image: linear-gradient(to bottom, #f8f8f8 0, #eee 100%);*/
   border-top: 1px solid rgba(0, 0, 0, .1);
   border-bottom: 1px solid rgba(0, 0, 0, .1);
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, .4);
@@ -524,10 +524,10 @@ textarea {
 /* Style select button to look like part of the Ratchet's style */
 select {
   height: auto;
-  font-size: 14px;
-  background-color: #f8f8f8;
-  background-image: -webkit-linear-gradient(top, #f8f8f8 0%, #d4d4d4 100%);
-  background-image: linear-gradient(to bottom, #f8f8f8 0%, #d4d4d4 100%);
+  /*font-size: 14px;*/
+  /*background-color: #f8f8f8;*/
+  /*background-image: -webkit-linear-gradient(top, #f8f8f8 0%, #d4d4d4 100%);*/
+  /*background-image: linear-gradient(to bottom, #f8f8f8 0%, #d4d4d4 100%);*/
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .1);
 }
 
@@ -627,7 +627,7 @@ select {
 .button-positive,
 .button-negative {
   /*color: #fff;*/
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);*/
 }
 
 /* Main button */
@@ -757,7 +757,7 @@ select {
 .count-positive,
 .count-negative {
   color: #fff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);*/
 }
 
 /* Main count  */
@@ -789,7 +789,7 @@ select {
   overflow: hidden;
   /*font-size: 12px;*/
   /*font-weight: bold;*/
-  text-shadow: 0 1px rgba(255, 255, 255, .5);
+  /*text-shadow: 0 1px rgba(255, 255, 255, .5);*/
   list-style: none;
   /*background-color: #f8f8f8;*/
   /*background-image: -webkit-linear-gradient(top, #f8f8f8 0, #d4d4d4 100%);*/
@@ -909,7 +909,7 @@ select {
   line-height: 12px;
   color: #fff;
   text-align: center;
-  text-shadow: 0 -1px rgba(0, 0, 0, .5);
+  /*text-shadow: 0 -1px rgba(0, 0, 0, .5);*/
 }
 
 /* Generic style for all buttons in .popover-header */
@@ -918,7 +918,7 @@ select {
   font-size: 12px;
   line-height: 22px;
   color: #fff;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);
+  /*text-shadow: 0 -1px 0 rgba(0, 0, 0, .3);*/
   background-color: #454545;
   background-image: -webkit-linear-gradient(top, #454545 0, #353535 100%);
   background-image: linear-gradient(to bottom, #454545 0, #353535 100%);
@@ -1048,7 +1048,7 @@ select {
   font-weight: bold;
   line-height: 28px;
   color: #777;
-  text-shadow: 0 1px #fff;
+  /*text-shadow: 0 1px #fff;*/
   text-transform: uppercase;
   content: "Off";
 }
@@ -1091,7 +1091,7 @@ select {
   right: auto;
   left: 15px;
   color: #fff;
-  text-shadow: 0 -1px rgba(0, 0, 0, 0.25);
+  /*text-shadow: 0 -1px rgba(0, 0, 0, 0.25);*/
   content: "On";
 }/* Push styles (to be used with push.js)
 -------------------------------------------------- */

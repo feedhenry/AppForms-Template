@@ -2,8 +2,8 @@ DraftListView = Backbone.View.extend({
   el: $('#fh_wufoo_drafts'),
 
   templates: {
-    draft_list: '<ul class="list inset draft_list"></ul>',
-    draft_header: '<li class="list-divider">Draft Submissions</li>'
+    draft_list: '<ul class="fh_appform_field_area list inset draft_list"></ul>',
+    draft_header: '<li class="list-divider"><div class="fh_appform_field_title">Draft Submissions</div></li>'
   },
 
   initialize: function() {
