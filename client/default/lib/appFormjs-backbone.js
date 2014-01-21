@@ -3860,7 +3860,6 @@ PageView=BaseView.extend({
     //Need to add the page title and description
 //    this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));
     this.$el.append(_.template(this.templates.pageDescription, {pageDescription: this.model.getDescription()}));
-    this.$el.append(_.template(this.templates.section, {"sectionId": "section0"}));
 
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
@@ -3869,22 +3868,48 @@ PageView=BaseView.extend({
 
     var sections = this.model.getSections();
 
-    fieldModelList.forEach(function (field, index) {
-      var fieldType = field.getType();
-      if (self.viewMap[fieldType]) {
-
-        console.log("*- "+fieldType);
-
-        self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
-          parentEl: self.$el,
-          parentView: self,
-          model: field,
-          formView: self.options.formView
-        });
-      } else {
-        console.warn('FIELD NOT SUPPORTED:' + fieldType);
+    if(sections != null){
+      for(var sectionKey in sections){
+        this.$el.append(_.template(this.templates.section, {"sectionId": sectionKey}));
       }
-    });
+
+      //Add the section fields
+      for(var sectionKey in sections){
+        sections[sectionKey].forEach(function(field, index){
+          var fieldType = field.getType();
+          if (self.viewMap[fieldType]) {
+
+            console.log("*- "+fieldType);
+
+            self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+              parentEl: self.$el,
+              parentView: self,
+              model: field,
+              formView: self.options.formView
+            });
+          } else {
+            console.warn('FIELD NOT SUPPORTED:' + fieldType);
+          }
+        });
+      }
+    } else {
+      fieldModelList.forEach(function (field, index) {
+        var fieldType = field.getType();
+        if (self.viewMap[fieldType]) {
+
+          console.log("*- "+fieldType);
+
+          self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+            parentEl: self.$el,
+            parentView: self,
+            model: field,
+            formView: self.options.formView
+          });
+        } else {
+          console.warn('FIELD NOT SUPPORTED:' + fieldType);
+        }
+      });
+    }
   },
 
   show: function () {
