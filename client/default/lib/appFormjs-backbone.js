@@ -3310,9 +3310,9 @@ FieldPhoneView = FieldView.extend({
   type:"tel"
 });
 FieldRadioView = FieldView.extend({
-  hidden_field: '<input id="radio<%= id %>" type="hidden" value="" data-type="radio">',
+  hidden_field: '<input  id="radio<%= id %>" type="hidden" value="" data-type="radio">',
   choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
-  radio: '<div class="radio"><%= radioChoices %></div>',
+  radio: '<div class="fh_appform_field_input"><%= radioChoices %></div>',
 
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
@@ -3356,7 +3356,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  select: "<select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
   renderInput: function(index) {
@@ -3732,7 +3732,7 @@ FieldTextView = FieldView.extend({
 //  template: ['<div class="fh_appform_field_input"><label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>"></div>']
 });
 FieldTextareaView = FieldView.extend({
-    input: "<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input: "<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
