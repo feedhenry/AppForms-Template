@@ -2208,11 +2208,7 @@ FieldView = Backbone.View.extend({
     button.addClass(extension_type);
     button.attr("data-index", index);
     button.text(' ' + label);
-    var img = $('<img>');
-    img.attr('src', './img/' + extension_type + '.png');
-    img.css('height', '28px');
-    img.css('width', '28px');
-    button.prepend(img);
+
     return this.htmlFromjQuery(button);
   },
   //deprecated
@@ -2222,11 +2218,7 @@ FieldView = Backbone.View.extend({
     button.addClass('special_button fh_appform_button_action');
     button.addClass(extension_type);
     button.text(' ' + label);
-    var img = $('<img>');
-    img.attr('src', './img/' + extension_type + '.png');
-    img.css('height', '28px');
-    img.css('width', '28px');
-    button.prepend(img);
+
 
     button.click(function(e) {
       self.action(this);
@@ -2325,9 +2317,9 @@ FieldCameraView = FieldView.extend({
   // },
 
   onElementShow: function(index) {
-    var captureBtn = $(this.renderButton(index, "Capture Photo From Camera", "fhcam"));
-    var libBtn = $(this.renderButton(index, "Choose Photo from Library", "fhcam_lib"));
-    var rmBtn = $(this.renderButton(index, "Remove Photo", "remove"));
+    var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>Capture Photo From Camera", "fhcam"));
+    var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>Choose Photo from Library", "fhcam_lib"));
+    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i> Remove Photo", "remove"));
 
     this.getWrapper(index).append(captureBtn);
     this.getWrapper(index).append(libBtn);
@@ -3028,6 +3020,7 @@ FieldFileView = FieldView.extend({
 });
 FieldGeoView = FieldView.extend({
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/>",
+  buttonHtml: "<i class='fa fa-map-marker'></i><%= buttonText %>",
   type: "text",
   initialize: function() {
     this.geoValues=[];
@@ -3036,6 +3029,8 @@ FieldGeoView = FieldView.extend({
   },
   renderInput: function(index) {
     var btnLabel = this.locationUnit === "latLong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
+
+    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
     var html = _.template(this.input, {
       "fieldId": this.model.getFieldId(),
       "index": index,
@@ -3399,7 +3394,7 @@ FieldSignatureView = FieldView.extend({
   //   FieldFileView.prototype.dumpContent.call(this);
   // },
   onElementShow: function(index) {
-    var html = $(this.renderButton(index, "Capture Signature", this.extension_type));
+    var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>Capture Signature", this.extension_type));
     this.getWrapper(index).append(html);
     var self = this;
     html.on("click", function() {
@@ -3762,13 +3757,13 @@ FieldDateTimeView = FieldView.extend({
     var buttonLabel="";
     if (unit=="dateTime"){
       template=this.inputDateTime;
-      buttonLabel="Get Current Date & Time";
+      buttonLabel="<i class='fa fa-calendar'></i> <i class='fa fa-clock-o'></i>Get Current Date & Time";
     }else if (unit=="date"){
       template=this.inputDate;
-      buttonLabel="Get Current Date";
+      buttonLabel="<i class='fa fa-calendar'></i> Get Current Date";
     }else if (unit=="time"){
       template=this.inputTime;
-      buttonLabel="Get Current Time";
+      buttonLabel="<i class='fa fa-clock-o'></i> Get Current Time";
     }
     var html=_.template(template,{
       "fieldId":fieldId,
