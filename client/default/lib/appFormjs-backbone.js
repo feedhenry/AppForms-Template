@@ -1964,7 +1964,6 @@ FieldView = Backbone.View.extend({
   renderInput: function(index) {
     var fieldId = this.model.getFieldId();
     var type = this.type || "text";
-    var required = required = this.getFieldRequired(index);
     return _.template(this.input, {
       "fieldId": fieldId,
       "index": index,
@@ -1988,7 +1987,6 @@ FieldView = Backbone.View.extend({
     return required;
   },
   renderEle: function(titleHtml, inputHtml, index) {
-    var helpText = this.model.getHelpText();
     var fieldId = this.model.getFieldId();
 
     return _.template(this.inputTemplate, {
@@ -3743,6 +3741,12 @@ FieldSectionBreak = FieldView.extend({
   renderEle:function(){
     this.$el.addClass("fh_appform_field_section_break");
     return _.template(this.templates.sectionBreak, {sectionTitle: this.model.getName(), sectionDescription: this.model.getHelpText()});
+  },
+  renderTitle: function(){
+    return "";
+  },
+  "renderHelpText": function(){
+    return "";
   }
 });
 FieldDateTimeView = FieldView.extend({
