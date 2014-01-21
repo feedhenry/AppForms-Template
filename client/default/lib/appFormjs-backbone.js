@@ -3832,7 +3832,7 @@ PageView=BaseView.extend({
   templates : {
     pageTitle : '<div class="fh_appform_page_title"><%= pageTitle %></div>',
     pageDescription: '<div class="fh_appform_page_description"><%= pageDescription%></div>',
-    section: '<div id="fh_appform_<%= sectionId %>"></div>'
+    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area"></div>'
   },
 
   initialize: function() {

@@ -264,3 +264,9 @@
     /*background-position:center;*/
     /*background-repeat:no-repeat;*/
 /*}*/
+
+.fh_appform_section_area {
+    background-color: blue;
+    padding: 5px;
+    border-radius: 5px;
+}
