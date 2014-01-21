@@ -63,6 +63,7 @@
         jQuery(document).ready(function(){
             try {//TODO Needs to be changed to fh_appform_xxx when renaming classes.
                 var headerHeight = jQuery('#fh_wufoo_header').outerHeight();
+                jQuery('body').addClass('fh_appform_body');
                 jQuery('#fh_logs').css('margin-top', headerHeight + 'px');
                 jQuery('#fh_wufoo_content').css('margin-top', headerHeight + 'px');
                 jQuery('#fh_wufoo_form_list').css('margin-top', headerHeight + 'px');
