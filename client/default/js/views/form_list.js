@@ -9,7 +9,7 @@ var FormListView = Backbone.View.extend({
 
   templates: {
     list: '<ul class="form_list"></ul>',
-    header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
+    header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
     footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
   },
