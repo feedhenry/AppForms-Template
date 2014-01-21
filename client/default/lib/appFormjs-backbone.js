@@ -2043,9 +2043,9 @@ FieldView = Backbone.View.extend({
     this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
 
-    // add to dom
-    if(this.options.sectionView){
-      this.options.sectionView.append(this.$el)
+    if(this.options.sectionName){
+      //This field belongs to a section
+      this.options.parentEl.find('#fh_appform_' + this.options.sectionName).append(this.$el);
     } else {
       this.options.parentEl.append(this.$el);
     }
