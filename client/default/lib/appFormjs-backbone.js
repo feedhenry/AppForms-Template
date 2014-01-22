@@ -3073,7 +3073,7 @@ FieldGeoView = FieldView.extend({
     if (location) {
       if (this.locationUnit === "latlong") {
         locStr = '(' + location.lat + ', ' + location.long + ')';
-      } else if (this.locationUnit === "northEast") {
+      } else if (this.locationUnit === "eastnorth") {
         locStr = '(' + location.zone+' '+location.eastings + ', ' + location.northings + ')';
       }
       textInput.val(locStr);
@@ -3099,7 +3099,7 @@ FieldGeoView = FieldView.extend({
           "lat": res.lat,
           "long": res.lon
         };
-      }else if (that.locationUnit==="northEast"){
+      }else if (that.locationUnit==="eastnorth"){
         var en_location = that.convertLocation(res);
         var locArr=en_location.toString().split(" ");
         that.geoValues[index]={
