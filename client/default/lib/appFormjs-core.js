@@ -2670,7 +2670,7 @@ appForm.models.Field = (function(module) {
         var inputValue=params.value;
         var def = this.getFieldDefinition();
         switch (def.locationUnit) {
-            case "latLong":
+            case "latlong":
                 if (!inputValue["lat"] || !inputValue["long"]) {
                     cb("the input values for latlong field is {lat: number, long: number}");
                 } else {
@@ -5765,7 +5765,7 @@ var formsRulesEngine = function(formDef) {
 
 
   function validatorLocation (fieldValue, fieldDefinition, previousFieldValues, cb) {
-    if(fieldDefinition.fieldOptions.definition.locationUnit === "latLong") {
+    if(fieldDefinition.fieldOptions.definition.locationUnit === "latlong") {
       if(fieldValue.lat && fieldValue.long){
         if(isNaN(parseFloat(fieldValue.lat)) || isNaN(parseFloat(fieldValue.lat))){
           return cb(new Error("Invalid latitude and longitude values"));

@@ -3040,7 +3040,7 @@ FieldGeoView = FieldView.extend({
   },
   onElementShow: function(index){
     var self = this;
-    var btnLabel = this.locationUnit === "latLong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
+    var btnLabel = this.locationUnit === "latlong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
     btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
     var geoButton = $(this.renderButton(index, btnLabel, "fhgeo"));
 
@@ -3071,7 +3071,7 @@ FieldGeoView = FieldView.extend({
     var locStr = "";
     var textInput = this.getWrapper(index).find("input[type='text']");
     if (location) {
-      if (this.locationUnit === "latLong") {
+      if (this.locationUnit === "latlong") {
         locStr = '(' + location.lat + ', ' + location.long + ')';
       } else if (this.locationUnit === "northEast") {
         locStr = '(' + location.zone+' '+location.eastings + ', ' + location.northings + ')';
@@ -3094,7 +3094,7 @@ FieldGeoView = FieldView.extend({
     var textInput = wrapper.find("input[type='text']");
     $fh.geo(function(res) {
       var location;
-      if (that.locationUnit === "latLong") {
+      if (that.locationUnit === "latlong") {
         that.geoValues[index] = {
           "lat": res.lat,
           "long": res.lon
