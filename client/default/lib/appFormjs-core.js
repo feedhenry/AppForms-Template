@@ -5827,7 +5827,7 @@ function rulesEngine (formDef) {
 
 
       function validatorLocation (fieldValue, fieldDefinition, previousFieldValues, cb) {
-        if(fieldDefinition.fieldOptions.definition.locationUnit === "latLong") {
+        if(fieldDefinition.fieldOptions.definition.locationUnit === "latlong") {
           if(fieldValue.lat && fieldValue.long){
             if(isNaN(parseFloat(fieldValue.lat)) || isNaN(parseFloat(fieldValue.lat))){
               return cb(new Error("Invalid latitude and longitude values"));
