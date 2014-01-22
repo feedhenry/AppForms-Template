@@ -3031,13 +3031,16 @@ FieldGeoView = FieldView.extend({
   renderInput: function(index) {
     var btnLabel = this.locationUnit === "latLong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
 
-    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
+
     var html = _.template(this.input, {
       "fieldId": this.model.getFieldId(),
       "index": index,
       "inputType": "text"
     });
-    html += this.renderButton(index, btnLabel, "fhgeo");
+
+    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
+
+    this.getWrapper(index).append(this.renderButton(index, btnLabel, "fhgeo"));
 
     return html;
   },
