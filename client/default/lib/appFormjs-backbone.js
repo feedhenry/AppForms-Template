@@ -1912,7 +1912,7 @@ FieldView = Backbone.View.extend({
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_input_container' style='display: inline-block;float: right;margin-right: 5px;'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div><br style='clear:both'/>",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 93%;'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div><br style='clear:both'/>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
@@ -2018,7 +2018,7 @@ FieldView = Backbone.View.extend({
 
   },
   onElementShow: function(index) {
-
+    console.log("Show done for field " + index);
   },
   render: function() {
     var self = this;
@@ -2040,6 +2040,7 @@ FieldView = Backbone.View.extend({
     this.$el.append(this.$fieldWrapper);
     this.$el.append(this.$fh_appform_fieldActionBar);
     this.$el.attr("data-field", this.model.getFieldId());
+
 
     if(this.options.sectionName){
       //This field belongs to a section
