@@ -1915,7 +1915,7 @@ FieldView = Backbone.View.extend({
   inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 86%;'>  <%= inputHtml %>  </div>  <div class='fh_appform_errorMsg hidden'>  </div>  </div><br style='clear:both'/>",
 
 
-  fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
+  fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
   title: '<label class="fh_appform_field_title"><%= title %> </label>',
   instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
   events: {
