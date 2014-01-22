@@ -3029,51 +3029,29 @@ FieldGeoView = FieldView.extend({
     FieldView.prototype.initialize.apply(this, arguments);
   },
   renderInput: function(index) {
-    var btnLabel = this.locationUnit === "latLong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
-
-
     var html = _.template(this.input, {
       "fieldId": this.model.getFieldId(),
       "index": index,
       "inputType": "text"
     });
 
-    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
-
-    this.getWrapper(index).append(this.renderButton(index, btnLabel, "fhgeo"));
 
     return html;
   },
+  onElementShow: function(index){
+    var self = this;
+    var btnLabel = this.locationUnit === "latLong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
+    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
+    var geoButton = $(this.renderButton(index, btnLabel, "fhgeo"));
+
+    this.getWrapper(index).append(geoButton);
+
+    geoButton.on("click", function(e){
+      self.getLocation(e, index);
+    });
+  },
   onRender: function() {
     var that = this;
-    this.$el.find("button").on("click", function(e) {
-      e.preventDefault();
-      var btn = $(this);
-      var index = btn.data().index;
-      var wrapper = that.getWrapper(index);
-      var textInput = wrapper.find("input[type='text']");
-      $fh.geo(function(res) {
-        var location;
-        if (that.locationUnit === "latLong") {
-          that.geoValues[index] = {
-            "lat": res.lat,
-            "long": res.lon
-          };
-        }else if (that.locationUnit==="northEast"){
-          var en_location = that.convertLocation(res);
-          var locArr=en_location.toString().split(" ");
-          that.geoValues[index]={
-            "zone":locArr[0],
-            "eastings":locArr[1],
-            "northings":locArr[2]
-          }
-        }
-        that.renderElement(index);
-      }, function(msg, err) {
-        textInput.attr('placeholder', 'Location could not be determined');
-      });
-      return false;
-    });
   },
   convertLocation: function(location) {
     var lat = location.lat;
@@ -3108,6 +3086,33 @@ FieldGeoView = FieldView.extend({
   },
   valueFromElement: function(index) {
     return this.geoValues[index];
+  },
+  getLocation: function(e, index) {
+    var that = this;
+    e.preventDefault();
+    var wrapper = that.getWrapper(index);
+    var textInput = wrapper.find("input[type='text']");
+    $fh.geo(function(res) {
+      var location;
+      if (that.locationUnit === "latLong") {
+        that.geoValues[index] = {
+          "lat": res.lat,
+          "long": res.lon
+        };
+      }else if (that.locationUnit==="northEast"){
+        var en_location = that.convertLocation(res);
+        var locArr=en_location.toString().split(" ");
+        that.geoValues[index]={
+          "zone":locArr[0],
+          "eastings":locArr[1],
+          "northings":locArr[2]
+        }
+      }
+      that.renderElement(index);
+    }, function(msg, err) {
+      textInput.attr('placeholder', 'Location could not be determined');
+    });
+    return false;
   }
 });
 FieldMapView = FieldView.extend({
