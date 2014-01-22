@@ -4057,7 +4057,8 @@ var FormView = BaseView.extend({
     self.pageViews = pageViews;
     self.pageCount = pageViews.length;
 
-    self.onLoadEnd();
+    //self.onLoadEnd();
+    self.render();
   },
   checkRules: function() {
     var self = this;
@@ -4215,7 +4216,13 @@ var FormView = BaseView.extend({
         if (err) {
           console.error(err);
         } else {
-          self.el.empty();
+          self.submission.upload(function(err, uploadTask) {
+            if(err){
+              console.error(err);
+            }
+
+            self.el.empty();
+          });
         }
       });
     });
