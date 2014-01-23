@@ -2931,7 +2931,7 @@ FieldEmailView = FieldView.extend({
   // }
 });
 FieldFileView = FieldView.extend({
-  input: "<button style='display:none' data-field='<%= fieldId %>' class='fh_appform_special_button fh_appform_button_action' data-index='<%= index %>'></button>" +
+  input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'></button>" +
     "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
   // dumpContent: function() {
@@ -3677,7 +3677,7 @@ FieldTextareaView = FieldView.extend({
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
-    sectionBreak: '<hr/><div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div>'
+    sectionBreak: '<div class="fh_appform_field_section_break_title"><%= sectionTitle %></div><div class="fh_appform_field_section_break_description"><%= sectionDescription%></div>'
   },
   renderEle:function(){
     this.$el.addClass("fh_appform_field_section_break");
