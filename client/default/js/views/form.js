@@ -19,6 +19,18 @@ $fh.ready({}, function() {
                             if (err) {
                                 alert(err);
                             }
+
+                            ut.on("progress", function(progress){
+                              console.log("PROGRESS ", progress, this);
+                            });
+
+                            ut.on("error", function(errMessage){
+                              console.log("ERROR ", errMessage, this);
+                            });
+
+                            ut.on("submitted", function(){
+                              console.log("SUBMISSION SUBMITTED ", this);
+                            });
                         });
                     },100);
 
