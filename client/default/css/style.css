@@ -423,7 +423,8 @@ textarea {
 }
 
 #fh_wufoo_header .count {
-  float: right;
+    float: right;
+    display: inline-block; padding-top: 6px; padding-bottom: 3px; padding-left: 9px; padding-right: 9px;
 }
 
 .segmented-controller li > a {
