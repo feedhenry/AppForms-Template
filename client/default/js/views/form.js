@@ -25,7 +25,6 @@ $fh.ready({}, function() {
                 });
                 self.trigger("loaded");
                 if (params.autoShow) {
-                    self.render();
                     self.el.show();
                 }
             });
