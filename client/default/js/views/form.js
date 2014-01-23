@@ -14,26 +14,18 @@ $fh.ready({}, function() {
                     App.views.header.showPending(true);
                     App.views.form = null;
                     refreshSubmissionCollections();
-                    setTimeout(function() {
-                        self.submission.upload(function(err, ut) {
-                            if (err) {
-                                alert(err);
-                            }
-
-                            ut.on("progress", function(progress){
-                              console.log("PROGRESS ", progress, this);
-                            });
-
-                            ut.on("error", function(errMessage){
-                              console.log("ERROR ", errMessage, this);
-                            });
-
-                            ut.on("submitted", function(){
-                              console.log("SUBMISSION SUBMITTED ", this);
-                            });
-                        });
-                    },100);
-
+                });
+                self.submission.on("progress", function(progress){
+                  console.log("PROGRESS", progress, this);
+                });
+                self.submission.on("submitted", function(){
+                  console.log("SUBMITTED", this);
+                });
+                self.submission.on("error", function(errorMessage){
+                  console.log("ERROR", errorMessage);
+                });
+                self.submission.on("inprogress", function(uploadTask){
+                  console.log("READY FOR UPLOAD ", this, uploadTask);
                 });
                 self.trigger("loaded");
                 if (params.autoShow) {

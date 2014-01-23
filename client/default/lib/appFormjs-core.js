@@ -51,11 +51,6 @@ var appForm = (function(module) {
         });
     }
 
-    // $fh.ready({}, function() {
-    //     appForms.init({},function(){
-    //         console.log("appForm is inited");
-    //     });
-    // });
     return module;
 })(appForm || {});
 appForm.utils = (function(module) {
@@ -2132,6 +2127,9 @@ appForm.models = (function(module) {
                       if(err) console.log(err);
                     });
                     that.emit("inprogress", ut);
+                    ut.on("progress", function(progress){
+                      that.emit("progress", progress);
+                    });
                     cb(null, ut);
                 }
             });
@@ -2147,7 +2145,7 @@ appForm.models = (function(module) {
         this.set("errorMessage", errorMsg);
         var targetStatus = "error";
         this.changeStatus(targetStatus, cb);
-        this.emit("submitted", errorMsg);
+        this.emit("error", errorMsg);
     }
     Submission.prototype.getStatus = function() {
         return this.get("status");
@@ -3032,7 +3030,7 @@ appForm.models = (function(module) {
             "_ludid": "uploadManager_queue"
         });
         this.set("taskQueue", []);
-        this.timeOut = appForm.config.get("submissionTimeout");
+        this.timeOut = 30;
         this.sending = false;
         this.timerInterval = 200;
         this.sendingStart = appForm.utils.getTime();
@@ -3826,7 +3824,6 @@ appForm.models = (function(module) {
       if (_err) {
         cb(_err);
       } else {
-        that.emit("submitted");
         model.submitted(cb);
       }
     });
@@ -3851,7 +3848,6 @@ appForm.models = (function(module) {
         cb(_err);
       } else {
         model.error(err, function() {
-          that.emit("error", err);
           cb(err);
         });
       }
