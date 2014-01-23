@@ -241,10 +241,10 @@ textarea {
 }
 
 .form_list .button-main:disabled {
-  background-color: #ddd;
-  background-image: -webkit-linear-gradient(top, #ddd 0, #bbb 100%);
-  background-image: linear-gradient(to bottom, #ddd 0, #bbb 100%);
-  border: 1px solid #aaa;
+  /*background-color: #ddd;*/
+  /*background-image: -webkit-linear-gradient(top, #ddd 0, #bbb 100%);*/
+  /*background-image: linear-gradient(to bottom, #ddd 0, #bbb 100%);*/
+  /*border: 1px solid #aaa;*/
 }
 
 /* Error highlighting Moved to phase3 theme definition*/
@@ -465,7 +465,7 @@ textarea {
 }
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
-  font-size: 12px;
+  /*font-size: 12px;*/
 }
 
 .pending_submission {
