@@ -1912,7 +1912,7 @@ FieldView = Backbone.View.extend({
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg hidden'>  </div> </div>  </div><br style='clear:both'/>",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden'>  </div> </div>  </div><br style='clear:both'/>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
@@ -3314,7 +3314,7 @@ FieldPhoneView = FieldView.extend({
   type:"tel"
 });
 FieldRadioView = FieldView.extend({
-  hidden_field: '<input  id="radio<%= id %>" type="hidden" value="" data-type="radio">',
+  hidden_field: '<input  id="radio<%= id %>" type="fh_appform_hidden" value="" data-type="radio">',
   choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
   radio: '<div class="fh_appform_field_input"><%= radioChoices %></div>',
 
@@ -3805,7 +3805,7 @@ PageView=BaseView.extend({
     this.fieldViews = {};
     this.sectionViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('fh_appform_page hidden');
+    this.$el.empty().addClass('fh_appform_page fh_appform_hidden');
 
     //Need to add the page title and description
 //    this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));
@@ -3865,11 +3865,11 @@ PageView=BaseView.extend({
 
   show: function () {
     var self = this;
-    this.$el.removeClass('hidden');
+    this.$el.removeClass('fh_appform_hidden');
   },
 
   hide: function () {
-    this.$el.addClass('hidden');
+    this.$el.addClass('fh_appform_hidden');
   },
 
   showField: function (id) {
@@ -3888,7 +3888,7 @@ PageView=BaseView.extend({
 
   isValid: function () {
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
-    var validateEls = this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="hidden"]:hidden');
+    var validateEls = this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="fh_appform_hidden"]:hidden');
     return validateEls.length ? validateEls.valid() : true;
   },
 
@@ -3933,7 +3933,7 @@ var FormView = BaseView.extend({
     formTitle: '<div class="fh_appform_title"><%= title %></div>',
     formDescription: '<div class="fh_appform_description"><%= description %></div>',
     formContainer: '<div id="fh_appform_container" class="fh_appform_form"></div>',
-    buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_action_bar"><button class="fh_appform_button_saveDraft hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous hidden fh_appform_button_navigation">Previous</button><button class="fh_appform_button_next hidden fh_appform_button_navigation">Next</button><button class="fh_appform_button_submit hidden fh_appform_button_action">Submit</button></div>'
+    buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_action_bar"><button class="fh_appform_button_saveDraft fh_appform_hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_hidden fh_appform_button_navigation">Previous</button><button class="fh_appform_button_next fh_appform_hidden fh_appform_button_navigation">Next</button><button class="fh_appform_button_submit fh_appform_hidden fh_appform_button_action">Submit</button></div>'
   },
   events: {
     "click button.fh_appform_button_next": "nextPage",
@@ -4013,13 +4013,12 @@ var FormView = BaseView.extend({
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {title: this.model.getName()}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formDescription, {description: this.model.getDescription()}));
 
-    if (this.model.pages.length > 1) {
-      self.steps = new StepsView({
-        parentEl: self.el.find(this.elementNames.formContainer),
-        parentView: self,
-        model: self.model
-      });
-    }
+    self.steps = new StepsView({
+      parentEl: self.el.find(this.elementNames.formContainer),
+      parentView: self,
+      model: self.model
+    });
+
 
     if (!params.submission) {
       params.submission = self.model.newSubmission();
