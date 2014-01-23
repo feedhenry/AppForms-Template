@@ -404,7 +404,7 @@ a {
 .list li {
   position: relative;
   padding: 20px 60px 20px 10px; /* Given extra right padding to accomodate counts, chevrons or buttons */
-  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  /*border-bottom: 1px solid rgba(0, 0, 0, .1);*/
 }
 
 /* Give top border to first list items */
@@ -435,10 +435,10 @@ a {
 
 /* Remove border from first/last standard list items to avoid double border at top/bottom of lists */
 .list.inset li:first-child {
-  border-top-width: 0;
+  /*border-top-width: 0;*/
 }
 .list.inset li:last-child {
-  border-bottom-width: 0;
+  /*border-bottom-width: 0;*/
 }
 
 
@@ -635,7 +635,7 @@ select {
   /*background-color: #1eafe7;*/
   /*background-image: -webkit-linear-gradient(top, #1eafe7 0, #1a97c8 100%);*/
   /*background-image: linear-gradient(to bottom, #1eafe7 0, #1a97c8 100%);*/
-  border: 1px solid #117aaa;
+  /*border: 1px solid #117aaa;*/
 }
 
 /* Positive button  */
