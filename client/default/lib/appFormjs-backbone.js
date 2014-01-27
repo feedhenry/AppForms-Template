@@ -1911,8 +1911,8 @@ FieldView = Backbone.View.extend({
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
-  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden'></div>  </div><br style='clear:both'/>    </div>",
+  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden'></div>  </div><br style='clear:both'/>    </div>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
@@ -2825,7 +2825,7 @@ FieldCameraGroupView = FieldCameraView.extend({
   }
 });
 FieldCheckboxView = FieldView.extend({
-  checkboxes: '<div ><div class="checkboxes"><%= choices %></div></div>',
+  checkboxes: '<div class="fh_appform_field_input"><div class="checkboxes"><%= choices %></div></div>',
   choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
   // contentChanged: function(e) {
   //   var self = this;
@@ -2922,7 +2922,7 @@ FieldEmailView = FieldView.extend({
 });
 FieldFileView = FieldView.extend({
   input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'  type='<%= inputType %>'></button>" +
-    "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
+    "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
   // dumpContent: function() {
   //   var tmp = "<empty>";
@@ -2971,7 +2971,7 @@ FieldFileView = FieldView.extend({
 
   valueFromElement: function(index) {
     var wrapperObj = this.getWrapper(index);
-    var fileEle = wrapperObj.find(".fh_appform_field_input > input")[0];
+    var fileEle = wrapperObj.find(".fh_appform_field_input")[0];
     if (fileEle.files && fileEle.files.length > 0) { //new file
       return fileEle.files[0];
     } else { //sandboxed file
@@ -2981,7 +2981,7 @@ FieldFileView = FieldView.extend({
   showButton: function(index, fileObj) {
     var wrapperObj = this.getWrapper(index);
     var button = wrapperObj.find("button");
-    var fileEle = wrapperObj.find(".fh_appform_field_input > input");
+    var fileEle = wrapperObj.find(".fh_appform_field_input");
     fileEle.hide();
     button.show();
     button.text(fileObj.fileName + "(" + fileObj.fileSize + ")");
@@ -2994,7 +2994,7 @@ FieldFileView = FieldView.extend({
   showFile: function(index) {
     var wrapperObj = this.getWrapper(index);
     var button = wrapperObj.find("button");
-    var fileEle = wrapperObj.find(".fh_appform_field_input > input");
+    var fileEle = wrapperObj.find(".fh_appform_field_input");
     button.off("click");
     button.hide();
     fileEle.show();
@@ -3010,7 +3010,7 @@ FieldFileView = FieldView.extend({
   }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
+  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
   buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
   type: "text",
   initialize: function() {
@@ -3059,7 +3059,7 @@ FieldGeoView = FieldView.extend({
   renderElement: function(index) {
     var location = this.geoValues[index];
     var locStr = "";
-    var textInput = this.getWrapper(index).find(".fh_appform_field_input > input");
+    var textInput = this.getWrapper(index).find(".fh_appform_field_input");
     if (location) {
       if (this.locationUnit === "latlong") {
         locStr = '(' + location.lat + ', ' + location.long + ')';
@@ -3081,7 +3081,7 @@ FieldGeoView = FieldView.extend({
     var that = this;
     e.preventDefault();
     var wrapper = that.getWrapper(index);
-    var textInput = wrapper.find(".fh_appform_field_input > input");
+    var textInput = wrapper.find(".fh_appform_field_input");
 
 
     //$fh.geo does not exist on the theme preview.
@@ -3314,7 +3314,7 @@ FieldPhoneView = FieldView.extend({
 FieldRadioView = FieldView.extend({
   hidden_field: '<input  id="radio<%= id %>" type="fh_appform_hidden" value="" data-type="radio">',
   choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" class="field radio" value="<%= value %>" type="radio"><label class="choice" ><%= choice %></label><br/>',
-  radio: '<div ><%= radioChoices %></div>',
+  radio: '<div class="fh_appform_field_input"><%= radioChoices %></div>',
 
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
@@ -3358,7 +3358,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  select: "<select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
   renderInput: function(index) {
@@ -3671,7 +3671,7 @@ FieldTextView = FieldView.extend({
 
 });
 FieldTextareaView = FieldView.extend({
-    input: "<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input: "<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
@@ -3885,7 +3885,7 @@ PageView=BaseView.extend({
 
   isValid: function () {
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
-    var validateEls = this.$el.find('.fh_appform_field_input > input').not('.validate_ignore]:hidden');
+    var validateEls = this.$el.find('.fh_appform_field_input').not('.validate_ignore]:hidden');
     return validateEls.length ? validateEls.valid() : true;
   },
 
