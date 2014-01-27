@@ -3014,7 +3014,7 @@ FieldFileView = FieldView.extend({
     }
   },
   onElementShow: function (index) {
-    showButton(index, null);
+    this.showButton(index, null);
   }
 });
 FieldGeoView = FieldView.extend({
