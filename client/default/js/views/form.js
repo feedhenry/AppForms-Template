@@ -32,8 +32,6 @@ $fh.ready({}, function() {
                     self.el.show();
                 }
             });
-
         }
-
     })
 });

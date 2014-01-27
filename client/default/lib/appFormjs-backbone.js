@@ -1911,8 +1911,8 @@ FieldView = Backbone.View.extend({
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
-  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%'>  <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden'>  </div> </div>  </div><br style='clear:both'/>",
+  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input' style='display: inline-block;float: right;width: 86%;margin-right:5px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden'></div>  </div><br style='clear:both'/>    </div>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
@@ -2131,17 +2131,7 @@ FieldView = Backbone.View.extend({
     wrapperObj.find("input,textarea,select").addClass(this.errorClassName);
   },
   contentChanged: function(e) {
-    var target = $(e.currentTarget);
-    var changedValue = target.val();
-    var self = this;
-    this.dumpContent();
-    // this.getTopView().trigger('change:field');
-    // var val = this.value();
-    // if (this.model.validate(changedValue) === true) {
-    //   var val = this.value();
-    //   this.options.formView.setInputValue(self.model.getFieldId(), val);
-    //   // self.model.set('value', val[self.model.get("_id")]);
-    // }
+    this.validate(e);
   },
 
 
@@ -2305,7 +2295,7 @@ FieldView = Backbone.View.extend({
 
 });
 FieldCameraView = FieldView.extend({
-  input: "<img class='imageThumb' width='100%' data-field='<%= fieldId %>' data-index='<%= index %>'>",
+  input: "<img class='imageThumb' width='100%' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>'>",
   html5Cam: '<div class="html5Cam">' +
     '<div class="camActionBar"><button class="camCancel camBtn fh_appform_button_cancel">Cancel</button><button class="camOk camBtn fh_appform_button_action">Ok</button></div>' +
     '<div class="cam"></div>' +
@@ -2835,8 +2825,8 @@ FieldCameraGroupView = FieldCameraView.extend({
   }
 });
 FieldCheckboxView = FieldView.extend({
-  checkboxes: '<div class="fh_appform_field_input"><div class="checkboxes"><%= choices %></div></div>',
-  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
+  checkboxes: '<div ><div class="checkboxes"><%= choices %></div></div>',
+  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
   // contentChanged: function(e) {
   //   var self = this;
   //   this.dumpContent();
@@ -2931,7 +2921,7 @@ FieldEmailView = FieldView.extend({
   // }
 });
 FieldFileView = FieldView.extend({
-  input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'></button>" +
+  input: "<button style='display:none' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'  type='<%= inputType %>'></button>" +
     "<input data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
   // dumpContent: function() {
@@ -2981,7 +2971,7 @@ FieldFileView = FieldView.extend({
 
   valueFromElement: function(index) {
     var wrapperObj = this.getWrapper(index);
-    var fileEle = wrapperObj.find("input[type='file']")[0];
+    var fileEle = wrapperObj.find(".fh_appform_field_input > input")[0];
     if (fileEle.files && fileEle.files.length > 0) { //new file
       return fileEle.files[0];
     } else { //sandboxed file
@@ -2991,7 +2981,7 @@ FieldFileView = FieldView.extend({
   showButton: function(index, fileObj) {
     var wrapperObj = this.getWrapper(index);
     var button = wrapperObj.find("button");
-    var fileEle = wrapperObj.find("input[type='file']");
+    var fileEle = wrapperObj.find(".fh_appform_field_input > input");
     fileEle.hide();
     button.show();
     button.text(fileObj.fileName + "(" + fileObj.fileSize + ")");
@@ -3004,7 +2994,7 @@ FieldFileView = FieldView.extend({
   showFile: function(index) {
     var wrapperObj = this.getWrapper(index);
     var button = wrapperObj.find("button");
-    var fileEle = wrapperObj.find("input[type='file']");
+    var fileEle = wrapperObj.find(".fh_appform_field_input > input");
     button.off("click");
     button.hide();
     fileEle.show();
@@ -3020,7 +3010,7 @@ FieldFileView = FieldView.extend({
   }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' disabled/>",
+  input: "<input data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
   buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
   type: "text",
   initialize: function() {
@@ -3069,7 +3059,7 @@ FieldGeoView = FieldView.extend({
   renderElement: function(index) {
     var location = this.geoValues[index];
     var locStr = "";
-    var textInput = this.getWrapper(index).find("input[type='text']");
+    var textInput = this.getWrapper(index).find(".fh_appform_field_input > input");
     if (location) {
       if (this.locationUnit === "latlong") {
         locStr = '(' + location.lat + ', ' + location.long + ')';
@@ -3091,27 +3081,33 @@ FieldGeoView = FieldView.extend({
     var that = this;
     e.preventDefault();
     var wrapper = that.getWrapper(index);
-    var textInput = wrapper.find("input[type='text']");
-    $fh.geo(function(res) {
-      var location;
-      if (that.locationUnit === "latlong") {
-        that.geoValues[index] = {
-          "lat": res.lat,
-          "long": res.lon
-        };
-      }else if (that.locationUnit==="eastnorth"){
-        var en_location = that.convertLocation(res);
-        var locArr=en_location.toString().split(" ");
-        that.geoValues[index]={
-          "zone":locArr[0],
-          "eastings":locArr[1],
-          "northings":locArr[2]
+    var textInput = wrapper.find(".fh_appform_field_input > input");
+
+
+    //$fh.geo does not exist on the theme preview.
+    if($fh.geo){
+      $fh.geo(function(res) {
+        var location;
+        if (that.locationUnit === "latlong") {
+          that.geoValues[index] = {
+            "lat": res.lat,
+            "long": res.lon
+          };
+        }else if (that.locationUnit==="eastnorth"){
+          var en_location = that.convertLocation(res);
+          var locArr=en_location.toString().split(" ");
+          that.geoValues[index]={
+            "zone":locArr[0],
+            "eastings":locArr[1],
+            "northings":locArr[2]
+          }
         }
-      }
-      that.renderElement(index);
-    }, function(msg, err) {
-      textInput.attr('placeholder', 'Location could not be determined');
-    });
+        that.renderElement(index);
+      }, function(msg, err) {
+        textInput.attr('placeholder', 'Location could not be determined');
+      });
+    }
+
     return false;
   }
 });
@@ -3198,52 +3194,54 @@ FieldMapView = FieldView.extend({
     // // Merge
     // this.mapSettings = _.defaults(options, this.mapSettings);
 
-    $fh.geo({
-      interval: 0
-    }, function(geoRes) {
-      // Override with geo, otherwise use defaults
-      var location = {
-        lat: geoRes.lat,
-        lon: geoRes.lon
-      };
-      $fh.map({
-        target: mapCanvas,
-        lon: location.lon,
-        lat: location.lat,
-        zoom: self.mapSettings.defaultZoom
-      }, function(res) {
-        self.maps[index] = res.map;
-        var marker = new google.maps.Marker({
-          position: self.maps[index].getCenter(),
-          map: self.maps[index],
-          draggable: true,
-          animation: google.maps.Animation.DROP,
-          title: "Drag this to set position"
+    if($fh.geo){
+      $fh.geo({
+        interval: 0
+      }, function(geoRes) {
+        // Override with geo, otherwise use defaults
+        var location = {
+          lat: geoRes.lat,
+          lon: geoRes.lon
+        };
+        $fh.map({
+          target: mapCanvas,
+          lon: location.lon,
+          lat: location.lat,
+          zoom: self.mapSettings.defaultZoom
+        }, function(res) {
+          self.maps[index] = res.map;
+          var marker = new google.maps.Marker({
+            position: self.maps[index].getCenter(),
+            map: self.maps[index],
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+            title: "Drag this to set position"
+          });
+          self.markers[index] = marker;
+          self.mapData[index] = {
+            "lat": marker.getPosition().lat(),
+            "long": marker.getPosition().lng(),
+            "zoom": self.mapSettings.defaultZoom
+          }
+          // google.maps.event.addListener(marker, "dragend", function() {
+          //   self.mapData[index].lat = marker.getPosition().lat();
+          //   self.mapData[index].long = marker.getPosition().lng();
+          //   self.mapData[index].zoom=zoomLevel;
+          //   // self.contentChanged();
+          // });
+          // google.maps.event.addListener(res.map, 'zoom_changed', function() {
+          //   var zoomLevel = res.map.getZoom();
+          //   self.mapData[index].zoom=zoomLevel;
+          //   self.mapData[index].lat = marker.getPosition().lat();
+          //   self.mapData[index].long = marker.getPosition().lng();
+          // });
+          self.onMapInit(index);
+        }, function(err) {
+          console.error(err);
+          self.onMapInit(index);
         });
-        self.markers[index] = marker;
-        self.mapData[index] = {
-          "lat": marker.getPosition().lat(),
-          "long": marker.getPosition().lng(),
-          "zoom": self.mapSettings.defaultZoom
-        }
-        // google.maps.event.addListener(marker, "dragend", function() {
-        //   self.mapData[index].lat = marker.getPosition().lat();
-        //   self.mapData[index].long = marker.getPosition().lng();
-        //   self.mapData[index].zoom=zoomLevel;
-        //   // self.contentChanged();
-        // });
-        // google.maps.event.addListener(res.map, 'zoom_changed', function() {
-        //   var zoomLevel = res.map.getZoom();
-        //   self.mapData[index].zoom=zoomLevel;
-        //   self.mapData[index].lat = marker.getPosition().lat();
-        //   self.mapData[index].long = marker.getPosition().lng();
-        // });
-        self.onMapInit(index);
-      }, function(err) {
-        console.error(err);
-        self.onMapInit(index);
       });
-    });
+    }
   },
   mapResize: function() {
     if (this.maps.length > 0) {
@@ -3315,8 +3313,8 @@ FieldPhoneView = FieldView.extend({
 });
 FieldRadioView = FieldView.extend({
   hidden_field: '<input  id="radio<%= id %>" type="fh_appform_hidden" value="" data-type="radio">',
-  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" type="radio" class="field radio" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
-  radio: '<div class="fh_appform_field_input"><%= radioChoices %></div>',
+  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" class="field radio" value="<%= value %>" type="radio"><label class="choice" ><%= choice %></label><br/>',
+  radio: '<div ><%= radioChoices %></div>',
 
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
@@ -3360,7 +3358,7 @@ FieldRadioView = FieldView.extend({
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  select: "<select data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
   renderInput: function(index) {
@@ -3670,10 +3668,10 @@ FieldSignatureView = FieldView.extend({
 
 });
 FieldTextView = FieldView.extend({
-//  template: ['<div class="fh_appform_field_input"><label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>"></div>']
+
 });
 FieldTextareaView = FieldView.extend({
-    input: "<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input: "<textarea data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
   templates: {
@@ -3757,7 +3755,6 @@ FieldDateTimeView = FieldView.extend({
 });
 FieldUrlView = FieldView.extend({
   type: "url"
-//  template: ['<div class="fh_appform_field_input"><label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium fh_appform_field_input" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>"></div>']
 });
 PageView=BaseView.extend({
 
@@ -3888,7 +3885,7 @@ PageView=BaseView.extend({
 
   isValid: function () {
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
-    var validateEls = this.$el.find('input,select,option,textarea').not('.validate_ignore,[type!="fh_appform_hidden"]:hidden');
+    var validateEls = this.$el.find('.fh_appform_field_input > input').not('.validate_ignore]:hidden');
     return validateEls.length ? validateEls.valid() : true;
   },
 
@@ -4428,6 +4425,26 @@ $fh.forms.renderForm = function(params, cb) {
     });
 }
 
+/**
+ *
+ * @param params Object {"formId":String,"rawMode":Boolean,"rawMode":Boolean}
+ * no io being done so no need for callback
+ */
+$fh.forms.renderFormFromJSON = function (params) {
+  if(! params) throw new Error("params cannot be empty");
+  if(! params.rawData) throw new Error("raw json data must be passed in the params.rawData");
+  if(! params.container) throw new Error("a container element must be passed in the params.container");
+
+  params.formId = new Date().getTime();
+  params.rawMode = true;
+
+  var formView=new FormView({parentEl:params.container});
+  formView.loadForm(params,function(err){
+    if(err) console.error("error loading form for renderFormFromJSON ",err);
+    //formView.render();
+  });
+};
+
 $fh.forms.renderFormList = function(params, cb) {
     var fromRemote = params.fromRemote || false;
     var parentEl = params.parentEl;
@@ -4445,6 +4462,7 @@ $fh.forms.renderFormList = function(params, cb) {
 $fh.forms.backbone={};
 $fh.forms.backbone.FormView=FormView;
 $fh.forms.backbone.FormListView=FormListView;
+
 
 
 //end  module;
