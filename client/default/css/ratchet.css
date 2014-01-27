@@ -87,15 +87,15 @@ a {
   background-color: #f2f2f2;
   background-image: -webkit-linear-gradient(top, #f2f2f2 0, #e5e5e5 100%);
   background-image: linear-gradient(to bottom, #f2f2f2 0, #e5e5e5 100%);
-  border-bottom: 1px solid #aaa;
+  /*border-bottom: 1px solid #aaa;*/
   box-shadow: inset 0 1px 1px -1px #fff;
 }
 
 /* Flip border position to top for footer bars */
 .bar-footer.bar-standard,
 .bar-footer-secondary.bar-standard {
-  border-top: 1px solid #aaa;
-  border-bottom-width: 0;
+  /*border-top: 1px solid #aaa;*/
+  /*border-bottom-width: 0;*/
 }
 
 /* Title bar
@@ -109,7 +109,7 @@ a {
   /*background-color: #1eb0e9;*/
   /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #109adc 100%);*/
   /*background-image: linear-gradient(to bottom, #1eb0e9 0, #109adc 100%);*/
-  border-bottom: 1px solid #0e5895;
+  /*border-bottom: 1px solid #0e5895;*/
   box-shadow: inset 0 1px 1px -1px rgba(255, 255, 255, .8);
   -webkit-box-orient: horizontal;
           box-orient: horizontal;
@@ -153,8 +153,8 @@ a {
   background-color: #393939;
   background-image: -webkit-linear-gradient(top, #393939 0, #2b2b2b 100%);
   background-image: linear-gradient(to bottom, #393939 0, #2b2b2b 100%);
-  border-top: 1px solid #000;
-  border-bottom-width: 0;
+  /*border-top: 1px solid #000;*/
+  /*border-bottom-width: 0;*/
   box-shadow: inset 0 1px 1px -1px rgba(255, 255, 255, .6);
 }
 
@@ -213,7 +213,7 @@ a {
   /*background-color: #1eb0e9;*/
   /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
   /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
-  border: 1px solid #0e5895;
+  /*border: 1px solid #0e5895;*/
   box-shadow: 0 1px rgba(255, 255, 255, .25);
   -webkit-box-flex: 0;
           box-flex: 0;
@@ -248,15 +248,15 @@ a {
 /* Prev/next button base styles */
 .bar-title .button-prev {
   margin-left: 7px; /* Push over to make room for :before content */
-  border-left: 0;
-  border-bottom-left-radius: 10px 15px;
-  border-top-left-radius: 10px 15px;
+  /*border-left: 0;*/
+  /*border-bottom-left-radius: 10px 15px;*/
+  /*border-top-left-radius: 10px 15px;*/
 }
 .bar-title .button-next {
   margin-right: 7px; /* Push over to make room for :before content */
-  border-right: 0;
-  border-top-right-radius: 10px 15px;
-  border-bottom-right-radius: 10px 15px;
+  /*border-right: 0;*/
+  /*border-top-right-radius: 10px 15px;*/
+  /*border-bottom-right-radius: 10px 15px;*/
 }
 
 /* Pointed part of directional button */
@@ -266,7 +266,7 @@ a {
   top: 2px;
   width: 27px;
   height: 27px;
-  border-radius: 30px 100px 2px 40px / 2px 40px 30px 100px;
+  /*border-radius: 30px 100px 2px 40px / 2px 40px 30px 100px;*/
   content: '';
   box-shadow: inset 1px 0 #0e5895, inset 0 1px #0e5895;
   -webkit-mask-image: -webkit-gradient(linear, left top, right bottom, from(#000), color-stop(.33, #000), color-stop(.5, transparent), to(transparent));
@@ -276,7 +276,7 @@ a {
   left: -5px;
   background-image: -webkit-gradient(linear, left bottom, right top, from(#0984c6), to(#1eb0e9));
   background-image: gradient(linear, left bottom, right top, from(#0984c6), to(#1eb0e9));
-  border-left: 1.5px solid rgba(255, 255, 255, .25);
+  /*border-left: 1.5px solid rgba(255, 255, 255, .25);*/
   -webkit-transform: rotate(-45deg) skew(-10deg, -10deg);
           transform: rotate(-45deg) skew(-10deg, -10deg);
 }
@@ -284,7 +284,7 @@ a {
   right: -5px;
   background-image: -webkit-gradient(linear, left bottom, right top, from(#1eb0e9), to(#0984c6));
   background-image: gradient(linear, left bottom, right top, from(#1eb0e9), to(#0984c6));
-  border-top: 1.5px solid rgba(255, 255, 255, .25);
+  /*border-top: 1.5px solid rgba(255, 255, 255, .25);*/
   -webkit-transform: rotate(135deg) skew(-10deg, -10deg);
           transform: rotate(135deg) skew(-10deg, -10deg);
 }
@@ -347,8 +347,8 @@ a {
   /*background-color: #1eb0e9;*/
   /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
   /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
-  border: 1px solid #0e5895;
-  border-radius: 3px;
+  /*border: 1px solid #0e5895;*/
+  /*border-radius: 3px;*/
   box-shadow: 0 1px rgba(255, 255, 255, .25);
   -webkit-box-flex: 1;
           box-flex: 1;
@@ -356,7 +356,7 @@ a {
 
 /* Set color for tab border and highlight */
 .bar-title .segmented-controller li {
-  border-left: 1px solid #0e5895;
+  /*border-left: 1px solid #0e5895;*/
   box-shadow: inset 1px 0 rgba(255, 255, 255, .25);
 }
 
@@ -368,7 +368,7 @@ a {
 
 /* Remove left-hand border from first tab */
 .bar-title .segmented-controller li:first-child {
-  border-left-width: 0;
+  /*border-left-width: 0;*/
 }
 
 /* Depressed state (active) */
@@ -409,7 +409,7 @@ a {
 
 /* Give top border to first list items */
 .list li:first-child {
-  border-top: 1px solid rgba(0, 0, 0, .1);
+  /*border-top: 1px solid rgba(0, 0, 0, .1);*/
 }
 
 /* If a list of links, make sure the child <a> takes up full list item tap area (want to avoid selecting child buttons though) */
@@ -428,8 +428,8 @@ a {
   width: auto;
   /*margin-right: 10px;*/
   /*margin-left: 10px;*/
-  border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 5px;
+  /*border: 1px solid rgba(0, 0, 0, .2);*/
+  /*border-radius: 5px;*/
   box-sizing: border-box;
 }
 
@@ -457,21 +457,21 @@ a {
   /*background-color: #f8f8f8;*/
   /*background-image: -webkit-linear-gradient(top, #f8f8f8 0, #eee 100%);*/
   /*background-image: linear-gradient(to bottom, #f8f8f8 0, #eee 100%);*/
-  border-top: 1px solid rgba(0, 0, 0, .1);
-  border-bottom: 1px solid rgba(0, 0, 0, .1);
+  /*border-top: 1px solid rgba(0, 0, 0, .1);*/
+  /*border-bottom: 1px solid rgba(0, 0, 0, .1);*/
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, .4);
 }
 
 /* Rounding first divider on inset lists and remove border on the top */
 .list.inset .list-divider:first-child {
   top: 0;
-  border-top-width: 0;
-  border-radius: 6px 6px 0 0;
+  /*border-top-width: 0;*/
+  /*border-radius: 6px 6px 0 0;*/
 }
 
 /* Rounding last divider on inset lists */
 .list.inset .list-divider:last-child {
-  border-radius: 0 0 6px 6px;
+  /*border-radius: 0 0 6px 6px;*/
 }
 
 /* Right-aligned subcontent in lists (chevrons, buttons, counts and toggles)
@@ -546,15 +546,15 @@ select {
 .input-group input {
   margin-bottom: 0;
   background-color: transparent;
-  border: 0;
-  border-bottom: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 0;
+  /*border: 0;*/
+  /*border-bottom: 1px solid rgba(0, 0, 0, .2);*/
+  /*border-radius: 0;*/
   box-shadow: none;
 }
 
 /* Remove bottom border on last input to avoid double bottom border */
 .input-group input:last-child {
-  border-bottom-width: 0;
+  /*border-bottom-width: 0;*/
 }
 
 /* Input groups with labels
@@ -563,12 +563,12 @@ select {
 /* To use labels with input groups, wrap a label and an input in an .input-row */
 .input-row {
   overflow: hidden;
-  border-bottom: 1px solid rgba(0, 0, 0, .2);
+  /*border-bottom: 1px solid rgba(0, 0, 0, .2);*/
 }
 
 /* Remove bottom border on last input-row to avoid double bottom border */
 .input-row:last-child {
-  border-bottom-width: 0;
+  /*border-bottom-width: 0;*/
 }
 
 /* Labels get floated left with a set percentage width */
@@ -585,7 +585,7 @@ select {
   width: 65%;
   padding-left: 0;
   margin-bottom: 0;
-  border-bottom: 0;
+  /*border-bottom: 0;*/
 }/* General button styles
 -------------------------------------------------- */
 
@@ -604,7 +604,7 @@ select {
   /*background-color: #f8f8f8;*/
   /*background-image: -webkit-linear-gradient(top, #f8f8f8 0, #d4d4d4 100%);*/
   /*background-image: linear-gradient(to bottom, #f8f8f8 0, #d4d4d4 100%);*/
-  border: 1px solid rgba(0, 0, 0, .3);
+  /*border: 1px solid rgba(0, 0, 0, .3);*/
   /*border-radius: 3px;*/
   box-shadow: inset 0 1px 1px rgba(255, 255, 255, .4), 0 1px 2px rgba(0, 0, 0, .05);
 }
@@ -643,7 +643,7 @@ select {
   /*background-color: #34ba15;*/
   /*background-image: -webkit-linear-gradient(top, #34ba15 0, #2da012 100%);*/
   /*background-image: linear-gradient(to bottom, #34ba15 0, #2da012 100%);*/
-  border: 1px solid #278f0f;
+  /*border: 1px solid #278f0f;*/
 }
 
 /* Negative button  */
@@ -651,7 +651,7 @@ select {
   /*background-color: #e71e1e;*/
   /*background-image: -webkit-linear-gradient(top, #e71e1e 0,#c71a1a 100%);*/
   /*background-image: linear-gradient(to bottom, #e71e1e 0, #c71a1a 100%);*/
-  border: 1px solid #b51a1a;
+  /*border: 1px solid #b51a1a;*/
 }
 
 /* Active state for buttons with modifiers */
@@ -746,7 +746,7 @@ select {
   line-height: 13px;
   color: #fff;
   background-color: rgba(0, 0, 0, .3);
-  border-radius: 100px;
+  /*border-radius: 100px;*/
 }
 
 /* Count modifiers
@@ -794,8 +794,8 @@ select {
   /*background-color: #f8f8f8;*/
   /*background-image: -webkit-linear-gradient(top, #f8f8f8 0, #d4d4d4 100%);*/
   /*background-image: linear-gradient(to bottom, #f8f8f8 0, #d4d4d4 100%);*/
-  border: 1px solid #aaa;
-  border-radius: 3px;
+  /*border: 1px solid #aaa;*/
+  /*border-radius: 3px;*/
   box-shadow: inset 0 1px rgba(255, 255, 255, 0.5), 0 1px rgba(255, 255, 255, .8);
   -webkit-box-orient: horizontal;
           box-orient: horizontal;
@@ -806,7 +806,7 @@ select {
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
-  border-left: 1px solid #aaa;
+  /*border-left: 1px solid #aaa;*/
   box-shadow: inset 1px 0 rgba(255, 255, 255, .5);
   -webkit-box-flex: 1;
           box-flex: 1;
@@ -824,7 +824,7 @@ select {
 
 /* Remove border-left and shadow from first section */
 .segmented-controller li:first-child {
-  border-left-width: 0;
+  /*border-left-width: 0;*/
   box-shadow: none;
 }
 
@@ -855,8 +855,8 @@ select {
   background-color: #555;
   background-image: -webkit-linear-gradient(top, #555 5%, #555 6%, #111 30%);
   background-image: linear-gradient(to bottom, #555 5%, #555 6%,#111 30%);
-  border: 1px solid #111;
-  border-radius: 6px;
+  /*border: 1px solid #111;*/
+  /*border-radius: 6px;*/
   opacity: 0;
   box-shadow: inset 0 1px 1px -1px #fff, 0 3px 10px rgba(0, 0, 0, .3);
   -webkit-transform: translate3d(0, -15px, 0);
@@ -877,16 +877,16 @@ select {
 .popover:before {
   top: -20px;
   margin-left: -21px;
-  border-right: 21px solid transparent;
-  border-bottom: 21px solid #111;
-  border-left: 21px solid transparent;
+  /*border-right: 21px solid transparent;*/
+  /*border-bottom: 21px solid #111;*/
+  /*border-left: 21px solid transparent;*/
 }
 .popover:after {
   top: -19px;
   margin-left: -20px;
-  border-right: 20px solid transparent;
-  border-bottom: 20px solid #555;
-  border-left: 20px solid transparent;
+  /*border-right: 20px solid transparent;*/
+  /*border-bottom: 20px solid #555;*/
+  /*border-left: 20px solid transparent;*/
 }
 
 /* Wrapper for a title and buttons */
@@ -922,7 +922,7 @@ select {
   background-color: #454545;
   background-image: -webkit-linear-gradient(top, #454545 0, #353535 100%);
   background-image: linear-gradient(to bottom, #454545 0, #353535 100%);
-  border: 1px solid #111;
+  /*border: 1px solid #111;*/
   -webkit-box-flex: 0;
           box-flex: 0;
 }
@@ -970,7 +970,7 @@ select {
 /* Positioning and giving darker border to look sharp against dark popover */
 .popover .button-block {
   margin-bottom: 5px;
-  border: 1px solid #111;
+  /*border: 1px solid #111;*/
 }
 
 /* Remove extra margin on bottom of last button */
@@ -989,8 +989,8 @@ select {
   margin-left: 0;
   overflow: auto;
   background-color: #fff;
-  border: 1px solid #000;
-  border-radius: 3px;
+  /*border: 1px solid #000;*/
+  /*border-radius: 3px;*/
   -webkit-overflow-scrolling: touch;
 }/* Slider styles (to be used with sliders.js)
 -------------------------------------------------- */
@@ -1036,8 +1036,8 @@ select {
   width: 75px;
   height: 28px;
   background-color: #eee;
-  border: 1px solid #bbb;
-  border-radius: 20px;
+  /*border: 1px solid #bbb;*/
+  /*border-radius: 20px;*/
   box-shadow: inset 0 0 4px rgba(0, 0, 0, .1);
 }
 
@@ -1064,8 +1064,8 @@ select {
   background-color: #fff;
   background-image: -webkit-linear-gradient(top, #fff 0, #f2f2f2 100%);
   background-image: linear-gradient(to bottom, #fff 0, #f2f2f2 100%);
-  border: 1px solid rgba(0, 0, 0, .2);
-  border-radius: 100px;
+  /*border: 1px solid rgba(0, 0, 0, .2);*/
+  /*border-radius: 100px;*/
   -webkit-transition: -webkit-transform 0.1s ease-in-out, border 0.1s ease-in-out;
                   transition: transform 0.1s ease-in-out, border 0.1s ease-in-out;
 }
@@ -1075,13 +1075,13 @@ select {
   background-color: #19a8e4;
   background-image: -webkit-linear-gradient(top, #088cd4 0, #19a8e4 100%);
   background-image: linear-gradient(to bottom, #088cd4 0, #19a8e4 100%);
-  border: 1px solid #096c9d;
+  /*border: 1px solid #096c9d;*/
   box-shadow: inset 0 0 15px rgba(255, 255, 255, .25);
 }
 
 /* Active state for toggle handle */
 .toggle.active .toggle-handle {
-  border-color: #0a76ad;
+  /*border-color: #0a76ad;*/
   -webkit-transform: translate3d(48px,0,0);
           transform: translate3d(48px,0,0);
 }
