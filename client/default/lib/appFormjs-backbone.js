@@ -19,11 +19,8 @@ if (typeof window =="undefined"){
 /*    var lon = Geo.parseDMS('000Â° 00â€² 05.31â€³ W');                                                */
 /*    var p1 = new LatLon(lat, lon);                                                              */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-
-var Geo = {};  // Geo namespace, representing static class
-
-
+var Geo = {};
+// Geo namespace, representing static class
 /**
  * Parses string representing degrees/minutes/seconds into numeric degrees
  *
@@ -36,40 +33,44 @@ var Geo = {};  // Geo namespace, representing static class
  * @returns {Number} Degrees as decimal number
  * @throws  {TypeError} dmsStr is an object, perhaps DOM object without .value?
  */
-Geo.parseDMS = function(dmsStr) {
-  if (typeof deg == 'object') throw new TypeError('Geo.parseDMS - dmsStr is [DOM?] object');
-  
+Geo.parseDMS = function (dmsStr) {
+  if (typeof deg == 'object')
+    throw new TypeError('Geo.parseDMS - dmsStr is [DOM?] object');
   // check for signed decimal degrees without NSEW, if so return it directly
-  if (typeof dmsStr === 'number' && isFinite(dmsStr)) return Number(dmsStr);
-  
+  if (typeof dmsStr === 'number' && isFinite(dmsStr))
+    return Number(dmsStr);
   // strip off any sign or compass dir'n & split out separate d/m/s
-  var dms = String(dmsStr).trim().replace(/^-/,'').replace(/[NSEW]$/i,'').split(/[^0-9.,]+/);
-  if (dms[dms.length-1]=='') dms.splice(dms.length-1);  // from trailing symbol
-  
-  if (dms == '') return NaN;
-  
+  var dms = String(dmsStr).trim().replace(/^-/, '').replace(/[NSEW]$/i, '').split(/[^0-9.,]+/);
+  if (dms[dms.length - 1] == '')
+    dms.splice(dms.length - 1);
+  // from trailing symbol
+  if (dms == '')
+    return NaN;
   // and convert to decimal degrees...
   switch (dms.length) {
-    case 3:  // interpret 3-part result as d/m/s
-      var deg = dms[0]/1 + dms[1]/60 + dms[2]/3600; 
-      break;
-    case 2:  // interpret 2-part result as d/m
-      var deg = dms[0]/1 + dms[1]/60; 
-      break;
-    case 1:  // just d (possibly decimal) or non-separated dddmmss
-      var deg = dms[0];
-      // check for fixed-width unseparated format eg 0033709W
-      //if (/[NS]/i.test(dmsStr)) deg = '0' + deg;  // - normalise N/S to 3-digit degrees
-      //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600; 
-      break;
-    default:
-      return NaN;
+  case 3:
+    // interpret 3-part result as d/m/s
+    var deg = dms[0] / 1 + dms[1] / 60 + dms[2] / 3600;
+    break;
+  case 2:
+    // interpret 2-part result as d/m
+    var deg = dms[0] / 1 + dms[1] / 60;
+    break;
+  case 1:
+    // just d (possibly decimal) or non-separated dddmmss
+    var deg = dms[0];
+    // check for fixed-width unseparated format eg 0033709W
+    //if (/[NS]/i.test(dmsStr)) deg = '0' + deg;  // - normalise N/S to 3-digit degrees
+    //if (/[0-9]{7}/.test(deg)) deg = deg.slice(0,3)/1 + deg.slice(3,5)/60 + deg.slice(5)/3600; 
+    break;
+  default:
+    return NaN;
   }
-  if (/^-|[WS]$/i.test(dmsStr.trim())) deg = -deg; // take '-', west and south as -ve
+  if (/^-|[WS]$/i.test(dmsStr.trim()))
+    deg = -deg;
+  // take '-', west and south as -ve
   return Number(deg);
-}
-
-
+};
 /**
  * Convert decimal degrees to deg/min/sec format
  *  - degree, prime, double-prime symbols are added, but sign is discarded, though no compass
@@ -82,56 +83,85 @@ Geo.parseDMS = function(dmsStr) {
  * @returns {String} deg formatted as deg/min/secs according to specified format
  * @throws  {TypeError} deg is an object, perhaps DOM object without .value?
  */
-Geo.toDMS = function(deg, format, dp) {
-  if (typeof deg == 'object') throw new TypeError('Geo.toDMS - deg is [DOM?] object');
-  if (isNaN(deg)) return null;  // give up here if we can't make a number from deg
-  
-    // default values
-  if (typeof format == 'undefined') format = 'dms';
+Geo.toDMS = function (deg, format, dp) {
+  if (typeof deg == 'object')
+    throw new TypeError('Geo.toDMS - deg is [DOM?] object');
+  if (isNaN(deg))
+    return null;
+  // give up here if we can't make a number from deg
+  // default values
+  if (typeof format == 'undefined')
+    format = 'dms';
   if (typeof dp == 'undefined') {
     switch (format) {
-      case 'd': dp = 4; break;
-      case 'dm': dp = 2; break;
-      case 'dms': dp = 0; break;
-      default: format = 'dms'; dp = 0;  // be forgiving on invalid format
-    }
-  }
-  
-  deg = Math.abs(deg);  // (unsigned result ready for appending compass dir'n)
-  
-  switch (format) {
     case 'd':
-      d = deg.toFixed(dp);     // round degrees
-      if (d<100) d = '0' + d;  // pad with leading zeros
-      if (d<10) d = '0' + d;
-      dms = d + '\u00B0';      // add Âº symbol
+      dp = 4;
       break;
     case 'dm':
-      var min = (deg*60).toFixed(dp);  // convert degrees to minutes & round
-      var d = Math.floor(min / 60);    // get component deg/min
-      var m = (min % 60).toFixed(dp);  // pad with trailing zeros
-      if (d<100) d = '0' + d;          // pad with leading zeros
-      if (d<10) d = '0' + d;
-      if (m<10) m = '0' + m;
-      dms = d + '\u00B0' + m + '\u2032';  // add Âº, ' symbols
+      dp = 2;
       break;
     case 'dms':
-      var sec = (deg*3600).toFixed(dp);  // convert degrees to seconds & round
-      var d = Math.floor(sec / 3600);    // get component deg/min/sec
-      var m = Math.floor(sec/60) % 60;
-      var s = (sec % 60).toFixed(dp);    // pad with trailing zeros
-      if (d<100) d = '0' + d;            // pad with leading zeros
-      if (d<10) d = '0' + d;
-      if (m<10) m = '0' + m;
-      if (s<10) s = '0' + s;
-      dms = d + '\u00B0' + m + '\u2032' + s + '\u2033';  // add Âº, ', " symbols
+      dp = 0;
       break;
+    default:
+      format = 'dms';
+      dp = 0;  // be forgiving on invalid format
+    }
   }
-  
+  deg = Math.abs(deg);
+  // (unsigned result ready for appending compass dir'n)
+  switch (format) {
+  case 'd':
+    d = deg.toFixed(dp);
+    // round degrees
+    if (d < 100)
+      d = '0' + d;
+    // pad with leading zeros
+    if (d < 10)
+      d = '0' + d;
+    dms = d + '\xb0';
+    // add Âº symbol
+    break;
+  case 'dm':
+    var min = (deg * 60).toFixed(dp);
+    // convert degrees to minutes & round
+    var d = Math.floor(min / 60);
+    // get component deg/min
+    var m = (min % 60).toFixed(dp);
+    // pad with trailing zeros
+    if (d < 100)
+      d = '0' + d;
+    // pad with leading zeros
+    if (d < 10)
+      d = '0' + d;
+    if (m < 10)
+      m = '0' + m;
+    dms = d + '\xb0' + m + '\u2032';
+    // add Âº, ' symbols
+    break;
+  case 'dms':
+    var sec = (deg * 3600).toFixed(dp);
+    // convert degrees to seconds & round
+    var d = Math.floor(sec / 3600);
+    // get component deg/min/sec
+    var m = Math.floor(sec / 60) % 60;
+    var s = (sec % 60).toFixed(dp);
+    // pad with trailing zeros
+    if (d < 100)
+      d = '0' + d;
+    // pad with leading zeros
+    if (d < 10)
+      d = '0' + d;
+    if (m < 10)
+      m = '0' + m;
+    if (s < 10)
+      s = '0' + s;
+    dms = d + '\xb0' + m + '\u2032' + s + '\u2033';
+    // add Âº, ', " symbols
+    break;
+  }
   return dms;
-}
-
-
+};
 /**
  * Convert numeric degrees to deg/min/sec latitude (suffixed with N/S)
  *
@@ -140,12 +170,10 @@ Geo.toDMS = function(deg, format, dp) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to use - default 0 for dms, 2 for dm, 4 for d
  * @returns {String} Deg/min/seconds
  */
-Geo.toLat = function(deg, format, dp) {
+Geo.toLat = function (deg, format, dp) {
   var lat = Geo.toDMS(deg, format, dp);
-  return lat==null ? 'â€“' : lat.slice(1) + (deg<0 ? 'S' : 'N');  // knock off initial '0' for lat!
-}
-
-
+  return lat == null ? '\xe2\u20ac\u201c' : lat.slice(1) + (deg < 0 ? 'S' : 'N');  // knock off initial '0' for lat!
+};
 /**
  * Convert numeric degrees to deg/min/sec longitude (suffixed with E/W)
  *
@@ -154,12 +182,10 @@ Geo.toLat = function(deg, format, dp) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to use - default 0 for dms, 2 for dm, 4 for d
  * @returns {String} Deg/min/seconds
  */
-Geo.toLon = function(deg, format, dp) {
+Geo.toLon = function (deg, format, dp) {
   var lon = Geo.toDMS(deg, format, dp);
-  return lon==null ? 'â€“' : lon + (deg<0 ? 'W' : 'E');
-}
-
-
+  return lon == null ? '\xe2\u20ac\u201c' : lon + (deg < 0 ? 'W' : 'E');
+};
 /**
  * Convert numeric degrees to deg/min/sec as a bearing (0Âº..360Âº)
  *
@@ -168,18 +194,18 @@ Geo.toLon = function(deg, format, dp) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to use - default 0 for dms, 2 for dm, 4 for d
  * @returns {String} Deg/min/seconds
  */
-Geo.toBrng = function(deg, format, dp) {
-  deg = (Number(deg)+360) % 360;  // normalise -ve values to 180Âº..360Âº
-  var brng =  Geo.toDMS(deg, format, dp);
-  return brng==null ? 'â€“' : brng.replace('360', '0');  // just in case rounding took us up to 360Âº!
-}
-
-
+Geo.toBrng = function (deg, format, dp) {
+  deg = (Number(deg) + 360) % 360;
+  // normalise -ve values to 180Âº..360Âº
+  var brng = Geo.toDMS(deg, format, dp);
+  return brng == null ? '\xe2\u20ac\u201c' : brng.replace('360', '0');  // just in case rounding took us up to 360Âº!
+};
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-if (!window.console) window.console = { log: function() {} };
-
-
-
+if (!window.console)
+  window.console = {
+    log: function () {
+    }
+  };
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Latitude/longitude spherical geodesy formulae & scripts (c) Chris Veness 2002-2012            */
 /*   - www.movable-type.co.uk/scripts/latlong.html                                                */
@@ -191,17 +217,12 @@ if (!window.console) window.console = { log: function() {} };
 /*    var brng = p1.bearingTo(p2);           // in degrees clockwise from north                   */
 /*    ... etc                                                                                     */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Note that minimal error checking is performed in this example code!                           */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-
 /**
  * @requires Geo
  */
- 
- 
 /**
  * Creates a point on the earth's surface at the supplied latitude / longitude
  *
@@ -211,14 +232,14 @@ if (!window.console) window.console = { log: function() {} };
  * @param {Number} [rad=6371]: radius of earth if different value is required from standard 6,371km
  */
 function LatLon(lat, lon, rad) {
-  if (typeof(rad) == 'undefined') rad = 6371;  // earth's mean radius in km
+  if (typeof rad == 'undefined')
+    rad = 6371;
+  // earth's mean radius in km
   // only accept numbers or valid numeric strings
-  this._lat = typeof(lat)=='number' ? lat : typeof(lat)=='string' && lat.trim()!='' ? +lat : NaN;
-  this._lon = typeof(lon)=='number' ? lon : typeof(lon)=='string' && lon.trim()!='' ? +lon : NaN;
-  this._radius = typeof(rad)=='number' ? rad : typeof(rad)=='string' && trim(lon)!='' ? +rad : NaN;
+  this._lat = typeof lat == 'number' ? lat : typeof lat == 'string' && lat.trim() != '' ? +lat : NaN;
+  this._lon = typeof lon == 'number' ? lon : typeof lon == 'string' && lon.trim() != '' ? +lon : NaN;
+  this._radius = typeof rad == 'number' ? rad : typeof rad == 'string' && trim(lon) != '' ? +rad : NaN;
 }
-
-
 /**
  * Returns the distance from this point to the supplied point, in km 
  * (using Haversine formula)
@@ -230,25 +251,20 @@ function LatLon(lat, lon, rad) {
  * @param   {Number} [precision=4]: no of significant digits to use for returned value
  * @returns {Number} Distance in km between this point and destination point
  */
-LatLon.prototype.distanceTo = function(point, precision) {
+LatLon.prototype.distanceTo = function (point, precision) {
   // default 4 sig figs reflects typical 0.3% accuracy of spherical model
-  if (typeof precision == 'undefined') precision = 4;
-  
+  if (typeof precision == 'undefined')
+    precision = 4;
   var R = this._radius;
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   var lat2 = point._lat.toRad(), lon2 = point._lon.toRad();
   var dLat = lat2 - lat1;
   var dLon = lon2 - lon1;
-
-  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(lat1) * Math.cos(lat2) * 
-          Math.sin(dLon/2) * Math.sin(dLon/2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   var d = R * c;
   return d.toPrecisionFixed(precision);
-}
-
-
+};
 /**
  * Returns the (initial) bearing from this point to the supplied point, in degrees
  *   see http://williams.best.vwh.net/avform.htm#Crs
@@ -256,19 +272,14 @@ LatLon.prototype.distanceTo = function(point, precision) {
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {Number} Initial bearing in degrees from North
  */
-LatLon.prototype.bearingTo = function(point) {
+LatLon.prototype.bearingTo = function (point) {
   var lat1 = this._lat.toRad(), lat2 = point._lat.toRad();
-  var dLon = (point._lon-this._lon).toRad();
-
+  var dLon = (point._lon - this._lon).toRad();
   var y = Math.sin(dLon) * Math.cos(lat2);
-  var x = Math.cos(lat1)*Math.sin(lat2) -
-          Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+  var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
   var brng = Math.atan2(y, x);
-  
-  return (brng.toDeg()+360) % 360;
-}
-
-
+  return (brng.toDeg() + 360) % 360;
+};
 /**
  * Returns final bearing arriving at supplied destination point from this point; the final bearing 
  * will differ from the initial bearing by varying degrees according to distance and latitude
@@ -276,21 +287,16 @@ LatLon.prototype.bearingTo = function(point) {
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {Number} Final bearing in degrees from North
  */
-LatLon.prototype.finalBearingTo = function(point) {
+LatLon.prototype.finalBearingTo = function (point) {
   // get initial bearing from supplied point back to this point...
   var lat1 = point._lat.toRad(), lat2 = this._lat.toRad();
-  var dLon = (this._lon-point._lon).toRad();
-
+  var dLon = (this._lon - point._lon).toRad();
   var y = Math.sin(dLon) * Math.cos(lat2);
-  var x = Math.cos(lat1)*Math.sin(lat2) -
-          Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+  var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
   var brng = Math.atan2(y, x);
-          
   // ... & reverse it by adding 180Â°
-  return (brng.toDeg()+180) % 360;
-}
-
-
+  return (brng.toDeg() + 180) % 360;
+};
 /**
  * Returns the midpoint between this point and the supplied point.
  *   see http://mathforum.org/library/drmath/view/51822.html for derivation
@@ -298,23 +304,18 @@ LatLon.prototype.finalBearingTo = function(point) {
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {LatLon} Midpoint between this point and the supplied point
  */
-LatLon.prototype.midpointTo = function(point) {
+LatLon.prototype.midpointTo = function (point) {
   lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   lat2 = point._lat.toRad();
-  var dLon = (point._lon-this._lon).toRad();
-
+  var dLon = (point._lon - this._lon).toRad();
   var Bx = Math.cos(lat2) * Math.cos(dLon);
   var By = Math.cos(lat2) * Math.sin(dLon);
-
-  lat3 = Math.atan2(Math.sin(lat1)+Math.sin(lat2),
-                    Math.sqrt( (Math.cos(lat1)+Bx)*(Math.cos(lat1)+Bx) + By*By) );
+  lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
   lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
-  lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+  lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
-
-
+};
 /**
  * Returns the destination point from this point having travelled the given distance (in km) on the 
  * given initial bearing (bearing may vary before destination is reached)
@@ -325,22 +326,19 @@ LatLon.prototype.midpointTo = function(point) {
  * @param   {Number} dist: Distance in km
  * @returns {LatLon} Destination point
  */
-LatLon.prototype.destinationPoint = function(brng, dist) {
-  dist = typeof(dist)=='number' ? dist : typeof(dist)=='string' && dist.trim()!='' ? +dist : NaN;
-  dist = dist/this._radius;  // convert dist to angular distance in radians
-  brng = brng.toRad();  // 
+LatLon.prototype.destinationPoint = function (brng, dist) {
+  dist = typeof dist == 'number' ? dist : typeof dist == 'string' && dist.trim() != '' ? +dist : NaN;
+  dist = dist / this._radius;
+  // convert dist to angular distance in radians
+  brng = brng.toRad();
+  // 
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
-
-  var lat2 = Math.asin( Math.sin(lat1)*Math.cos(dist) + 
-                        Math.cos(lat1)*Math.sin(dist)*Math.cos(brng) );
-  var lon2 = lon1 + Math.atan2(Math.sin(brng)*Math.sin(dist)*Math.cos(lat1), 
-                               Math.cos(dist)-Math.sin(lat1)*Math.sin(lat2));
-  lon2 = (lon2+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-
+  var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
+  var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
+  lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+  // normalise to -180..+180Âº
   return new LatLon(lat2.toDeg(), lon2.toDeg());
-}
-
-
+};
 /**
  * Returns the point of intersection of two paths defined by point and bearing
  *
@@ -352,60 +350,52 @@ LatLon.prototype.destinationPoint = function(brng, dist) {
  * @param   {Number} brng2: Initial bearing from second point
  * @returns {LatLon} Destination point (null if no unique intersection defined)
  */
-LatLon.intersection = function(p1, brng1, p2, brng2) {
-  brng1 = typeof brng1 == 'number' ? brng1 : typeof brng1 == 'string' && trim(brng1)!='' ? +brng1 : NaN;
-  brng2 = typeof brng2 == 'number' ? brng2 : typeof brng2 == 'string' && trim(brng2)!='' ? +brng2 : NaN;
+LatLon.intersection = function (p1, brng1, p2, brng2) {
+  brng1 = typeof brng1 == 'number' ? brng1 : typeof brng1 == 'string' && trim(brng1) != '' ? +brng1 : NaN;
+  brng2 = typeof brng2 == 'number' ? brng2 : typeof brng2 == 'string' && trim(brng2) != '' ? +brng2 : NaN;
   lat1 = p1._lat.toRad(), lon1 = p1._lon.toRad();
   lat2 = p2._lat.toRad(), lon2 = p2._lon.toRad();
   brng13 = brng1.toRad(), brng23 = brng2.toRad();
-  dLat = lat2-lat1, dLon = lon2-lon1;
-  
-  dist12 = 2*Math.asin( Math.sqrt( Math.sin(dLat/2)*Math.sin(dLat/2) + 
-    Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)*Math.sin(dLon/2) ) );
-  if (dist12 == 0) return null;
-  
+  dLat = lat2 - lat1, dLon = lon2 - lon1;
+  dist12 = 2 * Math.asin(Math.sqrt(Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) * Math.sin(dLon / 2)));
+  if (dist12 == 0)
+    return null;
   // initial/final bearings between points
-  brngA = Math.acos( ( Math.sin(lat2) - Math.sin(lat1)*Math.cos(dist12) ) / 
-    ( Math.sin(dist12)*Math.cos(lat1) ) );
-  if (isNaN(brngA)) brngA = 0;  // protect against rounding
-  brngB = Math.acos( ( Math.sin(lat1) - Math.sin(lat2)*Math.cos(dist12) ) / 
-    ( Math.sin(dist12)*Math.cos(lat2) ) );
-  
-  if (Math.sin(lon2-lon1) > 0) {
+  brngA = Math.acos((Math.sin(lat2) - Math.sin(lat1) * Math.cos(dist12)) / (Math.sin(dist12) * Math.cos(lat1)));
+  if (isNaN(brngA))
+    brngA = 0;
+  // protect against rounding
+  brngB = Math.acos((Math.sin(lat1) - Math.sin(lat2) * Math.cos(dist12)) / (Math.sin(dist12) * Math.cos(lat2)));
+  if (Math.sin(lon2 - lon1) > 0) {
     brng12 = brngA;
-    brng21 = 2*Math.PI - brngB;
+    brng21 = 2 * Math.PI - brngB;
   } else {
-    brng12 = 2*Math.PI - brngA;
+    brng12 = 2 * Math.PI - brngA;
     brng21 = brngB;
   }
-  
-  alpha1 = (brng13 - brng12 + Math.PI) % (2*Math.PI) - Math.PI;  // angle 2-1-3
-  alpha2 = (brng21 - brng23 + Math.PI) % (2*Math.PI) - Math.PI;  // angle 1-2-3
-  
-  if (Math.sin(alpha1)==0 && Math.sin(alpha2)==0) return null;  // infinite intersections
-  if (Math.sin(alpha1)*Math.sin(alpha2) < 0) return null;       // ambiguous intersection
-  
+  alpha1 = (brng13 - brng12 + Math.PI) % (2 * Math.PI) - Math.PI;
+  // angle 2-1-3
+  alpha2 = (brng21 - brng23 + Math.PI) % (2 * Math.PI) - Math.PI;
+  // angle 1-2-3
+  if (Math.sin(alpha1) == 0 && Math.sin(alpha2) == 0)
+    return null;
+  // infinite intersections
+  if (Math.sin(alpha1) * Math.sin(alpha2) < 0)
+    return null;
+  // ambiguous intersection
   //alpha1 = Math.abs(alpha1);
   //alpha2 = Math.abs(alpha2);
   // ... Ed Williams takes abs of alpha1/alpha2, but seems to break calculation?
-  
-  alpha3 = Math.acos( -Math.cos(alpha1)*Math.cos(alpha2) + 
-                       Math.sin(alpha1)*Math.sin(alpha2)*Math.cos(dist12) );
-  dist13 = Math.atan2( Math.sin(dist12)*Math.sin(alpha1)*Math.sin(alpha2), 
-                       Math.cos(alpha2)+Math.cos(alpha1)*Math.cos(alpha3) )
-  lat3 = Math.asin( Math.sin(lat1)*Math.cos(dist13) + 
-                    Math.cos(lat1)*Math.sin(dist13)*Math.cos(brng13) );
-  dLon13 = Math.atan2( Math.sin(brng13)*Math.sin(dist13)*Math.cos(lat1), 
-                       Math.cos(dist13)-Math.sin(lat1)*Math.sin(lat3) );
-  lon3 = lon1+dLon13;
-  lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+  alpha3 = Math.acos(-Math.cos(alpha1) * Math.cos(alpha2) + Math.sin(alpha1) * Math.sin(alpha2) * Math.cos(dist12));
+  dist13 = Math.atan2(Math.sin(dist12) * Math.sin(alpha1) * Math.sin(alpha2), Math.cos(alpha2) + Math.cos(alpha1) * Math.cos(alpha3));
+  lat3 = Math.asin(Math.sin(lat1) * Math.cos(dist13) + Math.cos(lat1) * Math.sin(dist13) * Math.cos(brng13));
+  dLon13 = Math.atan2(Math.sin(brng13) * Math.sin(dist13) * Math.cos(lat1), Math.cos(dist13) - Math.sin(lat1) * Math.sin(lat3));
+  lon3 = lon1 + dLon13;
+  lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
-
-
+};
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
 /**
  * Returns the distance from this point to the supplied point, in km, travelling along a rhumb line
  *
@@ -414,42 +404,36 @@ LatLon.intersection = function(p1, brng1, p2, brng2) {
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {Number} Distance in km between this point and destination point
  */
-LatLon.prototype.rhumbDistanceTo = function(point) {
+LatLon.prototype.rhumbDistanceTo = function (point) {
   var R = this._radius;
   var lat1 = this._lat.toRad(), lat2 = point._lat.toRad();
-  var dLat = (point._lat-this._lat).toRad();
-  var dLon = Math.abs(point._lon-this._lon).toRad();
-  
-  var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
-  var q = (isFinite(dLat/dPhi)) ? dLat/dPhi : Math.cos(lat1);  // E-W line gives dPhi=0
-  
+  var dLat = (point._lat - this._lat).toRad();
+  var dLon = Math.abs(point._lon - this._lon).toRad();
+  var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
+  var q = isFinite(dLat / dPhi) ? dLat / dPhi : Math.cos(lat1);
+  // E-W line gives dPhi=0
   // if dLon over 180Â° take shorter rhumb across anti-meridian:
   if (Math.abs(dLon) > Math.PI) {
-    dLon = dLon>0 ? -(2*Math.PI-dLon) : (2*Math.PI+dLon);
+    dLon = dLon > 0 ? -(2 * Math.PI - dLon) : 2 * Math.PI + dLon;
   }
-  
-  var dist = Math.sqrt(dLat*dLat + q*q*dLon*dLon) * R; 
-  
+  var dist = Math.sqrt(dLat * dLat + q * q * dLon * dLon) * R;
   return dist.toPrecisionFixed(4);  // 4 sig figs reflects typical 0.3% accuracy of spherical model
-}
-
+};
 /**
  * Returns the bearing from this point to the supplied point along a rhumb line, in degrees
  *
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {Number} Bearing in degrees from North
  */
-LatLon.prototype.rhumbBearingTo = function(point) {
+LatLon.prototype.rhumbBearingTo = function (point) {
   var lat1 = this._lat.toRad(), lat2 = point._lat.toRad();
-  var dLon = (point._lon-this._lon).toRad();
-  
-  var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
-  if (Math.abs(dLon) > Math.PI) dLon = dLon>0 ? -(2*Math.PI-dLon) : (2*Math.PI+dLon);
+  var dLon = (point._lon - this._lon).toRad();
+  var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
+  if (Math.abs(dLon) > Math.PI)
+    dLon = dLon > 0 ? -(2 * Math.PI - dLon) : 2 * Math.PI + dLon;
   var brng = Math.atan2(dLon, dPhi);
-  
-  return (brng.toDeg()+360) % 360;
-}
-
+  return (brng.toDeg() + 360) % 360;
+};
 /**
  * Returns the destination point from this point having travelled the given distance (in km) on the 
  * given bearing along a rhumb line
@@ -458,29 +442,28 @@ LatLon.prototype.rhumbBearingTo = function(point) {
  * @param   {Number} dist: Distance in km
  * @returns {LatLon} Destination point
  */
-LatLon.prototype.rhumbDestinationPoint = function(brng, dist) {
+LatLon.prototype.rhumbDestinationPoint = function (brng, dist) {
   var R = this._radius;
-  var d = parseFloat(dist)/R;  // d = angular distance covered on earthâ€™s surface
+  var d = parseFloat(dist) / R;
+  // d = angular distance covered on earthâ€™s surface
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   brng = brng.toRad();
-
-  var dLat = d*Math.cos(brng);
+  var dLat = d * Math.cos(brng);
   // nasty kludge to overcome ill-conditioned results around parallels of latitude:
-  if (Math.abs(dLat) < 1e-10) dLat = 0; // dLat < 1 mm
-  
+  if (Math.abs(dLat) < 1e-10)
+    dLat = 0;
+  // dLat < 1 mm
   var lat2 = lat1 + dLat;
-  var dPhi = Math.log(Math.tan(lat2/2+Math.PI/4)/Math.tan(lat1/2+Math.PI/4));
-  var q = (isFinite(dLat/dPhi)) ? dLat/dPhi : Math.cos(lat1);  // E-W line gives dPhi=0
-  var dLon = d*Math.sin(brng)/q;
-  
+  var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
+  var q = isFinite(dLat / dPhi) ? dLat / dPhi : Math.cos(lat1);
+  // E-W line gives dPhi=0
+  var dLon = d * Math.sin(brng) / q;
   // check for some daft bugger going past the pole, normalise latitude if so
-  if (Math.abs(lat2) > Math.PI/2) lat2 = lat2>0 ? Math.PI-lat2 : -Math.PI-lat2;
-  
-  lon2 = (lon1+dLon+3*Math.PI)%(2*Math.PI) - Math.PI;
- 
+  if (Math.abs(lat2) > Math.PI / 2)
+    lat2 = lat2 > 0 ? Math.PI - lat2 : -Math.PI - lat2;
+  lon2 = (lon1 + dLon + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
   return new LatLon(lat2.toDeg(), lon2.toDeg());
-}
-
+};
 /**
  * Returns the loxodromic midpoint (along a rhumb line) between this point and the supplied point.
  *   see http://mathforum.org/kb/message.jspa?messageID=148837
@@ -488,29 +471,25 @@ LatLon.prototype.rhumbDestinationPoint = function(brng, dist) {
  * @param   {LatLon} point: Latitude/longitude of destination point
  * @returns {LatLon} Midpoint between this point and the supplied point
  */
-LatLon.prototype.rhumbMidpointTo = function(point) {
+LatLon.prototype.rhumbMidpointTo = function (point) {
   lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   lat2 = point._lat.toRad(), lon2 = point._lon.toRad();
-  
-  if (Math.abs(lon2-lon1) > Math.PI) lon1 += 2*Math.PI; // crossing anti-meridian
-  
-  var lat3 = (lat1+lat2)/2;
-  var f1 = Math.tan(Math.PI/4 + lat1/2);
-  var f2 = Math.tan(Math.PI/4 + lat2/2);
-  var f3 = Math.tan(Math.PI/4 + lat3/2);
-  var lon3 = ( (lon2-lon1)*Math.log(f3) + lon1*Math.log(f2) - lon2*Math.log(f1) ) / Math.log(f2/f1);
-  
-  if (!isFinite(lon3)) lon3 = (lon1+lon2)/2; // parallel of latitude
-  
-  lon3 = (lon3+3*Math.PI) % (2*Math.PI) - Math.PI;  // normalise to -180..+180Âº
-  
+  if (Math.abs(lon2 - lon1) > Math.PI)
+    lon1 += 2 * Math.PI;
+  // crossing anti-meridian
+  var lat3 = (lat1 + lat2) / 2;
+  var f1 = Math.tan(Math.PI / 4 + lat1 / 2);
+  var f2 = Math.tan(Math.PI / 4 + lat2 / 2);
+  var f3 = Math.tan(Math.PI / 4 + lat3 / 2);
+  var lon3 = ((lon2 - lon1) * Math.log(f3) + lon1 * Math.log(f2) - lon2 * Math.log(f1)) / Math.log(f2 / f1);
+  if (!isFinite(lon3))
+    lon3 = (lon1 + lon2) / 2;
+  // parallel of latitude
+  lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
-}
-
-
+};
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-
 /**
  * Returns the latitude of this point; signed numeric degrees if no format, otherwise format & dp 
  * as per Geo.toLat()
@@ -519,12 +498,11 @@ LatLon.prototype.rhumbMidpointTo = function(point) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to display
  * @returns {Number|String} Numeric degrees if no format specified, otherwise deg/min/sec
  */
-LatLon.prototype.lat = function(format, dp) {
-  if (typeof format == 'undefined') return this._lat;
-  
+LatLon.prototype.lat = function (format, dp) {
+  if (typeof format == 'undefined')
+    return this._lat;
   return Geo.toLat(this._lat, format, dp);
-}
-
+};
 /**
  * Returns the longitude of this point; signed numeric degrees if no format, otherwise format & dp 
  * as per Geo.toLon()
@@ -533,12 +511,11 @@ LatLon.prototype.lat = function(format, dp) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to display
  * @returns {Number|String} Numeric degrees if no format specified, otherwise deg/min/sec
  */
-LatLon.prototype.lon = function(format, dp) {
-  if (typeof format == 'undefined') return this._lon;
-  
+LatLon.prototype.lon = function (format, dp) {
+  if (typeof format == 'undefined')
+    return this._lon;
   return Geo.toLon(this._lon, format, dp);
-}
-
+};
 /**
  * Returns a string representation of this point; format and dp as per lat()/lon()
  *
@@ -546,30 +523,25 @@ LatLon.prototype.lon = function(format, dp) {
  * @param   {Number} [dp=0|2|4]: No of decimal places to display
  * @returns {String} Comma-separated latitude/longitude
  */
-LatLon.prototype.toString = function(format, dp) {
-  if (typeof format == 'undefined') format = 'dms';
-  
+LatLon.prototype.toString = function (format, dp) {
+  if (typeof format == 'undefined')
+    format = 'dms';
   return Geo.toLat(this._lat, format, dp) + ', ' + Geo.toLon(this._lon, format, dp);
-}
-
+};
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
 // ---- extend Number object with methods for converting degrees/radians
-
 /** Converts numeric degrees to radians */
 if (typeof Number.prototype.toRad == 'undefined') {
-  Number.prototype.toRad = function() {
+  Number.prototype.toRad = function () {
     return this * Math.PI / 180;
-  }
+  };
 }
-
 /** Converts radians to numeric (signed) degrees */
 if (typeof Number.prototype.toDeg == 'undefined') {
-  Number.prototype.toDeg = function() {
+  Number.prototype.toDeg = function () {
     return this * 180 / Math.PI;
-  }
+  };
 }
-
 /** 
  * Formats the significant digits of a number, using only fixed-point notation (no exponential)
  * 
@@ -577,54 +549,51 @@ if (typeof Number.prototype.toDeg == 'undefined') {
  * @returns {String} A string representation of number which contains precision significant digits
  */
 if (typeof Number.prototype.toPrecisionFixed == 'undefined') {
-  Number.prototype.toPrecisionFixed = function(precision) {
-    
+  Number.prototype.toPrecisionFixed = function (precision) {
     // use standard toPrecision method
     var n = this.toPrecision(precision);
-    
     // ... but replace +ve exponential format with trailing zeros
-    n = n.replace(/(.+)e\+(.+)/, function(n, sig, exp) {
-      sig = sig.replace(/\./, '');       // remove decimal from significand
+    n = n.replace(/(.+)e\+(.+)/, function (n, sig, exp) {
+      sig = sig.replace(/\./, '');
+      // remove decimal from significand
       l = sig.length - 1;
-      while (exp-- > l) sig = sig + '0'; // append zeros from exponent
+      while (exp-- > l)
+        sig = sig + '0';
+      // append zeros from exponent
       return sig;
     });
-    
     // ... and replace -ve exponential format with leading zeros
-    n = n.replace(/(.+)e-(.+)/, function(n, sig, exp) {
-      sig = sig.replace(/\./, '');       // remove decimal from significand
-      while (exp-- > 1) sig = '0' + sig; // prepend zeros from exponent
+    n = n.replace(/(.+)e-(.+)/, function (n, sig, exp) {
+      sig = sig.replace(/\./, '');
+      // remove decimal from significand
+      while (exp-- > 1)
+        sig = '0' + sig;
+      // prepend zeros from exponent
       return '0.' + sig;
     });
-    
     return n;
-  }
+  };
 }
-
 /** Trims whitespace from string (q.v. blog.stevenlevithan.com/archives/faster-trim-javascript) */
 if (typeof String.prototype.trim == 'undefined') {
-  String.prototype.trim = function() {
+  String.prototype.trim = function () {
     return String(this).replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
+  };
 }
-
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-if (!window.console) window.console = { log: function() {} };
-
-
+if (!window.console)
+  window.console = {
+    log: function () {
+    }
+  };
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 /*  Ordnance Survey Grid Reference functions  (c) Chris Veness 2005-2012                          */
 /*   - www.movable-type.co.uk/scripts/gridref.js                                                  */
 /*   - www.movable-type.co.uk/scripts/latlon-gridref.html                                         */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
-
 /**
  * @requires LatLon
  */
- 
- 
 /**
  * Creates a OsGridRef object
  *
@@ -636,113 +605,107 @@ function OsGridRef(easting, northing) {
   this.easting = parseInt(easting, 10);
   this.northing = parseInt(northing, 10);
 }
-
-
 /**
  * Convert (OSGB36) latitude/longitude to Ordnance Survey grid reference easting/northing coordinate
  *
  * @param {LatLon} point: OSGB36 latitude/longitude
  * @return {OsGridRef} OS Grid Reference easting/northing
  */
-OsGridRef.latLongToOsGrid = function(point) {
-  var lat = point.lat().toRad(); 
-  var lon = point.lon().toRad(); 
-  
-  var a = 6377563.396, b = 6356256.910;          // Airy 1830 major & minor semi-axes
-  var F0 = 0.9996012717;                         // NatGrid scale factor on central meridian
-  var lat0 = (49).toRad(), lon0 = (-2).toRad();  // NatGrid true origin is 49ºN,2ºW
-  var N0 = -100000, E0 = 400000;                 // northing & easting of true origin, metres
-  var e2 = 1 - (b*b)/(a*a);                      // eccentricity squared
-  var n = (a-b)/(a+b), n2 = n*n, n3 = n*n*n;
-
+OsGridRef.latLongToOsGrid = function (point) {
+  var lat = point.lat().toRad();
+  var lon = point.lon().toRad();
+  var a = 6377563.396, b = 6356256.91;
+  // Airy 1830 major & minor semi-axes
+  var F0 = 0.9996012717;
+  // NatGrid scale factor on central meridian
+  var lat0 = 49..toRad(), lon0 = (-2).toRad();
+  // NatGrid true origin is 49ºN,2ºW
+  var N0 = -100000, E0 = 400000;
+  // northing & easting of true origin, metres
+  var e2 = 1 - b * b / (a * a);
+  // eccentricity squared
+  var n = (a - b) / (a + b), n2 = n * n, n3 = n * n * n;
   var cosLat = Math.cos(lat), sinLat = Math.sin(lat);
-  var nu = a*F0/Math.sqrt(1-e2*sinLat*sinLat);              // transverse radius of curvature
-  var rho = a*F0*(1-e2)/Math.pow(1-e2*sinLat*sinLat, 1.5);  // meridional radius of curvature
-  var eta2 = nu/rho-1;
-
-  var Ma = (1 + n + (5/4)*n2 + (5/4)*n3) * (lat-lat0);
-  var Mb = (3*n + 3*n*n + (21/8)*n3) * Math.sin(lat-lat0) * Math.cos(lat+lat0);
-  var Mc = ((15/8)*n2 + (15/8)*n3) * Math.sin(2*(lat-lat0)) * Math.cos(2*(lat+lat0));
-  var Md = (35/24)*n3 * Math.sin(3*(lat-lat0)) * Math.cos(3*(lat+lat0));
-  var M = b * F0 * (Ma - Mb + Mc - Md);              // meridional arc
-
-  var cos3lat = cosLat*cosLat*cosLat;
-  var cos5lat = cos3lat*cosLat*cosLat;
-  var tan2lat = Math.tan(lat)*Math.tan(lat);
-  var tan4lat = tan2lat*tan2lat;
-
+  var nu = a * F0 / Math.sqrt(1 - e2 * sinLat * sinLat);
+  // transverse radius of curvature
+  var rho = a * F0 * (1 - e2) / Math.pow(1 - e2 * sinLat * sinLat, 1.5);
+  // meridional radius of curvature
+  var eta2 = nu / rho - 1;
+  var Ma = (1 + n + 5 / 4 * n2 + 5 / 4 * n3) * (lat - lat0);
+  var Mb = (3 * n + 3 * n * n + 21 / 8 * n3) * Math.sin(lat - lat0) * Math.cos(lat + lat0);
+  var Mc = (15 / 8 * n2 + 15 / 8 * n3) * Math.sin(2 * (lat - lat0)) * Math.cos(2 * (lat + lat0));
+  var Md = 35 / 24 * n3 * Math.sin(3 * (lat - lat0)) * Math.cos(3 * (lat + lat0));
+  var M = b * F0 * (Ma - Mb + Mc - Md);
+  // meridional arc
+  var cos3lat = cosLat * cosLat * cosLat;
+  var cos5lat = cos3lat * cosLat * cosLat;
+  var tan2lat = Math.tan(lat) * Math.tan(lat);
+  var tan4lat = tan2lat * tan2lat;
   var I = M + N0;
-  var II = (nu/2)*sinLat*cosLat;
-  var III = (nu/24)*sinLat*cos3lat*(5-tan2lat+9*eta2);
-  var IIIA = (nu/720)*sinLat*cos5lat*(61-58*tan2lat+tan4lat);
-  var IV = nu*cosLat;
-  var V = (nu/6)*cos3lat*(nu/rho-tan2lat);
-  var VI = (nu/120) * cos5lat * (5 - 18*tan2lat + tan4lat + 14*eta2 - 58*tan2lat*eta2);
-
-  var dLon = lon-lon0;
-  var dLon2 = dLon*dLon, dLon3 = dLon2*dLon, dLon4 = dLon3*dLon, dLon5 = dLon4*dLon, dLon6 = dLon5*dLon;
-
-  var N = I + II*dLon2 + III*dLon4 + IIIA*dLon6;
-  var E = E0 + IV*dLon + V*dLon3 + VI*dLon5;
-
+  var II = nu / 2 * sinLat * cosLat;
+  var III = nu / 24 * sinLat * cos3lat * (5 - tan2lat + 9 * eta2);
+  var IIIA = nu / 720 * sinLat * cos5lat * (61 - 58 * tan2lat + tan4lat);
+  var IV = nu * cosLat;
+  var V = nu / 6 * cos3lat * (nu / rho - tan2lat);
+  var VI = nu / 120 * cos5lat * (5 - 18 * tan2lat + tan4lat + 14 * eta2 - 58 * tan2lat * eta2);
+  var dLon = lon - lon0;
+  var dLon2 = dLon * dLon, dLon3 = dLon2 * dLon, dLon4 = dLon3 * dLon, dLon5 = dLon4 * dLon, dLon6 = dLon5 * dLon;
+  var N = I + II * dLon2 + III * dLon4 + IIIA * dLon6;
+  var E = E0 + IV * dLon + V * dLon3 + VI * dLon5;
   return new OsGridRef(E, N);
-}
-
-
+};
 /**
  * Convert Ordnance Survey grid reference easting/northing coordinate to (OSGB36) latitude/longitude
  *
  * @param {OsGridRef} easting/northing to be converted to latitude/longitude
  * @return {LatLon} latitude/longitude (in OSGB36) of supplied grid reference
  */
-OsGridRef.osGridToLatLong = function(gridref) {
+OsGridRef.osGridToLatLong = function (gridref) {
   var E = gridref.easting;
   var N = gridref.northing;
-
-  var a = 6377563.396, b = 6356256.910;              // Airy 1830 major & minor semi-axes
-  var F0 = 0.9996012717;                             // NatGrid scale factor on central meridian
-  var lat0 = 49*Math.PI/180, lon0 = -2*Math.PI/180;  // NatGrid true origin
-  var N0 = -100000, E0 = 400000;                     // northing & easting of true origin, metres
-  var e2 = 1 - (b*b)/(a*a);                          // eccentricity squared
-  var n = (a-b)/(a+b), n2 = n*n, n3 = n*n*n;
-
-  var lat=lat0, M=0;
+  var a = 6377563.396, b = 6356256.91;
+  // Airy 1830 major & minor semi-axes
+  var F0 = 0.9996012717;
+  // NatGrid scale factor on central meridian
+  var lat0 = 49 * Math.PI / 180, lon0 = -2 * Math.PI / 180;
+  // NatGrid true origin
+  var N0 = -100000, E0 = 400000;
+  // northing & easting of true origin, metres
+  var e2 = 1 - b * b / (a * a);
+  // eccentricity squared
+  var n = (a - b) / (a + b), n2 = n * n, n3 = n * n * n;
+  var lat = lat0, M = 0;
   do {
-    lat = (N-N0-M)/(a*F0) + lat;
-
-    var Ma = (1 + n + (5/4)*n2 + (5/4)*n3) * (lat-lat0);
-    var Mb = (3*n + 3*n*n + (21/8)*n3) * Math.sin(lat-lat0) * Math.cos(lat+lat0);
-    var Mc = ((15/8)*n2 + (15/8)*n3) * Math.sin(2*(lat-lat0)) * Math.cos(2*(lat+lat0));
-    var Md = (35/24)*n3 * Math.sin(3*(lat-lat0)) * Math.cos(3*(lat+lat0));
-    M = b * F0 * (Ma - Mb + Mc - Md);                // meridional arc
-
-  } while (N-N0-M >= 0.00001);  // ie until < 0.01mm
-
+    lat = (N - N0 - M) / (a * F0) + lat;
+    var Ma = (1 + n + 5 / 4 * n2 + 5 / 4 * n3) * (lat - lat0);
+    var Mb = (3 * n + 3 * n * n + 21 / 8 * n3) * Math.sin(lat - lat0) * Math.cos(lat + lat0);
+    var Mc = (15 / 8 * n2 + 15 / 8 * n3) * Math.sin(2 * (lat - lat0)) * Math.cos(2 * (lat + lat0));
+    var Md = 35 / 24 * n3 * Math.sin(3 * (lat - lat0)) * Math.cos(3 * (lat + lat0));
+    M = b * F0 * (Ma - Mb + Mc - Md);  // meridional arc
+  } while (N - N0 - M >= 0.00001);
+  // ie until < 0.01mm
   var cosLat = Math.cos(lat), sinLat = Math.sin(lat);
-  var nu = a*F0/Math.sqrt(1-e2*sinLat*sinLat);              // transverse radius of curvature
-  var rho = a*F0*(1-e2)/Math.pow(1-e2*sinLat*sinLat, 1.5);  // meridional radius of curvature
-  var eta2 = nu/rho-1;
-
+  var nu = a * F0 / Math.sqrt(1 - e2 * sinLat * sinLat);
+  // transverse radius of curvature
+  var rho = a * F0 * (1 - e2) / Math.pow(1 - e2 * sinLat * sinLat, 1.5);
+  // meridional radius of curvature
+  var eta2 = nu / rho - 1;
   var tanLat = Math.tan(lat);
-  var tan2lat = tanLat*tanLat, tan4lat = tan2lat*tan2lat, tan6lat = tan4lat*tan2lat;
-  var secLat = 1/cosLat;
-  var nu3 = nu*nu*nu, nu5 = nu3*nu*nu, nu7 = nu5*nu*nu;
-  var VII = tanLat/(2*rho*nu);
-  var VIII = tanLat/(24*rho*nu3)*(5+3*tan2lat+eta2-9*tan2lat*eta2);
-  var IX = tanLat/(720*rho*nu5)*(61+90*tan2lat+45*tan4lat);
-  var X = secLat/nu;
-  var XI = secLat/(6*nu3)*(nu/rho+2*tan2lat);
-  var XII = secLat/(120*nu5)*(5+28*tan2lat+24*tan4lat);
-  var XIIA = secLat/(5040*nu7)*(61+662*tan2lat+1320*tan4lat+720*tan6lat);
-
-  var dE = (E-E0), dE2 = dE*dE, dE3 = dE2*dE, dE4 = dE2*dE2, dE5 = dE3*dE2, dE6 = dE4*dE2, dE7 = dE5*dE2;
-  lat = lat - VII*dE2 + VIII*dE4 - IX*dE6;
-  var lon = lon0 + X*dE - XI*dE3 + XII*dE5 - XIIA*dE7;
-  
+  var tan2lat = tanLat * tanLat, tan4lat = tan2lat * tan2lat, tan6lat = tan4lat * tan2lat;
+  var secLat = 1 / cosLat;
+  var nu3 = nu * nu * nu, nu5 = nu3 * nu * nu, nu7 = nu5 * nu * nu;
+  var VII = tanLat / (2 * rho * nu);
+  var VIII = tanLat / (24 * rho * nu3) * (5 + 3 * tan2lat + eta2 - 9 * tan2lat * eta2);
+  var IX = tanLat / (720 * rho * nu5) * (61 + 90 * tan2lat + 45 * tan4lat);
+  var X = secLat / nu;
+  var XI = secLat / (6 * nu3) * (nu / rho + 2 * tan2lat);
+  var XII = secLat / (120 * nu5) * (5 + 28 * tan2lat + 24 * tan4lat);
+  var XIIA = secLat / (5040 * nu7) * (61 + 662 * tan2lat + 1320 * tan4lat + 720 * tan6lat);
+  var dE = E - E0, dE2 = dE * dE, dE3 = dE2 * dE, dE4 = dE2 * dE2, dE5 = dE3 * dE2, dE6 = dE4 * dE2, dE7 = dE5 * dE2;
+  lat = lat - VII * dE2 + VIII * dE4 - IX * dE6;
+  var lon = lon0 + X * dE - XI * dE3 + XII * dE5 - XIIA * dE7;
   return new LatLon(lat.toDeg(), lon.toDeg());
-}
-
-
+};
 /**
  * Converts standard grid reference ('SU387148') to fully numeric ref ([438700,114800]);
  *   returned co-ordinates are in metres, centred on supplied grid square;
@@ -750,99 +713,109 @@ OsGridRef.osGridToLatLong = function(gridref) {
  * @param {String} gridref: Standard format OS grid reference
  * @returns {OsGridRef}     Numeric version of grid reference in metres from false origin
  */
-OsGridRef.parse = function(gridref) {
+OsGridRef.parse = function (gridref) {
   gridref = gridref.trim();
   // get numeric values of letter references, mapping A->0, B->1, C->2, etc:
   var l1 = gridref.toUpperCase().charCodeAt(0) - 'A'.charCodeAt(0);
   var l2 = gridref.toUpperCase().charCodeAt(1) - 'A'.charCodeAt(0);
   // shuffle down letters after 'I' since 'I' is not used in grid:
-  if (l1 > 7) l1--;
-  if (l2 > 7) l2--;
-
+  if (l1 > 7)
+    l1--;
+  if (l2 > 7)
+    l2--;
   // convert grid letters into 100km-square indexes from false origin (grid square SV):
-  var e = ((l1-2)%5)*5 + (l2%5);
-  var n = (19-Math.floor(l1/5)*5) - Math.floor(l2/5);
-  if (e<0 || e>6 || n<0 || n>12) return new OsGridRef(NaN, NaN);
-
+  var e = (l1 - 2) % 5 * 5 + l2 % 5;
+  var n = 19 - Math.floor(l1 / 5) * 5 - Math.floor(l2 / 5);
+  if (e < 0 || e > 6 || n < 0 || n > 12)
+    return new OsGridRef(NaN, NaN);
   // skip grid letters to get numeric part of ref, stripping any spaces:
-  gridref = gridref.slice(2).replace(/ /g,'');
-
+  gridref = gridref.slice(2).replace(/ /g, '');
   // append numeric part of references to grid index:
-  e += gridref.slice(0, gridref.length/2);
-  n += gridref.slice(gridref.length/2);
-
+  e += gridref.slice(0, gridref.length / 2);
+  n += gridref.slice(gridref.length / 2);
   // normalise to 1m grid, rounding up to centre of grid square:
   switch (gridref.length) {
-    case 0: e += '50000'; n += '50000'; break;
-    case 2: e += '5000'; n += '5000'; break;
-    case 4: e += '500'; n += '500'; break;
-    case 6: e += '50'; n += '50'; break;
-    case 8: e += '5'; n += '5'; break;
-    case 10: break; // 10-digit refs are already 1m
-    default: return new OsGridRef(NaN, NaN);
+  case 0:
+    e += '50000';
+    n += '50000';
+    break;
+  case 2:
+    e += '5000';
+    n += '5000';
+    break;
+  case 4:
+    e += '500';
+    n += '500';
+    break;
+  case 6:
+    e += '50';
+    n += '50';
+    break;
+  case 8:
+    e += '5';
+    n += '5';
+    break;
+  case 10:
+    break;
+  // 10-digit refs are already 1m
+  default:
+    return new OsGridRef(NaN, NaN);
   }
-
   return new OsGridRef(e, n);
-}
-
-
+};
 /**
  * Converts this numeric grid reference to standard OS grid reference
  *
  * @param {Number} [digits=6] Precision of returned grid reference (6 digits = metres)
  * @return {String)           This grid reference in standard format
  */
-OsGridRef.prototype.toString = function(digits) {
-  digits = (typeof digits == 'undefined') ? 10 : digits;
+OsGridRef.prototype.toString = function (digits) {
+  digits = typeof digits == 'undefined' ? 10 : digits;
   e = this.easting, n = this.northing;
-  if (e==NaN || n==NaN) return '??';
-  
+  if (isNaN(e) || isNaN(n))
+    return '??';
   // get the 100km-grid indices
-  var e100k = Math.floor(e/100000), n100k = Math.floor(n/100000);
-  
-  if (e100k<0 || e100k>6 || n100k<0 || n100k>12) return '';
-
+  var e100k = Math.floor(e / 100000), n100k = Math.floor(n / 100000);
+  if (e100k < 0 || e100k > 6 || n100k < 0 || n100k > 12)
+    return '';
   // translate those into numeric equivalents of the grid letters
-  var l1 = (19-n100k) - (19-n100k)%5 + Math.floor((e100k+10)/5);
-  var l2 = (19-n100k)*5%25 + e100k%5;
-
+  var l1 = 19 - n100k - (19 - n100k) % 5 + Math.floor((e100k + 10) / 5);
+  var l2 = (19 - n100k) * 5 % 25 + e100k % 5;
   // compensate for skipped 'I' and build grid letter-pairs
-  if (l1 > 7) l1++;
-  if (l2 > 7) l2++;
-  var letPair = String.fromCharCode(l1+'A'.charCodeAt(0), l2+'A'.charCodeAt(0));
-
+  if (l1 > 7)
+    l1++;
+  if (l2 > 7)
+    l2++;
+  var letPair = String.fromCharCode(l1 + 'A'.charCodeAt(0), l2 + 'A'.charCodeAt(0));
   // strip 100km-grid indices from easting & northing, and reduce precision
-  e = Math.floor((e%100000)/Math.pow(10,5-digits/2));
-  n = Math.floor((n%100000)/Math.pow(10,5-digits/2));
-
-  var gridRef = letPair + ' ' + e.padLz(digits/2) + ' ' + n.padLz(digits/2);
-
+  e = Math.floor(e % 100000 / Math.pow(10, 5 - digits / 2));
+  n = Math.floor(n % 100000 / Math.pow(10, 5 - digits / 2));
+  var gridRef = letPair + ' ' + e.padLz(digits / 2) + ' ' + n.padLz(digits / 2);
   return gridRef;
-}
-
-
+};
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-
 /** Trims whitespace from string (q.v. blog.stevenlevithan.com/archives/faster-trim-javascript) */
 if (typeof String.prototype.trim == 'undefined') {
-  String.prototype.trim = function() {
+  String.prototype.trim = function () {
     return this.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-  }
+  };
 }
-
 /** Pads a number with sufficient leading zeros to make it w chars wide */
 if (typeof String.prototype.padLz == 'undefined') {
-  Number.prototype.padLz = function(w) {
+  Number.prototype.padLz = function (w) {
     var n = this.toString();
     var l = n.length;
-    for (var i=0; i<w-l; i++) n = '0' + n;
+    for (var i = 0; i < w - l; i++)
+      n = '0' + n;
     return n;
-  }
+  };
 }
-
-
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
-if (!window.console) window.console = { log: function() {} };
+if (!window.console)
+  window.console = {
+    log: function () {
+    }
+  };
 /**
  * @preserve SignaturePad: A jQuery plugin for assisting in the creation of an HTML5 canvas
  * based signature pad. Records the drawn signature in JSON for later regeneration.
@@ -857,7 +830,6 @@ if (!window.console) window.console = { log: function() {} };
  * @license New BSD License
  * @version {{version}}
  */
-
 /**
  * Usage for accepting signatures:
  *  $('.sigPad').signaturePad()
@@ -869,119 +841,19 @@ if (!window.console) window.console = { log: function() {} };
  *  api.regenerate(sig)
  */
 (function ($) {
-
-function SignaturePad (selector, options) {
-  /**
+  function SignaturePad(selector, options) {
+    /**
    * Reference to the object for use in public methods
    *
    * @private
    *
    * @type {Object}
    */
-  var self = this
-
-  /**
-   * Holds the merged default settings and user passed settings
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , settings = $.extend({}, $.fn.signaturePad.defaults, options)
-
-  /**
-   * The current context, as passed by jQuery, of selected items
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , context = $(selector)
-
-  /**
-   * jQuery reference to the canvas element inside the signature pad
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , canvas = $(settings.canvas, context)
-
-  /**
-   * Dom reference to the canvas element inside the signature pad
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , element = canvas.get(0)
-
-  /**
-   * The drawing context for the signature canvas
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , canvasContext = null
-
-  /**
-   * Holds the previous point of drawing
-   * Disallows drawing over the same location to make lines more delicate
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , previous = {'x': null, 'y': null}
-
-  /**
-   * An array holding all the points and lines to generate the signature
-   * Each item is an object like:
-   * {
-   *   mx: moveTo x coordinate
-   *   my: moveTo y coordinate
-   *   lx: lineTo x coordinate
-   *   lx: lineTo y coordinate
-   * }
-   *
-   * @private
-   *
-   * @type {Array}
-   */
-  , output = []
-
-  /**
-   * Stores a timeout for when the mouse leaves the canvas
-   * If the mouse has left the canvas for a specific amount of time
-   * Stops drawing on the canvas
-   *
-   * @private
-   *
-   * @type {Object}
-   */
-  , mouseLeaveTimeout = false
-
-  /**
-   * Whether the browser is a touch event browser or not
-   *
-   * @private
-   *
-   * @type {Boolean}
-   */
-  , touchable = false
-
-  /**
-   * Whether events have already been bound to the canvas or not
-   *
-   * @private
-   *
-   * @type {Boolean}
-   */
-  , eventsBound = false
-
-
-  /**
+    var self = this, settings = $.extend({}, $.fn.signaturePad.defaults, options), context = $(selector), canvas = $(settings.canvas, context), element = canvas.get(0), canvasContext = null, previous = {
+        'x': null,
+        'y': null
+      }, output = [], mouseLeaveTimeout = false, touchable = false, eventsBound = false;
+    /**
    * Draws a line on canvas using the mouse position
    * Checks previous position to not draw over top of previous drawing
    *  (makes the line really thick and poorly anti-aliased)
@@ -991,51 +863,41 @@ function SignaturePad (selector, options) {
    * @param {Object} e The event object
    * @param {Number} newYOffset A pixel value for drawing the newY, used for drawing a single dot on click
    */
-  function drawLine (e, newYOffset) {
-    var offset = $(e.target).offset(), newX, newY
-
-    clearTimeout(mouseLeaveTimeout)
-    mouseLeaveTimeout = false
-
-    if (typeof e.changedTouches !== 'undefined') {
-      newX = Math.floor(e.changedTouches[0].pageX - offset.left)
-      newY = Math.floor(e.changedTouches[0].pageY - offset.top)
-    } else {
-      newX = Math.floor(e.pageX - offset.left)
-      newY = Math.floor(e.pageY - offset.top)
+    function drawLine(e, newYOffset) {
+      var offset = $(e.target).offset(), newX, newY;
+      clearTimeout(mouseLeaveTimeout);
+      mouseLeaveTimeout = false;
+      if (typeof e.changedTouches !== 'undefined') {
+        newX = Math.floor(e.changedTouches[0].pageX - offset.left);
+        newY = Math.floor(e.changedTouches[0].pageY - offset.top);
+      } else {
+        newX = Math.floor(e.pageX - offset.left);
+        newY = Math.floor(e.pageY - offset.top);
+      }
+      if (previous.x === newX && previous.y === newY)
+        return true;
+      if (previous.x === null)
+        previous.x = newX;
+      if (previous.y === null)
+        previous.y = newY;
+      if (newYOffset)
+        newY += newYOffset;
+      canvasContext.beginPath();
+      canvasContext.moveTo(previous.x, previous.y);
+      canvasContext.lineTo(newX, newY);
+      canvasContext.lineCap = settings.penCap;
+      canvasContext.stroke();
+      canvasContext.closePath();
+      output.push({
+        'lx': newX,
+        'ly': newY,
+        'mx': previous.x,
+        'my': previous.y
+      });
+      previous.x = newX;
+      previous.y = newY;
     }
-
-    if (previous.x === newX && previous.y === newY)
-      return true
-
-    if (previous.x === null)
-      previous.x = newX
-
-    if (previous.y === null)
-      previous.y = newY
-
-    if (newYOffset)
-      newY += newYOffset
-
-    canvasContext.beginPath()
-    canvasContext.moveTo(previous.x, previous.y)
-    canvasContext.lineTo(newX, newY)
-    canvasContext.lineCap = settings.penCap
-    canvasContext.stroke()
-    canvasContext.closePath()
-
-    output.push({
-      'lx': newX
-      ,'ly': newY
-      ,'mx': previous.x
-      ,'my': previous.y
-    })
-
-    previous.x = newX
-    previous.y = newY
-  }
-
-  /**
+    /**
    * Callback registered to mouse/touch events of the canvas
    * Stops the drawing abilities
    *
@@ -1043,63 +905,53 @@ function SignaturePad (selector, options) {
    *
    * @param {Object} e The event object
    */
-  function stopDrawing () {
-    if (touchable) {
-      canvas.each(function () {
-        this.ontouchmove = null
-      })
-    } else {
-      canvas.unbind('mousemove.signaturepad')
+    function stopDrawing() {
+      if (touchable) {
+        canvas.each(function () {
+          this.ontouchmove = null;
+        });
+      } else {
+        canvas.unbind('mousemove.signaturepad');
+      }
+      previous.x = null;
+      previous.y = null;
+      if (output.length > 0)
+        $(settings.output, context).val(JSON.stringify(output));
     }
-
-    previous.x = null
-    previous.y = null
-
-    if (output.length > 0)
-      $(settings.output, context).val(JSON.stringify(output))
-  }
-
-  /**
+    /**
    * Draws the signature line
    *
    * @private
    */
-  function drawSigLine () {
-    if (!settings.lineWidth)
-      return false
-
-    canvasContext.beginPath()
-    canvasContext.lineWidth = settings.lineWidth
-    canvasContext.strokeStyle = settings.lineColour
-    canvasContext.moveTo(settings.lineMargin, settings.lineTop)
-    canvasContext.lineTo(element.width - settings.lineMargin, settings.lineTop)
-    canvasContext.stroke()
-    canvasContext.closePath()
-  }
-
-  /**
+    function drawSigLine() {
+      if (!settings.lineWidth)
+        return false;
+      canvasContext.beginPath();
+      canvasContext.lineWidth = settings.lineWidth;
+      canvasContext.strokeStyle = settings.lineColour;
+      canvasContext.moveTo(settings.lineMargin, settings.lineTop);
+      canvasContext.lineTo(element.width - settings.lineMargin, settings.lineTop);
+      canvasContext.stroke();
+      canvasContext.closePath();
+    }
+    /**
    * Clears all drawings off the canvas and redraws the signature line
    *
    * @private
    */
-  function clearCanvas () {
-    stopDrawing()
-
-    canvasContext.clearRect(0, 0, element.width, element.height)
-    canvasContext.fillStyle = settings.bgColour
-    canvasContext.fillRect(0, 0, element.width, element.height)
-
-    if (!settings.displayOnly)
-      drawSigLine()
-
-    canvasContext.lineWidth = settings.penWidth
-    canvasContext.strokeStyle = settings.penColour
-
-    $(settings.output, context).val('')
-    output = []
-  }
-
-  /**
+    function clearCanvas() {
+      stopDrawing();
+      canvasContext.clearRect(0, 0, element.width, element.height);
+      canvasContext.fillStyle = settings.bgColour;
+      canvasContext.fillRect(0, 0, element.width, element.height);
+      if (!settings.displayOnly)
+        drawSigLine();
+      canvasContext.lineWidth = settings.penWidth;
+      canvasContext.strokeStyle = settings.penColour;
+      $(settings.output, context).val('');
+      output = [];
+    }
+    /**
    * Callback registered to mouse/touch events of canvas
    * Triggers the drawLine function
    *
@@ -1108,44 +960,39 @@ function SignaturePad (selector, options) {
    * @param {Object} e The event object
    * @param {Object} o The object context registered to the event; canvas
    */
-  function startDrawing (e, o) {
-    if (touchable) {
-      canvas.each(function () {
-        this.addEventListener('touchmove', drawLine, false)
-      })
-    } else {
-      canvas.bind('mousemove.signaturepad', drawLine)
+    function startDrawing(e, o) {
+      if (touchable) {
+        canvas.each(function () {
+          this.addEventListener('touchmove', drawLine, false);
+        });
+      } else {
+        canvas.bind('mousemove.signaturepad', drawLine);
+      }
+      // Draws a single point on initial mouse down, for people with periods in their name
+      drawLine(e, 1);
     }
-
-    // Draws a single point on initial mouse down, for people with periods in their name
-    drawLine(e, 1)
-  }
-
-  /**
+    /**
    * Removes all the mouse events from the canvas
    *
    * @private
    */
-  function disableCanvas () {
-    eventsBound = false
-
-    if (touchable) {
-      canvas.each(function () {
-        this.removeEventListener('touchstart', stopDrawing)
-        this.removeEventListener('touchend', stopDrawing)
-        this.removeEventListener('touchmove', drawLine)
-      })
-    } else {
-      canvas.unbind('mousedown.signaturepad')
-      canvas.unbind('mouseup.signaturepad')
-      canvas.unbind('mousemove.signaturepad')
-      canvas.unbind('mouseleave.signaturepad')
+    function disableCanvas() {
+      eventsBound = false;
+      if (touchable) {
+        canvas.each(function () {
+          this.removeEventListener('touchstart', stopDrawing);
+          this.removeEventListener('touchend', stopDrawing);
+          this.removeEventListener('touchmove', drawLine);
+        });
+      } else {
+        canvas.unbind('mousedown.signaturepad');
+        canvas.unbind('mouseup.signaturepad');
+        canvas.unbind('mousemove.signaturepad');
+        canvas.unbind('mouseleave.signaturepad');
+      }
+      $(settings.clear, context).unbind('click.signaturepad');
     }
-
-    $(settings.clear, context).unbind('click.signaturepad')
-  }
-
-  /**
+    /**
    * Lazy touch event detection
    * Uses the first press on the canvas to detect either touch or mouse reliably
    * Will then bind other events as needed
@@ -1154,105 +1001,102 @@ function SignaturePad (selector, options) {
    *
    * @param {Object} e The event object
    */
-  function initDrawEvents (e) {
-    if (eventsBound)
-      return false
-
-    eventsBound = true
-
-    if (typeof e.changedTouches !== 'undefined')
-      touchable = true
-
-    if (touchable) {
-      canvas.each(function () {
-        this.addEventListener('touchend', stopDrawing, false)
-        this.addEventListener('touchcancel', stopDrawing, false)
-      })
-
-      canvas.unbind('mousedown.signaturepad')
-    } else {
-      canvas.bind('mouseup.signaturepad', function (e) { stopDrawing() })
-      canvas.bind('mouseleave.signaturepad', function (e) {
-        if (!mouseLeaveTimeout) {
-          mouseLeaveTimeout = setTimeout(function () {
-            stopDrawing()
-            clearTimeout(mouseLeaveTimeout)
-            mouseLeaveTimeout = false
-          }, 500)
-        }
-      })
-
-      canvas.each(function () {
-        this.ontouchstart = null
-      })
+    function initDrawEvents(e) {
+      if (eventsBound)
+        return false;
+      eventsBound = true;
+      if (typeof e.changedTouches !== 'undefined')
+        touchable = true;
+      if (touchable) {
+        canvas.each(function () {
+          this.addEventListener('touchend', stopDrawing, false);
+          this.addEventListener('touchcancel', stopDrawing, false);
+        });
+        canvas.unbind('mousedown.signaturepad');
+      } else {
+        canvas.bind('mouseup.signaturepad', function (e) {
+          stopDrawing();
+        });
+        canvas.bind('mouseleave.signaturepad', function (e) {
+          if (!mouseLeaveTimeout) {
+            mouseLeaveTimeout = setTimeout(function () {
+              stopDrawing();
+              clearTimeout(mouseLeaveTimeout);
+              mouseLeaveTimeout = false;
+            }, 500);
+          }
+        });
+        canvas.each(function () {
+          this.ontouchstart = null;
+        });
+      }
     }
-  }
-
-  /**
+    /**
    * Triggers the abilities to draw on the canvas
    * Sets up mouse/touch events, hides and shows descriptions and sets current classes
    *
    * @private
    */
-  function drawIt () {
-    $(settings.typed, context).hide()
-    clearCanvas()
-
-    canvas.each(function () {
-      this.ontouchstart = function (e) {
-        e.preventDefault()
-        initDrawEvents(e)
-        startDrawing(e, this)
-      }
-    })
-
-    canvas.bind('mousedown.signaturepad', function (e) {
-      initDrawEvents(e)
-      startDrawing(e, this)
-    })
-
-    $(settings.clear, context).bind('click.signaturepad', function (e) { e.preventDefault(); clearCanvas() })
-
-    $(settings.typeIt, context).bind('click.signaturepad', function (e) { e.preventDefault(); typeIt() })
-    $(settings.drawIt, context).unbind('click.signaturepad')
-    $(settings.drawIt, context).bind('click.signaturepad', function (e) { e.preventDefault() })
-
-    $(settings.typeIt, context).removeClass(settings.currentClass)
-    $(settings.drawIt, context).addClass(settings.currentClass)
-    $(settings.sig, context).addClass(settings.currentClass)
-
-    $(settings.typeItDesc, context).hide()
-    $(settings.drawItDesc, context).show()
-    $(settings.clear, context).show()
-  }
-
-  /**
+    function drawIt() {
+      $(settings.typed, context).hide();
+      clearCanvas();
+      canvas.each(function () {
+        this.ontouchstart = function (e) {
+          e.preventDefault();
+          initDrawEvents(e);
+          startDrawing(e, this);
+        };
+      });
+      canvas.bind('mousedown.signaturepad', function (e) {
+        initDrawEvents(e);
+        startDrawing(e, this);
+      });
+      $(settings.clear, context).bind('click.signaturepad', function (e) {
+        e.preventDefault();
+        clearCanvas();
+      });
+      $(settings.typeIt, context).bind('click.signaturepad', function (e) {
+        e.preventDefault();
+        typeIt();
+      });
+      $(settings.drawIt, context).unbind('click.signaturepad');
+      $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+        e.preventDefault();
+      });
+      $(settings.typeIt, context).removeClass(settings.currentClass);
+      $(settings.drawIt, context).addClass(settings.currentClass);
+      $(settings.sig, context).addClass(settings.currentClass);
+      $(settings.typeItDesc, context).hide();
+      $(settings.drawItDesc, context).show();
+      $(settings.clear, context).show();
+    }
+    /**
    * Triggers the abilities to type in the input for generating a signature
    * Sets up mouse events, hides and shows descriptions and sets current classes
    *
    * @private
    */
-  function typeIt () {
-    clearCanvas()
-    disableCanvas()
-    $(settings.typed, context).show()
-
-    $(settings.drawIt, context).bind('click.signaturepad', function (e) { e.preventDefault(); drawIt() })
-    $(settings.typeIt, context).unbind('click.signaturepad')
-    $(settings.typeIt, context).bind('click.signaturepad', function (e) { e.preventDefault() })
-
-    $(settings.output, context).val('')
-
-    $(settings.drawIt, context).removeClass(settings.currentClass)
-    $(settings.typeIt, context).addClass(settings.currentClass)
-    $(settings.sig, context).removeClass(settings.currentClass)
-
-    $(settings.drawItDesc, context).hide()
-    $(settings.clear, context).hide()
-    $(settings.typeItDesc, context).show()
-  }
-
-  /**
+    function typeIt() {
+      clearCanvas();
+      disableCanvas();
+      $(settings.typed, context).show();
+      $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+        e.preventDefault();
+        drawIt();
+      });
+      $(settings.typeIt, context).unbind('click.signaturepad');
+      $(settings.typeIt, context).bind('click.signaturepad', function (e) {
+        e.preventDefault();
+      });
+      $(settings.output, context).val('');
+      $(settings.drawIt, context).removeClass(settings.currentClass);
+      $(settings.typeIt, context).addClass(settings.currentClass);
+      $(settings.sig, context).removeClass(settings.currentClass);
+      $(settings.drawItDesc, context).hide();
+      $(settings.clear, context).hide();
+      $(settings.typeItDesc, context).show();
+    }
+    /**
    * Callback registered on key up and blur events for input field
    * Writes the text fields value as Html into an element
    *
@@ -1260,16 +1104,14 @@ function SignaturePad (selector, options) {
    *
    * @param {String} val The value of the input field
    */
-  function type (val) {
-    $(settings.typed, context).html(val.replace(/>/g, '&gt;').replace(/</g, '&lt;'))
-
-    while ($(settings.typed, context).width() > element.width) {
-      var oldSize = $(settings.typed, context).css('font-size').replace(/px/, '')
-      $(settings.typed, context).css('font-size', oldSize-1+'px')
+    function type(val) {
+      $(settings.typed, context).html(val.replace(/>/g, '&gt;').replace(/</g, '&lt;'));
+      while ($(settings.typed, context).width() > element.width) {
+        var oldSize = $(settings.typed, context).css('font-size').replace(/px/, '');
+        $(settings.typed, context).css('font-size', oldSize - 1 + 'px');
+      }
     }
-  }
-
-  /**
+    /**
    * Default onBeforeValidate function to clear errors
    *
    * @private
@@ -1277,13 +1119,12 @@ function SignaturePad (selector, options) {
    * @param {Object} context current context object
    * @param {Object} settings provided settings
    */
-  function onBeforeValidate (context, settings) {
-    $('p.' + settings.errorClass, context).remove()
-    context.removeClass(settings.errorClass)
-    $('input, label', context).removeClass(settings.errorClass)
-  }
-
-  /**
+    function onBeforeValidate(context, settings) {
+      $('p.' + settings.errorClass, context).remove();
+      context.removeClass(settings.errorClass);
+      $('input, label', context).removeClass(settings.errorClass);
+    }
+    /**
    * Default onFormError function to show errors
    *
    * @private
@@ -1292,19 +1133,29 @@ function SignaturePad (selector, options) {
    * @param {Object} context current context object
    * @param {Object} settings provided settings
    */
-  function onFormError (errors, context, settings) {
-    if (errors.nameInvalid) {
-      context.prepend(['<p class="', settings.errorClass, '">', settings.errorMessage, '</p>'].join(''))
-      $(settings.name, context).focus()
-      $(settings.name, context).addClass(settings.errorClass)
-      $('label[for=' + $(settings.name).attr('id') + ']', context).addClass(settings.errorClass)
+    function onFormError(errors, context, settings) {
+      if (errors.nameInvalid) {
+        context.prepend([
+          '<p class="',
+          settings.errorClass,
+          '">',
+          settings.errorMessage,
+          '</p>'
+        ].join(''));
+        $(settings.name, context).focus();
+        $(settings.name, context).addClass(settings.errorClass);
+        $('label[for=' + $(settings.name).attr('id') + ']', context).addClass(settings.errorClass);
+      }
+      if (errors.drawInvalid)
+        context.prepend([
+          '<p class="',
+          settings.errorClass,
+          '">',
+          settings.errorMessageDraw,
+          '</p>'
+        ].join(''));
     }
-
-    if (errors.drawInvalid)
-      context.prepend(['<p class="', settings.errorClass, '">', settings.errorMessageDraw, '</p>'].join(''))
-  }
-
-  /**
+    /**
    * Validates the form to confirm a name was typed in the field
    * If drawOnly also confirms that the user drew a signature
    *
@@ -1312,38 +1163,39 @@ function SignaturePad (selector, options) {
    *
    * @return {Boolean}
    */
-  function validateForm () {
-    var valid = true
-      , errors = {drawInvalid: false, nameInvalid: false}
-      , onBeforeArguments = [context, settings]
-      , onErrorArguments = [errors, context, settings]
-
-    if (settings.onBeforeValidate && typeof settings.onBeforeValidate === 'function') {
-      settings.onBeforeValidate.apply(self,onBeforeArguments)
-    } else {
-      onBeforeValidate.apply(self, onBeforeArguments)
+    function validateForm() {
+      var valid = true, errors = {
+          drawInvalid: false,
+          nameInvalid: false
+        }, onBeforeArguments = [
+          context,
+          settings
+        ], onErrorArguments = [
+          errors,
+          context,
+          settings
+        ];
+      if (settings.onBeforeValidate && typeof settings.onBeforeValidate === 'function') {
+        settings.onBeforeValidate.apply(self, onBeforeArguments);
+      } else {
+        onBeforeValidate.apply(self, onBeforeArguments);
+      }
+      if (settings.drawOnly && output.length < 1) {
+        errors.drawInvalid = true;
+        valid = false;
+      }
+      if ($(settings.name, context).val() === '') {
+        errors.nameInvalid = true;
+        valid = false;
+      }
+      if (settings.onFormError && typeof settings.onFormError === 'function') {
+        settings.onFormError.apply(self, onErrorArguments);
+      } else {
+        onFormError.apply(self, onErrorArguments);
+      }
+      return valid;
     }
-
-    if (settings.drawOnly && output.length < 1) {
-      errors.drawInvalid = true
-      valid = false
-    }
-
-    if ($(settings.name, context).val() === '') {
-      errors.nameInvalid = true
-      valid = false
-    }
-
-    if (settings.onFormError && typeof settings.onFormError === 'function') {
-      settings.onFormError.apply(self,onErrorArguments)
-    } else {
-      onFormError.apply(self, onErrorArguments)
-    }
-
-    return valid
-  }
-
-  /**
+    /**
    * Redraws the signature on a specific canvas
    *
    * @private
@@ -1352,181 +1204,160 @@ function SignaturePad (selector, options) {
    * @param {Object} context the canvas context to draw on
    * @param {Boolean} saveOutput whether to write the path to the output array or not
    */
-  function drawSignature (paths, context, saveOutput) {
-    for(var i in paths) {
-      if (typeof paths[i] === 'object') {
-        context.beginPath()
-        context.moveTo(paths[i].mx, paths[i].my)
-        context.lineTo(paths[i].lx, paths[i].ly)
-        context.lineCap = settings.penCap
-        context.stroke()
-        context.closePath()
-
-        if (saveOutput) {
-          output.push({
-            'lx': paths[i].lx
-            ,'ly': paths[i].ly
-            ,'mx': paths[i].mx
-            ,'my': paths[i].my
-          })
+    function drawSignature(paths, context, saveOutput) {
+      for (var i in paths) {
+        if (typeof paths[i] === 'object') {
+          context.beginPath();
+          context.moveTo(paths[i].mx, paths[i].my);
+          context.lineTo(paths[i].lx, paths[i].ly);
+          context.lineCap = settings.penCap;
+          context.stroke();
+          context.closePath();
+          if (saveOutput) {
+            output.push({
+              'lx': paths[i].lx,
+              'ly': paths[i].ly,
+              'mx': paths[i].mx,
+              'my': paths[i].my
+            });
+          }
         }
       }
     }
-  }
-
-  /**
+    /**
    * Initialisation function, called immediately after all declarations
    * Technically public, but only should be used internally
    *
    * @private
    */
-  function init () {
-    // Fixes the jQuery.fn.offset() function for Mobile Safari Browsers i.e. iPod Touch, iPad and iPhone
-    // https://gist.github.com/661844
-    // http://bugs.jquery.com/ticket/6446
-    if (parseFloat(((/CPU.+OS ([0-9_]{3}).*AppleWebkit.*Mobile/i.exec(navigator.userAgent)) || [0,'4_2'])[1].replace('_','.')) < 4.1) {
-       $.fn.Oldoffset = $.fn.offset;
-       $.fn.offset = function () {
-          var result = $(this).Oldoffset()
-          result.top -= window.scrollY
-          result.left -= window.scrollX
-
-          return result
-       }
-    }
-
-    // Disable selection on the typed div and canvas
-    $(settings.typed, context).bind('selectstart.signaturepad', function (e) { return $(e.target).is(':input') })
-    canvas.bind('selectstart.signaturepad', function (e) { return $(e.target).is(':input') })
-
-    if (!element.getContext && FlashCanvas)
-      FlashCanvas.initElement(element)
-
-    if (element.getContext) {
-      canvasContext = element.getContext('2d')
-
-      $(settings.sig, context).show()
-
-      if (!settings.displayOnly) {
-        if (!settings.drawOnly) {
-          $(settings.name, context).bind('keyup.signaturepad', function () {
-            type($(this).val())
-          })
-
-          $(settings.name, context).bind('blur.signaturepad', function () {
-            type($(this).val())
-          })
-
-          $(settings.drawIt, context).bind('click.signaturepad', function (e) {
-            e.preventDefault()
-            drawIt()
-          })
-        }
-
-        if (settings.drawOnly || settings.defaultAction === 'drawIt') {
-          drawIt()
-        } else {
-          typeIt()
-        }
-
-        if (settings.validateFields) {
-          if ($(selector).is('form')) {
-            $(selector).bind('submit.signaturepad', function () { return validateForm() })
-          } else {
-            $(selector).parents('form').bind('submit.signaturepad', function () { return validateForm() })
+    function init() {
+      // Fixes the jQuery.fn.offset() function for Mobile Safari Browsers i.e. iPod Touch, iPad and iPhone
+      // https://gist.github.com/661844
+      // http://bugs.jquery.com/ticket/6446
+      if (parseFloat((/CPU.+OS ([0-9_]{3}).*AppleWebkit.*Mobile/i.exec(navigator.userAgent) || [
+          0,
+          '4_2'
+        ])[1].replace('_', '.')) < 4.1) {
+        $.fn.Oldoffset = $.fn.offset;
+        $.fn.offset = function () {
+          var result = $(this).Oldoffset();
+          result.top -= window.scrollY;
+          result.left -= window.scrollX;
+          return result;
+        };
+      }
+      // Disable selection on the typed div and canvas
+      $(settings.typed, context).bind('selectstart.signaturepad', function (e) {
+        return $(e.target).is(':input');
+      });
+      canvas.bind('selectstart.signaturepad', function (e) {
+        return $(e.target).is(':input');
+      });
+      if (!element.getContext && FlashCanvas)
+        FlashCanvas.initElement(element);
+      if (element.getContext) {
+        canvasContext = element.getContext('2d');
+        $(settings.sig, context).show();
+        if (!settings.displayOnly) {
+          if (!settings.drawOnly) {
+            $(settings.name, context).bind('keyup.signaturepad', function () {
+              type($(this).val());
+            });
+            $(settings.name, context).bind('blur.signaturepad', function () {
+              type($(this).val());
+            });
+            $(settings.drawIt, context).bind('click.signaturepad', function (e) {
+              e.preventDefault();
+              drawIt();
+            });
           }
+          if (settings.drawOnly || settings.defaultAction === 'drawIt') {
+            drawIt();
+          } else {
+            typeIt();
+          }
+          if (settings.validateFields) {
+            if ($(selector).is('form')) {
+              $(selector).bind('submit.signaturepad', function () {
+                return validateForm();
+              });
+            } else {
+              $(selector).parents('form').bind('submit.signaturepad', function () {
+                return validateForm();
+              });
+            }
+          }
+          $(settings.sigNav, context).show();
         }
-
-        $(settings.sigNav, context).show()
       }
     }
-  }
-
-  $.extend(self, {
-    /**
-     * Initializes SignaturePad
-     */
-    init: function () { init() }
-
-    /**
+    $.extend(self, {
+      init: function () {
+        init();
+      }  /**
      * Regenerates a signature on the canvas using an array of objects
      * Follows same format as object property
      * @see var object
      *
      * @param {Array} paths An array of the lines and points
-     */
-    , regenerate: function (paths) {
-      self.clearCanvas()
-      $(settings.typed, context).hide()
-
-      if (typeof paths === 'string')
-        paths = JSON.parse(paths)
-
-      drawSignature(paths, canvasContext, true)
-
-      if ($(settings.output, context).length > 0)
-        $(settings.output, context).val(JSON.stringify(output))
-    }
-
-    /**
+     */,
+      regenerate: function (paths) {
+        self.clearCanvas();
+        $(settings.typed, context).hide();
+        if (typeof paths === 'string')
+          paths = JSON.parse(paths);
+        drawSignature(paths, canvasContext, true);
+        if ($(settings.output, context).length > 0)
+          $(settings.output, context).val(JSON.stringify(output));
+      }  /**
      * Clears the canvas
      * Redraws the background colour and the signature line
-     */
-    , clearCanvas: function () { clearCanvas() }
-
-    /**
+     */,
+      clearCanvas: function () {
+        clearCanvas();
+      }  /**
      * Returns the signature as a Js array
      *
      * @return {Array}
-     */
-    , getSignature: function () { return output }
-
-    /**
+     */,
+      getSignature: function () {
+        return output;
+      }  /**
      * Returns the signature as a Json string
      *
      * @return {String}
-     */
-    , getSignatureString: function () { return JSON.stringify(output) }
-
-    /**
+     */,
+      getSignatureString: function () {
+        return JSON.stringify(output);
+      }  /**
      * Returns the signature as an image
      * Re-draws the signature in a shadow canvas to create a clean version
      *
      * @return {String}
-     */
-    , getSignatureImage: function () {
-      var tmpCanvas = document.createElement('canvas')
-        , tmpContext = null
-        , data = null
-
-      tmpCanvas.style.position = 'absolute'
-      tmpCanvas.style.top = '-999em'
-      tmpCanvas.width = element.width
-      tmpCanvas.height = element.height
-      document.body.appendChild(tmpCanvas)
-
-      if (!tmpCanvas.getContext && FlashCanvas)
-        FlashCanvas.initElement(tmpCanvas)
-
-      tmpContext = tmpCanvas.getContext('2d')
-
-      tmpContext.fillStyle = settings.bgColour
-      tmpContext.fillRect(0, 0, element.width, element.height)
-      tmpContext.lineWidth = settings.penWidth
-      tmpContext.strokeStyle = settings.penColour
-
-      drawSignature(output, tmpContext)
-      data = tmpCanvas.toDataURL.apply(tmpCanvas, arguments)
-
-      document.body.removeChild(tmpCanvas)
-      tmpCanvas = null
-
-      return data
-    }
-  })
-}
-
-/**
+     */,
+      getSignatureImage: function () {
+        var tmpCanvas = document.createElement('canvas'), tmpContext = null, data = null;
+        tmpCanvas.style.position = 'absolute';
+        tmpCanvas.style.top = '-999em';
+        tmpCanvas.width = element.width;
+        tmpCanvas.height = element.height;
+        document.body.appendChild(tmpCanvas);
+        if (!tmpCanvas.getContext && FlashCanvas)
+          FlashCanvas.initElement(tmpCanvas);
+        tmpContext = tmpCanvas.getContext('2d');
+        tmpContext.fillStyle = settings.bgColour;
+        tmpContext.fillRect(0, 0, element.width, element.height);
+        tmpContext.lineWidth = settings.penWidth;
+        tmpContext.strokeStyle = settings.penColour;
+        drawSignature(output, tmpContext);
+        data = tmpCanvas.toDataURL.apply(tmpCanvas, arguments);
+        document.body.removeChild(tmpCanvas);
+        tmpCanvas = null;
+        return data;
+      }
+    });
+  }
+  /**
  * Create the plugin
  * Returns an Api which can be used to call specific methods
  *
@@ -1534,57 +1365,52 @@ function SignaturePad (selector, options) {
  *
  * @return {Object} The Api for controlling the instance
  */
-$.fn.signaturePad = function (options) {
-  var api = null
-
-  this.each(function () {
-    api = new SignaturePad(this, options)
-    api.init()
-  })
-
-  return api
-}
-
-/**
+  $.fn.signaturePad = function (options) {
+    var api = null;
+    this.each(function () {
+      api = new SignaturePad(this, options);
+      api.init();
+    });
+    return api;
+  };
+  /**
  * Expose the defaults so they can be overwritten for multiple instances
  *
  * @type {Object}
  */
-$.fn.signaturePad.defaults = {
-  defaultAction: 'typeIt' // What action should be highlighted first: typeIt or drawIt
-  , displayOnly: false // Initialize canvas for signature display only; ignore buttons and inputs
-  , drawOnly: false // Whether the to allow a typed signature or not
-  , canvas: 'canvas' // Selector for selecting the canvas element
-  , sig: '.sig' // Parts of the signature form that require Javascript (hidden by default)
-  , sigNav: '.sigNav' // The TypeIt/DrawIt navigation (hidden by default)
-  , bgColour: '#ffffff' // The colour fill for the background of the canvas
-  , penColour: '#145394' // Colour of the drawing ink
-  , penWidth: 2 // Thickness of the pen
-  , penCap: 'round' // Determines how the end points of each line are drawn (values: 'butt', 'round', 'square')
-  , lineColour: '#ccc' // Colour of the signature line
-  , lineWidth: 2 // Thickness of the signature line
-  , lineMargin: 5 // Margin on right and left of signature line
-  , lineTop: 35 // Distance to draw the line from the top
-  , name: '.name' // The input field for typing a name
-  , typed: '.typed' // The Html element to accept the printed name
-  , clear: '.clearButton' // Button for clearing the canvas
-  , typeIt: '.typeIt a' // Button to trigger name typing actions (current by default)
-  , drawIt: '.drawIt a' // Button to trigger name drawing actions
-  , typeItDesc: '.typeItDesc' // The description for TypeIt actions
-  , drawItDesc: '.drawItDesc' // The description for DrawIt actions (hidden by default)
-  , output: '.output' // The hidden input field for remembering line coordinates
-  , currentClass: 'current' // The class used to mark items as being currently active
-  , validateFields: true // Whether the name, draw fields should be validated
-  , errorClass: 'error' // The class applied to the new error Html element
-  , errorMessage: 'Please enter your name' // The error message displayed on invalid submission
-  , errorMessageDraw: 'Please sign the document' // The error message displayed when drawOnly and no signature is drawn
-  , onBeforeValidate: null // Pass a callback to be used instead of the built-in function
-  , onFormError: null // Pass a callback to be used instead of the built-in function
-}
+  $.fn.signaturePad.defaults = {
+    defaultAction: 'typeIt',
+    displayOnly: false,
+    drawOnly: false,
+    canvas: 'canvas',
+    sig: '.sig',
+    sigNav: '.sigNav',
+    bgColour: '#ffffff',
+    penColour: '#145394',
+    penWidth: 2,
+    penCap: 'round',
+    lineColour: '#ccc',
+    lineWidth: 2,
+    lineMargin: 5,
+    lineTop: 35,
+    name: '.name',
+    typed: '.typed',
+    clear: '.clearButton',
+    typeIt: '.typeIt a',
+    drawIt: '.drawIt a',
+    typeItDesc: '.typeItDesc',
+    drawItDesc: '.drawItDesc',
+    output: '.output',
+    currentClass: 'current',
+    validateFields: true,
+    errorClass: 'error',
+    errorMessage: 'Please enter your name',
+    errorMessageDraw: 'Please sign the document',
+    onBeforeValidate: null,
+    onFormError: null
+  };
 }(jQuery));
-
-var toBitmapURL = (function ($fromCharCode, FF, MAX_LENGTH) {
-    
+var toBitmapURL = function ($fromCharCode, FF, MAX_LENGTH) {
     /**
      * (C) WebReflection - Mit Style License
      *      given a canvas, returns BMP 32bit with alpha channel data uri representation
@@ -1614,30 +1440,22 @@ var toBitmapURL = (function ($fromCharCode, FF, MAX_LENGTH) {
      *      Moreover, have you ever tried to use native toDataURL("image/bmp") ?
      *      Most likely you gonna have max 24bit bitmap with all alpha channel info lost.
      */
-    
     function fromCharCode(code) {
-        for (var
-            result = [],
-            i = 0,
-            length = code.length;
-            i < length; i += MAX_LENGTH
-        ) {
-            result.push($fromCharCode.apply(null, code.slice(i, i + MAX_LENGTH)));
-        }
-        return result.join("");
+      for (var result = [], i = 0, length = code.length; i < length; i += MAX_LENGTH) {
+        result.push($fromCharCode.apply(null, code.slice(i, i + MAX_LENGTH)));
+      }
+      return result.join('');
     }
-    
     function numberToInvertedBytes(number) {
-        return [
-            number & FF,
-            (number >> 8) & FF,
-            (number >> 16) & FF,
-            (number >> 24) & FF
-        ];
+      return [
+        number & FF,
+        number >> 8 & FF,
+        number >> 16 & FF,
+        number >> 24 & FF
+      ];
     }
-    
     function swapAndInvertY(data, width, height) {
-        /**
+      /**
          * Bitmap pixels array is stored "pseudo inverted"
          * RGBA => BGRA (read as Alpha + RGB)
          * in few words this canvas pixels array
@@ -1651,78 +1469,32 @@ var toBitmapURL = (function ($fromCharCode, FF, MAX_LENGTH) {
          *   2, 1, 0,  3,  6,  5,  4,  7
          * ]
          */
-        for (var
-            i, j, x0, x1, y0, y1,
-            sizeX = 4 * width,
-            sizeY = height - 1,
-            result = [];
-            height--;
-        ) {
-            y0 = sizeX * (sizeY - height);
-            y1 = sizeX * height;
-            for (i = 0; i < width; i++) {
-                j = i * 4;
-                x0 = y0 + j;
-                x1 = y1 + j;
-                result[x0] = data[x1 + 2];
-                result[x0 + 1] = data[x1 + 1];
-                result[x0 + 2] = data[x1];
-                result[x0 + 3] = data[x1 + 3];
-            }
+      for (var i, j, x0, x1, y0, y1, sizeX = 4 * width, sizeY = height - 1, result = []; height--;) {
+        y0 = sizeX * (sizeY - height);
+        y1 = sizeX * height;
+        for (i = 0; i < width; i++) {
+          j = i * 4;
+          x0 = y0 + j;
+          x1 = y1 + j;
+          result[x0] = data[x1 + 2];
+          result[x0 + 1] = data[x1 + 1];
+          result[x0 + 2] = data[x1];
+          result[x0 + 3] = data[x1 + 3];
         }
-        return result;
+      }
+      return result;
     }
-    
     function toBitmapURL(canvas) {
-        var
-            width = canvas.width,
-            height = canvas.height,
-            header = [].concat(
-                numberToInvertedBytes(width),
-                numberToInvertedBytes(height),
-                1, 0,
-                32, 0,
-                3, 0, 0, 0,
-                numberToInvertedBytes(
-                    width * height * 4
-                ),
-                19, 11, 0, 0,
-                19, 11, 0, 0,
-                0, 0, 0, 0,
-                0, 0, 0, 0,
-                0, 0, FF, 0,
-                0, FF, 0, 0,
-                FF, 0, 0, 0,
-                0, 0, 0, FF,
-                32, 110, 105, 87
-            ),
-            data = swapAndInvertY(
-                canvas.getContext("2d").getImageData(
-                    0, 0, width, height
-                ).data,
-                width,
-                height
-            ),
-            offset
-        ;
-        header = numberToInvertedBytes(header.length).concat(header);
-        offset = 14 + header.length;
-        return "data:image/bmp;base64," + btoa(fromCharCode(
-            [66, 77].concat(
-                numberToInvertedBytes(offset + data.length),
-                0, 0, 0, 0,
-                numberToInvertedBytes(offset),
-                header,
-                data
-            )
-        ));
+      var width = canvas.width, height = canvas.height, header = [].concat(numberToInvertedBytes(width), numberToInvertedBytes(height), 1, 0, 32, 0, 3, 0, 0, 0, numberToInvertedBytes(width * height * 4), 19, 11, 0, 0, 19, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, FF, 0, 0, FF, 0, 0, FF, 0, 0, 0, 0, 0, 0, FF, 32, 110, 105, 87), data = swapAndInvertY(canvas.getContext('2d').getImageData(0, 0, width, height).data, width, height), offset;
+      header = numberToInvertedBytes(header.length).concat(header);
+      offset = 14 + header.length;
+      return 'data:image/bmp;base64,' + btoa(fromCharCode([
+        66,
+        77
+      ].concat(numberToInvertedBytes(offset + data.length), 0, 0, 0, 0, numberToInvertedBytes(offset), header, data)));
     }
-    
     return toBitmapURL;
-    
-}(String.fromCharCode, 0xFF, 0x7FFF));
-
-
+  }(String.fromCharCode, 255, 32767);
 // Namespace
 var App=(function(module){
     module.views={};
@@ -1852,56 +1624,40 @@ var FormListView = BaseView.extend({
     });
   }
 });
- var FormListItemView=BaseView.extend({
-  events: {
-    'click button.show.fetched': 'show',
-    'click button.show.fetch_error': 'fetch'
-  },
-
-  templates: {
-    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_navigation"><%= name %><div class="loading"></div></button></li>'
-  },
-
-  render: function() {
-    var html;
-    // var errorLoading = this.model.get('fh_error_loading');
-    var enabled = true;
-    html = _.template(this.templates.form_button, {
-      name: this.model.name,
-      enabledClass: enabled ? 'fh_appform_button_main' : '',
-      // dataClass: errorLoading ? 'fetch_error' : fullyLoaded ? 'fetched' : 'fetching'
-      dataClass:"fetched"
-    });
-
-    this.$el.html(html);
-    this.$el.find('button').not('.fh_full_data_loaded');
-
-    return this;
-  },
-
-  unrender: function() {
-    $(this.el).remove();
-  },
-
-  show: function() {
-
-    var formId=this.model._id;
-    // this will init and render formView
-    var formView = new FormView({parentEl:$("#backbone #page")});
-    formView.loadForm({formId:formId}, function(){
-      formView.render();
-      Backbone.history.navigate('form',true);
-    })
-  },
-
-  fetch: function () {
-    // show loading view
-    
-    // var loadingView = new LoadingView(this.model);
-    // loadingView.show('Syncing form');
-    // this.model.fetch();
-  }
-});
+var FormListItemView = BaseView.extend({
+    events: {
+      'click button.show.fetched': 'show',
+      'click button.show.fetch_error': 'fetch'
+    },
+    templates: { form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>' },
+    render: function () {
+      var html;
+      // var errorLoading = this.model.get('fh_error_loading');
+      var enabled = true;
+      html = _.template(this.templates.form_button, {
+        name: this.model.name,
+        enabledClass: enabled ? 'button-main' : '',
+        dataClass: 'fetched'
+      });
+      this.$el.html(html);
+      this.$el.find('button').not('.fh_full_data_loaded');
+      return this;
+    },
+    unrender: function () {
+      $(this.el).remove();
+    },
+    show: function () {
+      var formId = this.model._id;
+      // this will init and render formView
+      var formView = new FormView({ parentEl: $('#backbone #page') });
+      formView.loadForm({ formId: formId }, function () {
+        formView.render();
+        Backbone.history.navigate('form', true);
+      });
+    },
+    fetch: function () {
+    }
+  });
 FieldView = Backbone.View.extend({
 
   className: 'fh_appform_field_area',
@@ -2300,13 +2056,6 @@ FieldCameraView = FieldView.extend({
     '<div class="camActionBar"><button class="camCancel camBtn fh_appform_button_cancel">Cancel</button><button class="camOk camBtn fh_appform_button_action">Ok</button></div>' +
     '<div class="cam"></div>' +
     '</div>',
-  // initialize: function() {
-  //   FieldView.prototype.initialize.call(this);
-  //   //Make sure 'this' is bound for setImageData, was incorrect on device!
-  //   _.bindAll(this, 'setImageData', 'imageSelected');
-  //   this.on('visible',this.clearError);
-  // },
-
   onElementShow: function(index) {
     var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>&nbspCapture Photo From Camera", "fhcam"));
     var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>&nbspChoose Photo from Library", "fhcam_lib"));
@@ -2315,172 +2064,59 @@ FieldCameraView = FieldView.extend({
     this.getWrapper(index).append(captureBtn);
     this.getWrapper(index).append(libBtn);
     this.getWrapper(index).append(rmBtn);
-
     var self = this;
-    captureBtn.on("click", function(e) {
+    captureBtn.on('click', function (e) {
       self.addFromCamera(e, index);
     });
-    libBtn.on("click", function(e) {
+    libBtn.on('click', function (e) {
       self.addFromLibrary(e, index);
     });
-    rmBtn.on("click", function(e) {
+    rmBtn.on('click', function (e) {
       self.removeThumb(e, index);
     });
     rmBtn.hide();
   },
-  // render: function() {
-  //   var self = this;
-  //   // construct field html
-  //   this.$el.append(_.template(this.template.join(''), {
-  //     "id": this.model.get('_id'),
-  //     "title": this.model.get('name')
-  //   }));
-
-  //   this.addButton(this.$el, 'fhcam', 'Capture Photo from Camera');
-  //   this.addButton(this.$el, 'fhcam_lib', 'Choose Photo from Library');
-  //   this.addButton(this.$el, 'remove', 'Remove Photo', 'uploaded');
-
-  //   this.setImageData(null, true);
-
-  //   // add to dom hidden
-  //   this.$el.hide();
-  //   this.options.parentEl.append(this.$el);
-
-  //   // populate field if Submission obj exists
-  //   var submission = this.options.formView.getSubmission();
-  //   if(submission){
-  //     this.submission = submission;
-  //     this.submission.getInputValueByFieldId(this.model.get('_id'),function(err,res){
-  //       console.log(err,res);
-  //       self.value(res);
-  //     });
-  //   }
-
-  //   this.show();
-  // },
-
-  // contentChanged: function(e) {
-  //   FieldView.prototype.contentChanged.apply(this,arguments);
-  //   this.clearError();
-  // },
-
-  // addButton: function(input, img_file, label, classes, action) {
-  //   var self = this;
-  //   var button = $('<button>');
-  //   button.addClass('special_button');
-  //   button.addClass(img_file);
-  //   button.text(' ' + label);
-  //   var img = $('<img>');
-  //   img.attr('src', './img/' + img_file + '.png');
-  //   img.css('height', '28px');
-  //   img.css('width', '28px');
-  //   button.prepend(img);
-
-  //   if (typeof action !== 'undefined') {
-  //     button.click(function(e) {
-  //       action();
-  //       e.preventDefault();
-  //       return false;
-  //     });
-  //   }
-
-  //   if (classes) {
-  //     button.addClass(classes);
-  //   }
-
-  //   input.append(button);
-  //   return button;
-  // },
-
-  // getOrder: function() {
-  //   return this.options.order;
-  // },
-  setImage: function(index, base64Img) {
+  setImage: function (index, base64Img) {
     var wrapper = this.getWrapper(index);
-    var img = wrapper.find("img.imageThumb");
-    img.attr("src", base64Img);
-    wrapper.find("button").hide();
-    wrapper.find(".remove").show();
+    var img = wrapper.find('img.imageThumb');
+    img.attr('src', base64Img);
+    wrapper.find('button').hide();
+    wrapper.find('.remove').show();
   },
-  // setImageData: function(imageData, dontCallContentChanged) {
-  //   var target = this.$el.find('#' + this.model.get('_id'));
-
-  //   if (imageData) {
-  //     console.debug('setting imageData:', imageData.length);
-  //     // prepend dataUri if not already there
-  //     var dataUri = imageData;
-  //     if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
-  //       dataUri = 'data:image/jpeg;base64,' + imageData;
-  //     }
-  //     target.val(dataUri);
-  //     this.$el.find('.imageThumb').attr('src', dataUri);
-  //     this.$el.find('.upload').hide();
-  //     this.$el.find('.uploaded').show();
-  //     this.fileData = {};
-  //     this.fileData.fileBase64 = dataUri;
-  //     this.fileData.filename = "photo";
-  //     this.fileData.content_type = "image/jpeg";
-  //   } else {
-  //     target.val(null);
-  //     this.$el.find('.imageThumb').removeAttr('src');
-  //     this.$el.find('.upload').show();
-  //     this.$el.find('.uploaded').hide();
-  //     delete this.fileData;
-  //   }
-
-  //   // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
-  //   if (!dontCallContentChanged) {
-  //     this.contentChanged();
-  //   }
-  // },
-
-  // dumpContent: function() {
-  //   FieldFileView.prototype.dumpContent.call(this);
-  // },
-
-  // hasImageData: function() {
-  //   return this.$el.find('#' + this.model.get('_id')).val().length > 0;
-  // },
-
-  // getImageData: function() {
-  //   return this.$el.find('#' + this.model.get('_id')).val();
-  // },
-  getImageThumb: function(index) {
+  getImageThumb: function (index) {
     var wrapper = this.getWrapper(index);
-    var img = wrapper.find("img.imageThumb");
+    var img = wrapper.find('img.imageThumb');
     return img;
   },
-  getCameraBtn: function(index) {
+  getCameraBtn: function (index) {
     var wrapper = this.getWrapper(index);
-    return wrapper.find("button.fhcam");
+    return wrapper.find('button.fhcam');
   },
-  getLibBtn: function(index) {
+  getLibBtn: function (index) {
     var wrapper = this.getWrapper(index);
-    return wrapper.find("button.fhcam_lib");
+    return wrapper.find('button.fhcam_lib');
   },
-  getRemoveBtn: function(index) {
+  getRemoveBtn: function (index) {
     var wrapper = this.getWrapper(index);
-    return wrapper.find("button.remove");
+    return wrapper.find('button.remove');
   },
-  removeThumb: function(e, index) {
+  removeThumb: function (e, index) {
     e.preventDefault();
     var img = this.getImageThumb(index);
-    img.removeAttr("src");
+    img.removeAttr('src');
     this.getLibBtn(index).show();
     this.getCameraBtn(index).show();
-    this.getRemoveBtn(index).hide();
-    // this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
+    this.getRemoveBtn(index).hide();  // this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
   },
-
-  addFromCamera: function(e, index) {
+  addFromCamera: function (e, index) {
     e.preventDefault();
     var self = this;
     var params = {
-      width: App.config.getValueOrDefault('cam_targetWidth'),
-      height: App.config.getValueOrDefault('cam_targetHeight')
-    }
+        width: App.config.getValueOrDefault('cam_targetWidth'),
+        height: App.config.getValueOrDefault('cam_targetHeight')
+      };
     if (this.model.utils.isPhoneGapCamAvailable()) {
-      this.model.utils.takePhoto(params, function(err, base64Img) {
+      this.model.utils.takePhoto(params, function (err, base64Img) {
         if (err) {
           console.error(err);
         } else {
@@ -2489,44 +2125,42 @@ FieldCameraView = FieldView.extend({
       });
     } else if (this.model.utils.isHtml5CamAvailable()) {
       var camObj = $(self.html5Cam);
-      var actionBar = camObj.find(".camActionBar");
+      var actionBar = camObj.find('.camActionBar');
       camObj.css({
-        "position": "fixed",
-        "top": 0,
-        "bottom": 0,
-        "left": 0,
-        "right": 0,
-        "background": "#000",
-        "z-index": 9999
+        'position': 'fixed',
+        'top': 0,
+        'bottom': 0,
+        'left': 0,
+        'right': 0,
+        'background': '#000',
+        'z-index': 9999
       });
       actionBar.css({
-        "text-align": "center",
-        "padding": "10px",
-        "background": "#999"
-
+        'text-align': 'center',
+        'padding': '10px',
+        'background': '#999'
       });
-      actionBar.find("button").css({
-        "width": "80px",
-        "height": "30px",
-        "margin-right": "8px",
-        "font-size": "1.3em"
+      actionBar.find('button').css({
+        'width': '80px',
+        'height': '30px',
+        'margin-right': '8px',
+        'font-size': '1.3em'
       });
       self.$el.append(camObj);
-      actionBar.find(".camCancel").on("click", function() {
+      actionBar.find('.camCancel').on('click', function () {
         self.model.utils.cancelHtml5Camera();
         camObj.remove();
       });
-      this.model.utils.initHtml5Camera(params, function(err, video) {
+      this.model.utils.initHtml5Camera(params, function (err, video) {
         if (err) {
           console.error(err);
           alert(err);
           camObj.remove();
         } else {
-          $(video).css("width", "100%");
-          camObj.find(".cam").append(video);
-
-          actionBar.find(".camOk").on("click", function() {
-            self.model.utils.takePhoto(params, function(err, base64Img) {
+          $(video).css('width', '100%');
+          camObj.find('.cam').append(video);
+          actionBar.find('.camOk').on('click', function () {
+            self.model.utils.takePhoto(params, function (err, base64Img) {
               camObj.remove();
               if (err) {
                 console.error(err);
@@ -2534,7 +2168,6 @@ FieldCameraView = FieldView.extend({
                 self.setImage(index, base64Img);
               }
             });
-
           });
         }
       });
@@ -2543,142 +2176,62 @@ FieldCameraView = FieldView.extend({
       self.setImage(index, sampleImage);
     }
   },
-  // imageSelected: function(imageData) {
-  //   this.setImageData(imageData);
-  //   this.trigger('imageAdded'); // trigger events used by grouped camera fields
-  // },
-
-  // parseCssClassCameraOptions: function() {
-  //   var options = {
-  //     targetHeight: null,
-  //     targetWidth: null,
-  //     quality: null
-  //   };
-
-  //   // TODO - review if this is needed
-  //   // var classNames = this.model.get('ClassNames'),
-  //   //   parts, val;
-  //   // if (classNames !== '') {
-  //   //   var classes = classNames.split(' ');
-  //   //   _(classes).forEach(function(className) {
-  //   //     if (className.indexOf("fhdimensions") != -1) {
-  //   //       parts = className.split('=');
-  //   //       val = parts[1].split('x');
-
-  //   //       // Retry
-  //   //       if (val.length == 2) {
-  //   //         // Validity check
-  //   //         if (val[0] < 10000 && val[1] < 10000) {
-  //   //           options.targetWidth = val[0];
-  //   //           options.targetHeight = val[1];
-  //   //         } else {
-  //   //           console.error('Invalid camera resolution, using defaults');
-  //   //         }
-  //   //       }
-  //   //     } else if (className.indexOf("fhcompression") != -1) {
-  //   //       parts = className.split('=');
-  //   //       val = parts[1].split('%');
-
-  //   //       options.quality = val[0];
-  //   //     }
-  //   //   });
-  //   // }
-
-  //   return options;
-  // },
-  addFromLibrary: function(e, index) {
+  addFromLibrary: function (e, index) {
     var self = this;
     var params = {
-      width: App.config.getValueOrDefault('cam_targetWidth'),
-      height: App.config.getValueOrDefault('cam_targetHeight')
-    }
+        width: App.config.getValueOrDefault('cam_targetWidth'),
+        height: App.config.getValueOrDefault('cam_targetHeight')
+      };
     if (self.model.utils.isPhoneGapCamAvailable()) {
       e.preventDefault();
       params.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-      self.model.utils.takePhoto(params, function(err, base64Img) {
+      self.model.utils.takePhoto(params, function (err, base64Img) {
         self.setImage(index, base64Img);
       });
     } else {
-      var file = document.createElement("input");
-      file.type = "file";
+      var file = document.createElement('input');
+      file.type = 'file';
       var fileObj = $(file);
       fileObj.hide();
       self.$el.append(fileObj);
-
-      fileObj.on("change", function() {
-        var file=fileObj[0];
-        if (file.files && file.files.length>0){
-          var file=file.files[0];
+      fileObj.on('change', function () {
+        var file = fileObj[0];
+        if (file.files && file.files.length > 0) {
+          file = file.files[0];
           fileObj.remove();
-          self.model.utils.fileSystem.fileToBase64(file,function(err,base64Img){
-            if (err){
+          self.model.utils.fileSystem.fileToBase64(file, function (err, base64Img) {
+            if (err) {
               console.error(err);
               alser(err);
-            }else{
-              self.setImage(index,base64Img);
+            } else {
+              self.setImage(index, base64Img);
             }
-          });  
+          });
         }
-        
       });
       fileObj.click();
     }
   },
-  // addImage: function(fromLibrary) {
-  //   // TODO: move this to cloud config, synced to client on startup
-  //   var camOptions = {
-  //     quality: App.config.getValueOrDefault('cam_quality'),
-  //     targetWidth: App.config.getValueOrDefault('cam_targetWidth'),
-  //     targetHeight: App.config.getValueOrDefault('cam_targetHeight')
-  //   };
-
-  //   var options = this.parseCssClassCameraOptions();
-  //   // Merge
-  //   camOptions = _.defaults(options, camOptions);
-
-  //   if (typeof navigator.camera === 'undefined') {
-  //     this.imageSelected(this.sampleImage());
-  //   } else {
-  //     if (fromLibrary) {
-  //       camOptions.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-  //     }
-  //     // turn off refetch on resume from pic taking, necessary as pic/cam sends app in background
-  //     App.resumeFetchAllowed = false;
-  //     navigator.camera.getPicture(this.imageSelected, function(err) {
-  //       alert('Camera Error: ' + err);
-  //     }, camOptions);
-  //   }
-  // },
-
-  // show: function() {
-  //   // only perform check once
-  //   if (this.options.initHidden) {
-  //     this.options.initHidden = false;
-  //   } else {
-  //     FieldView.prototype.show.call(this);
-  //   }
-  // },
-
-  valueFromElement: function(index) {
-
+  valueFromElement: function (index) {
     var img = this.getImageThumb(index);
-    return img.attr("src");
+    return img.attr('src');
   },
-  valuePopulateToElement: function(index, value) {
+  valuePopulateToElement: function (index, value) {
     if (value) {
       var base64Data = value.data;
       var base64Img = value.imgHeader + base64Data;
       this.setImage(index, base64Img);
     }
-
   },
-  sampleImages: ['/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALklEQVQYV2NkwAT/oUKMyFIoHKAETBFIDU6FIEUgSaJMBJk0MhQihx2W8IcIAQBhewsKNsLKIgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYUlEQVQYV2NkQAJlM1X/g7hd6bdBFCOyHCNIEigBppElkNkgeYIKYBrwKoQ6A+wEuDtwOQHmLLgbQbqQ3YnubhSfwRTj9DUu3+J0I7oGkPVwXwMZKOEHdCdcPdQJILczAAACnDmkK8T25gAAAABJRU5ErkJggg=='],
-
-  sampleImage: function() {
+  sampleImages: [
+    '/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=',
+    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALklEQVQYV2NkwAT/oUKMyFIoHKAETBFIDU6FIEUgSaJMBJk0MhQihx2W8IcIAQBhewsKNsLKIgAAAABJRU5ErkJggg==',
+    'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYUlEQVQYV2NkQAJlM1X/g7hd6bdBFCOyHCNIEigBppElkNkgeYIKYBrwKoQ6A+wEuDtwOQHmLLgbQbqQ3YnubhSfwRTj9DUu3+J0I7oGkPVwXwMZKOEHdCdcPdQJILczAAACnDmkK8T25gAAAABJRU5ErkJggg=='
+  ],
+  sampleImage: function () {
     window.sampleImageNum = (window.sampleImageNum += 1) % this.sampleImages.length;
     return this.sampleImages[window.sampleImageNum];
   }
-
 });
 window.sampleImageNum = -1;
 FieldCameraGroupView = FieldCameraView.extend({
@@ -2921,7 +2474,7 @@ FieldEmailView = FieldView.extend({
   // }
 });
 FieldFileView = FieldView.extend({
-  input: "<button style='' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>'  type='<%= inputType %>'>Select A File</button>" +
+  input: "<button style='' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
     "<input style='display:none;' class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
   // dumpContent: function() {
@@ -3078,11 +2631,11 @@ FieldGeoView = FieldView.extend({
     }
     textInput.blur();
   },
-  valuePopulateToElement: function(index, value) {
+  valuePopulateToElement: function (index, value) {
     this.geoValues[index] = value;
     this.renderElement(index);
   },
-  valueFromElement: function(index) {
+  valueFromElement: function (index) {
     return this.geoValues[index];
   },
   getLocation: function(e, index) {
@@ -3108,7 +2661,7 @@ FieldGeoView = FieldView.extend({
             "zone":locArr[0],
             "eastings":locArr[1],
             "northings":locArr[2]
-          }
+          };
         }
         that.renderElement(index);
       }, function(msg, err) {
@@ -3122,29 +2675,6 @@ FieldGeoView = FieldView.extend({
 FieldMapView = FieldView.extend({
   extension_type: 'fhmap',
   input: "<div data-index='<%= index %>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
-  // parseCssOptions: function() {
-  //   var options = {
-  //     defaultZoom: null
-  //   };
-
-  //   var classNames = this.model.get('ClassNames'),
-  //     parts, val;
-  //   if (classNames !== '') {
-  //     var classes = classNames.split(' ');
-  //     _(classes).forEach(function(className) {
-  //       if (className.indexOf("fhzoom") != -1) {
-  //         parts = className.split('=');
-  //         val = parseInt(parts[1], 10);
-
-  //         if (_.isNumber(val)) {
-  //           options.defaultZoom = val;
-  //         }
-  //       }
-  //     });
-  //   }
-
-  //   return options;
-  // },
   initialize: function() {
     this.mapInited = 0;
     this.maps = [];
@@ -3159,27 +2689,25 @@ FieldMapView = FieldView.extend({
         lon: -5.80078125,
         lat: 53.12040528310657
       }
-    }
+    };
     FieldView.prototype.initialize.apply(this, arguments);
   },
   renderInput: function(index) {
-    var required = this.getFieldRequired(index);
-    var inputContent = "";
-
     return _.template(this.input, {
       width: this.mapSettings.mapWidth,
       height: this.mapSettings.mapHeight,
-      "index": index
+      'index': index
     });
   },
   onMapInit: function(index) {
     this.mapInited++;
-    if (this.mapInited == this.curRepeat) { // all map initialised
+    if (this.mapInited == this.curRepeat) {
+      // all map initialised
       this.allMapInit();
     }
   },
   allMapInit: function() {
-    while (func = this.allMapInitFunc.shift()) {
+    while ((func = this.allMapInitFunc.shift()) != null) {
       func();
     }
   },
@@ -3191,14 +2719,12 @@ FieldMapView = FieldView.extend({
         this.allMapInitFunc.push(func);
       }
     }
-
   },
   onElementShow: function(index) {
     var wrapperObj = this.getWrapper(index);
     var self = this;
     var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
     // var options = this.parseCssOptions();
-
     // // Merge
     // this.mapSettings = _.defaults(options, this.mapSettings);
 
@@ -3223,14 +2749,14 @@ FieldMapView = FieldView.extend({
             map: self.maps[index],
             draggable: true,
             animation: google.maps.Animation.DROP,
-            title: "Drag this to set position"
+            title: 'Drag this to set position'
           });
           self.markers[index] = marker;
           self.mapData[index] = {
-            "lat": marker.getPosition().lat(),
-            "long": marker.getPosition().lng(),
-            "zoom": self.mapSettings.defaultZoom
-          }
+            'lat': marker.getPosition().lat(),
+            'long': marker.getPosition().lng(),
+            'zoom': self.mapSettings.defaultZoom
+          };
           // google.maps.event.addListener(marker, "dragend", function() {
           //   self.mapData[index].lat = marker.getPosition().lat();
           //   self.mapData[index].long = marker.getPosition().lng();
@@ -3262,24 +2788,19 @@ FieldMapView = FieldView.extend({
       }
     }
   },
-
-  addValidationRules: function() {
-    // You can't have a required map, since there's no input. Also there's always a default location set.
-  },
-
+  addValidationRules: function() {},
   valueFromElement: function(index) {
     var map = this.maps[index];
     var marker = this.markers[index];
     if (map && marker) {
       return {
-        "lat": marker.getPosition().lat(),
-        "long": marker.getPosition().lng(),
-        "zoom": map.getZoom()
+        'lat': marker.getPosition().lat(),
+        'long': marker.getPosition().lng(),
+        'zoom': map.getZoom()
       };
     } else {
       return null;
     }
-
   },
   valuePopulateToElement: function(index, value) {
     if (value){
@@ -3340,7 +2861,7 @@ FieldRadioView = FieldView.extend({
         "index": index
       }));
 
-      if (choice.checked == true) {
+      if (choice.checked === true) {
         jQObj.attr('checked', 'checked');
       }
       radioChoicesHtml += self.htmlFromjQuery(jQObj);
@@ -3348,21 +2869,17 @@ FieldRadioView = FieldView.extend({
 
     return _.template(this.radio, {"radioChoices": radioChoicesHtml});
   },
-  // addValidationRules: function() {
-  //   // first radio is always initially checked, so no need to do 'required' validation on this field
-  // },
-  valuePopulateToElement: function(index, value) {
-    var wrapperObj=this.getWrapper(index);
-    var opt=wrapperObj.find("input[value='"+value+"']");
-    if (opt.length==0){
-      opt=wrapperObj.find("input:first-child");
-      
+  valuePopulateToElement: function (index, value) {
+    var wrapperObj = this.getWrapper(index);
+    var opt = wrapperObj.find('input[value=\'' + value + '\']');
+    if (opt.length === 0) {
+      opt = wrapperObj.find('input:first-child');
     }
-    opt.attr("checked","checked");  
+    opt.attr('checked', 'checked');
   },
-  valueFromElement: function(index) {
-    var wrapperObj=this.getWrapper(index);
-    return wrapperObj.find("input:checked").val() || this.model.getRadioOption()[0].label;
+  valueFromElement: function (index) {
+    var wrapperObj = this.getWrapper(index);
+    return wrapperObj.find('input:checked').val() || this.model.getRadioOption()[0].label;
   }
 });
 FieldSelectView = FieldView.extend({
@@ -3850,6 +3367,7 @@ PageView=BaseView.extend({
       }
     } else {
       fieldModelList.forEach(function (field, index) {
+        if(!field) return;
         var fieldType = field.getType();
         if (self.viewMap[fieldType]) {
 
@@ -3981,7 +3499,8 @@ var FormView = BaseView.extend({
   },
   readOnly: function() {
     this.readonly = true;
-    for (var i = 0, fieldView; fieldView = this.fieldViews[i]; i++) {
+    for (var i = 0; i<this.fieldViews.length; i++) {
+      var fieldView=this.fieldViews[i];
       fieldView.$el.find("button,input,textarea,select").attr("disabled", "disabled");
     }
     this.el.find("button.fh_appform_button_saveDraft").hide();
@@ -4007,6 +3526,7 @@ var FormView = BaseView.extend({
   },
   initWithForm: function(form, params) {
     var self = this;
+    var pageView;
     self.formId = form.getFormId();
 
     self.el.empty();
@@ -4033,12 +3553,13 @@ var FormView = BaseView.extend({
     // Init Pages --------------
     var pageModelList = form.getPageModelList();
     var pageViews = [];
-    for (var i = 0, pageModel; pageModel = pageModelList[i]; i++) {
+    for (var i = 0; i<pageModelList.length; i++) {
+      var pageModel = pageModelList[i];
       // get fieldModels
       var list = pageModel.getFieldModelList();
       self.fieldModels = self.fieldModels.concat(list);
 
-      var pageView = new PageView({
+      pageView = new PageView({
         model: pageModel,
         parentEl: self.el.find(this.elementNames.formContainer),
         formView: self
@@ -4046,7 +3567,8 @@ var FormView = BaseView.extend({
       pageViews.push(pageView);
     }
     var fieldViews = [];
-    for (var i = 0, pageView; pageView = pageViews[i]; i++) {
+    for ( i = 0; i<pageViews.length; i++) {
+      pageView = pageViews[i];
       var pageFieldViews = pageView.fieldViews;
       for (var key in pageFieldViews) {
         var fView = pageFieldViews[key];
@@ -4062,7 +3584,7 @@ var FormView = BaseView.extend({
     self.pageCount = pageViews.length;
 
     //self.onLoadEnd();
-    self.render();
+    //self.render();
   },
   checkRules: function() {
     var self = this;
@@ -4075,10 +3597,11 @@ var FormView = BaseView.extend({
           var actions = res.actions;
           var pages = actions.pages;
           var fields = actions.fields;
-          for (var targetId in pages) {
+          var targetId;
+          for (targetId in pages) {
             self.performRuleAction("page", targetId, pages[targetId]["action"]);
           }
-          for (var targetId in fields) {
+          for (targetId in fields) {
             self.performRuleAction("field", targetId, fields[targetId]["action"]);
           }
         }
@@ -4131,7 +3654,8 @@ var FormView = BaseView.extend({
     return this.submission;
   },
   getPageViewById: function(pageId) {
-    for (var i = 0, pageView; pageView = this.pageViews[i]; i++) {
+    for (var i = 0; i<pageViews.length ; i++) {
+      var pageView = this.pageViews[i];
       var pId = pageView.model.getPageId();
       if (pId == pageId) {
         return pageView;
@@ -4140,7 +3664,8 @@ var FormView = BaseView.extend({
     return null;
   },
   getFieldViewById: function(fieldId) {
-    for (var i = 0, fieldView; fieldView = this.fieldViews[i]; i++) {
+    for (var i = 0; i<this.fieldViews.length; i++) {
+      var fieldView = this.fieldViews[i];
       var pId = fieldView.model.getFieldId();
       if (pId == fieldId) {
         return fieldView;
@@ -4251,10 +3776,12 @@ var FormView = BaseView.extend({
     }
     var submission = this.submission;
     var fieldViews = this.fieldViews;
+    var fieldId;
     var tmpObj = [];
-    for (var i = 0, fieldView; fieldView = fieldViews[i]; i++) {
+    for (var i = 0; i<fieldViews.length ; i++) {
+      var fieldView = fieldViews[i];
       var val = fieldView.value();
-      var fieldId = fieldView.model.getFieldId();
+      fieldId = fieldView.model.getFieldId();
       var fieldType = fieldView.model.getType();
 
       if(fieldType !== "sectionBreak"){
@@ -4270,8 +3797,9 @@ var FormView = BaseView.extend({
     }
     var count = tmpObj.length;
     submission.reset();
-    for (var i = 0, item; item = tmpObj[i]; i++) {
-      var fieldId = item.id;
+    for (i = 0; i<tmpObj.length ; i++) {
+      var item = tmpObj[i];
+      fieldId = item.id;
       var value = item.value;
       var index=item.index;
       submission.addInputValue({
@@ -4284,7 +3812,7 @@ var FormView = BaseView.extend({
           console.error(err);
         }
         count--;
-        if (count == 0) {
+        if (count === 0) {
           cb();
         }
       });
@@ -4293,12 +3821,14 @@ var FormView = BaseView.extend({
 
   setInputValue: function(fieldId, value) {
     var self = this;
-    for (var i = 0, item; item = this.fieldValue[i]; i++) {
+    for (var i = 0; i<this.fieldValue.length; i++) {
+      var item = this.fieldValue[i];
       if (item.id == fieldId) {
         this.fieldValue.splice(i, 1);
       }
     }
-    for (var i = 0, v; v = value[i]; i++) {
+    for (i = 0; i<value.length; i++) {
+      var v = value[i];
       this.fieldValue.push({
         id: fieldId,
         value: v
@@ -4309,52 +3839,42 @@ var FormView = BaseView.extend({
   }
 });
 var FromJsonView = BaseView.extend({
-  events: {
-    'click button#convert': 'convert'
-  },
-
-  templates: {
-    body: '<h1>Insert JSON</h1><textarea id="jsonBox" rows="30" cols="50"></textarea><button id="convert">Convert</button><div id="resultArea"></div>'
-  },
-  el: '#jsonPage',
-
-  initialize: function() {
-    _.bindAll(this, 'render');
-  },
-
-  show: function () {
-    $(this.el).show();
-  },
-
-  hide: function () {
-    $(this.el).hide();
-  },
-
-  render: function() {
-    $(this.el).html(this.templates.body);
-    this.show();
-  },
-
-  convert: function(){
-    var json = $('#jsonBox').val();
-    try {
-      var jsonData = JSON.parse(json);
-    } catch(e){
-      console.log(e);
-      throw ("Invalid JSON object");
+    events: { 'click button#convert': 'convert' },
+    templates: { body: '<h1>Insert JSON</h1><textarea id="jsonBox" rows="30" cols="50"></textarea><button id="convert">Convert</button><div id="resultArea"></div>' },
+    el: '#jsonPage',
+    initialize: function () {
+      _.bindAll(this, 'render');
+    },
+    show: function () {
+      $(this.el).show();
+    },
+    hide: function () {
+      $(this.el).hide();
+    },
+    render: function () {
+      $(this.el).html(this.templates.body);
+      this.show();
+    },
+    convert: function () {
+      var json = $('#jsonBox').val();
+      var jsonData;
+      try {
+        jsonData = JSON.parse(json);
+      } catch (e) {
+        console.log(e);
+        throw 'Invalid JSON object';
+      }
+      var params = {
+          formId: new Date().getTime(),
+          rawMode: true,
+          rawData: jsonData
+        };
+      var formView = new FormView({ parentEl: $('#backbone #resultArea') });
+      formView.loadForm(params, function (err) {
+        formView.render();
+      });
     }
-    var params = {
-      formId : new Date().getTime(), // empty as we are passing in JSON form
-      rawMode : true,
-      rawData : jsonData
-    }
-    var formView=new FormView({parentEl:$("#backbone #resultArea")});
-    formView.loadForm(params,function(err){
-      formView.render();
-    });
-  }
-
-});
+  });
 SectionView=BaseView.extend({
 
   initialize: function() {
@@ -4407,70 +3927,61 @@ StepsView = Backbone.View.extend({
   }
 
 });
-;
-if (typeof $fh == "undefined") {
-    $fh = {};
+if (typeof $fh == 'undefined') {
+  $fh = {};
 }
 if (!$fh.forms) {
-    $fh.forms={};
+  $fh.forms = {};
 }
-$fh.forms.renderForm = function(params, cb) {
-    var parentEl = params.container;
-    var formId = params.formId;
-    var fromRemote = params.fromRemote || false;
-    var type = params.type || "backbone";
-    var form = new FormView({
-        parentEl: parentEl
-    });
-    form.loadForm(params, function() {
-        if (type == "backbone") {
-            cb(null, form);
-        } else if (type == "html") {
-            //TODO convert backbone view to html.
-            cb(null, form);
-        }
-
-    });
-}
-
+$fh.forms.renderForm = function (params, cb) {
+  var parentEl = params.container;
+  var formId = params.formId;
+  var fromRemote = params.fromRemote || false;
+  var type = params.type || 'backbone';
+  var form = new FormView({ parentEl: parentEl });
+  form.loadForm(params, function () {
+    if (type == 'backbone') {
+      cb(null, form);
+    } else if (type == 'html') {
+      //TODO convert backbone view to html.
+      cb(null, form);
+    }
+  });
+};
 /**
  *
  * @param params Object {"formId":String,"rawMode":Boolean,"rawMode":Boolean}
  * no io being done so no need for callback
  */
 $fh.forms.renderFormFromJSON = function (params) {
-  if(! params) throw new Error("params cannot be empty");
-  if(! params.rawData) throw new Error("raw json data must be passed in the params.rawData");
-  if(! params.container) throw new Error("a container element must be passed in the params.container");
-
+  if (!params)
+    throw new Error('params cannot be empty');
+  if (!params.rawData)
+    throw new Error('raw json data must be passed in the params.rawData');
+  if (!params.container)
+    throw new Error('a container element must be passed in the params.container');
   params.formId = new Date().getTime();
   params.rawMode = true;
-
-  var formView=new FormView({parentEl:params.container});
-  formView.loadForm(params,function(err){
-    if(err) console.error("error loading form for renderFormFromJSON ",err);
-    //formView.render();
+  var formView = new FormView({ parentEl: params.container });
+  formView.loadForm(params, function (err) {
+    if (err)
+      console.error('error loading form for renderFormFromJSON ', err);
+    formView.render();
   });
 };
-
-$fh.forms.renderFormList = function(params, cb) {
-    var fromRemote = params.fromRemote || false;
-    var parentEl = params.parentEl;
-    $fh.forms.getForms({
-        fromRemote: fromRemote
-    }, function(err, forms) {
-        formListView = new FormListView({
-            "model": forms,
-            "parentEl": parentEl
-        });
-        formListView.render();
+$fh.forms.renderFormList = function (params, cb) {
+  var fromRemote = params.fromRemote || false;
+  var parentEl = params.parentEl;
+  $fh.forms.getForms({ fromRemote: fromRemote }, function (err, forms) {
+    formListView = new FormListView({
+      'model': forms,
+      'parentEl': parentEl
     });
+    formListView.render();
+  });
 };
-
-$fh.forms.backbone={};
-$fh.forms.backbone.FormView=FormView;
-$fh.forms.backbone.FormListView=FormListView;
-
+$fh.forms.backbone = {};
+$fh.forms.backbone.FormView = FormView;
 
 
 //end  module;

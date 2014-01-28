@@ -31,6 +31,7 @@ $fh.ready({}, function() {
                 if (params.autoShow) {
                     self.el.show();
                 }
+                self.render();
             });
         }
     })
