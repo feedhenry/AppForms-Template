@@ -1,6 +1,6 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2013-12-11
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-01-29
 * https://github.com/feedhenry/Wufoo-Template/
-* Copyright (c) 2013 FeedHenry */
+* Copyright (c) 2014 FeedHenry */
 
 (function(a){function u(e,j){function f(f){return a.isArray(g.readonly)?(f=a(".dwwl",t).index(f),g.readonly[f]):g.readonly}function x(a){var f="",e;for(e in T[a])f+='<li class="dw-v" data-val="'+e+'" style="height:'+H+"px;line-height:"+H+'px;"><div class="dw-i">'+T[a][e]+"</div></li>";return f}function p(){var f=document.body,a=document.documentElement;return Math.max(f.scrollHeight,f.offsetHeight,a.clientHeight,a.scrollHeight,a.offsetHeight)}function l(f){c=a("li.dw-v",f).eq(0).index();d=a("li.dw-v",
 f).eq(-1).index();y=a("ul",t).index(f);m=H;o=k}function q(f){var a=g.headerText;return a?"function"==typeof a?a.call(L,f):a.replace(/\{value\}/i,f):""}function w(){k.temp=P&&(null!==k.val&&k.val!=v.val()||!v.val().length)||null===k.values?g.parseValue(v.val()||"",k):k.values.slice(0);k.setValue(!0)}function u(f,e,g,c){K("validate",[t,e]);a(".dww ul",t).each(function(g){var x=a(this),b=a('li[data-val="'+k.temp[g]+'"]',x),d=b.index(),j=g==e||void 0===e;if(!b.hasClass("dw-v")){for(var h=b,i=0,n=0;h.prev().length&&
@@ -1236,7 +1236,13 @@ var Pages = Backbone.Collection.extend({
 });
 FormModel = Backbone.Model.extend({
   idAttribute: 'Hash',
-  sync: FHBackboneDataActSyncFn,
+  sync: function(method,model,options){
+    if (method == "read"){
+      this.loadForm();
+    }else{
+
+    }
+  },
   defaults: {
     "Theme": "",
     "Pages": [],
@@ -1244,83 +1250,108 @@ FormModel = Backbone.Model.extend({
     "active_page": null,
     "page_history": []
   },
-
-  initialize: function () {
+  loadForm:function(){
+    var formId=this.get("formId");
+    var self=this;
+    $fh.forms.getForm({
+      "formId":formId
+    },function(err,form){
+        if (err){
+          self.trigger("error",err);
+        }else{
+          self.coreModel=form;
+          self.trigger("change:fh_full_data_loaded");
+          self.set("fh_full_data_loaded",true);
+          self.id=formId;
+        }
+    }); 
+  },
+  get:function(key){
+      var res=Backbone.Model.prototype.get.apply(this,arguments);
+      if (res && res !== ""){
+        return res;
+      }else if (this.coreModel){
+        return this.coreModel.get(key);
+      }else{
+        return res;
+      }
+  },
+  initialize: function() {
     _.bindAll(this);
 
     this.initPages();
 
     // if model changes, re-initialise sub-collection of pages
     this.bind('change', this.reInitPages, this);
-    this.on('change:page_history', function (model, history) {
+    this.on('change:page_history', function(model, history) {
       model.set('active_page', _(history).last());
     });
   },
 
-  load: function (cb) {
-    if(this.get("flyweight")){
-      var ctor = this.model|| this.collection.model;
+  load: function(cb) {
+    if (this.get("flyweight")) {
+      var ctor = this.model || this.collection.model;
       var store = this.store || this.collection.store;
-      store._read(this.id,function(err,resp){
-        var model =(err ? null :  new ctor(resp));
-        cb(err,model);
+      store._read(this.id, function(err, resp) {
+        var model = (err ? null : new ctor(resp));
+        cb(err, model);
       });
     } else {
-      cb(null,this);
+      cb(null, this);
     }
   },
 
-  reInitPages: function () {
+  reInitPages: function() {
     this.initPages();
   },
 
-  initPages: function () {
+  initPages: function() {
     var pages = this.get('Pages');
     this.pages = new Pages(pages);
   },
 
-  pushPage: function (page) {
+  pushPage: function(page) {
     this.attributes.page_history.push(page);
     // manually trigger change event as we're modifying an array
     this.trigger('change:page_history', this, this.attributes.page_history);
   },
 
-  popPage: function () {
+  popPage: function() {
     this.attributes.page_history.pop();
     // manually trigger change event as we're modifying an array
     this.trigger('change:page_history', this, this.attributes.page_history);
   },
 
-  emptyPageHistory: function () {
+  emptyPageHistory: function() {
     this.attributes.page_history = [];
     this.attributes.active_page = null;
   },
 
-  toJSON: function () {
+  toJSON: function() {
     var self = this;
     var form = Backbone.Model.prototype.toJSON.apply(this, arguments);
     form.Pages = self.pages.toJSON();
     return form;
   },
 
-  getTimeout:function (millis) {
+  getTimeout: function(millis) {
     var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
-    if(millis) {
-      timeout = timeout *1000;
+    if (millis) {
+      timeout = timeout * 1000;
     }
     return timeout;
   },
 
   handleError: function(e, cb) {
-    var type = e.msg  || "unknown";
+    var type = e.msg || "unknown";
     var err = e.err;
     var msg;
-    $fh.logger.debug("handleError" + Utils.truncate(e,150));
-    if(type  === "error_ajaxfail") {
+    $fh.logger.debug("handleError" + Utils.truncate(e, 150));
+    if (type === "error_ajaxfail") {
 
-      msg = "Unexpected Network Error : ";// + (err ? err.error : "");
-      if(!err.error  || err.error.length === 0 || err.error === "\"error\"") {
-        if(err.message && err.message.length !== 0) {
+      msg = "Unexpected Network Error : "; // + (err ? err.error : "");
+      if (!err.error || err.error.length === 0 || err.error === "\"error\"") {
+        if (err.message && err.message.length !== 0) {
           msg += err.message;
         } else {
           msg += "Unknown";
@@ -1329,37 +1360,62 @@ FormModel = Backbone.Model.extend({
         msg += "Unknown";
 
       }
-      AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:msg, type:"network"}, msg);
+      AlertView.showAlert({
+        text: msg
+      }, "error", 5000);
+      return cb({
+        error: msg,
+        type: "network"
+      }, msg);
     }
 
-    if(type  === "validation") {
+    if (type === "validation") {
       msg = "Form Validation Error : " + (err ? err : "please fix the errors");
-      AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:msg, type:"validation"}, e.res || msg);
+      AlertView.showAlert({
+        text: msg
+      }, "error", 5000);
+      return cb({
+        error: msg,
+        type: "validation"
+      }, e.res || msg);
     }
 
-    if(type  === "offline") {
+    if (type === "offline") {
       msg = err || "You are currently offline";
-      AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:msg, type:"network"},msg);
+      AlertView.showAlert({
+        text: msg
+      }, "error", 5000);
+      return cb({
+        error: msg,
+        type: "network"
+      }, msg);
     }
 
-    if(type === "network") {
+    if (type === "network") {
       msg = "Network Error : " + (err || JSON.stringify(e));
-      AlertView.showAlert({text : msg}, "error", 5000);
-      return cb({error:type, type:"network"});
+      AlertView.showAlert({
+        text: msg
+      }, "error", 5000);
+      return cb({
+        error: type,
+        type: "network"
+      });
     }
 
     msg = "Unknown Error : " + JSON.stringify(e);
-    AlertView.showAlert({text : msg}, "error", 5000);
-    return cb({error:msg, type:"unknown"}, msg);
+    AlertView.showAlert({
+      text: msg
+    }, "error", 5000);
+    return cb({
+      error: msg,
+      type: "unknown"
+    }, msg);
   },
 
-  toBytes: function(len){
-    var size = len +" bytes";
-    if(len > 1024) {
-      size = (Math.floor((len/ 1024) * 1000) / 1000) +" Kilo bytes";
+  toBytes: function(len) {
+    var size = len + " bytes";
+    if (len > 1024) {
+      size = (Math.floor((len / 1024) * 1000) / 1000) + " Kilo bytes";
     }
     return size;
   },
@@ -1372,50 +1428,61 @@ FormModel = Backbone.Model.extend({
    * @param res the results from the tasks
    * @param cb
    */
-  pollRemoteFormSubmissionComplete: function(req,form_id,res, cb) {
+  pollRemoteFormSubmissionComplete: function(req, form_id, res, cb) {
     var self = this;
-    AlertView.showAlert({text : "Form Submitted to cloud"}, "success", self.getTimeout(true) );
+    AlertView.showAlert({
+      text: "Form Submitted to cloud"
+    }, "success", self.getTimeout(true));
     $fh.logger.debug('Form Submitted to cloud: res:' + Utils.truncate(res));
-    var timeout  = this.getTimeout();
+    var timeout = this.getTimeout();
     var start = Math.floor(Date.now() / 1000);
     var complete = false;
 
     async.whilst(
       function check() {
         var end = Math.floor(Date.now() / 1000);
-        var delta = end -start ;
+        var delta = end - start;
         $fh.logger.debug('pollRemoteFormSubmissionComplete check : delta < timeout=' + delta < timeout);
-        return delta < timeout ;
+        return delta < timeout;
       },
       function process(callback) {
-        setTimeout(function () {
-          $fh.act({"act":"pollRemoteFormSubmissionComplete","req":{"form_id":form_id}},
-                  function (res) {
-                    $fh.logger.debug('pollRemoteFormSubmissionComplete process : res=' + Utils.truncate(res) );
-                    if ((res.Success && res.Success === 1 && (res.stat && res.stat.completedAt)) || res.err){
-                      return callback(res);
-                    } else {
-                      return callback();
-                    }
+        setTimeout(function() {
+          $fh.act({
+              "act": "pollRemoteFormSubmissionComplete",
+              "req": {
+                "form_id": form_id
+              }
+            },
+            function(res) {
+              $fh.logger.debug('pollRemoteFormSubmissionComplete process : res=' + Utils.truncate(res));
+              if ((res.Success && res.Success === 1 && (res.stat && res.stat.completedAt)) || res.err) {
+                return callback(res);
+              } else {
+                return callback();
+              }
 
-                  },
-                  function onError(msg, err) {
-                    $fh.logger.debug('pollRemoteFormSubmissionComplete failed : res=' + Utils.truncate(msg) +'err=' + Utils.truncate(err) );
-                    return callback();
-                  });
+            },
+            function onError(msg, err) {
+              $fh.logger.debug('pollRemoteFormSubmissionComplete failed : res=' + Utils.truncate(msg) + 'err=' + Utils.truncate(err));
+              return callback();
+            });
         }, 1000);
       },
       function complete(res) {
         $fh.logger.debug('pollRemoteFormSubmissionComplete complete : res=' + Utils.truncate(res));
-        if(res) {
-          if (res.Success === 1){
+        if (res) {
+          if (res.Success === 1) {
 
-            if(res.stat && res.stat.completedAt){
-              AlertView.showAlert({text:"Form Submission complete"}, "success", 5000);
+            if (res.stat && res.stat.completedAt) {
+              AlertView.showAlert({
+                text: "Form Submission complete"
+              }, "success", 5000);
               cb(null, res);
             }
-          } else if(res.err  || res.Error) {
-            return cb({err: (res.err|| res.Error)});
+          } else if (res.err || res.Error) {
+            return cb({
+              err: (res.err || res.Error)
+            });
           }
 
         } else {
@@ -1431,24 +1498,37 @@ FormModel = Backbone.Model.extend({
    * @param form the form
    * @param callback
    */
-  submitFormBody: function(req,form, callback) {
+  submitFormBody: function(req, form, callback) {
     var self = this;
-    var data = {"act":"submitFormBody","req":form};
+    var data = {
+      "act": "submitFormBody",
+      "req": form
+    };
     req.total += JSON.stringify(data).length;
     var timeout = self.getTimeout(true);
 
-    AlertView.showAlert({ text : "Form body : start ", current : req.size, total : req.total}, "success", timeout );
+    AlertView.showAlert({
+      text: "Form body : start ",
+      current: req.size,
+      total: req.total
+    }, "success", timeout);
     var start = Date.now();
-    req.to = setTimeout(function () {
+    req.to = setTimeout(function() {
       $fh.logger.debug("submitFormBody timeout");
       clearTimeout(req.to);
       delete req.to;
-      req.error = {msg : "network",err:"timeout"};
-      callback({msg : "network",err:"timeout"});
+      req.error = {
+        msg: "network",
+        err: "timeout"
+      };
+      callback({
+        msg: "network",
+        err: "timeout"
+      });
 
     }, timeout + 1000);
 
-    $fh.act(data, function (res) {
+    $fh.act(data, function(res) {
       clearTimeout(req.to);
       delete req.to;
 
@@ -1457,17 +1537,33 @@ FormModel = Backbone.Model.extend({
       if (res.Success && res.Success === 1) {
         var json = JSON.stringify(data);
         req.size += json.length;
-        AlertView.showAlert({ text : "Form body : complete", current : req.size, total : req.total}, "success", timeout);
-        callback(null,{name : "submitFormBody", start : start, end : end, size: req.size});
+        AlertView.showAlert({
+          text: "Form body : complete",
+          current: req.size,
+          total: req.total
+        }, "success", timeout);
+        callback(null, {
+          name: "submitFormBody",
+          start: start,
+          end: end,
+          size: req.size
+        });
       } else {
-        callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
+        callback({
+          msg: "validation",
+          err: "Please fix the highlighted errors",
+          res: res
+        });
       }
-    }, function (msg, err) {
+    }, function(msg, err) {
       clearTimeout(req.to);
       delete req.to;
 
-      $fh.logger.debug("submitFormBody failed : msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err,150)+ "'");
-      callback({msg : msg,err:err});
+      $fh.logger.debug("submitFormBody failed : msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err, 150) + "'");
+      callback({
+        msg: msg,
+        err: err
+      });
     });
 
   },
@@ -1478,34 +1574,48 @@ FormModel = Backbone.Model.extend({
    * @param chunk e.g. {form_id:form_id, "name":name,"value":value , "size":value.length};
    * @param callback
    */
-  submitChunk: function(req,chunk, callback) {
+  submitChunk: function(req, chunk, callback) {
     var self = this;
-    $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "]");
+    $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "]");
     var value = chunk.value;
-    var len =  value.fileBase64.length;
-    var timeout = self.getTimeout(true) ;
+    var len = value.fileBase64.length;
+    var timeout = self.getTimeout(true);
     req.current_chunk += 1;
-    var title = "Field " + req.current_chunk+  " of "+ req.num_chunks;
+    var title = "Field " + req.current_chunk + " of " + req.num_chunks;
     //AlertView.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
-    AlertView.showAlert({text : (title + " started"), current : req.size, total : req.total}, "success", timeout);
+    AlertView.showAlert({
+      text: (title + " started"),
+      current: req.size,
+      total: req.total
+    }, "success", timeout);
 
-    $fh.logger.debug("submitChunk starting value="  + Utils.truncate(value,50));
+    $fh.logger.debug("submitChunk starting value=" + Utils.truncate(value, 50));
     $fh.act({
-      "act":"submitChunk",
-      "retries" : App.config.getValueOrDefault("max_retries"),
+      "act": "submitChunk",
+      "retries": App.config.getValueOrDefault("max_retries"),
       "req": chunk
     }, function onSuccess(res) {
-      $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] res='" + Utils.truncate(res ) + "'");
+      $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "] res='" + Utils.truncate(res) + "'");
       if (res.Success && res.Success === 1) {
         req.size += len;
-        AlertView.showAlert({text : (title + " complete"), current : req.size, total : req.total}, "success", timeout);
+        AlertView.showAlert({
+          text: (title + " complete"),
+          current: req.size,
+          total: req.total
+        }, "success", timeout);
         return callback(null, res);
       } else {
-        return callback({err:'unknown' , msg: JSON.stringify(res)}, res);
+        return callback({
+          err: 'unknown',
+          msg: JSON.stringify(res)
+        }, res);
       }
     }, function onError(msg, err) {
-      $fh.logger.debug("submitChunk starting form[" +chunk.form_id + "][" + chunk.name+ "] msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err)+ "'");
-      return callback({msg : msg,err:err});
+      $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "] msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
+      return callback({
+        msg: msg,
+        err: err
+      });
     });
   },
 
@@ -1515,25 +1625,50 @@ FormModel = Backbone.Model.extend({
    * @param form_id the id of the form
    * @param callback
    */
-  validateFormTransmission: function(req,form_id, callback) {
+  validateFormTransmission: function(req, form_id, callback) {
     var self = this;
-    var data = {"act":"validateFormTransmission","req":{form_id:form_id}};
+    var data = {
+      "act": "validateFormTransmission",
+      "req": {
+        form_id: form_id
+      }
+    };
     var start = Date.now();
     var timeout = self.getTimeout(true);
-    $fh.logger.debug("validateFormTransmission [" +form_id + "] started");
-    AlertView.showAlert({text : "Form check started " ,current :req.total , total : req.total}, "success", timeout );
-    $fh.act(data, function (res) {
+    $fh.logger.debug("validateFormTransmission [" + form_id + "] started");
+    AlertView.showAlert({
+      text: "Form check started ",
+      current: req.total,
+      total: req.total
+    }, "success", timeout);
+    $fh.act(data, function(res) {
       var end = Date.now();
-      $fh.logger.debug("submit res="+ Utils.truncate(res));
+      $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        AlertView.showAlert({text : "Form check complete" ,current :req.total , total : req.total}, "success", timeout );
-        return callback(null,{name : "validateFormTransmission", start : start, end : end, size : req.size});
+        AlertView.showAlert({
+          text: "Form check complete",
+          current: req.total,
+          total: req.total
+        }, "success", timeout);
+        return callback(null, {
+          name: "validateFormTransmission",
+          start: start,
+          end: end,
+          size: req.size
+        });
       } else {
-        return callback({msg:"validation", err: "Please fix the highlighted errors",res:res});
+        return callback({
+          msg: "validation",
+          err: "Please fix the highlighted errors",
+          res: res
+        });
       }
     }, function onError(msg, err) {
-      $fh.logger.debug("validateFormTransmission [" +form_id + "] failed msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err)+ "'");
-      return callback({msg : msg,err:err});
+      $fh.logger.debug("validateFormTransmission [" + form_id + "] failed msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
+      return callback({
+        msg: msg,
+        err: err
+      });
     });
   },
 
@@ -1543,24 +1678,45 @@ FormModel = Backbone.Model.extend({
    * @param form_id the form id
    * @param callback
    */
-  doRemoteFormSubmission: function(req,form_id, callback) {
+  doRemoteFormSubmission: function(req, form_id, callback) {
     var self = this;
-    var data = {"act":"doRemoteFormSubmission","req":{form_id:form_id}};
+    var data = {
+      "act": "doRemoteFormSubmission",
+      "req": {
+        form_id: form_id
+      }
+    };
     var start = Date.now();
-    $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] started");
-    AlertView.showAlert({text : "Remote form submission: started"}, "success", 5000);
-    $fh.act(data, function (res) {
+    $fh.logger.debug("doRemoteFormSubmission[" + form_id + "] started");
+    AlertView.showAlert({
+      text: "Remote form submission: started"
+    }, "success", 5000);
+    $fh.act(data, function(res) {
       var end = Date.now();
       $fh.logger.debug("submit res=" + Utils.truncate(res));
       if (res.Success && res.Success === 1) {
-        AlertView.showAlert({text : "Remote form submission: complete"}, "success", 5000);
-        return callback(null,{name : "doRemoteFormSubmission", start : start, end : end, size: req.total});
+        AlertView.showAlert({
+          text: "Remote form submission: complete"
+        }, "success", 5000);
+        return callback(null, {
+          name: "doRemoteFormSubmission",
+          start: start,
+          end: end,
+          size: req.total
+        });
       } else {
-        return callback({msg:"validation", err:"Please fix the highlighted errors",res:res});
+        return callback({
+          msg: "validation",
+          err: "Please fix the highlighted errors",
+          res: res
+        });
       }
     }, function onError(msg, err) {
-      $fh.logger.debug("doRemoteFormSubmission[" +form_id + "] failed msg='"  + Utils.truncate(msg) +"' err='" + Utils.truncate(err)+ "'");
-      return callback({msg : msg,err:err});
+      $fh.logger.debug("doRemoteFormSubmission[" + form_id + "] failed msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
+      return callback({
+        msg: msg,
+        err: err
+      });
     });
   },
 
@@ -1575,24 +1731,36 @@ FormModel = Backbone.Model.extend({
    * @param form the serialized form
    * @return an array of tasks
    */
-  splitFormIntoTasks: function(req,form) {
+  splitFormIntoTasks: function(req, form) {
     $fh.logger.debug("splitFormIntoTasks starting");
     var self = this;
-    var tasks  = [];
+    var tasks = [];
     var serialized_form = form.data;
     var form_id = req.form_id;
-    if(App.config.getValueOrDefault("use_chunking")) {
-      _.each(serialized_form, function chunkHandler(value,name){
+    if (App.config.getValueOrDefault("use_chunking")) {
+      _.each(serialized_form, function chunkHandler(value, name) {
         if (_.isObject(value) && !_.isUndefined(value.filename)) {
           var str = JSON.stringify(value);
           var size = str.length;
           $fh.logger.debug("field name=" + name + ",value=" + Utils.truncate(str) + ",size=" + size);
           req.max = Math.max(req.max, size);
-          req.chunks.push({name:name, size:size});
+          req.chunks.push({
+            name: name,
+            size: size
+          });
           req.total += size;
-          var chunk = {form_id:form_id, "name":name,"value":value , "size":size};
-          serialized_form[name] = {content_type:"ref", form_id:form_id, name:name};
-          var func = async.apply(self.submitChunk, req,chunk);
+          var chunk = {
+            form_id: form_id,
+            "name": name,
+            "value": value,
+            "size": size
+          };
+          serialized_form[name] = {
+            content_type: "ref",
+            form_id: form_id,
+            name: name
+          };
+          var func = async.apply(self.submitChunk, req, chunk);
           func.name = name;
           tasks.push(func);
         }
@@ -1601,9 +1769,9 @@ FormModel = Backbone.Model.extend({
     req.num_chunks = req.chunks.length;
     req.current_chunk = 0;
     // NOTE : put first task at start of array
-    tasks.unshift(async.apply(this.submitFormBody, req,form));
+    tasks.unshift(async.apply(this.submitFormBody, req, form));
 
-    tasks.push(async.apply(this.validateFormTransmission, req,form_id));
+    tasks.push(async.apply(this.validateFormTransmission, req, form_id));
 
     $fh.logger.debug("splitFormIntoTasks complete tasks.length=" + tasks.length);
     return tasks;
@@ -1648,29 +1816,37 @@ FormModel = Backbone.Model.extend({
         if (online) {
           var serialized_form = self.serialize();
           var form_hash = self.attributes.Hash;
-          var form_id = [form_hash,props.uuid,self.id].join("/");
+          var form_id = [form_hash, props.uuid, self.id].join("/");
           var form = {
-            "form_hash":form_hash,
-            "form_id":form_id,
-            "data":serialized_form
+            "form_hash": form_hash,
+            "form_id": form_id,
+            "data": serialized_form
           };
-          var req = {start : Date.now(),
-            size : 0,
+          var req = {
+            start: Date.now(),
+            size: 0,
             total: 0,
-            max :-1,
-            chunks : [],
-            form_id:form.form_id
+            max: -1,
+            chunks: [],
+            form_id: form.form_id
           };
-          var tasks = self.splitFormIntoTasks(req,form);
-          async.series(tasks,function(err, results){
-            if (err) {return self.handleError(err,cb);}
-            self.doRemoteFormSubmission(req,form_id, function handleResponse(err){
-              if (err) {return self.handleError(err,cb);}
-              self.pollRemoteFormSubmissionComplete(req,form_id,results, cb);
+          var tasks = self.splitFormIntoTasks(req, form);
+          async.series(tasks, function(err, results) {
+            if (err) {
+              return self.handleError(err, cb);
+            }
+            self.doRemoteFormSubmission(req, form_id, function handleResponse(err) {
+              if (err) {
+                return self.handleError(err, cb);
+              }
+              self.pollRemoteFormSubmissionComplete(req, form_id, results, cb);
             });
           });
         } else {
-          self.handleError({msg: "offline", err:"Unable to submit the form : you are currently offline"},cb);
+          self.handleError({
+            msg: "offline",
+            err: "Unable to submit the form : you are currently offline"
+          }, cb);
         }
       });
     });
@@ -1679,7 +1855,7 @@ FormModel = Backbone.Model.extend({
   serialize: function() {
     var self = this;
     var serialized_form = {};
-    self.pages.each(function (page) {
+    self.pages.each(function(page) {
       $.extend(serialized_form, page.serialize());
     });
     return serialized_form;
@@ -1691,210 +1867,322 @@ FormsCollection = Backbone.Collection.extend({
   model: FormModel,
   // form collection will only fetch minimum form details to populate models. Models will be fetched individually as full detail is required
   store: new FHBackboneDataActSync('forms', 'getForms', 'getForm', 'Hash', 'DateUpdated'),
-  sync: FHBackboneDataActSyncFn,
-
-  initialize: function () {
-    this.store.on('error', function () {});
-  }
-});
-
-App.collections.forms = new FormsCollection();
-
-SentModel = FormModel.extend({
-  idAttribute: 'id',
-  sync: FHBackboneDataActSyncFn,
-
-  reInitPages: function() {
-    // Do Nothing
-  }
-});
-
-SentCollection = Backbone.Collection.extend({
-  model: SentModel,
-  store: new FHBackboneIndexedDataActSync("sent"),
-  sync: FHBackboneDataActSyncFn,
-
-  initialize: function() {
-    this.on('add', this.checkSize);
-  },
-
-  checkSize: function() {
-    var maxSize = (App.config.attributes.hasOwnProperty('sent_save_max') ?  App.config.get('sent_save_max') : App.config.get('defaults')['sent_save_max']);
-    if (this.length > maxSize) {
-      var toDelete = this.models.slice(0, this.models.length - maxSize);
-      _(toDelete).forEach(function(model) {
-        model.destroy();
+  sync: function(method, collection, options) {
+    var self = this;
+    if (method == "read") {
+      $fh.forms.getForms({
+        fromRemote:true
+      }, function(err, formList) {
+        if (err) {
+          self.trigger("error", err.getMessage());
+          options.error(err);
+        } else {
+          var count=formList.size();
+          var formIdArr=[];
+          for (var i=0;i<formList.size();i++){
+            var formId=formList.getFormIdByIndex(i);
+            formIdArr.push({formId:formId});
+          }
+          options.success(formIdArr);
+        }
       });
     }
   },
 
-  create: function(attributes, options) {
-    attributes.submittedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
+  initialize: function() {
+    this.store.on('error', function() {});
   }
 });
-DraftModel = FormModel.extend({
-  idAttribute: 'id',
-  sync: FHBackboneDataActSyncFn,
 
-  reInitPages: function () {
-    // Do Nothing
-  }
+App.collections.forms = new FormsCollection();
+// FormListModel = Backbone.Model.extend({
+    
+// });
 
+// FormListCollection=Backbone.Collection.extend({
+//     store:new FHBackboneDataActSync('forms', 'getForms', 'getForm', 'Hash', 'DateUpdated'),
+//     model:FormListModel,
+//     sync:function(method,model,options){
+//         debugger;
+        
+//     }
+// });
+// App.collections.formList=new FormListCollection({});
+SubmissionModel = Backbone.Model.extend({
+    sync: function(method, model, options) {
+        var self = this;
+        if (method == "read") {
+            this.loadSubmission(this.submissionMeta, function(err, sub) {});
+        } else if (method == "delete") {
+            this.coreModel.clearLocal(function() {});
+        } else {
+
+        }
+
+    },
+    loadSubmission: function(submissionMeta, cb) {
+        var self = this;
+        $fh.forms.getSubmissions({}, function(err, subList) {
+            subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
+                if (err) {
+                    self.trigger("error", err);
+                } else {
+                    self.coreModel = submission;
+                    self.id = submission.getLocalId();
+                }
+                self.initModel();
+                self.trigger("change");
+                cb(err, submission);
+            });
+        });
+    },
+    initModel: function() {
+        var coreModel = this.coreModel;
+        var self = this;
+        coreModel.on("inprogress", function(ut) {
+            self.refreshAllCollections();
+            AlertView.showAlert({
+                "text": "Form submission started."
+            }, "success", 5000);
+            ut.on("progress", function(progress) {
+
+                AlertView.showAlert({
+                    "text": "Progress",
+                    "current": progress.uploaded,
+                    "total": progress.totalSize
+                }, "success", 5000);
+            });
+        });
+        coreModel.on("submitted", function(err) {
+            if (!err) {
+                AlertView.showAlert({
+                    "text": "Form submission submitted."
+                }, "success", 5000);
+            } else {
+                AlertView.showAlert({
+                    "text": "Failed:" + err
+                }, "success", 5000);
+            }
+            self.refreshAllCollections();
+        });
+        coreModel.on("submit", function() {
+            self.refreshAllCollections();
+        });
+    },
+    refreshAllCollections: function() {
+        refreshSubmissionCollections();
+    },
+    get: function(key) {
+        var res = Backbone.Model.prototype.get.apply(this, arguments);
+        if (res && res !== "") {
+            return res;
+        } else if (this.coreModel) {
+            return this.coreModel.get(key);
+        } else {
+            return res;
+        }
+    },
+    initialize: function(submissionMeta, options) {
+
+        var self = this;
+        this.submissionMeta = submissionMeta;
+        this.loadSubmission(submissionMeta, function(err, sub) {});
+    }
+});
+SubmissionCollection = Backbone.Collection.extend({
+    model: SubmissionModel,
+    status: null,
+    initialize: function() {
+        Backbone.Collection.prototype.initialize.apply(this, arguments);
+    },
+    getSubmissionList: function(cb) {
+        var self = this;
+        $fh.forms.getSubmissions({}, function(err, subList) {
+            if (err) {
+
+                cb(err);
+            } else {
+                var status = self.status;
+                var submissions = subList.getSubmissions();
+                if (status) {
+                    submissions = subList.findByStatus(status);
+                }
+                self.coreModel = subList;
+                cb(null, submissions);
+            }
+        });
+    },
+    sync: function(method, collection, options) {
+        if (method == "read") {
+            this.getSubmissionList(function(err, submissions) {
+                if (err) {
+                    options.error(err);
+                } else {
+                    options.success(submissions);
+                }
+
+            });
+        }
+    }
 });
 
+function refreshSubmissionCollections() {
+    App.collections.drafts.fetch();
+    App.collections.sent.fetch();
+    App.collections.pending_submitting.fetch();
+    App.collections.pending_waiting.fetch();
+    App.collections.pending_review.fetch();
+}
+SentModel = SubmissionModel.extend({
+});
 
-DraftsCollection = Backbone.Collection.extend({
+SentCollection = SubmissionCollection.extend({
+  status:"submitted",
+  model: SentModel,
+  store: new FHBackboneIndexedDataActSync("sent")
+});
+DraftModel = SubmissionModel.extend({
+});
+
+DraftsCollection = SubmissionCollection.extend({
   model: DraftModel,
-  store: new FHBackboneIndexedDataActSync("drafts"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    $fh.logger.debug(attributes);
-    attributes.savedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
+  status:"draft",
+  store: new FHBackboneIndexedDataActSync("drafts")
 });
 
 App.collections.drafts = new DraftsCollection();
-PendingModel = FormModel.extend({
-  idAttribute: 'id',
-  sync: FHBackboneDataActSyncFn,
+PendingModel = SubmissionModel.extend({
 
-  reInitPages: function() {
-    // Do Nothing
-  }
 });
 
-PendingWaitingCollection = Backbone.Collection.extend({
-  model: PendingModel,
-  store: new FHBackboneIndexedDataActSync("pending-waiting"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    attributes.savedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
+PendingWaitingCollection = SubmissionCollection.extend({
+  status: "pending",
+  store: new FHBackboneIndexedDataActSync("pending-waiting")
+});
+PendingSubmittingCollection = SubmissionCollection.extend({
+  status: "inprogress",
+  store: new FHBackboneIndexedDataActSync("pending-waiting")
 });
 
-
-PendingReviewCollection = Backbone.Collection.extend({
-  model: PendingModel,
-  store: new FHBackboneIndexedDataActSync("pending-review"),
-  sync: FHBackboneDataActSyncFn,
-  create: function(attributes, options) {
-    attributes.submittedAt = new Date().getTime();
-    return Backbone.Collection.prototype.create.call(this, attributes, options);
-  }
+PendingReviewCollection = SubmissionCollection.extend({
+  status: "error",
+  store: new FHBackboneIndexedDataActSync("pending-waiting")
 });
 
 
-PendingSubmittingCollection = Backbone.Collection.extend({
-  model: PendingModel,
-  store: new FHBackboneIndexedDataActSync("pending-submitting"),
-  sync: FHBackboneDataActSyncFn,
+// PendingSubmittingCollection = Backbone.Collection.extend({
+//   model: PendingModel,
+//   store: new FHBackboneIndexedDataActSync("pending-submitting"),
+//   sync: FHBackboneDataActSyncFn,
 
-  initialize: function() {
-    this.on('reset', function(collection, options) {
-      $fh.logger.debug("reset called on: " + this.store.name);
+//   initialize: function() {
+//     this.on('reset', function(collection, options) {
+//       $fh.logger.debug("reset called on: " + this.store.name);
 
-      if(collection.models.length) {
-        var models = [];
-        var copy = function(model,callback){
-          model.load(function (err,actual){
-            var json = actual.toJSON();
-            delete json.error;
-            App.collections.pending_waiting.create(json, {success : function onSuccess(){
-              models.push(model);
-              callback(null,model);
-            },error : function onError(err){
-              callback(err);
-            }});
+//       if (collection.models.length) {
+//         var models = [];
+//         var copy = function(model, callback) {
+//           model.load(function(err, actual) {
+//             var json = actual.toJSON();
+//             delete json.error;
+//             App.collections.pending_waiting.create(json, {
+//               success: function onSuccess() {
+//                 models.push(model);
+//                 callback(null, model);
+//               },
+//               error: function onError(err) {
+//                 callback(err);
+//               }
+//             });
 
-          });
-        };
+//           });
+//         };
 
-        async.map(collection.models, copy, function(err, results){
-          _(models).forEach(function(model) {
-            $fh.logger.debug("pending on reset destroy");
-            model.destroy();
-          });
-        });
+//         async.map(collection.models, copy, function(err, results) {
+//           _(models).forEach(function(model) {
+//             $fh.logger.debug("pending on reset destroy");
+//             model.destroy();
+//           });
+//         });
 
-      }
-    });
-  },
-  create: function(attributes, options,callback) {
-    attributes.savedAt = new Date().getTime();
-    $fh.logger.debug("pending.create : attributes.Pages" + attributes.Pages.length);
-    var model = Backbone.Collection.prototype.create.call(this, attributes, options);
+//       }
+//     });
+//   },
+//   create: function(attributes, options, callback) {
+//     attributes.savedAt = new Date().getTime();
+//     $fh.logger.debug("pending.create : attributes.Pages" + attributes.Pages.length);
+//     var model = Backbone.Collection.prototype.create.call(this, attributes, options);
 
-    $fh.logger.debug("pending.create : model.get(Pages)=" + model.get("Pages").length);
+//     $fh.logger.debug("pending.create : model.get(Pages)=" + model.get("Pages").length);
 
-    if(callback == null) {
-      callback = function (){};
-    }
-    $fh.logger.debug("pending create : before submit");
-    model.submit(function(err, res) {
-      $fh.logger.debug("pending create : after submit err=" , err);
-      $fh.logger.debug("pending create : after submit res=" , err);
-      $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
-      var modelJson = model.toJSON();
-      delete modelJson.error;
+//     if (callback == null) {
+//       callback = function() {};
+//     }
+//     $fh.logger.debug("pending create : before submit");
+//     model.submit(function(err, res) {
+//       $fh.logger.debug("pending create : after submit err=", err);
+//       $fh.logger.debug("pending create : after submit res=", err);
+//       $fh.logger.debug("pending.create : after submit model.get(Pages)=" + model.get("Pages").length);
+//       var modelJson = model.toJSON();
+//       delete modelJson.error;
 
-      var option = {
-        success : function onSuccess(nextModel, resp){
-          $fh.logger.debug("pending create : options.onSuccess");
-          $fh.logger.debug("pending create success destroy");
+//       var option = {
+//         success: function onSuccess(nextModel, resp) {
+//           $fh.logger.debug("pending create : options.onSuccess");
+//           $fh.logger.debug("pending create success destroy");
 
-          $fh.logger.debug("pending create success         next ="+ nextModel.id);
-          $fh.logger.debug("pending create success destroy model="+ model.id);
-          model.destroy();
-          callback(err,res);
-        },
-        error : function onError(ferr){
-          $fh.logger.debug("pending create : options.onError=" + ferr);
-          $fh.logger.debug("pending create error destroy");
-          model.destroy();
-          callback(err,res);
-        }
-      };
-      if (err) {
-        // add error to model json
-        modelJson.error = {
-          "type": err.type || err.error,
-          "details": res
-        };
-        $fh.logger.debug('Form submission: error :: ' , err, " :: ", res);
+//           $fh.logger.debug("pending create success         next =" + nextModel.id);
+//           $fh.logger.debug("pending create success destroy model=" + model.id);
+//           model.destroy();
+//           callback(err, res);
+//         },
+//         error: function onError(ferr) {
+//           $fh.logger.debug("pending create : options.onError=" + ferr);
+//           $fh.logger.debug("pending create error destroy");
+//           model.destroy();
+//           callback(err, res);
+//         }
+//       };
+//       if (err) {
+//         // add error to model json
+//         modelJson.error = {
+//           "type": err.type || err.error,
+//           "details": res
+//         };
+//         $fh.logger.debug('Form submission: error :: ', err, " :: ", res);
 
-        if (/\b(offline|network)\b/.test(err.type)) {
-          // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
-          $fh.logger.debug("pending_waiting create modelJson="+ modelJson.id );
-          App.collections.pending_waiting.create(modelJson,option);
-        } else {
-          // move to review as the form cannot be resubmitted without being modified
-          $fh.logger.debug("pending_review create modelJson="+ modelJson.id);
-          App.collections.pending_review.create(modelJson,option);
-        }
-      } else {
-        $fh.logger.debug('Form submission: success :: ' ,res);
-        try {
-          modelJson.Entry = {EntryId:res.stat.res.EntryId, EntryLink :res.stat.res.EntryLink};
-        } catch(e) {
-          $fh.logger.warn("Error accessing EntryId", e);
-        }
-        App.collections.sent.create(modelJson,option);
-      }
-    });
+//         if (/\b(offline|network)\b/.test(err.type)) {
+//           // error with act call (usually connectivity error) or offline. move to waiting to be resubmitted manually
+//           $fh.logger.debug("pending_waiting create modelJson=" + modelJson.id);
+//           App.collections.pending_waiting.create(modelJson, option);
+//         } else {
+//           // move to review as the form cannot be resubmitted without being modified
+//           $fh.logger.debug("pending_review create modelJson=" + modelJson.id);
+//           App.collections.pending_review.create(modelJson, option);
+//         }
+//       } else {
+//         $fh.logger.debug('Form submission: success :: ', res);
+//         try {
+//           modelJson.Entry = {
+//             EntryId: res.stat.res.EntryId,
+//             EntryLink: res.stat.res.EntryLink
+//           };
+//         } catch (e) {
+//           $fh.logger.warn("Error accessing EntryId", e);
+//         }
+//         App.collections.sent.create(modelJson, option);
+//       }
+//     });
 
 
-    return model;
-  }
-});
+//     return model;
+//   }
+// });
 
 App.collections.pending_submitting = new PendingSubmittingCollection();
 App.collections.sent = new SentCollection();
 App.collections.pending_review = new PendingReviewCollection();
 App.collections.pending_waiting = new PendingWaitingCollection();
-
 LoadingView = Backbone.View.extend({
   id: 'loading',
   className: 'hidden',
@@ -2104,7 +2392,7 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   templates: {
-    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>'
+    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_navigation"><%= name %><div class="loading"></div></button></li>'
   },
 
   initialize: function() {
@@ -2121,7 +2409,7 @@ ShowFormButtonView = Backbone.View.extend({
     var errorLoading = this.model.get('fh_error_loading');
     var enabled = fullyLoaded || !errorLoading;
     html = _.template(this.templates.form_button, {
-      name: this.model.get("Name"),
+      name: this.model.get("name"),
       enabledClass: enabled ? 'button-main' : '',
       dataClass: errorLoading ? 'fetch_error' : fullyLoaded ? 'fetched' : 'fetching'
     });
@@ -2137,21 +2425,62 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   show: function() {
-    var draft = new DraftModel(this.model.toJSON());
-    App.views.form = new DraftView({
-      model: draft
+    App.views.header.hideAll();
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "form":this.model.coreModel,
+      "autoShow":true
     });
-    App.views.form.render();
+   
   },
 
-  fetch: function () {
+  fetch: function() {
     // show loading view
     var loadingView = new LoadingView(this.model);
     loadingView.show('Syncing form');
     this.model.fetch();
   }
 });
-FormListView = Backbone.View.extend({
+$fh.ready({}, function() {
+    FormView = $fh.forms.backbone.FormView.extend({
+        initialize: function(params) {
+            $fh.forms.backbone.FormView.prototype.initialize.apply(this, arguments);
+            var self = this;
+
+            this.loadForm(params, function() {
+                self.submission.on("savedraft", function(submission) {
+                    App.views.header.showDrafts(true);
+                    App.views.form = null;
+                    refreshSubmissionCollections();
+                });
+                self.submission.on("submit", function() {
+                    App.views.header.showPending(true);
+                    App.views.form = null;
+                    refreshSubmissionCollections();
+                });
+                self.submission.on("progress", function(progress){
+                  console.log("PROGRESS", progress, this);
+                });
+                self.submission.on("submitted", function(){
+                  console.log("SUBMITTED", this);
+                });
+                self.submission.on("error", function(errorMessage){
+                  console.log("ERROR", errorMessage);
+                });
+                self.submission.on("inprogress", function(uploadTask){
+                  console.log("READY FOR UPLOAD ", this, uploadTask);
+                });
+                self.trigger("loaded");
+                if (params.autoShow) {
+                    self.el.show();
+                }
+                self.render();
+            });
+        }
+    });
+});
+
+var FormListView = Backbone.View.extend({
   el: $('#fh_wufoo_form_list'),
 
   events: {
@@ -2161,19 +2490,19 @@ FormListView = Backbone.View.extend({
 
   templates: {
     list: '<ul class="form_list"></ul>',
-    header: '<h2>Your Forms</h2><h4>Choose a form from the list below</h4>',
+    header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about" href="#fh_wufoo_banner"><img src="img/info.png"></a><a class="settings hidden"><img src="img/settings.png"></a>'
+    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings hidden"></a><br style="clear:both;">'
   },
 
   initialize: function() {
     _.bindAll(this, 'render', 'appendForm');
     this.views = [];
 
-    App.collections.forms.bind('reset', function (collection, options) {
+    App.collections.forms.bind('reset', function(collection, options) {
       if (options == null || !options.noFetch) {
         $fh.logger.debug('reset forms collection');
-        App.collections.forms.each(function (form) {
+        App.collections.forms.each(function(form) {
           form.fetch();
         });
       }
@@ -2187,21 +2516,21 @@ FormListView = Backbone.View.extend({
     App.router.reload();
   },
 
-  show: function () {
+  show: function() {
     App.views.header.markActive('.fh_wufoo_home');
     $(this.el).show();
   },
 
-  hide: function () {
+  hide: function() {
     $(this.el).hide();
   },
 
   renderErrorHandler: function(msg) {
     try {
-      if(msg == null || msg.match("error_ajaxfail")) {
+      if (msg == null || msg.match("error_ajaxfail")) {
         msg = "An unexpected error occurred.";
       }
-    } catch(e) {
+    } catch (e) {
       msg = "An unexpected error occurred.";
     }
     var html = _.template(this.templates.error, {
@@ -2220,10 +2549,12 @@ FormListView = Backbone.View.extend({
     // Add list
     $(this.el).append(this.templates.list);
 
-    if(App.collections.forms.models.length) {
+    if (App.collections.forms.models.length) {
       // Add header
       $('ul', this.el).append(this.templates.header);
-      _(App.collections.forms.models).forEach(function(form) {this.appendForm(form);}, this);
+      _(App.collections.forms.models).forEach(function(form) {
+        this.appendForm(form);
+      }, this);
     } else {
       this.renderErrorHandler(arguments[1]);
     }
@@ -2231,16 +2562,18 @@ FormListView = Backbone.View.extend({
   },
 
   appendForm: function(form) {
-    var view = new ShowFormButtonView({model: form});
+    var view = new ShowFormButtonView({
+      model: form
+    });
     this.views.push(view);
     $('ul', this.el).append(view.render().el);
   },
 
-  showSettings: function () {
+  showSettings: function() {
     App.views.header.showSettings();
   },
 
-  showAbout: function () {
+  showAbout: function() {
     App.views.header.showAbout();
   }
 });
@@ -2253,10 +2586,10 @@ SentListView = Backbone.View.extend({
   },
 
   templates: {
-    sent_list: '<ul class="list inset sent_list"></ul>',
-    sent_header: '<li class="list-divider">Sent Submissions</li>',
-    dismiss_all: '<li><button class="dismiss-all button button-main button-block">Dismiss All</button></li>',
-    save_max: '<li><label for="sentSaveMax" class="sentSaveMaxLabel">Number of sent items to keep</label><select id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></li>'
+    sent_list: '<ul class="fh_appform_field_area list inset sent_list"></ul>',
+    sent_header: '<li class="list-divider fh_appform_field_title">Sent Submissions</li>',
+    dismiss_all: '<li><button class="fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button></li>',
+    save_max: '<li><label for="sentSaveMax" class="fh_appform_field_title">Number of sent items to keep</label><select class="fh_appform_field_input" id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></li>'
   },
 
   initialize: function() {
@@ -2343,8 +2676,8 @@ DraftListView = Backbone.View.extend({
   el: $('#fh_wufoo_drafts'),
 
   templates: {
-    draft_list: '<ul class="list inset draft_list"></ul>',
-    draft_header: '<li class="list-divider">Draft Submissions</li>'
+    draft_list: '<ul class="fh_appform_field_area list inset draft_list"></ul>',
+    draft_header: '<li class="list-divider"><div class="fh_appform_field_title">Draft Submissions</div></li>'
   },
 
   initialize: function() {
@@ -2512,7 +2845,7 @@ AboutView = Backbone.View.extend({
 });
 ItemView = Backbone.View.extend({
   tagName: 'li',
-  className: 'pending_submission',
+  className: 'fh_appform_field_input pending_submission',
   events: {
     'click button.delete-item': 'delete',
     'click button.submit-item': 'submit',
@@ -2520,8 +2853,8 @@ ItemView = Backbone.View.extend({
   },
 
   templates: {
-    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type <%= error_type %>"><%= error_message %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
+    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type fh_appform_error <%= error_type %>"><%= error_message %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
   },
 
   errorTypes: {
@@ -2539,13 +2872,13 @@ ItemView = Backbone.View.extend({
   },
 
   renderId: function() {
-    if(this.model.get("Entry")&&this.model.get("Entry").EntryId) {
+    if (this.model.get("Entry") && this.model.get("Entry").EntryId) {
       return "App Forms Id : " + this.model.get("Entry").EntryId;
     }
-    if(this.model.idValue) {
+    if (this.model.idValue) {
       return this.model.idValue;
     }
-    if(this.model.id) {
+    if (this.model.id) {
       return this.model.id.split(/-/)[0];
     }
     return "new";
@@ -2555,14 +2888,14 @@ ItemView = Backbone.View.extend({
     var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
     var template = this.templates.item;
-    if(error && this.templates.item_failed) {
+    if (error && this.templates.item_failed) {
       template = this.templates.item_failed;
     }
     var item = _.template(template, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
-      timestamp: time,
-      error_type: (error && error.type ) ? error.type : null,
+      name: this.model.get('formName'),
+      id: this.getIdText(),
+      timestamp: this.getItemTime(),
+      error_type: (error && error.type) ? error.type : null,
       error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
 
@@ -2580,14 +2913,14 @@ ItemView = Backbone.View.extend({
 
     return false;
   },
-
   submit: function() {
     var model = this.model;
-    model.load(function (err,actual ){
-      var json = actual.toJSON();
-      model.destroy();
-      App.collections.pending_submitting.create(json);
-    });
+    model.coreModel.upload(function() {});
+    // model.load(function (err,actual ){
+    //   var json = actual.toJSON();
+    //   model.destroy();
+    //   App.collections.pending_submitting.create(json);
+    // });
 
     return false;
   },
@@ -2597,9 +2930,11 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    this.model.load(function (err,actual ){
+    this.model.load(function(err, actual) {
       var draft = new DraftModel(actual.toJSON());
-      App.views.form = new DraftView({model: draft});
+      App.views.form = new DraftView({
+        model: draft
+      });
       App.views.form.render();
     });
   }
@@ -2607,19 +2942,34 @@ ItemView = Backbone.View.extend({
 DraftItemView = ItemView.extend({
 
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="fh_appform_button_cancel button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
   },
 
   show: function() {
-    this.model.load(function (err,actual ){
-      App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
-      App.views.form.render();
+    App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
     });
+    
+    // this.model.load(function (err,actual ){
+    //   App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
+    //   App.views.form.render();
+    // });
+  },
+  getItemTime:function(){
+    return "Saved: "+this.model.get("saveDate");
+  },
+  getIdText:function(){
+    return "FormId: "+this.model.get("formId");
   }
 });
 PendingReviewItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
   },
   errorTypes: {
     "validation": "Validation Error. Please review for details.",
@@ -2628,20 +2978,58 @@ PendingReviewItemView = ItemView.extend({
     "timeout": "Form Submission timeout. Please try again later",
     "defaults": "Unknown Error. Please review for details"
   },
-
+  getIdText: function() {
+    return "FormId: " + this.model.get("formId");
+  },
+  getItemTime: function() {
+    return "Submit: " + this.model.get("submitDate");
+  },
+  show: function() {
+    App.views.header.hideAll();
+    var submission = this.model.coreModel;
+    App.views.form = new FormView({
+      "parentEl": $("#fh_wufoo_content"),
+      "formId": submission.get("formId"),
+      "autoShow": true,
+      "submission": submission
+    });
+  },
   render: function() {
-    var time = new moment(this.model.get('submittedAt')).format('HH:mm:ss DD/MM/YYYY');
+    var time = new moment(this.model.get('submitDate')).format('HH:mm:ss DD/MM/YYYY');
     var error = this.model.get('error');
     var item = _.template(this.templates.item, {
-      name: this.model.get('Name'),
+      name: this.model.get('formName'),
       id: this.renderId(),
       timestamp: time,
       error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
     });
-
     $(this.el).html(item);
     return this;
   }
+});
+PendingWaitingView = ItemView.extend({
+  getIdText:function(){
+    return "FormId: "+this.model.get("formId");
+  },
+  getItemTime:function(){
+    return "Submit: "+this.model.get("submitDate");
+  },
+  show: function() {
+    // this.model.load(function (err,actual ){
+    //   App.views.form = new SentView({model: new DraftModel(actual.toJSON())});
+    //   App.views.form.render();
+    // });
+   App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
+    });
+    App.views.form.readOnly();
+  }
+
 });
 PendingSubmittingItemView = ItemView.extend({
   templates: {
@@ -2650,10 +3038,10 @@ PendingSubmittingItemView = ItemView.extend({
   //Added submit button for test only, remove after
 
   render: function() {
-    var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
+    var time = new moment(this.model.get('uploadStartDate') || new Date()).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
+      name: this.model.get('formName'),
+      id: this.model.get("formId"),
       timestamp: time
     });
 
@@ -2668,14 +3056,14 @@ PendingSubmittingItemView = ItemView.extend({
 });
 PendingSubmittedItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main delete-item second_button">Dismiss</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main fh_appform_button_cancel delete-item second_button">Dismiss</button><span class="chevron"></span>'
   },
 
   render: function() {
-    var time = new moment(this.model.get('submittedAt')).format('HH:mm:ss DD/MM/YYYY');
+    var time = new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY');
     var item = _.template(this.templates.item, {
-      name: this.model.get('Name'),
-      id: this.renderId(),
+      name: this.model.get('formName'),
+      id: this.model.get("formId"),
       timestamp: time
     });
 
@@ -2684,10 +3072,15 @@ PendingSubmittedItemView = ItemView.extend({
   } ,
 
   show: function() {
-    this.model.load(function (err,actual ){
-      App.views.form = new SentView({model: new DraftModel(actual.toJSON())});
-      App.views.form.render();
+    App.views.header.hideAll();
+    var submission=this.model.coreModel;
+    App.views.form=new FormView({
+      "parentEl":$("#fh_wufoo_content"),
+      "formId":submission.get("formId"),
+      "autoShow":true,
+      "submission":submission
     });
+    App.views.form.readOnly();
 
   }
 
@@ -2700,13 +3093,13 @@ PendingListView = Backbone.View.extend({
   },
 
   templates: {
-    pending_waiting_list: '<ul class="list inset pending_waiting_list"></ul>',
-    pending_waiting_header: '<li class="list-divider">Forms Awaiting Submission</li>',
-    pending_waiting_submitall: '<li><button class="submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
-    pending_submitting_list: '<ul class="list inset pending_submitting_list"></ul>',
-    pending_submitting_header: '<li class="list-divider">Forms currently being submitted<div class="loading hidden"></div></li>',
-    pending_review_list: '<ul class="list inset pending_review_list"></ul>',
-    pending_review_header: '<li class="list-divider">These submissions need to be reviewed</li>'
+    pending_waiting_list: '<ul class="fh_appform_field_area list inset pending_waiting_list"></ul>',
+    pending_waiting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms Awaiting Submission</div></li>',
+    pending_waiting_submitall: '<li><button class="fh_appform_button_action submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
+    pending_submitting_list: '<ul class="fh_appform_field_area list inset pending_submitting_list"></ul>',
+    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div><div class="loading hidden"></div></li>',
+    pending_review_list: '<ul class="fh_appform_field_area list inset pending_review_list"></ul>',
+    pending_review_header: '<li class="list-divider"><div class="fh_appform_field_title">These submissions need to be reviewed</div></li>'
   },
 
   initialize: function() {
@@ -2734,27 +3127,36 @@ PendingListView = Backbone.View.extend({
 
         loadingView.updateProgress(c * 100 / tasks.length);
         loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
-        model.load(function (err,actual){
-          var json = actual.toJSON();
-          loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
-          $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
-          model.destroy();
-
-          return App.collections.pending_submitting.create(json,{},function (err){
-            loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
-            c += 1;
-            loadingView.updateProgress(c * 100 / tasks.length);
-            if(!err) {
-              loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
-              //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-              // to make sure it is re-created and not removed below by model.destroy.
-            } else {
-              loadingView.updateMessage("Submitting " + c + " failed");
-            }
-
-            callback.apply(self,arguments);
-          });
+        model.coreModel.upload(function(){});
+        model.coreModel.on("submitted",function(err){
+          if (!err){
+            loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+          }else{
+            loadingView.updateMessage("Submitting " + c + " failed");
+          }
+          callback(null);
         });
+        // model.load(function (err,actual){
+        //   var json = actual.toJSON();
+        //   loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
+        //   $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
+        //   model.destroy();
+
+        //   return App.collections.pending_submitting.create(json,{},function (err){
+        //     loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
+        //     c += 1;
+        //     loadingView.updateProgress(c * 100 / tasks.length);
+        //     if(!err) {
+        //       loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
+        //       //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
+        //       // to make sure it is re-created and not removed below by model.destroy.
+        //     } else {
+        //       loadingView.updateMessage("Submitting " + c + " failed");
+        //     }
+
+        //     callback.apply(self,arguments);
+        //   });
+        // });
       };
     });    // Kick things off by fetching when all stores are initialised
 
@@ -2813,7 +3215,7 @@ PendingListView = Backbone.View.extend({
   },
 
   appendWaitingForm: function(form) {
-    var view = new ItemView({
+    var view = new PendingWaitingView({
       model: form
     });
     $('.pending_waiting_list', this.el).append(view.render().el);
@@ -2844,11 +3246,11 @@ HeaderView = Backbone.View.extend({
   },
   
   templates: {
-    list: '<ul class="segmented-controller"></ul>',
-    forms_button: '<li class="fh_wufoo_home"><a href="#">Forms</a></li>',
-    drafts_button: '<li class="fh_wufoo_drafts"><a href="#">Drafts<span class="count"></span></a></li>',
-    pending_button: '<li class="fh_wufoo_pending"><a href="#">Pending<span class="count"></span></a></li>',
-    sent_button: '<li class="fh_wufoo_sent"><a href="#">Sent<span class="count"></span></a></li>'
+    list: '<ul class="segmented-controller fh_appform_navigation"></ul>',
+    forms_button: '<li class="fh_wufoo_home"><a class="" href="#">Forms</a></li>',
+    drafts_button: '<li class="fh_wufoo_drafts"><a class="" href="#">Drafts<span class="count"></span></a></li>',
+    pending_button: '<li class="fh_wufoo_pending"><a class="" href="#">Pending<span class="count"></span></a></li>',
+    sent_button: '<li class="fh_wufoo_sent"><a class="" href="#">Sent<span class="count"></span></a></li>'
   },
 
   initialize: function() {
@@ -2898,11 +3300,11 @@ HeaderView = Backbone.View.extend({
           return func.call(self,args);
         } finally {
           if(clear && App.views.form){
-            App.views.form.clearFieldChanged();
+            App.views.form=null;
           }
         }
       };
-      if(skip || App.views.form == null|| (App.views.form && !App.views.form.hasFieldChanged())) {
+      if(skip || App.views.form == null || App.views.form.readonly) {
         return proceed();
       } else {
         var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
@@ -2960,7 +3362,7 @@ HeaderView = Backbone.View.extend({
     App.views.sent_list.hide();
     App.views.settings.hide();
     if (_.isObject(App.views.form)) {
-      App.views.form.hide();
+      App.views.form.el.hide();
       //App.views.form = null;
     }
   },
@@ -3036,1798 +3438,6 @@ AlertView.showAlert = function(o, type, timeout) {
   $fh.logger.debug("showAlert " ,o);
   alertView.render({o:o, type:type, timeout:timeout});
 };
-FieldView = Backbone.View.extend({
-
-  className: 'field_container',
-  templates: {
-    instructions: '<p class="instruct"><%= instructions %></p>'
-  },
-
-  events: {
-    "change": "contentChanged"
-  },
-
-  // TODO: cache the input element lookup?
-  initialize: function() {
-    _.bindAll(this, 'dumpContent', 'clearError');
-
-    var nonFhClasses = this.model.getNonFhClasses();
-    if (nonFhClasses) {
-      this.$el.addClass(nonFhClasses);
-    }
-
-    this.on('visible', function () {
-      //$fh.logger.debug('field visible');
-    });
-
-    if(!this.model.serialize() && !_.isEmpty(this.defaultValue())) {
-      this.model.set({
-        Value: this.defaultValue()
-      });
-    }
-
-    if (this.model.get('IsRequired') === '1') {
-      this.$el.addClass('required');
-    }
-
-    // only call render once. model will never update
-    this.render();
-  },
-
-  dumpContent: function() {
-    $fh.logger.debug("Value changed :: " + JSON.stringify(this.value()));
-  },
-
-  getTopView: function(){
-    var view = this.options.parentView;
-    var parent;
-    do {
-      parent = view.options.parentView;
-      if(parent) {
-        view = parent;
-      }
-    }while(parent);
-    return view;
-  },
-
-  contentChanged: function(e) {
-    this.dumpContent();
-    this.getTopView().trigger('change:field');
-    this.model.set({
-      Value: this.value()
-    });
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.template.join(''), {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title'),
-      "defaultVal": this.model.get('DefaultVal') || ''
-    }));
-
-    var instructions = this.model.get('Instructions');
-
-    if (instructions && instructions !== '') {
-      $('label:first', this.el).after(_.template(this.templates.instructions, {
-        instructions: this.model.get('Instructions')
-      }));
-    }
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-
-    // force the element to be initially hidden
-    if (this.$el.hasClass("hide")) {
-      this.hide(true);
-    }
-  },
-
-  addRules: function() {
-    this.addValidationRules();
-    this.addSpecialRules();
-  },
-
-  isRequired: function() {
-    return this.model.get('IsRequired') === '1';
-  },
-
-  addValidationRules: function() {
-    if (this.model.get('IsRequired') === '1') {
-      this.$el.find('#' + this.model.get('ID')).rules('add', {
-        "required": true
-      });
-    }
-  },
-
-  addSpecialRules: function() {
-    var self = this;
-
-    var rules = {
-      'Show': function(rulePasses, params) {
-        var fieldId = 'Field' + params.Setting.FieldName;
-        if (rulePasses) {
-          App.views.form.showField(fieldId);
-        } else {
-          App.views.form.hideField(fieldId);
-        }
-      },
-      'Hide': function(rulePasses, params) {
-        var fieldId = 'Field' + params.Setting.FieldName;
-        if (rulePasses) {
-          App.views.form.hideField(fieldId);
-        } else {
-          App.views.form.showField(fieldId);
-        }
-      }
-    };
-
-    // also apply any special rules
-    _(this.model.get('Rules') || []).each(function(rule) {
-      var ruleConfig = _.clone(rule);
-      ruleConfig.pageView = self.options.parentView;
-      ruleConfig.fn = rules[rule.Type];
-      self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
-    });
-  },
-
-  removeRules: function() {
-    this.$el.find('#' + this.model.get('ID')).rules('remove');
-  },
-
-  // force a hide , defaults to false
-  hide: function(force) {
-    if (force || this.$el.is(':visible')) {
-      this.$el.hide();
-      // remove rules too
-      this.removeRules();
-    }
-  },
-
-  addButton: function(input, extension_type, label) {
-    var self = this;
-    var button = $('<button>');
-    button.addClass('special_button');
-    button.addClass(extension_type);
-    button.text(' ' + label);
-    var img = $('<img>');
-    img.attr('src', './img/' + extension_type + '.png');
-    img.css('height', '28px');
-    img.css('width', '28px');
-    button.prepend(img);
-
-    button.click(function(e) {
-      self.action(this);
-      e.preventDefault();
-      return false;
-    });
-
-    input.append(button);
-    return button;
-  },
-
-  show: function() {
-    if (!this.$el.is(':visible')) {
-      this.$el.show();
-      // add rules too
-      this.addRules();
-      //set the form value from model
-      this.value(this.model.serialize());
-    }
-  },
-
-  defaultValue: function() {
-    var defaultValue = {};
-    defaultValue[this.model.get('ID')] = this.model.get('DefaultVal');
-    return defaultValue;
-  },
-
-  // Gets or Set the value for this field
-  // value should always be the serialized form value i.e {Field1 : "Test"}
-  // field with sub fields - {{Field1 : "First Name"}, {Field2 : "Second Name"}}
-  // More complex fields such as files may have value overridden
-  // file - {Field2 : {filebase64 : "sssss", filename : "test.txt", content_type : "text/plain"}}
-  value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      $.each(value, function(id, val) {
-        $("#" + id).val(val);
-      });
-    }
-    value = {};
-    this.$el.find('input, select, textarea').each(function() {
-      value[$(this).attr('id')] = $(this).val();
-    });
-    return value;
-  } ,
-
-  // TODO horrible hack
-  clearError: function(){
-    this.$el.find("label[class=error]").remove();
-    this.$el.removeClass("error");
-    this.$el.find(".error").removeClass("error");
-  }
-
-});
-FieldTextView = FieldView.extend({
-  template: ['<label class="desc" for="<%= id %>"><%= title %></label>', '<input class="field text medium" maxlength="255" id="<%= id %>" name="<%= id %>" type="text" value="<%= defaultVal %>">']
-});
-FieldNumberView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="number">'],
-
-  addValidationRules: function () {
-    // call super
-    FieldView.prototype.addValidationRules.call(this);
-
-    // make sure value is a number
-    this.$el.find('#' + this.model.get('ID')).rules("add", {
-      "number": true
-    });
-  }
-});
-FieldDateView = FieldView.extend({
-  template:['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="date">'],
-
-  // TODO: do we need validation? how is this inputted by user?
-
-
-  defaultValue: function() {
-    var defaultValue = {};
-    if(this.model.get('DefaultVal')) {
-      var val = new moment(this.model.get('DefaultVal'), 'MM/DD/YYYY');
-      defaultValue[this.model.get('ID')] = val.format('YYYYMMDD');
-    }
-    return defaultValue;
-  },
-
-  value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      $.each(value, function(id, val) {
-        if (val && !_.isEmpty(val)) {
-          $("#" + id).val(new moment(val, "YYYYMMDD").format('YYYY-MM-DD'));
-        }
-      });
-    }
-    var val = $('#' + this.model.get('ID')).val();
-    value = {};
-    if(val !== "") {
-      value[this.model.get('ID')] = new moment(val).format('YYYYMMDD');
-    }
-    return value;
-  }
-});
-FieldTextareaView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<textarea id="<%= id %>" name="<%= id %>" ></textarea>']
-});
-FieldRadioView = FieldView.extend({
-  templates: {
-    hidden_field: '<input id="radio<%= id %>" type="hidden" value="" data-type="radio">',
-    title: '<label><%= title %></label>',
-    choice: '<input id="<%= id %>_<%= iteration %>" name="<%= id %>" type="radio" class="field radio" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>_<%= iteration %>"><%= choice %></label><br/>'
-  },
-
-  render: function() {
-    var self = this;
-
-    var title = _.template(this.templates.title, {
-      "title": this.model.get('Title')
-    });
-    this.$el.append(title);
-
-    var hidden_field = _.template(this.templates.hidden_field, {
-      "id": this.model.get('ID')
-    });
-    this.$el.append(hidden_field);
-
-    var choices = this.model.get('Choices');
-    $.each(choices, function(i, choice) {
-      var choice_field = $(_.template(self.templates.choice, {
-        "id": self.model.get('ID'),
-        "iteration": i,
-        "choice": choice.Label,
-        "value": choice.Label
-      }));
-      if (i === 0) {
-        choice_field.attr('checked', 'checked');
-      }
-      self.$el.append(choice_field);
-    });
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-    // ensure that the field has a value, otherwise
-    // submission will fail on a required radio with the default field as the first field
-    this.model.set({Value: this.value()});
-  },
-
-  addValidationRules: function () {
-    // first radio is always initially checked, so no need to do 'required' validation on this field
-  },
-
-  value:function (value) {
-    var self = this;
-    if (value) {
-      $.each(value, function (id, val) {
-        $("input[value='" + val + "']").attr("checked", "checked");
-      });
-    }
-    value = {};
-    this.$el.find('input[type="radio"]:checked').each(function() {
-      value[self.model.get('ID')] = $(this).val();
-    });
-    return value;
-  }
-});
-FieldCheckboxView = FieldView.extend({
-  templates: {
-    title: '<label><%= title %></label>',
-    choice: '<input id="<%= id %>" name="<%= mainId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" tabindex="<%= iteration %>"><label class="choice" for="<%= id %>"><%= choice %></label><br/>'
-  },
-
-  render: function() {
-    var self = this;
-
-    var title = _.template(this.templates.title, {
-      "title": this.model.get('Title')
-    });
-    this.$el.append(title);
-
-    var subfields = this.model.get('SubFields');
-    $.each(subfields, function(i, subfield) {
-      var choice_field = $(_.template(self.templates.choice, {
-        "id": subfield.ID,
-        "mainId": self.model.get('ID'),
-        "iteration": i,
-        "choice": subfield.Label,
-        "value": subfield.Label
-      }));
-      self.$el.append(choice_field);
-    });
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  addValidationRules: function () {
-    if (this.model.get('IsRequired') === '1') {
-      // special required rule for checkbox fields
-      this.$el.find('[name="' + this.model.get('ID') + '[]"]').first().rules('add', {
-        "required": true,
-        "minlength": 1,
-        messages: {
-          required: "Please choose at least 1"
-         }
-      });
-    }
-  },
-
-  defaultValue:function () {
-    var defaultValue = {};
-    var subfields = this.model.get('SubFields');
-    $.each(subfields, function(i, subfield) {
-      if(subfield.DefaultVal && subfield.DefaultVal == 1) {
-        defaultValue[subfield.ID] = subfield.Label;
-      }
-    });
-    return defaultValue;
-  },
-
-  value:function (value) {
-    if (value) {
-      $.each(value, function (id, val) {
-        $("input[value='" + val + "']").attr("checked", "checked");
-      });
-    }
-    value = {};
-    this.$el.find('input[type="checkbox"]:checked').each(function() {
-      value[$(this).attr('id')] = $(this).val();
-    });
-    return value;
-  }
-});
-
-FieldSelectView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<select id="<%= id %>" name="<%= id %>"><option>Test</option></select>'],
-
-  templates: {
-    label: '<label><%= title %></label>',
-    select: '<select id="<%= id %>" name="<%= id %>"></select>',
-    option: '<option value="<%= value %>"><%= value %></option>'
-  },
-
-  render: function() {
-    var self = this;
-
-    var label = _.template(this.templates.label, {
-      "title": this.model.get('Title')
-    });
-    this.$el.append(label);
-
-    var select = _.template(this.templates.select, {
-      "id": this.model.get('ID')
-    });
-    this.$el.append(select);
-
-    var choices = this.model.get('Choices');    
-
-    $.each(choices, function(i, choice) {
-      var option = $(_.template(self.templates.option, {
-        "value": choice.Label
-      }));
-      $('select', self.el).append(option);
-    });
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-
-    this.show();
-  }
-  
-});
-FieldFileView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="file">'],
-
-
-  dumpContent: function() {
-    var tmp = "<empty>";
-    if(this.fileData) {
-      var size = this.fileData.fileBase64.length +" bytes";
-      if(this.fileData.fileBase64.length > 1024) {
-        size = (Math.floor((this.fileData.fileBase64.length/ 1024) * 1000) / 1000) +" Kilo bytes";
-      }
-      tmp = {content_type : this.fileData.content_type,filename : this.fileData.filename , size: size };
-    }
-    $fh.logger.debug("Value changed :: " + JSON.stringify(tmp));
-  },
-
-  contentChanged: function(e) {
-    var self = this;
-    self.fileData = {};
-    var changeimg = function(str){
-      if(typeof str === "object") {
-        str = str.target.result; // file reader
-      }
-      self.fileData.fileBase64 = str;
-      self.dumpContent();
-      self.model.set({Value: self.value()});
-    };
-
-    var file, fileObj = this.$el.find('input')[0];
-    if (fileObj && fileObj.files) { // webkit/ie
-      file = fileObj.files[0];
-      self.fileData.filename = file.name;
-      self.fileData.content_type = file.type;
-      var fr = new FileReader();
-      fr.onloadend = changeimg;
-      fr.readAsDataURL(file);
-    } else {
-      file = fileObj.value; // firefox
-      changeimg(file);
-    }
-  },
-
-  value: function(value) {
-    if (value) {
-      //How can you update the file element to show the current file selected
-      this.fileData = value[this.model.get('ID')];
-    }
-    value = {};
-    if(this.fileData) {
-      value[this.model.get('ID')] = this.fileData;
-    }
-    return value;
-  }
-});
-FieldEmailView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="email">'],
-
-  addValidationRules: function () {
-    // call super
-    FieldView.prototype.addValidationRules.call(this);
-
-    // email validation
-    this.$el.find('#' + this.model.get('ID')).rules('add', {
-      "email": true
-    });
-  }
-});
-FieldTimeView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="time">']
-
-//  'Field117' => '08:30:31',
-// TODO: do we need validation? how is this inputted by user?
-
-});
-// We only capture this as text
-// NOTE: validate plugin has a 'phoneUS' type. Could use this if needed
-FieldPhoneView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="tel">']
-});
-FieldShortnameView = FieldView.extend({
-  templates: {
-    title: '<label><%= title %></label>',
-    input: '<span class="fancy_name"><input id="<%= id %>" name="<%= id %>" type="text" class="field text"/><label for="<%= id %>"><%= label %></label></span>'
-  },
-
-  render: function() {
-    var self = this;
-
-    this.$el.addClass('shortname');
-    var title = _.template(this.templates.title, {
-      "title": this.model.get('Title')
-    });
-    this.$el.append(title);
-
-    var subfields = this.model.get('SubFields');
-    $.each(subfields, function(i, subfield) {
-      var choice_field = $(_.template(self.templates.input, {
-        "id": subfield.ID,
-        "label": subfield.Label,
-        "value": subfield.DefaultVal
-      }));
-
-      self.$el.append(choice_field);
-    });
-
-    var br = $('<br>').css('clear', 'left');
-    self.$el.append(br);
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  addValidationRules: function () {
-    if (this.model.get('IsRequired') === '1') {
-      this.$el.find('input').each(function () {
-        $(this).rules('add', {
-          "required": true
-        });
-      });
-    }
-  }
-});
-
-FieldAddressView = FieldView.extend({
-  templates: {
-    title: '<label><%= title %></label>',
-    input: '<span class="fancy_name"><label for="<%= id %>"><%= label %></label><input id="<%= id %>" name="<%= id %>" type="text" class="field text <%= classes %>" value="<%= value %>"/></span>',
-    countries_select: '<span class="fancy_name"><label for="<%= id %>">Country</label><select id="<%= id %>" name="<%= id %>"></select></span>',
-    countries_option: '<option><%= value %></option>'
-  },
-
-  // TODO: allow for default country specified in wufoo form builder?
-  countries: ["", "United States", "United Kingdom", "Ireland", "----", "Afghanistan", "Åland Islands", "Albania", "Algeria", "American Samoa", "Andorra", "Angola", "Anguilla", "Antarctica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia, Plurinational State of", "Bonaire, Saint Eustatius and Saba", "Bosnia and Herzegovina", "Botswana", "Bouvet Island", "Brazil", "British Indian Ocean Territory", "Brunei Darussalam", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo", "Congo, the Democratic Republic of the", "Cook Islands", "Costa Rica", "Côte D'ivoire", "Croatia", "Cuba", "Curaçao", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Falkland Islands (Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern Territories", "Gabon", "Gambia", "Georgia", "Germany", "Ghana", "Gibraltar", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and Mcdonald Islands", "Holy See (Vatican City State)", "Honduras", "Hong Kong", "Hungary", "Iceland", "India", "Indonesia", "Iran, Islamic Republic of", "Iraq", "Isle of Man", "Israel", "Italy", "Jamaica", "Japan", "Jersey", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Korea, Democratic People's Republic of", "Korea, Republic of", "Kuwait", "Kyrgyzstan", "Lao People's Democratic Republic", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libyan Arab Jamahiriya", "Liechtenstein", "Lithuania", "Luxembourg", "Macao", "Macedonia, the Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Moldova, Republic of", "Monaco", "Mongolia", "Montenegro", "Montserrat", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Palestinian Territory, Occupied", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcairn", "Poland", "Portugal", "Puerto Rico", "Qatar", "Réunion", "Romania", "Russian Federation", "Rwanda", "Saint Barthélemy", "Saint Helena, Ascension and Tristan Da Cunha", "Saint Kitts and Nevis", "Saint Lucia", "Saint Martin (French Part)", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia", "Seychelles", "Sierra Leone", "Singapore", "Sint Maarten (Dutch Part)", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and the South Sandwich Islands", "Spain", "Sri Lanka", "Sudan", "Suriname", "Svalbard and Jan Mayen", "Swaziland", "Sweden", "Switzerland", "Syrian Arab Republic", "Taiwan, Province of China", "Tajikistan", "Tanzania, United Republic of", "Thailand", "Timor-Leste", "Togo", "Tokelau", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Turks and Caicos Islands", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United States Minor Outlying Islands", "Uruguay", "Uzbekistan", "Vanuatu", "Venezuela, Bolivarian Republic of", "Viet Nam", "Virgin Islands, British", "Virgin Islands, U.S.", "Wallis and Futuna", "Western Sahara", "Yemen", "Zambia", "Zimbabwe"],
-
-  render: function() {
-    var self = this;
-
-    var title = _.template(this.templates.title, {
-      "title": this.model.get('Title')
-    });
-    this.$el.addClass('address');
-    this.$el.append(title);
-
-    // TODO: Fancy country
-    var subfields = this.model.get('SubFields');
-    $.each(subfields, function(i, subfield) {
-      var formattedLabel = subfield.Label.toLowerCase().replace(/\s|\//g, '');
-      if (subfield.Label === 'Country') {
-        var select = $(_.template(self.templates.countries_select, {
-          "id": subfield.ID,
-          "classes": formattedLabel
-        }));
-
-        // Build countries list
-        $.each(self.countries, function(i, country) {
-          var option = $(_.template(self.templates.countries_option, {
-            "value": country
-          }));
-          $('select', select).append(option);
-        });
-
-        self.$el.append(select);
-      } else {
-        var choice_field = $(_.template(self.templates.input, {
-          "id": subfield.ID,
-          "label": subfield.Label,
-          "classes": (['streetaddress', 'city', 'postalzipcode'].indexOf(formattedLabel) < 0 ? 'validate_ignore ' : ' ') + formattedLabel,
-          "value": subfield.DefaultVal
-        }));
-
-        self.$el.append(choice_field);
-      }
-    });
-
-    var br = $('<br>').css('clear', 'left');
-    self.$el.append(br);
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  defaultValue:function () {
-    var defaultValue = {};
-    var subfields = this.model.get('SubFields');
-    $.each(subfields, function(i, subfield) {
-      if(subfield.DefaultVal) {
-        defaultValue[subfield.ID] = subfield.DefaultVal;
-      }
-    });
-    return defaultValue;
-  },
-
-  addValidationRules: function () {
-    if (this.isRequired()) {
-      var message = 'Please fill in the highlighted fields.';
-      // street
-      this.$el.find('.streetaddress, .city, .postalzipcode, select').each(function (index) { // have to do each as validate plugin runs for first item in selector only
-        $(this).rules('add', {
-          required: true
-        });
-      });
-    }
-  }
-
-});
-FieldUrlView = FieldView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="url">'],
-
-  addValidationRules: function () {
-    // call super
-    FieldView.prototype.addValidationRules.call(this);
-
-    // url validation
-    this.$el.find('#' + this.model.get('ID')).rules('add', {
-      "url": true
-    });
-  }
-});
-// TODO: Wufoo forms page splits this up into subfields, but the API doesn't seem to. Investigate whether we can just post a single field.
-
-FieldMoneyView = FieldNumberView.extend({
-  template: ['<label for="<%= id %>"><%= title %></label>','<input id="<%= id %>" name="<%= id %>" type="number">']
-});
-$.validator.addMethod('likert_group_required', function (value, element, params) {
-  return $(element).closest('.field_container').find('select option:selected:empty').length < 1;
-}, 'Please select an option for all questions.');
-
-FieldLikertView = FieldView.extend({
-  templates: {
-    title: '<label><%= title %></label>',
-    subfield_container: '<div class="likert_subfield"></div>',
-    select_label: '<label for="<%= id %>" class="font-normal"><%= label %></label>',
-    select: '<select id="<%= id %>" name="<%= id %>" class="<%= classes %>"></select>',
-    option: '<option value="<%= value %>"><%= label %></option>'
-  },
-
-  render: function() {
-    var self = this;
-
-    var title = _.template(this.templates.title, {
-      "title": this.model.get('Title')
-    });
-    this.$el.append(title);
-
-    var subfields = this.model.get('SubFields');
-    var choices = this.model.get('Choices');
-
-    $.each(subfields, function(i, subfield) {
-      var subfield_container = $(_.template(self.templates.subfield_container, {}));
-      
-      var select_label = $(_.template(self.templates.select_label, {
-        id: subfield.ID,
-        label: subfield.Label
-      }));
-      var select = $(_.template(self.templates.select, {
-        id: subfield.ID,
-        classes: i > 0 ? 'validate_ignore': ''
-      }));
-
-      // Add options
-      $.each(choices, function(i, choice) {
-        var option;
-        // Default blank
-        if (i === 0) {
-          option = $(_.template(self.templates.option, {
-            label: '',
-            value: ''
-          }));
-          select.append(option);
-        }
-        option = $(_.template(self.templates.option, {
-          label: choice.Label,
-          value: choice.Score
-        }));
-        select.append(option);
-      });
-
-      // Add select
-      subfield_container.append(select_label);
-      subfield_container.append(select);
-      self.$el.append(subfield_container);
-    });
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-
-    this.show();
-  },
-
-  addValidationRules: function () {
-    if (this.isRequired()) {
-      this.$el.find('#' + this.model.get('ID')).rules('add', {
-        "likert_group_required": true
-      });
-    }
-  }
-
-});
-
-FieldGeoView = FieldView.extend({
-  extension_type: 'fhgeo',
-
-  templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text" disabled>'
-  },
-  initialize: function() {
-    FieldView.prototype.initialize.call(this);
-    this.on('visible',this.clearError);
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.templates.input, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add button
-    this.addButton(this.$el, this.extension_type, 'Capture Location (Lat/Lon)');
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  contentChanged: function(e) {
-    FieldView.prototype.contentChanged.apply(this,arguments);
-    this.clearError();
-  },
-
-  action: function(el) {
-    var self = this;
-    var ds = new moment().format('YYYY-MM-DD');
-    var input = $('input', this.$el);
-
-    navigator.geolocation.getCurrentPosition(function(res) {
-      var location = '(' + res.coords.latitude + ', ' + res.coords.longitude + ')';
-      input.val(location);
-      self.contentChanged();
-    }, function(msg, err) {
-      input.attr('placeholder','Location could not be determined');
-    });
-    input.blur();
-  }
-});
-FieldGeoENView = FieldView.extend({
-  extension_type: 'fhgeoen',
-
-  templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="text" disabled>'
-  },
-
-  initialize: function() {
-    FieldView.prototype.initialize.call(this);
-    this.on('visible',this.clearError);
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.templates.input, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add button
-    this.addButton(this.$el, this.extension_type, 'Capture Location (E/N)');
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  action: function(el) {
-    var self = this;
-    var ds = new moment().format('YYYY-MM-DD');
-    var input = $('input', this.$el);
-
-    navigator.geolocation.getCurrentPosition(function(res) {
-      var en_location = self.convertLocation(res);
-      var location = '(' + en_location.easting + ', ' + en_location.northing + ')';
-      input.val(location);
-      self.contentChanged();
-    }, function(msg, err) {
-      input.attr('placeholder','Location could not be determined');
-    });
-    input.blur();
-  },
-
-  convertLocation: function(location) {
-    var lat = location.coords.latitude;
-    var lon = location.coords.longitude;
-    var params = {
-      lat: function() {
-        return lat;
-      },
-      lon: function() {
-        return lon;
-      }
-    };
-    return OsGridRef.latLongToOsGrid(params);
-  },
-
-  contentChanged: function(e) {
-    FieldView.prototype.contentChanged.apply(this,arguments);
-    this.clearError();
-  }
-
-});
-FieldCameraView = FieldView.extend({
-  events: {
-    'click button.remove': "removeThumb",
-    'click button.fhcam': "addFromCamera",
-    'click button.fhcam_lib': "addFromLibrary"
-  },
-
-  template: ['<label for="<%= id %>"><%= title %></label>', '<input id="<%= id %>" name="<%= id %>" type="hidden">', '<div class="upload"><p>Please choose a picture</p>', '</div>', '<div class="uploaded"><p>Picture chosen</p>', '<img class="imageThumb" width="100%">', '</div>'],
-
-  initialize: function() {
-    FieldView.prototype.initialize.call(this);
-    //Make sure 'this' is bound for setImageData, was incorrect on device!
-    _.bindAll(this, 'setImageData', 'imageSelected');
-    this.on('visible',this.clearError);
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.template.join(''), {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    this.addButton(this.$el, 'fhcam', 'Capture Photo from Camera');
-    this.addButton(this.$el, 'fhcam_lib', 'Choose Photo from Library');
-    this.addButton(this.$el, 'remove', 'Remove Photo', 'uploaded');
-
-    this.setImageData(null, true);
-
-    // add to dom hidden
-    this.$el.hide();
-    this.options.parentEl.append(this.$el);
-
-    this.show();
-  },
-
-  contentChanged: function(e) {
-    FieldView.prototype.contentChanged.apply(this,arguments);
-    this.clearError();
-  },
-
-  addButton: function(input, img_file, label, classes, action) {
-    var self = this;
-    var button = $('<button>');
-    button.addClass('special_button');
-    button.addClass(img_file);
-    button.text(' ' + label);
-    var img = $('<img>');
-    img.attr('src', './img/' + img_file + '.png');
-    img.css('height', '28px');
-    img.css('width', '28px');
-    button.prepend(img);
-
-    if (typeof action !== 'undefined') {
-      button.click(function(e) {
-        action();
-        e.preventDefault();
-        return false;
-      });
-    }
-
-    if (classes) {
-      button.addClass(classes);
-    }
-
-    input.append(button);
-    return button;
-  },
-
-  getOrder: function() {
-    return this.options.order;
-  },
-
-  setImageData: function(imageData, dontCallContentChanged) {
-    var target = this.$el.find('#' + this.model.get('ID'));
-
-    if (imageData) {
-      $fh.logger.debug('setting imageData:', imageData.length);
-      // prepend dataUri if not already there
-      var dataUri = imageData;
-      if (!/\bdata\:image\/.+?\;base64,/.test(dataUri)) {
-        dataUri = 'data:image/jpeg;base64,' + imageData;
-      }
-      target.val(dataUri);
-      this.$el.find('.imageThumb').attr('src', dataUri);
-      this.$el.find('.upload').hide();
-      this.$el.find('.uploaded').show();
-      this.fileData = {};
-      this.fileData.fileBase64 = dataUri;
-      this.fileData.filename = "photo";
-      this.fileData.content_type = "image/jpeg";
-    } else {
-      target.val(null);
-      this.$el.find('.imageThumb').removeAttr('src');
-      this.$el.find('.upload').show();
-      this.$el.find('.uploaded').hide();
-      delete this.fileData;
-    }
-
-    // manually call contentChanged as 'change' event doesn't get triggered when we manipulate fields programatically
-    if (!dontCallContentChanged) {
-      this.contentChanged();
-    }
-  },
-
-  dumpContent: function() {
-    FieldFileView.prototype.dumpContent.call(this);
-  },
-
-  hasImageData: function() {
-    return this.$el.find('#' + this.model.get('ID')).val().length > 0;
-  },
-
-  getImageData: function() {
-    return this.$el.find('#' + this.model.get('ID')).val();
-  },
-
-  removeThumb: function(e) {
-    e.preventDefault();
-    $fh.logger.debug('removeThumb');
-
-    this.setImageData(null);
-    this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
-  },
-
-  addFromCamera: function(e) {
-    e.preventDefault();
-    this.addImage();
-  },
-
-  addFromLibrary: function(e) {
-    e.preventDefault();
-    this.addImage(true);
-  },
-
-  imageSelected: function(imageData) {
-    this.setImageData(imageData);
-    this.trigger('imageAdded'); // trigger events used by grouped camera fields
-  },
-
-  parseCssClassCameraOptions: function() {
-    var options = {
-      targetHeight: null,
-      targetWidth: null,
-      quality: null
-    };
-
-    var classNames = this.model.get('ClassNames'),
-      parts, val;
-    if (classNames !== '') {
-      var classes = classNames.split(' ');
-      _(classes).forEach(function(className) {
-        if (className.indexOf("fhdimensions") != -1) {
-          parts = className.split('=');
-          val = parts[1].split('x');
-
-          // Retry
-          if (val.length == 2) {
-            // Validity check
-            if (val[0] < 10000 && val[1] < 10000) {
-              options.targetWidth = val[0];
-              options.targetHeight = val[1];
-            } else {
-              $fh.logger.error('Invalid camera resolution, using defaults');
-            }
-          }
-        } else if (className.indexOf("fhcompression") != -1) {
-          parts = className.split('=');
-          val = parts[1].split('%');
-
-          options.quality = val[0];
-        }
-      });
-    }
-
-    return options;
-  },
-
-  addImage: function(fromLibrary) {
-    // TODO: move this to cloud config, synced to client on startup
-    var camOptions = {
-      quality: App.config.getValueOrDefault('cam_quality'),
-      targetWidth: App.config.getValueOrDefault('cam_targetWidth'),
-      targetHeight: App.config.getValueOrDefault('cam_targetHeight')
-    };
-
-    var options = this.parseCssClassCameraOptions();
-    // Merge
-    camOptions = _.defaults(options, camOptions);
-
-    //wp8 need to use data URL
-    if(window.device && window.device.platform && window.device.platform.indexOf("Win32NT") > -1){
-      camOptions.destinationType = Camera.DestinationType.DATA_URL;
-    }
-
-    if (typeof navigator.camera === 'undefined') {
-      this.imageSelected(this.sampleImage());
-    } else {
-      if (fromLibrary) {
-        camOptions.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-      }
-      // turn off refetch on resume from pic taking, necessary as pic/cam sends app in background
-      App.resumeFetchAllowed = false;
-      navigator.camera.getPicture(this.imageSelected, function(err) {
-        alert('Camera Error: ' + err);
-      }, camOptions);
-    }
-  },
-
-  show: function() {
-    // only perform check once
-    if (this.options.initHidden) {
-      this.options.initHidden = false;
-    } else {
-      FieldView.prototype.show.call(this);
-    }
-  },
-
-  value: function(value) {
-    if (value && !_.isEmpty(value) && value[this.model.get('ID')] && value[this.model.get('ID')].fileBase64) {
-      this.setImageData(value[this.model.get('ID')].fileBase64.replace(/^data:([^,]*,|)/, ""), true);
-    }
-    value = {};
-    if (this.fileData) {
-      value[this.model.get('ID')] = this.fileData;
-    }
-    return value;
-  },
-
-  sampleImages: ['/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAAAAAAD/4QMraHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjAtYzA2MCA2MS4xMzQ3NzcsIDIwMTAvMDIvMTItMTc6MzI6MDAgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCBDUzUgTWFjaW50b3NoIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVEMzgyQjRCMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0IiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVEMzgyQjRDMTU1MjExRTJBNzNDQzMyMEE5ODI5OEU0Ij4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUQzODJCNDkxNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUQzODJCNEExNTUyMTFFMkE3M0NDMzIwQTk4Mjk4RTQiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/7gAOQWRvYmUAZMAAAAAB/9sAhAAbGhopHSlBJiZBQi8vL0JHPz4+P0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHAR0pKTQmND8oKD9HPzU/R0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0dHR0f/wAARCAAyADIDASIAAhEBAxEB/8QATQABAQAAAAAAAAAAAAAAAAAAAAQBAQEBAAAAAAAAAAAAAAAAAAAEBRABAAAAAAAAAAAAAAAAAAAAABEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8AiASt8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAB//9k=', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAALklEQVQYV2NkwAT/oUKMyFIoHKAETBFIDU6FIEUgSaJMBJk0MhQihx2W8IcIAQBhewsKNsLKIgAAAABJRU5ErkJggg==', 'iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAYUlEQVQYV2NkQAJlM1X/g7hd6bdBFCOyHCNIEigBppElkNkgeYIKYBrwKoQ6A+wEuDtwOQHmLLgbQbqQ3YnubhSfwRTj9DUu3+J0I7oGkPVwXwMZKOEHdCdcPdQJILczAAACnDmkK8T25gAAAABJRU5ErkJggg=='],
-
-  sampleImage: function() {
-    window.sampleImageNum = (window.sampleImageNum += 1) % this.sampleImages.length;
-    return this.sampleImages[window.sampleImageNum];
-  }
-
-});
-window.sampleImageNum = -1;
-FieldCameraGroupView = FieldCameraView.extend({
-  initialize: function() {
-    FieldCameraView.prototype.initialize.call(this);
-    //Make sure 'this' is bound for setImageData, was incorrect on device!
-    // pass visible event down to all fields
-    var parent = this;
-    this.on('visible', function () {
-      $fh.logger.debug('group visible');
-      var subviews = this.subviews;
-      _(subviews).forEach(function (fieldView) {
-        // this group is a camera view and contains itself
-        // we've already triggered visible on the group, so skip
-        if(parent !== fieldView){
-          fieldView.trigger('visible');
-        }
-      });
-    });
-  },
-
-  render: function () {
-    var self = this;
-    // this view subclasses camera view, so render it for first camera item
-    FieldCameraView.prototype.render.call(this);
-    this.options.order = 0;
-
-    this.subviews = [this]; // this is the first field i.e. this extends FieldCameraView
-    this.bind('imageAdded imageRemoved', this.updateFields, this);
-
-    // initialilse subsequent camera views from subfields
-    var subFields = this.model.get('SubFields');
-    _(subFields).forEach(function (subField, index) {
-      var subview = new FieldCameraView({
-        parentEl: self.options.parentEl,
-        parentView: self.options.parentView,
-        model: new FieldModel(subField),
-        order: index + 1,
-        initHidden: subField.IsRequired === '1' ? false: true // hide camera fields initially if they're not required
-      });
-      // bind event handler for whenever image is added/remove from field
-      subview.bind('imageAdded imageRemoved', self.updateFields, self); // purposely pass in self here as subviews need to be iterated over no matter which field changed
-      self.subviews.push(subview);
-    });
-    //ToDo subviews should probably be added in initialize?
-    this.value(this.model.serialize());
-
-    // if restoring from a draft, may need to show some additional fields
-    this._optimiseVisibleFields();
-  },
-
-  updateFields: function () {
-    this._fillBlanks();
-    this._optimiseVisibleFields();
-  },
-
-  _fillBlanks: function () {
-    var groups = this._getGroupedFields();
-
-    // move any optional filled fields into empty required field spots
-    // NOTE: could move all filled fields here,
-    //       but not necessary as required fields that are filled is what we want (and are always visible anyways).
-    //       Only thing is, may have a blank required above a filled required. minor UI preference
-    _(groups.optFilled).forEach(function (optField, index) {
-      // get next empty field
-      var nextEmptyField = groups.empty[0];
-      // if field exists & is before the field we're trying to move, move it. Otherwise, do nothing
-      if (nextEmptyField && (nextEmptyField.getOrder() < optField.getOrder())) {
-        // remove entry from empty list as we'll be filling it here
-        groups.empty.shift();
-        // move image data to reqField
-        nextEmptyField.setImageData(optField.getImageData(), true);
-        // empty image data from optField
-        optField.setImageData(null, false);
-        groups.empty.push(optField); // field is now empty, add to end of empty list
-      }
-    });
-  },
-
-  _optimiseVisibleFields: function () {
-    // get groups again as they may have changed above (optional filled moved to req filled)
-    var groups = this._getGroupedFields();
-
-    // all fields image data in order. See how many optional fields we should show, if any
-    var amountToShow = groups.reqFilled.length >= groups.req.length ? Math.min(groups.opt.length, Math.max(0, groups.optFilled.length + 1)) : 0;
-    _(groups.opt).forEach(function (optField, index) {
-      if (index < amountToShow) {
-        optField.show();
-      } else {
-        optField.hide();
-      }
-    });
-    this.contentChanged(); //Call contentChanged so all image data is set on the group model
-  },
-
-    // group fields based on required status and whether or not image data is filled
-  _getGroupedFields: function () {
-    var groups = {
-      req: [], // required fields
-      reqEmpty: [], // required empty fields
-      reqFilled: [], // required filled fields
-      opt: [], // optional fields
-      optEmpty: [], // optional empty fields
-      optFilled: [], // optional filled fields
-      empty: [] // empty fields
-    };
-
-    _(this.subviews).forEach(function (subview, index) {
-      if (subview.isRequired()) { // required field
-        groups.req.push(subview);
-        if (subview.hasImageData()) { // filled in
-          groups.reqFilled.push(subview);
-        } else { // empty
-          groups.reqEmpty.push(subview);
-          groups.empty.push(subview);
-        }
-      } else { // optional field
-        groups.opt.push(subview);
-        if (subview.hasImageData()) { // filled in
-          groups.optFilled.push(subview);
-        } else { // empty
-          groups.optEmpty.push(subview);
-          groups.empty.push(subview);
-        }
-      }
-    });
-    return groups;
-  },
-
-  value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      _(this.subviews).forEach(function (subview, index) {
-        //subview might be the group, so we call value on FieldCameraView
-        FieldCameraView.prototype.value.call(subview, value);
-      });
-    }
-    value = {};
-    _(this.subviews).forEach(function (subview, index) {
-      $.extend(value, FieldCameraView.prototype.value.call(subview));
-    });
-    return value;
-  }
-});
-FieldSignatureView = FieldView.extend({
-  extension_type: 'fhsig',
-
-  templates: {
-    input: '<label for="<%= id %>"><%= title %></label><img class="sigImage"/><input id="<%= id %>" name="<%= id %>" type="hidden">',
-    signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton">Clear</button><button class="cap_sig_done_btn">Done</button>', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
-  },
-
-  initialize: function() {
-    FieldView.prototype.initialize.call(this);
-    this.on('visible',this.clearError);
-  },
-
-  dumpContent: function() {
-    FieldFileView.prototype.dumpContent.call(this);
-  },
-
-  render: function() {
-    var self = this;
-    this.$el.append(_.template(this.templates.input, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add button
-    var button = this.addButton(this.$el, this.extension_type, 'Capture Signature');
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    $fh.logger.debug("render html=" + this.$el.html());
-    this.show();
-  },
-
-  contentChanged: function(e) {
-    FieldView.prototype.contentChanged.apply(this,arguments);
-    this.clearError();
-  },
-
-  // TODO horrible hack
-  clearError: function(){
-    var id = this.model.get('ID');
-    var val = this.model.get("Value");
-    if(val && val.hasOwnProperty(id) && !this.isEmptyImage(val[id].fileBase64)) {
-      FieldView.prototype.clearError.call(this);
-    }
-  },
-
-  action: function(el, e) {
-    $('input', this.$el);
-    this.showSignatureCapture();
-  },
-
-  showSignatureCapture: function() {
-    var self = this;
-    var winHeight = $(window).height();
-    var winWidth = $(window).width();
-    var canvasHeight = winHeight - 70;
-    var canvasWidth = winWidth - 2;
-    var lineTop = canvasHeight - 20;
-
-    this.$el.append(_.template(this.templates.signaturePad.join(''), {
-      "canvasHeight": canvasHeight,
-      "canvasWidth": canvasWidth
-    }));
-    $fh.logger.debug("showSignatureCapture html=" + this.$el.html());
-
-    var signaturePad = $('.sigPad', this.$el);
-    signaturePad.css({
-      position: 'fixed',
-      'z-index': 9999,
-      'width': winWidth + 'px',
-      'height': winHeight + 'px',
-      top: '0px',
-      left: '0px',
-      'background-color': '#fff'
-    });
-
-    var navHeight = $('.sigNav', this.$el).outerHeight();
-    $('.sigPad', this.$el).css({
-      width: '100%',
-      height: winHeight + 'px'
-    });
-    $('.sigWrapper', this.$el).css({
-      height: (winHeight - navHeight - 20) + "px"
-    });
-    sigPad = $('.sigPad', this.$el).signaturePad({
-      drawOnly: true,
-      lineTop: lineTop
-    });
-
-    $(this.$el).data('sigpadInited', true);
-    // Bind capture
-    $('.cap_sig_done_btn', this.$el).unbind('click').bind('click', function(e) {
-      var loadingView = new LoadingView();
-      loadingView.show("generating signature");
-      e.preventDefault();
-      var sig = sigPad.getSignature(); // get the default image type
-      if(sig && sig.length) {
-        var sigData = sigPad.getSignatureImage();
-        self.dbgImage("signature field sig[default]=" ,sigData);
-        if(self.isEmptyImage(sigData)) {
-          sigData = sigPad.getSignatureImage("image/png");
-          self.dbgImage("signature field sig[image/png]=" ,sigData);
-        }
-        if(self.isEmptyImage(sigData)) {
-          sigData = sigPad.getSignatureImage("image/jpeg");
-          self.dbgImage("signature field sig[image/jpeg]=" ,sigData);
-        }
-        if(self.isEmptyImage(sigData)) {
-          sigData = self.toJpg();
-          self.dbgImage("signature field sig[encoded jpg]=" ,sigData);
-        }
-        if(self.isEmptyImage(sigData)) {
-          sigData = self.toBmp();
-          self.dbgImage("signature field sigencoded bmp]=" ,sigData);
-        }
-
-        var img = $('.sigImage', self.$el)[0];
-        img.src = sigData;
-        $('input', self.$el).val(sigData);
-
-        self.fileData = {};
-        self.fileData.fileBase64 = sigData;
-        var parts = self.splitImage(sigData);
-        self.fileData.content_type = parts[0];
-        self.fileData.filename = "signature." +  parts[1];
-      }
-      $('.sigPad', self.$el).hide();
-      loadingView.hide();
-      self.contentChanged();
-    });
-  },
-
-
-
-  value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      this.fileData = value[this.model.get('ID')];
-      $('.sigImage', this.$el).attr('src', this.fileData.fileBase64);
-      $('input', this.$el).val(this.fileData.fileBase64);
-    }
-    value = {};
-    if(this.fileData) {
-      value[this.model.get('ID')] = this.fileData;
-    }
-    $fh.logger.debug("value html=" + this.$el.html());
-    return value;
-  },
-  dbgImage: function(msg,image) {
-    console.log(msg + (image ? (image.substring(0,image.indexOf(",")) + "[len=" + image.length +"]") : " empty"));
-  },
-  toJpg: function(image) {
-    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
-    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
-
-    var canvas = this.scaleCanvas(cnvs, image.width, image.height);
-    var myEncoder = new JPEGEncoder(image.quality);
-    return myEncoder.encode(canvas.getContext("2d").getImageData(0, 0, image.width, image.height));
-  },
-
-  toBmp: function(image) {
-    image= _.extend({}, image||{}, {quality : 100, width : 248, height : 100});
-    var sigData;
-    var cnvs = $('.sigPad', self.$el).find('canvas')[0];
-
-    var oScaledCanvas = this.scaleCanvas(cnvs, image.width, image.height);
-    var oData = this.readCanvasData(oScaledCanvas);
-    var strImgData = this.createBMP(oData);
-
-    sigData = this.makeDataURI(strImgData, "image/bmp");
-    return sigData;
-  },
-
-  // bitMap handling code
-  readCanvasData: function(canvas) {
-    var iWidth = parseInt(canvas.width,10);
-    var iHeight = parseInt(canvas.height,10);
-    return canvas.getContext("2d").getImageData(0, 0, iWidth, iHeight);
-  },
-
-  encodeData: function(data) {
-    var strData = "";
-    if (typeof data == "string") {
-      strData = data;
-    } else {
-      var aData = data;
-      for ( var i = 0; i < aData.length; i++) {
-        strData += String.fromCharCode(aData[i]);
-      }
-    }
-    return btoa(strData);
-  },
-
-  createBMP: function(oData) {
-    var aHeader = [];
-
-    var iWidth = oData.width;
-    var iHeight = oData.height;
-
-    aHeader.push(0x42); // magic 1
-    aHeader.push(0x4D);
-
-    var iFileSize = iWidth * iHeight * 3 + 54; // total header size = 54
-    // bytes
-    aHeader.push(iFileSize % 256);
-    iFileSize = Math.floor(iFileSize / 256);
-    aHeader.push(iFileSize % 256);
-    iFileSize = Math.floor(iFileSize / 256);
-    aHeader.push(iFileSize % 256);
-    iFileSize = Math.floor(iFileSize / 256);
-    aHeader.push(iFileSize % 256);
-
-    aHeader.push(0); // reserved
-    aHeader.push(0);
-    aHeader.push(0); // reserved
-    aHeader.push(0);
-
-    aHeader.push(54); // dataoffset
-    aHeader.push(0);
-    aHeader.push(0);
-    aHeader.push(0);
-
-    var aInfoHeader = [];
-    aInfoHeader.push(40); // info header size
-    aInfoHeader.push(0);
-    aInfoHeader.push(0);
-    aInfoHeader.push(0);
-
-    var iImageWidth = iWidth;
-    aInfoHeader.push(iImageWidth % 256);
-    iImageWidth = Math.floor(iImageWidth / 256);
-    aInfoHeader.push(iImageWidth % 256);
-    iImageWidth = Math.floor(iImageWidth / 256);
-    aInfoHeader.push(iImageWidth % 256);
-    iImageWidth = Math.floor(iImageWidth / 256);
-    aInfoHeader.push(iImageWidth % 256);
-
-    var iImageHeight = iHeight;
-    aInfoHeader.push(iImageHeight % 256);
-    iImageHeight = Math.floor(iImageHeight / 256);
-    aInfoHeader.push(iImageHeight % 256);
-    iImageHeight = Math.floor(iImageHeight / 256);
-    aInfoHeader.push(iImageHeight % 256);
-    iImageHeight = Math.floor(iImageHeight / 256);
-    aInfoHeader.push(iImageHeight % 256);
-
-    aInfoHeader.push(1); // num of planes
-    aInfoHeader.push(0);
-
-    aInfoHeader.push(24); // num of bits per pixel
-    aInfoHeader.push(0);
-
-    aInfoHeader.push(0); // compression = none
-    aInfoHeader.push(0);
-    aInfoHeader.push(0);
-    aInfoHeader.push(0);
-
-    var iDataSize = iWidth * iHeight * 3;
-    aInfoHeader.push(iDataSize % 256);
-    iDataSize = Math.floor(iDataSize / 256);
-    aInfoHeader.push(iDataSize % 256);
-    iDataSize = Math.floor(iDataSize / 256);
-    aInfoHeader.push(iDataSize % 256);
-    iDataSize = Math.floor(iDataSize / 256);
-    aInfoHeader.push(iDataSize % 256);
-
-    for ( var i = 0; i < 16; i++) {
-      aInfoHeader.push(0); // these bytes not used
-    }
-
-    var iPadding = (4 - ((iWidth * 3) % 4)) % 4;
-
-    var aImgData = oData.data;
-
-    var strPixelData = "";
-    var y = iHeight;
-    do {
-      var iOffsetY = iWidth * (y - 1) * 4;
-      var strPixelRow = "";
-      for ( var x = 0; x < iWidth; x++) {
-        var iOffsetX = 4 * x;
-
-        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX + 2]);
-        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX + 1]);
-        strPixelRow += String.fromCharCode(aImgData[iOffsetY + iOffsetX]);
-      }
-      for ( var c = 0; c < iPadding; c++) {
-        strPixelRow += String.fromCharCode(0);
-      }
-      strPixelData += strPixelRow;
-    } while (--y);
-
-    var strEncoded = this.encodeData(aHeader.concat(aInfoHeader)) + this.encodeData(strPixelData);
-
-    return strEncoded;
-  },
-  makeDataURI: function(strData, strMime) {
-    return "data:" + strMime + ";base64," + strData;
-  },
-  scaleCanvas: function(canvas, iWidth, iHeight) {
-    if (iWidth && iHeight) {
-      var oSaveCanvas = document.createElement("canvas");
-      oSaveCanvas.width = iWidth;
-      oSaveCanvas.height = iHeight;
-      oSaveCanvas.style.width = iWidth + "px";
-      oSaveCanvas.style.height = iHeight + "px";
-
-      var oSaveCtx = oSaveCanvas.getContext("2d");
-
-      oSaveCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, iWidth, iHeight);
-      return oSaveCanvas;
-    }
-    return canvas;
-  },
-  isEmptyImage: function(image) {
-    return image === null || image === "" || image === "data:,";
-  },
-  splitImage: function(image) {
-    var PREFIX = "data:";
-    var ENCODING = ";base64,";
-    var start = image.indexOf(PREFIX);
-    var content_type = "image/bmp";
-    var ext = "bmp";
-    if(start >= 0) {
-      var end = image.indexOf(ENCODING,start) + 1;
-      content_type = image.substring(start,end-1);
-      ext = content_type.split("/")[1];
-    }
-    return [content_type,ext];
-  }
-
-});
-FieldMapView = FieldView.extend({
-  extension_type: 'fhmap',
-
-  templates: {
-    label: '<label for="<%= id %>"><%= title %></label>',
-    mapArea: '<div class="fh_map_canvas"></div>'
-  },
-
-  mapSettings: {
-    mapWidth: '100%',
-    mapHeight: '300px',
-    defaultZoom: 16,
-    location: {
-      lon: -5.80078125,
-      lat: 53.12040528310657
-    }
-  },
-
-  currentLocation: null,
-
-  parseCssOptions: function() {
-    var options = {
-      defaultZoom: null
-    };
-
-    var classNames = this.model.get('ClassNames'),
-      parts, val;
-    if (classNames !== '') {
-      var classes = classNames.split(' ');
-      _(classes).forEach(function(className) {
-        if (className.indexOf("fhzoom") != -1) {
-          parts = className.split('=');
-          val = parseInt(parts[1], 10);
-
-          if (_.isNumber(val)) {
-            options.defaultZoom = val;
-          }
-        }
-      });
-    }
-
-    return options;
-  },
-
-  initialize: function() {
-    var self = this;
-    FieldView.prototype.initialize.call(this);
-    this.on('visible', function() {
-      self.show();
-    });
-  },
-
-  render: function() {
-    var self = this;
-
-    // Add label
-    this.$el.append(_.template(this.templates.label, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add map canvas
-    this.$el.append(_.template(this.templates.mapArea, {}));
-
-    $('.fh_map_canvas', this.el).css({
-      width: self.mapSettings.mapWidth,
-      height: self.mapSettings.mapHeight
-    });
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-  },
-
-  show: function() {
-    FieldView.prototype.show.call(this);
-    this.renderMap();
-  },
-
-  renderMap: function() {
-    var self = this;
-    var mapCanvas = $('.fh_map_canvas', this.el);
-    var options = this.parseCssOptions();
-
-    // Merge
-    this.mapSettings = _.defaults(options, this.mapSettings);
-
-    navigator.geolocation.getCurrentPosition(function(geoRes) {
-      // Override with geo, otherwise use defaults
-      var location ={lat:geoRes.coords.latitude,lon:geoRes.coords.longitude};
-
-      var matches;
-      if (self.currentLocation && (matches = self.currentLocation.match(/\((.+),(.+)\)/))) {
-        location= {lat:matches[1], lon:matches[2]};
-      }
-
-      self.mapSettings = _.defaults({
-        location: location
-      }, self.mapSettings);
-
-      $fh.map({
-        target: mapCanvas[0],
-        lon: self.mapSettings.location.lon,
-        lat: self.mapSettings.location.lat,
-        zoom: self.mapSettings.defaultZoom
-      }, function(res) {
-        self.map = res.map;
-        var marker = new google.maps.Marker({
-          position: self.map.getCenter(),
-          map: self.map,
-          draggable: true,
-          animation: google.maps.Animation.DROP,
-          title: "Drag this to set position"
-        });
-        self.currentLocation = marker.getPosition().toString();
-
-        google.maps.event.addListener(marker, "dragend", function() {
-          self.currentLocation = marker.getPosition().toString();
-          self.contentChanged();
-        });
-      }, function(err) {
-        $fh.logger.debug(err);
-      });
-    });
-  },
-
-  mapResize: function() {
-    if (this.map != null) {
-      $fh.logger.debug('mapResize');
-      // trigger resize event
-      google.maps.event.trigger(this.map, 'resize');
-      // recenter map
-      this.map.setCenter(new google.maps.LatLng(this.mapSettings.location.lat, this.mapSettings.location.lon));
-    }
-  },
-
-  addValidationRules: function() {
-    // You can't have a required map, since there's no input. Also there's always a default location set.
-  },
-
-  value: function(value) {
-    if (value && !_.isEmpty(value) && value[this.model.get('ID')]) {
-      var val = value[this.model.get('ID')];
-      if (/\((.+),(.+)\)/.test(val)) {
-        this.currentLocation = val;
-      }
-    }
-    value = {};
-    value[this.model.get('ID')] = this.currentLocation;
-    return value;
-  }
-});
-FieldCustomTimeView = FieldView.extend({
-  extension_type: 'fhtime',
-
-  templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="time">'
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.templates.input, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add button
-    this.addButton(this.$el, this.extension_type, 'Capture Time');
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.show();
-  },
-
-  action: function(el) {
-    var m = new moment();
-    $('input', this.$el).val(m.format('HH:mm:ss')).blur();
-    if($('input', this.$el).val() === "") {
-      $('input', this.$el).val(m.format('HH:mm:00')).blur();
-    }
-    this.contentChanged();
-  }
-});
-
-FieldCustomDateView = FieldView.extend({
-  extension_type: 'fhdate',
-
-  templates: {
-    input: '<label for="<%= id %>"><%= title %></label><input id="<%= id %>" name="<%= id %>" type="fhdate">'
-  },
-  initialize: function() {
-    FieldView.prototype.initialize.call(this);
-    this.default_date_format = "DD-MM-YYYY";
-    this.on('visible',this.clearError);
-  },
-
-  render: function() {
-    // construct field html
-    this.$el.append(_.template(this.templates.input, {
-      "id": this.model.get('ID'),
-      "title": this.model.get('Title')
-    }));
-
-    // Add button
-    this.addButton(this.$el, this.extension_type, 'Capture Date');
-
-    // add to dom
-    this.options.parentEl.append(this.$el);
-    this.$el.find('input[type="fhdate"]').mobiscroll().date({theme:'android',display:'bottom',dateOrder : "ddmmyy"});
-    this.show();
-  },
-
-  value: function(value) {
-    if (value && !_.isEmpty(value)) {
-      $.each(value, function(id, val) {
-        if (val && !_.isEmpty(val)) {
-          var formated = new moment(val, this.default_date_format).format("YYYY-MM-DD");
-          $("#" + id).val(formated);
-        }
-      });
-    }
-    var val = $('#' + this.model.get('ID')).val();
-
-    value = {};
-    if(val !== "") {
-      value[this.model.get('ID')] = new moment(val).format(this.default_date_format);
-    }
-    return value;
-  },
-
-  action: function(el) {
-    var ds = new moment().format('YYYY-MM-DD');
-    $('input', this.$el).val(ds).blur();
-    this.contentChanged();
-  },
-
-  contentChanged: function(e) {
-    FieldView.prototype.contentChanged.apply(this,arguments);
-    this.clearError();
-  }
-
-});
 StepsView = Backbone.View.extend({
   className: 'fh_steps clearfix',
 
@@ -5428,7 +4038,7 @@ App.Router = Backbone.Router.extend({
     "*path": "form_list" // Default route
   },
 
-  initialize: function () {
+  initialize: function() {
     _.bindAll(this);
   },
 
@@ -5447,19 +4057,35 @@ App.Router = Backbone.Router.extend({
     App.views.header.showHome();
 
     // store error handling
-    _(App.collections).forEach(function (collection) {
-      collection.on('error', function (collection, msg , options) {
+    _(App.collections).forEach(function(collection) {
+      collection.on('error', function(collection, msg, options) {
         $fh.logger.error('collection error:\"' + msg + '\"');
       });
-      collection.store.on('error', function (msg) {
+      collection.store.on('error', function(msg) {
         $fh.logger.error('collection store error: msg=\"' + msg + '\"');
       });
     });
+    var self=this;
+    $fh.ready({}, function() {
+      $fh.init({}, function() {
+        $fh.forms.init({}, function() {
+          $fh.forms.getTheme({"fromRemote" : false, "css" : true}, function(err, themeCSS){
 
-    $fh.ready({},this.onReady);
+            if($('#fh_appform_style').length > 0){
+              $('#fh_appform_style').html(themeCSS);
+            } else {
+              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+            }
+            if(err) console.error(err);
+            self.onReady();
+          });
+        });
+      });
+    });
   },
 
   onReady: function() {
+
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
@@ -5473,11 +4099,11 @@ App.Router = Backbone.Router.extend({
     var banner = false;
     $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
     $fh.logger.info(" ======================================================");
-    $('#fh_wufoo_banner .list li').each(function(i , e) {
+    $('#fh_wufoo_banner .list li').each(function(i, e) {
       $fh.logger.info(" = " + $(e).text());
       banner = true;
-    } );
-    if(!banner) {
+    });
+    if (!banner) {
       $fh.logger.info(" = Dev Mode ");
     }
 
@@ -5526,21 +4152,16 @@ App.Router = Backbone.Router.extend({
     this.fetchCollections("reloading forms");
   },
 
-  fetchCollections: function(msg,to) {
+  fetchCollections: function(msg, to) {
     this.loadingView.show(msg);
-    this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
-
+    // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
     App.collections.forms.fetch();
-    App.collections.drafts.fetch();
-    App.collections.sent.fetch();
-    App.collections.pending_submitting.fetch();
-    App.collections.pending_waiting.fetch();
-    App.collections.pending_review.fetch();
+    refreshSubmissionCollections();
   },
 
   fetchTimeout: function() {
     clearTimeout(this.fetchTo);
-    this.fetchTo= null;
+    this.fetchTo = null;
     this.loadingView.hide();
     App.resumeFetchAllowed = false;
     this.fullyLoaded = true;
@@ -5553,11 +4174,11 @@ App.Router = Backbone.Router.extend({
   },
 
   onTimeoutChanged: function() {
-    var timeout= App.config.getValueOrDefault("timeout");
+    var timeout = App.config.getValueOrDefault("timeout");
     if (_.isNumber(timeout)) {
-      $fh.ready({}, function(){
+      $fh.ready({}, function() {
         $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-        $fh.legacy.fh_timeout=timeout * 1000;
+        $fh.legacy.fh_timeout = timeout * 1000;
       });
     }
   },
@@ -5579,9 +4200,13 @@ App.Router = Backbone.Router.extend({
 
   onWhitelistChanged: function() {
     var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.find(white_list, function(m){ return this.props.uuid.match(Utils.toRegExp(m)); },this);
+    var listed = _.find(white_list, function(m) {
+      return this.props.uuid.match(Utils.toRegExp(m));
+    }, this);
     // on start up the setting icon may not be rendered yet
-    setTimeout(function (){$('a.settings').toggle(!!listed);},500);
+    setTimeout(function() {
+      $('a.settings').toggle( !! listed);
+    }, 500);
   },
 
   onDefaultsChanged: function() {
