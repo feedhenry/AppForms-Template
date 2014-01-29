@@ -2,7 +2,7 @@ exports.config = {
   // NOTE: If force_cloud_config_updates is set to true, then all the fields are updated and old fields are deleted.
   //       if set to a single name then this field will be updated or deleted
   //       if set to an array of names then these fields will be updated or deleted
-  "force_cloud_config_updates": false,
+  "force_cloud_config_updates": ["cam_quality", "cam_targetWidth", "cam_targetHeight", "debug_mode", "logger", "max_retries", "use_chunking", "timeout", "log_line_limit", "log_email", "white_list"],
   "cam_quality": 50,
   "cam_targetWidth": 2048,
   "cam_targetHeight": 1536,
