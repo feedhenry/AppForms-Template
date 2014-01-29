@@ -4,7 +4,7 @@ FormModel = Backbone.Model.extend({
     if (method == "read"){
       this.loadForm();
     }else{
-      debugger;
+
     }
   },
   defaults: {
@@ -32,7 +32,7 @@ FormModel = Backbone.Model.extend({
   },
   get:function(key){
       var res=Backbone.Model.prototype.get.apply(this,arguments);
-      if (res && res !=""){
+      if (res && res !== ""){
         return res;
       }else if (this.coreModel){
         return this.coreModel.get(key);

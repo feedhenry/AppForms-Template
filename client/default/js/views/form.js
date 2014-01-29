@@ -34,5 +34,5 @@ $fh.ready({}, function() {
                 self.render();
             });
         }
-    })
+    });
 });

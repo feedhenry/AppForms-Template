@@ -6,7 +6,7 @@ SubmissionModel = Backbone.Model.extend({
         } else if (method == "delete") {
             this.coreModel.clearLocal(function() {});
         } else {
-            debugger;
+
         }
 
     },
@@ -64,7 +64,7 @@ SubmissionModel = Backbone.Model.extend({
     },
     get: function(key) {
         var res = Backbone.Model.prototype.get.apply(this, arguments);
-        if (res && res != "") {
+        if (res && res !== "") {
             return res;
         } else if (this.coreModel) {
             return this.coreModel.get(key);
@@ -100,7 +100,7 @@ SubmissionCollection = Backbone.Collection.extend({
                 self.coreModel = subList;
                 cb(null, submissions);
             }
-        })
+        });
     },
     sync: function(method, collection, options) {
         if (method == "read") {
