@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-01-30
+/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-01-31
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -4066,8 +4066,7 @@ FieldCameraView = FieldView.extend({
     // Merge
     camOptions = _.defaults(options, camOptions);
 
-    //wp8 need to use data URL
-    if(window.device && window.device.platform && window.device.platform.indexOf("Win32NT") > -1){
+    if(camOptions.destinationType !== Camera.DestinationType.DATA_URL){
       camOptions.destinationType = Camera.DestinationType.DATA_URL;
     }
 
