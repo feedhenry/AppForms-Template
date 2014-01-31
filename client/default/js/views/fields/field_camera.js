@@ -188,8 +188,7 @@ FieldCameraView = FieldView.extend({
     // Merge
     camOptions = _.defaults(options, camOptions);
 
-    //wp8 need to use data URL
-    if(window.device && window.device.platform && window.device.platform.indexOf("Win32NT") > -1){
+    if(camOptions.destinationType !== Camera.DestinationType.DATA_URL){
       camOptions.destinationType = Camera.DestinationType.DATA_URL;
     }
 
