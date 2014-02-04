@@ -1728,6 +1728,7 @@ appForm.models = function (module) {
      * 2. Field
      * 3. Rules
      * @return {[type]} [description]
+     * @deprecated replaced by rule engine
      */
     Submissions.prototype.validateBeforeSubmission = function() {
         return true;
@@ -1783,7 +1784,9 @@ appForm.models = function (module) {
         if(!params){
           params = {};
         }
-
+        if (typeof params =="string"){
+          params={status:params};
+        }
         if(params.status == null){
           return [];
         }

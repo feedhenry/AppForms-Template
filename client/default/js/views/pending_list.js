@@ -89,6 +89,7 @@ PendingListView = Backbone.View.extend({
   },
 
   changed: function() {
+    // debugger;
     var self = this;
 
     // Empty our existing view

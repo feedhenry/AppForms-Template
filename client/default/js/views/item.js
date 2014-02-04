@@ -85,6 +85,7 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
+    
     this.model.load(function(err, actual) {
       var draft = new DraftModel(actual.toJSON());
       App.views.form = new DraftView({
