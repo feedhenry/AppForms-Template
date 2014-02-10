@@ -74,6 +74,8 @@ var FormListView = Backbone.View.extend({
       _(App.collections.forms.models).forEach(function(form) {
         this.appendForm(form);
       }, this);
+    } else if(App.collections.forms.models.length === 0){
+      this.renderErrorHandler("No forms exist for this app.");
     } else {
       this.renderErrorHandler(arguments[1]);
     }
