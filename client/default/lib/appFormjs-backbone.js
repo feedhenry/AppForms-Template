@@ -3721,7 +3721,6 @@ var FormView = BaseView.extend({
 
   },
   render: function() {
-
     // this.initWithForm(this.form, this.params);
     this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
     this.rebindButtons();
@@ -3932,7 +3931,9 @@ StepsView = Backbone.View.extend({
 
   activePageChange: function(model, pageIndex) {
     this.$el.find('td').removeClass('active');
+    this.$el.find('.fh_appform_page_title').hide();
     this.$el.find('td:eq(' + pageIndex + ')').addClass('active');
+    this.$el.find('td:eq(' + pageIndex + ') .fh_appform_page_title').show();
   }
 
 });
