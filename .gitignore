@@ -11,3 +11,7 @@ dist-dev
 dist
 dist.zip
 max.zip
+.idea/
+client/default/css/phase3CSS.css
+client/default/css/testGeneratedPhas3.css
+import_phase3.sh
