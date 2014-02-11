@@ -1302,7 +1302,7 @@ appForm.models = function (module) {
      * @param {Function} cb         [description]
      */
   function Form(params, cb) {
-    console.log(params, cb);
+    //console.log(params, cb);
     var that = this;
     var rawMode = params.rawMode;
     var rawData = params.rawData;
@@ -2073,7 +2073,7 @@ appForm.models = function(module) {
       this.set('status', status);
       this.saveToList(function(err) {
         if (err) {
-          console.log(err);
+          console.error(err);
         }
       });
       this.saveLocal(cb);
@@ -2094,7 +2094,7 @@ appForm.models = function(module) {
         } else {
           ut.set("error", null);
           ut.saveLocal(function(err) {
-            if (err) console.log(err);
+            if (err) console.error(err);
           });
           that.emit("inprogress", ut);
           ut.on("progress", function(progress) {
@@ -2804,7 +2804,6 @@ appForm.models = function (module) {
       return this.get("fields",[]);
   };
   Page.prototype.getFieldModelList=function(){
-      console.log("fieldModelList", this.fieldsIds);
       var list=[];
       for (var i=0;i<this.fieldsIds.length;i++){
           list.push(this.form.getFieldModelById(this.fieldsIds[i]));
@@ -2874,7 +2873,6 @@ appForm.models = function (module) {
     return this.get('fields', []);
   };
   Page.prototype.getFieldModelList = function () {
-    console.log('fieldModelList', this.fieldsIds);
     var list = [];
     for (var i = 0; i < this.fieldsIds.length; i++) {
       list.push(this.form.getFieldModelById(this.fieldsIds[i]));
@@ -3033,7 +3031,7 @@ appForm.models = function (module) {
       });
       this.saveLocal(function (err) {
         if (err)
-          console.log(err);
+          console.error(err);
       });
     } else {
       cb(null, null);
@@ -3087,14 +3085,14 @@ appForm.models = function (module) {
     this.get('taskQueue').push(uploadTaskId);
     this.saveLocal(function (err) {
       if (err)
-        console.log(err);
+        console.error(err);
     });
   };
   UploadManager.prototype.shift = function () {
     var shiftedTask = this.get('taskQueue').shift();
     this.saveLocal(function (err) {
       if (err)
-        console.log(err);
+        console.error(err);
     });
     return shiftedTask;
   };
@@ -3175,9 +3173,7 @@ appForm.models = function (module) {
      */
   Rule.prototype.getRelatedFieldId = function () {
     var def = this.getDefinition();
-    console.log("def", def);
     var statements = def.ruleConditionalStatements;
-    console.log("statements", statements);
     var rtn = [];
     for (var i = 0; i<statements.length; i++) {
       var statement = statements[i];
@@ -3566,14 +3562,14 @@ appForm.models = function (module) {
     var that = this;
     function _handler(err) {
       if (err) {
-        console.log('Err, retrying:', err);
+        console.error('Err, retrying:', err);
         //If the upload has encountered an error -- flag the submission as needing a retry on the next tick -- User should be insulated from an error until the retries are finished.
         that.increRetryAttempts();
         if (that.getRetryAttempts() <= appForm.config.get('submissionRetryAttempts')) {
           that.setRetryNeeded(true);
           that.saveLocal(function (err) {
             if (err)
-              console.log(err);
+              console.error(err);
             cb();
           });
         } else {
@@ -3589,7 +3585,7 @@ appForm.models = function (module) {
         that.setRetryNeeded(false);
         that.saveLocal(function (_err) {
           if (_err)
-            console.log(_err);
+            console.error(_err);
         });
         that.submissionModel(function (err, submission) {
           if (err) {
