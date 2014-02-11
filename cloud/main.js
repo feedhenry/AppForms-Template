@@ -418,8 +418,8 @@ exports.submitChunk= function (params, callback) {
 
 
 /*
- * Here we get a list of available App Forms forms
- */
+* Here we get a list of available App Forms forms
+*/
 exports.getForms = function (params, callback) {
   var memo = logger.onStart("getForms",null, params);
   // can't filter forms list endpoint by hash, so get all and filter them by hash here
