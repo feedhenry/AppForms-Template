@@ -1,6 +1,6 @@
-var webapp = require('fh-webapp-test');
+var webapp = require('fh-webapp-alpha');
 var express = require('express');
-$fh = require('fh-api-test');
+$fh = require('fh-api-alpha');
 var mainjs = require('main.js');
 
 var app = express();
