@@ -174,7 +174,7 @@ FormModel = Backbone.Model.extend({
       error: msg,
       type: "unknown"
     }, msg);
-  },
+  }
 
   // toBytes: function(len) {
   //   var size = len + " bytes";
