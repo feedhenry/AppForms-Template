@@ -1187,6 +1187,10 @@ $fh.ready({}, function() {
             $fh.forms.backbone.FormView.prototype.initialize.apply(this, arguments);
             var self = this;
 
+            if(params.form){
+              params.formId = params.form.getFormId();
+            }
+
             this.loadForm(params, function() {
                 self.submission.on("savedraft", function(submission) {
                     App.views.header.showDrafts(true);
