@@ -1421,7 +1421,7 @@ appForm.models = function (module) {
       var ruleObj = new appForm.models.Rule(constructor);
       var fieldIds = ruleObj.getRelatedFieldId();
       console.log("fieldIds", fieldIds);
-      for (var j = 0; i<fieldIds.length; j++) {
+      for (var j = 0; j<fieldIds.length; j++) {
         var  fieldId = fieldIds[j];
         if (!this.rules[fieldId]) {
           this.rules[fieldId] = [];
@@ -5385,7 +5385,7 @@ function rulesEngine (formDef) {
 
         function checkRepeat(numSubmittedValues, fieldDefinition, cb) {
 
-          if(fieldDefinition.repeating && fieldDefinition.fieldOptions.definition){
+          if(fieldDefinition.repeating && fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.definition){
             if(fieldDefinition.fieldOptions.definition.minRepeat){
               if(numSubmittedValues < fieldDefinition.fieldOptions.definition.minRepeat){
                 return cb(undefined, "Expected min of " + fieldDefinition.fieldOptions.definition.minRepeat + " values for field " + fieldDefinition.name + " but got " + numSubmittedValues);
