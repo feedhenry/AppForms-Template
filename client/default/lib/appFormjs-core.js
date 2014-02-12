@@ -178,7 +178,7 @@ appForm.utils = function (module) {
         size = saveObj.size;
       } else if (content instanceof Blob) {
         saveObj = content;
-        size = b.size;
+        size = saveObj.size;
       } else {
         //JSON object
         var stringify = JSON.stringify(content);
