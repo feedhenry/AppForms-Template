@@ -1304,8 +1304,8 @@ appForm.models = function (module) {
   function Form(params, cb) {
     //console.log(params, cb);
     var that = this;
-    var rawMode = params.rawMode;
-    var rawData = params.rawData;
+    var rawMode = params.rawMode || false;
+    var rawData = params.rawData || null;
     var formId = params.formId;
     var fromRemote = params.fromRemote;
 
@@ -1328,7 +1328,7 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
-    if (_forms[formId]) {
+    if (rawMode === false && _forms[formId]) {
       //found form object in mem return it.
       cb(null, _forms[formId]);
       return _forms[formId];
@@ -1338,7 +1338,7 @@ appForm.models = function (module) {
       that.fromJSON(rawData);
       that.initialise();
 
-      _forms[formId] = this;
+      _forms[formId] = that;
       return cb(null, that);
     }
 
@@ -3364,38 +3364,50 @@ appForm.models = function (module) {
    * @return {[type]}      [description]
    */
   UploadTask.prototype.uploadForm = function (cb) {
-    var formSub = this.get('jsonTask');
     var that = this;
+
+    function processUploadDataResult(res){
+      if(res.error){
+        console.error("Error submitting form " + res.error);
+        return cb("Error submitting form " + res.error);
+      } else {
+        var submissionId = res.submissionId;
+        // form data submitted successfully.
+        formSub.lastUpdate = appForm.utils.getTime();
+        that.set('submissionId', submissionId);
+        that.increProgress();
+        that.saveLocal(function (err) {
+          if (err) {
+            console.error(err);
+          }
+        });
+        that.emit('progress', that.getProgress());
+        return cb(null);
+      }
+    }
+
+    var formSub = this.get('jsonTask');
+
     var formSubmissionModel = new appForm.models.FormSubmission(formSub);
     this.getRemoteStore().create(formSubmissionModel, function (err, res) {
       if (err) {
-        cb(err);
+        return cb(err);
       } else {
-        var submissionId = res.submissionId;
         var updatedFormDefinition = res.updatedFormDefinition;
+
         if (updatedFormDefinition) {
           // remote form definition is updated
-          that.refreshForm(function (err) {
+          that.refreshForm(updatedFormDefinition, function (err) {
             //refresh form def in parallel. maybe not needed.
+            console.log("Form Updated, refreshed");
             if (err) {
               console.error(err);
             }
+
+            processUploadDataResult(res);
           });
-          var errMsg = 'Form definition is out of date.';
-          cb(errMsg);
         } else {
-          // form data submitted successfully.
-          formSub.lastUpdate = appForm.utils.getTime();
-          that.set('submissionId', submissionId);
-          // that.set("currentTask", 0);
-          that.increProgress();
-          that.saveLocal(function (err) {
-            if (err) {
-              console.error(err);
-            }
-          });
-          that.emit('progress', that.getProgress());
-          return cb(null);
+          processUploadDataResult(res);
         }
       }
     });
@@ -3759,18 +3771,15 @@ appForm.models = function (module) {
    * @param  {Function} cb [description]
    * @return {[type]}      [description]
    */
-  UploadTask.prototype.refreshForm = function (cb) {
+  UploadTask.prototype.refreshForm = function (updatedForm, cb) {
     var formId = this.get('formId');
-    new appForm.models.Form({ 'formId': formId }, function (err, form) {
+    new appForm.models.Form({'formId': formId, 'rawMode': true, 'rawData' : updatedForm }, function (err, form) {
       if (err) {
         console.error(err);
       }
-      form.refresh(true, function (err) {
-        if (err) {
-          console.error(err);
-        }
-        cb();
-      });
+
+      console.log('successfully updated form the form with id ' + updatedForm._id);
+      cb();
     });
   };
   UploadTask.prototype.submissionModel = function (cb) {
