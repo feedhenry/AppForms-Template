@@ -140,8 +140,8 @@ appForm.utils = function (module) {
     fileToBase64: fileToBase64
   };
   var fileSystemAvailable = false;
-//  var _requestFileSystem = function () {
-//  };
+  var _requestFileSystem = function () {
+  };
   //placeholder
   var PERSISTENT = 1;
   //placeholder
