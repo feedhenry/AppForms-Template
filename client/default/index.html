@@ -71,7 +71,8 @@
 //                    jQuery('#fh_wufoo_pending').css('margin-top', headerHeight + 'px');
 //                    jQuery('#fh_wufoo_sent').css('margin-top', headerHeight + 'px');
 //                    jQuery('#fh_wufoo_drafts').css('margin-top', headerHeight + 'px');
-                    jQuery('#fh_wufoo_alerts_area').css('margin-top', headerHeight + 'px;clear:both;');
+                    jQuery('#fh_wufoo_alerts_area').css('margin-top', headerHeight + 'px');
+                    jQuery('#fh_wufoo_alerts_area').css('clear', 'both');
 
                     jQuery('#app_version').html('Version: ' + fh_app_version + '(' + $(".release .value").text() + ')');
                     jQuery('#fh_wufoo_banner .list').append(jQuery('<li class="build"   ><span>Build</span>:<span>' + fh_app_version + '</span></li>'));
