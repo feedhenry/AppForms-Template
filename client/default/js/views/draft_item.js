@@ -13,10 +13,6 @@ DraftItemView = ItemView.extend({
       "autoShow":true,
       "submission":submission
     });
-    // this.model.load(function (err,actual ){
-    //   App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
-    //   App.views.form.render();
-    // });
   },
   getItemTime:function(){
     return "Saved: "+this.model.get("saveDate");

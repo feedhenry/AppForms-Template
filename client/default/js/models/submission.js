@@ -8,7 +8,6 @@ SubmissionModel = Backbone.Model.extend({
         } else {
 
         }
-
     },
     loadSubmission: function(submissionMeta, cb) {
         var self = this;
@@ -73,7 +72,6 @@ SubmissionModel = Backbone.Model.extend({
         }
     },
     initialize: function(submissionMeta, options) {
-
         var self = this;
         this.submissionMeta = submissionMeta;
         this.loadSubmission(submissionMeta, function(err, sub) {});
@@ -155,7 +153,6 @@ App.collections.pending_review = new PendingReviewCollection();
 App.collections.pending_waiting = new PendingWaitingCollection();
 
 function refreshSubmissionCollections() {
-
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();

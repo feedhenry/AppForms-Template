@@ -14,10 +14,5 @@ PendingSubmittingItemView = ItemView.extend({
 
     $(this.el).html(item);
     return this;
-  },
-
-  show: function() {
-    //TODO: Impl?
-    $fh.logger.debug('show for submitting not implemented');
   }
 });

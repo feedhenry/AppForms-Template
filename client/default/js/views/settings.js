@@ -9,8 +9,6 @@ SettingsView = Backbone.View.extend({
 
   templates: {
     "form": '<form><div class="input-group"></div></form>',
-//    "list": '<ul class="list"><form><div class="input-group"></div></form></ul>',
-//    "toggle": '<li><label><%= list_item %><div class="toggle <%= toggle_class %>"><div class="toggle-handle"></div></div></li>',
     "toggle": '<div class="input-row"><label><%= list_item %></label><div class="toggle <%= toggle_class %>" data-key="<%= key %>"><div class="toggle-handle"></div></div></div>',
     "input": '<div class="input-row"><label><%= list_item %></label><input type="<%= type %>" value="<%= value %>" data-key="<%= key %>"></div>',
     "other": '<div class="input-row"><label><%= list_item %></label><input readonly type="text" value="<%= value %>"></div>',
