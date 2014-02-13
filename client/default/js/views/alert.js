@@ -26,9 +26,10 @@ AlertView = Backbone.View.extend({
     this.$el.show();
     clearTimeout(this.to);
     this.to = setTimeout(function() {
-      self.$el.slideUp(function() {
-        $(self.$el).empty();
-      });
+//      self.$el.slideUp(function() {
+//
+//      });
+      $(self.$el).empty();
     }, opts.timeout || 10000);
     return this;
   }
