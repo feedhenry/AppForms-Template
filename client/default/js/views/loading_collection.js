@@ -53,6 +53,7 @@ LoadingCollectionView = LoadingView.extend({
 
   modelLoaded: function(a, b, c) {
     this.percent += 100 / App.collections.forms.length;
+    if(this.percent > 100) this.percent = 100;
     this.updateLoadedCount();
     this.totalCounter += 1;
     this.updateProgress(this.percent);
@@ -62,6 +63,7 @@ LoadingCollectionView = LoadingView.extend({
   modelLoadError: function(model, b, c) {
     model.set('fh_error_loading', true);
     this.percent += 100 / App.collections.forms.length;
+    if(this.percent > 100) this.percent = 100;
     $fh.logger.debug(' !! error loading model. ID: ' + model.id + this.percent);
     this.totalCounter += 1;
     this.updateProgress(this.percent);
