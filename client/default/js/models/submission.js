@@ -88,7 +88,7 @@ SubmissionCollection = Backbone.Collection.extend({
     getSubmissionList: function(cb) {
         var self = this;
         $fh.forms.getSubmissions({}, function(err, subList) {
-            console.log(self.status);
+            console.log("$fh.forms.getSubmissions", self.status);
             if (err) {
                 console.log(err);
                 cb(err);

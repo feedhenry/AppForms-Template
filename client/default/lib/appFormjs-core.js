@@ -500,6 +500,34 @@ appForm.utils = function (module) {
   return module;
 }(appForm.utils || {});
 appForm.web = function (module) {
+
+  module.uploadFile = function(url, fileProps, cb){
+    var filePath = fileProps.fullPath;
+
+    var success = function (r) {
+      console.log("upload to url ", url, " sucessfull");
+      r.response = r.response || {};
+      if(typeof r.response == "string"){
+        r.response = JSON.parse(r.response);
+      }
+      cb(null, r.response);
+    };
+
+    var fail = function (error) {
+      console.error("An error uploading a file has occurred: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      console.log("upload error target " + error.target);
+      cb(error);
+    };
+
+    var options = new FileUploadOptions();
+    options.fileName = fileProps.fileName;
+    options.mimeType = fileProps.contentType;
+
+    var ft = new FileTransfer();
+    ft.upload(filePath, encodeURI(url), success, fail, options);
+  };
+
   return module;
 }(appForm.web || {});
 appForm.web.ajax = function (module) {
@@ -747,19 +775,21 @@ appForm.stores = function (module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     // console.log(options);
-    $fh.data(options, function (res) {
-      if (typeof res == 'undefined') {
-        res = {
-          key: options.key,
-          val: options.val
-        };
-      }
-      //unify the interfaces
-      if (options.act.toLowerCase() == 'remove') {
-        success(null, null);
-      }
-      success(null, res.val ? res.val : null);
-    }, failure);
+    if($fh.data){
+      $fh.data(options, function (res) {
+        if (typeof res == 'undefined') {
+          res = {
+            key: options.key,
+            val: options.val
+          };
+        }
+        //unify the interfaces
+        if (options.act.toLowerCase() == 'remove') {
+          success(null, null);
+        }
+        success(null, res.val ? res.val : null);
+      }, failure);
+    }
   }
   //use file system
   function _fhFileData(options, success, failure) {
@@ -868,7 +898,11 @@ appForm.stores = function (module) {
   appForm.utils.extend(MBaaS, Store);
   MBaaS.prototype.create = function (model, cb) {
     var url = _getUrl(model);
-    appForm.web.ajax.post(url, model.getProps(), cb);
+    if((model.get("_type") == "fileSubmission" || model.get("_type") == "base64fileSubmission") && (typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
+      appForm.web.uploadFile(url, model.getProps(), cb);
+    } else {
+      appForm.web.ajax.post(url, model.getProps(), cb);
+    }
   };
   MBaaS.prototype.read = function (model, cb) {
     var url = _getUrl(model);
@@ -900,6 +934,7 @@ appForm.stores = function (module) {
     }
     var url = host + mBaaSBaseUrl + relativeUrl;
     var props = {};
+    props.appId = appForm.config.get('appId');
     //Theme and forms do not require any parameters that are not in _fh
     switch (type) {
     case 'form':
@@ -1227,14 +1262,14 @@ appForm.models = function (module) {
     var appId = this.get('appId');
     //ebaas url definition https://docs.google.com/a/feedhenry.com/document/d/1_bd4kZMm7q6C1htNJBTSA2X4zi1EKx0hp_4aiJ-N5Zg/edit#
     this.set('formUrls', {
-      'forms': '/forms',
-      'form': '/forms/:formId',
-      'theme': '/forms/theme',
-      'formSubmission': '/forms/:formId/submitFormData',
-      'fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFile',
-      'base64fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFileBase64',
-      'submissionStatus': '/forms/:submissionId/status',
-      'completeSubmission': '/forms/:submissionId/completeSubmission'
+      'forms': '/forms/:appId',
+      'form': '/forms/:appId/:formId',
+      'theme': '/forms/:appId/theme',
+      'formSubmission': '/forms/:appId/:formId/submitFormData',
+      'fileSubmission': '/forms/:appId/:submissionId/:fieldId/:hashName/submitFormFile',
+      'base64fileSubmission': '/forms/:appId/:submissionId/:fieldId/:hashName/submitFormFileBase64',
+      'submissionStatus': '/forms/:appId/:submissionId/status',
+      'completeSubmission': '/forms/:appId/:submissionId/completeSubmission'
     });
   };
   module.config = new Config();
