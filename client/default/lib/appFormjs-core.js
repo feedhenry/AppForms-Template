@@ -934,7 +934,6 @@ appForm.stores = function (module) {
     }
     var url = host + mBaaSBaseUrl + relativeUrl;
     var props = {};
-    props.appId = appForm.config.get('appId');
     //Theme and forms do not require any parameters that are not in _fh
     switch (type) {
     case 'form':
@@ -1262,14 +1261,14 @@ appForm.models = function (module) {
     var appId = this.get('appId');
     //ebaas url definition https://docs.google.com/a/feedhenry.com/document/d/1_bd4kZMm7q6C1htNJBTSA2X4zi1EKx0hp_4aiJ-N5Zg/edit#
     this.set('formUrls', {
-      'forms': '/forms/:appId',
-      'form': '/forms/:appId/:formId',
-      'theme': '/forms/:appId/theme',
-      'formSubmission': '/forms/:appId/:formId/submitFormData',
-      'fileSubmission': '/forms/:appId/:submissionId/:fieldId/:hashName/submitFormFile',
-      'base64fileSubmission': '/forms/:appId/:submissionId/:fieldId/:hashName/submitFormFileBase64',
-      'submissionStatus': '/forms/:appId/:submissionId/status',
-      'completeSubmission': '/forms/:appId/:submissionId/completeSubmission'
+      'forms': '/forms',
+      'form': '/forms/:formId',
+      'theme': '/forms/theme',
+      'formSubmission': '/forms/:formId/submitFormData',
+      'fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFile',
+      'base64fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFileBase64',
+      'submissionStatus': '/forms/:submissionId/status',
+      'completeSubmission': '/forms/:submissionId/completeSubmission'
     });
   };
   module.config = new Config();
