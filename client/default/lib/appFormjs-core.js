@@ -1367,10 +1367,12 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
-    if (rawMode === false && _forms[formId]) {
-      //found form object in mem return it.
-      cb(null, _forms[formId]);
-      return _forms[formId];
+    if (!appForm.models.forms.isFormUpdated(that)) {
+      if (rawMode === false && _forms[formId]) {
+        //found form object in mem return it.
+        cb(null, _forms[formId]);
+        return _forms[formId];
+      }
     }
 
     function processRawFormJSON(){
@@ -2474,6 +2476,19 @@ appForm.models = function (module) {
       'validation': {},
       'definition': {}
     });
+  };
+  Field.prototype.getPhotoOptions = function(){
+    var photoOptions = {
+      "photoWidth" : null,
+      "photoHeight" : null,
+      "photoQuality" : null
+    };
+
+    var fieldDef = this.getFieldDefinition();
+    photoOptions.photoWidth = fieldDef.photoHeight || appForm.config.photoHeight || 200;
+    photoOptions.photoHeight = fieldDef.photoHeight || appForm.config.photoHeight || 200;
+    photoOptions.photoQuality = fieldDef.photoQuality || appForm.config.photoQuality || 50;
+    return photoOptions;
   };
   Field.prototype.isRepeating = function () {
     return this.get('repeating', false);
