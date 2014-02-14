@@ -141,6 +141,7 @@ appForm.utils = function (module) {
   };
   var fileSystemAvailable = false;
   var _requestFileSystem = function () {
+    console.error("No file system available");
   };
   //placeholder
   var PERSISTENT = 1;
@@ -177,7 +178,7 @@ appForm.utils = function (module) {
         size = saveObj.size;
       } else if (content instanceof Blob) {
         saveObj = content;
-        size = b.size;
+        size = saveObj.size;
       } else {
         //JSON object
         var stringify = JSON.stringify(content);
@@ -324,6 +325,7 @@ appForm.utils = function (module) {
     });
   }
   function _getFileEntry(fileName, size, params, cb) {
+    _checkEnv();
     _requestFileSystem(PERSISTENT, size, function gotFS(fileSystem) {
       fileSystem.root.getFile(fileName, params, function gotFileEntry(fileEntry) {
         cb(null, fileEntry);
@@ -391,12 +393,15 @@ appForm.utils = function (module) {
   var ctx = null;
   var localMediaStream = null;
   function isHtml5CamAvailable() {
+    checkEnv();
     return isHtml5;
   }
   function isPhoneGapAvailable() {
+    checkEnv();
     return isPhoneGap;
   }
   function initHtml5Camera(params, cb) {
+    checkEnv();
     _html5Camera(params, cb);
   }
   function cancelHtml5Camera() {
@@ -407,16 +412,16 @@ appForm.utils = function (module) {
   }
   function takePhoto(params, cb) {
     //use configuration
-    var width = params.width;
-    var height = params.height;
+    params.sourceType = params.sourceType || Camera.PictureSourceType.SAVEDPHOTOALBUM;
     if (isPhoneGap) {
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
-        quality: 100,
-        targetWidth: width,
-        targetHeight: height,
+        quality: params.quality,
+        targetWidth: params.targetWidth,
+        targetHeight: params.targetHeight,
+        sourceType: params.sourceType,
         saveToPhotoAlbum: false,
-        destinationType: Camera.DestinationType.DATA_URL,
-        encodingType: Camera.EncodingType.PNG
+        destinationType: Camera.DestinationType.FILE_URI,
+        encodingType: Camera.EncodingType.JPEG
       });
     } else if (isHtml5) {
       snapshot(params, cb);
@@ -498,6 +503,34 @@ appForm.utils = function (module) {
   return module;
 }(appForm.utils || {});
 appForm.web = function (module) {
+
+  module.uploadFile = function(url, fileProps, cb){
+    var filePath = fileProps.fullPath;
+
+    var success = function (r) {
+      console.log("upload to url ", url, " sucessfull");
+      r.response = r.response || {};
+      if(typeof r.response == "string"){
+        r.response = JSON.parse(r.response);
+      }
+      cb(null, r.response);
+    };
+
+    var fail = function (error) {
+      console.error("An error uploading a file has occurred: Code = " + error.code);
+      console.log("upload error source " + error.source);
+      console.log("upload error target " + error.target);
+      cb(error);
+    };
+
+    var options = new FileUploadOptions();
+    options.fileName = fileProps.fileName;
+    options.mimeType = fileProps.contentType;
+
+    var ft = new FileTransfer();
+    ft.upload(filePath, encodeURI(url), success, fail, options);
+  };
+
   return module;
 }(appForm.web || {});
 appForm.web.ajax = function (module) {
@@ -749,19 +782,21 @@ appForm.stores = function(module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     // console.log(options);
-    $fh.data(options, function(res) {
-      if (typeof res == 'undefined') {
-        res = {
-          key: options.key,
-          val: options.val
-        };
-      }
-      //unify the interfaces
-      if (options.act.toLowerCase() == 'remove') {
-        success(null, null);
-      }
-      success(null, res.val ? res.val : null);
-    }, failure);
+    if($fh.data){
+      $fh.data(options, function (res) {
+        if (typeof res == 'undefined') {
+          res = {
+            key: options.key,
+            val: options.val
+          };
+        }
+        //unify the interfaces
+        if (options.act.toLowerCase() == 'remove') {
+          success(null, null);
+        }
+        success(null, res.val ? res.val : null);
+      }, failure);
+    }
   }
   //use file system
   function _fhFileData(options, success, failure) {
@@ -874,7 +909,11 @@ appForm.stores = function(module) {
   appForm.utils.extend(MBaaS, Store);
   MBaaS.prototype.create = function(model, cb) {
     var url = _getUrl(model);
-    appForm.web.ajax.post(url, model.getProps(), cb);
+    if((model.get("_type") == "fileSubmission" || model.get("_type") == "base64fileSubmission") && (typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
+      appForm.web.uploadFile(url, model.getProps(), cb);
+    } else {
+      appForm.web.ajax.post(url, model.getProps(), cb);
+    }
   };
   MBaaS.prototype.read = function(model, cb) {
     if (model.get("_type") == "offlineTest") {
@@ -1392,7 +1431,7 @@ appForm.models = function (module) {
         fromRemote = false;
       }
     } else {
-      console.log('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
+      console.error('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
     }
 
     if (!formId) {
@@ -1404,10 +1443,32 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
+    function checkForUpdate(form){
+      form.refresh(false, function (err, obj) {
+        if (appForm.models.forms.isFormUpdated(form)) {
+          form.refresh(true, function (err, obj1) {
+            if(err){
+              return cb(err, null);
+            }
+            form.initialise();
+
+            _forms[formId] = obj1;
+            return cb(err, obj1);
+          });
+        } else {
+          form.initialise();
+          _forms[formId] = obj;
+          cb(err, obj);
+        }
+      });
+    }
+
     if (rawMode === false && _forms[formId]) {
       //found form object in mem return it.
-      cb(null, _forms[formId]);
-      return _forms[formId];
+      if(!appForm.models.forms.isFormUpdated(_forms[formId])){
+        cb(null, _forms[formId]);
+        return _forms[formId];
+      }
     }
 
     function processRawFormJSON(){
@@ -1421,23 +1482,7 @@ appForm.models = function (module) {
     if (rawMode === true) {
       processRawFormJSON();
     } else {
-      that.refresh(fromRemote, function (err, obj) {
-        if (appForm.models.forms.isFormUpdated(that)) {
-          that.refresh(true, function (err, obj1) {
-            if(err){
-              return cb(err, null);
-            }
-            that.initialise();
-
-            _forms[formId] = obj1;
-            return cb(err, obj1);
-          });
-        } else {
-          that.initialise();
-          _forms[formId] = obj;
-          cb(err, obj);
-        }
-      });
+      checkForUpdate(that);
     }
   }
   appForm.utils.extend(Form, Model);
@@ -2511,6 +2556,19 @@ appForm.models = function (module) {
       'validation': {},
       'definition': {}
     });
+  };
+  Field.prototype.getPhotoOptions = function(){
+    var photoOptions = {
+      "targetWidth" : null,
+      "targetHeight" : null,
+      "quality" : null
+    };
+
+    var fieldDef = this.getFieldDefinition();
+    photoOptions.targetWidth = fieldDef.photoHeight || appForm.config.photoHeight || 200;
+    photoOptions.targetHeight = fieldDef.photoHeight || appForm.config.photoHeight || 200;
+    photoOptions.quality = fieldDef.photoQuality || appForm.config.photoQuality || 50;
+    return photoOptions;
   };
   Field.prototype.isRepeating = function () {
     return this.get('repeating', false);
