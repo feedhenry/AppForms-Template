@@ -141,7 +141,6 @@ appForm.utils = function (module) {
   };
   var fileSystemAvailable = false;
   var _requestFileSystem = function () {
-    console.error("No file system available");
   };
   //placeholder
   var PERSISTENT = 1;
@@ -178,7 +177,7 @@ appForm.utils = function (module) {
         size = saveObj.size;
       } else if (content instanceof Blob) {
         saveObj = content;
-        size = saveObj.size;
+        size = b.size;
       } else {
         //JSON object
         var stringify = JSON.stringify(content);
@@ -325,7 +324,6 @@ appForm.utils = function (module) {
     });
   }
   function _getFileEntry(fileName, size, params, cb) {
-    _checkEnv();
     _requestFileSystem(PERSISTENT, size, function gotFS(fileSystem) {
       fileSystem.root.getFile(fileName, params, function gotFileEntry(fileEntry) {
         cb(null, fileEntry);
@@ -393,15 +391,12 @@ appForm.utils = function (module) {
   var ctx = null;
   var localMediaStream = null;
   function isHtml5CamAvailable() {
-    checkEnv();
     return isHtml5;
   }
   function isPhoneGapAvailable() {
-    checkEnv();
     return isPhoneGap;
   }
   function initHtml5Camera(params, cb) {
-    checkEnv();
     _html5Camera(params, cb);
   }
   function cancelHtml5Camera() {
@@ -503,34 +498,6 @@ appForm.utils = function (module) {
   return module;
 }(appForm.utils || {});
 appForm.web = function (module) {
-
-  module.uploadFile = function(url, fileProps, cb){
-    var filePath = fileProps.fullPath;
-
-    var success = function (r) {
-      console.log("upload to url ", url, " sucessfull");
-      r.response = r.response || {};
-      if(typeof r.response == "string"){
-        r.response = JSON.parse(r.response);
-      }
-      cb(null, r.response);
-    };
-
-    var fail = function (error) {
-      console.error("An error uploading a file has occurred: Code = " + error.code);
-      console.log("upload error source " + error.source);
-      console.log("upload error target " + error.target);
-      cb(error);
-    };
-
-    var options = new FileUploadOptions();
-    options.fileName = fileProps.fileName;
-    options.mimeType = fileProps.contentType;
-
-    var ft = new FileTransfer();
-    ft.upload(filePath, encodeURI(url), success, fail, options);
-  };
-
   return module;
 }(appForm.web || {});
 appForm.web.ajax = function (module) {
@@ -541,6 +508,7 @@ appForm.web.ajax = function (module) {
   function _myAjax() {
   }
   function get(url, cb) {
+    console.log(url);
     _ajax({
       'url': url,
       'type': 'GET',
@@ -697,38 +665,41 @@ appForm.stores = function (module) {
 /**
  * Local storage stores a model's json definition persistently.
  */
-appForm.stores = function (module) {
+appForm.stores = function(module) {
   //implementation
   var utils = appForm.utils;
   var fileSystem = utils.fileSystem;
-  var _fileSystemAvailable = function () {
-  };
+  var _fileSystemAvailable = function() {};
   //placeholder
   function LocalStorage() {
     appForm.stores.Store.call(this, 'LocalStorage');
   }
   appForm.utils.extend(LocalStorage, appForm.stores.Store);
   //store a model to local storage
-  LocalStorage.prototype.create = function (model, cb) {
+  LocalStorage.prototype.create = function(model, cb) {
     var key = utils.localId(model);
     model.setLocalId(key);
     this.update(model, cb);
   };
   //read a model from local storage
-  LocalStorage.prototype.read = function (model, cb) {
-    var key = model.getLocalId();
-    if (key != null) {
-      _fhData({
-        'act': 'load',
-        'key': key.toString()
-      }, cb, cb);
+  LocalStorage.prototype.read = function(model, cb) {
+    if (model.get("_type") == "offlineTest") {
+      cb(null, {});
     } else {
-      //model does not exist in local storage if key is null.
-      cb(null, null);
+      var key = model.getLocalId();
+      if (key != null) {
+        _fhData({
+          'act': 'load',
+          'key': key.toString()
+        }, cb, cb);
+      } else {
+        //model does not exist in local storage if key is null.
+        cb(null, null);
+      }
     }
   };
   //update a model
-  LocalStorage.prototype.update = function (model, cb) {
+  LocalStorage.prototype.update = function(model, cb) {
     var key = model.getLocalId();
     var data = model.getProps();
     var dataStr = JSON.stringify(data);
@@ -739,14 +710,14 @@ appForm.stores = function (module) {
     }, cb, cb);
   };
   //delete a model
-  LocalStorage.prototype["delete"] = function (model, cb) {
+  LocalStorage.prototype["delete"] = function(model, cb) {
     var key = model.getLocalId();
     _fhData({
       'act': 'remove',
       'key': key.toString()
     }, cb, cb);
   };
-  LocalStorage.prototype.upsert = function (model, cb) {
+  LocalStorage.prototype.upsert = function(model, cb) {
     var key = model.getLocalId();
     if (key == null) {
       this.create(model, cb);
@@ -754,17 +725,17 @@ appForm.stores = function (module) {
       this.update(model, cb);
     }
   };
-  LocalStorage.prototype.switchFileSystem = function (isOn) {
-    _fileSystemAvailable = function () {
+  LocalStorage.prototype.switchFileSystem = function(isOn) {
+    _fileSystemAvailable = function() {
       return isOn;
     };
   };
-  LocalStorage.prototype.defaultStorage = function () {
-    _fileSystemAvailable = function () {
+  LocalStorage.prototype.defaultStorage = function() {
+    _fileSystemAvailable = function() {
       return fileSystem.isFileSystemAvailable();
     };
   };
-  _fileSystemAvailable = function () {
+  _fileSystemAvailable = function() {
     return fileSystem.isFileSystemAvailable();
   };
   //use different local storage model according to environment
@@ -778,21 +749,19 @@ appForm.stores = function (module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     // console.log(options);
-    if($fh.data){
-      $fh.data(options, function (res) {
-        if (typeof res == 'undefined') {
-          res = {
-            key: options.key,
-            val: options.val
-          };
-        }
-        //unify the interfaces
-        if (options.act.toLowerCase() == 'remove') {
-          success(null, null);
-        }
-        success(null, res.val ? res.val : null);
-      }, failure);
-    }
+    $fh.data(options, function(res) {
+      if (typeof res == 'undefined') {
+        res = {
+          key: options.key,
+          val: options.val
+        };
+      }
+      //unify the interfaces
+      if (options.act.toLowerCase() == 'remove') {
+        success(null, null);
+      }
+      success(null, res.val ? res.val : null);
+    }, failure);
   }
   //use file system
   function _fhFileData(options, success, failure) {
@@ -800,13 +769,13 @@ appForm.stores = function (module) {
       // console.log('fail: msg= ' + msg);
       if (typeof failure !== 'undefined') {
         return failure(msg, {});
-      } else {
-      }
+      } else {}
     }
+
     function filenameForKey(key, cb) {
       var appid = $fh && $fh.app_props ? $fh.app_props.appid : '';
       key = key + appid;
-      utils.md5(key, function (err, hash) {
+      utils.md5(key, function(err, hash) {
         if (err) {
           hash = key;
         }
@@ -831,9 +800,10 @@ appForm.stores = function (module) {
         }
       });
     }
+
     function save(key, value) {
-      filenameForKey(key, function (hash) {
-        fileSystem.save(hash, value, function (err, res) {
+      filenameForKey(key, function(hash) {
+        fileSystem.save(hash, value, function(err, res) {
           if (err) {
             fail(err);
           } else {
@@ -842,10 +812,11 @@ appForm.stores = function (module) {
         });
       });
     }
+
     function remove(key) {
-      filenameForKey(key, function (hash) {
+      filenameForKey(key, function(hash) {
         // console.log('remove: ' + key + '. Filename: ' + hash);
-        fileSystem.remove(hash, function (err) {
+        fileSystem.remove(hash, function(err) {
           if (err) {
             if (err.name == 'NotFoundError' || err.code == 1) {
               //same respons of $fh.data if key not found.
@@ -859,9 +830,10 @@ appForm.stores = function (module) {
         });
       });
     }
+
     function load(key) {
-      filenameForKey(key, function (hash) {
-        fileSystem.readAsText(hash, function (err, text) {
+      filenameForKey(key, function(hash) {
+        fileSystem.readAsText(hash, function(err, text) {
           if (err) {
             if (err.name == 'NotFoundError' || err.code == 1) {
               //same respons of $fh.data if key not found.
@@ -892,75 +864,81 @@ appForm.stores = function (module) {
   module.localStorage = new LocalStorage();
   return module;
 }(appForm.stores || {});
-appForm.stores = function (module) {
+appForm.stores = function(module) {
   var Store = appForm.stores.Store;
   module.mBaaS = new MBaaS();
+
   function MBaaS() {
     Store.call(this, 'MBaaS');
   }
   appForm.utils.extend(MBaaS, Store);
-  MBaaS.prototype.create = function (model, cb) {
+  MBaaS.prototype.create = function(model, cb) {
     var url = _getUrl(model);
-    if((model.get("_type") == "fileSubmission" || model.get("_type") == "base64fileSubmission") && (typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
-      appForm.web.uploadFile(url, model.getProps(), cb);
+    appForm.web.ajax.post(url, model.getProps(), cb);
+  };
+  MBaaS.prototype.read = function(model, cb) {
+    if (model.get("_type") == "offlineTest") {
+      cb("offlinetest. ignore");
     } else {
-      appForm.web.ajax.post(url, model.getProps(), cb);
+      var url = _getUrl(model);
+      appForm.web.ajax.get(url, cb);
     }
+
   };
-  MBaaS.prototype.read = function (model, cb) {
-    var url = _getUrl(model);
-    appForm.web.ajax.get(url, cb);
-  };
-  MBaaS.prototype.update = function (model, cb) {
-  };
-  MBaaS.prototype["delete"] = function (model, cb) {
-  };
+  MBaaS.prototype.update = function(model, cb) {};
+  MBaaS.prototype["delete"] = function(model, cb) {};
   //@Deprecated use create instead
-  MBaaS.prototype.completeSubmission = function (submissionToComplete, cb) {
+  MBaaS.prototype.completeSubmission = function(submissionToComplete, cb) {
     var url = _getUrl(submissionToComplete);
     appForm.web.ajax.post(url, {}, cb);
   };
-  MBaaS.prototype.submissionStatus = function (submission, cb) {
+  MBaaS.prototype.submissionStatus = function(submission, cb) {
     var url = _getUrl(submission);
     appForm.web.ajax.get(url, cb);
   };
+
   function _getUrl(model) {
     var type = model.get('_type');
     var host = appForm.config.get('cloudHost');
     var mBaaSBaseUrl = appForm.config.get('mbaasBaseUrl');
     var formUrls = appForm.config.get('formUrls');
-    var relativeUrl="";
+    var relativeUrl = "";
     if (formUrls[type]) {
       relativeUrl = formUrls[type];
     } else {
-      throw 'type not found to get url:' + type;
+      console.error('type not found to get url:' + type);
     }
     var url = host + mBaaSBaseUrl + relativeUrl;
     var props = {};
     //Theme and forms do not require any parameters that are not in _fh
     switch (type) {
-    case 'form':
-      props.formId = model.get('_id');
+      case 'config':
+        props.appid=model.get("appId");
       break;
-    case 'formSubmission':
-      props.formId = model.getFormId();
-      break;
-    case 'fileSubmission':
-      props.submissionId = model.getSubmissionId();
-      props.hashName = model.getHashName();
-      props.fieldId = model.getFieldId();
-      break;
-    case 'base64fileSubmission':
-      props.submissionId = model.getSubmissionId();
-      props.hashName = model.getHashName();
-      props.fieldId = model.getFieldId();
-      break;
-    case 'submissionStatus':
-      props.submissionId = model.get('submissionId');
-      break;
-    case 'completeSubmission':
-      props.submissionId = model.get('submissionId');
-      break;
+      case 'form':
+        props.formId = model.get('_id');
+        break;
+      case 'formSubmission':
+        props.formId = model.getFormId();
+        break;
+      case 'fileSubmission':
+        props.submissionId = model.getSubmissionId();
+        props.hashName = model.getHashName();
+        props.fieldId = model.getFieldId();
+        break;
+      case 'base64fileSubmission':
+        props.submissionId = model.getSubmissionId();
+        props.hashName = model.getHashName();
+        props.fieldId = model.getFieldId();
+        break;
+      case 'submissionStatus':
+        props.submissionId = model.get('submissionId');
+        break;
+      case 'completeSubmission':
+        props.submissionId = model.get('submissionId');
+        break;
+      case 'offlineTest':
+        return "http://127.0.0.1:8453";
     }
     for (var key in props) {
       url = url.replace(':' + key, props[key]);
@@ -1023,6 +1001,23 @@ appForm.stores = function (module) {
           args.push(true);
           cb.apply({}, args);
         });
+      }
+    });
+  };
+
+  /**
+   * Attempt to run refresh read first, if failed, run read.
+   * @param  {[type]}   model [description]
+   * @param  {Function} cb    [description]
+   * @return {[type]}         [description]
+   */
+  DataAgent.prototype.attemptRead=function(model,cb){
+    var self=this;
+    self.refreshRead(model,function(err){
+      if (err){
+        self.read(model,cb);
+      }else{
+        cb.apply({},arguments);
       }
     });
   };
@@ -1160,6 +1155,18 @@ appForm.models = function (module) {
       }
     }
   };
+  Model.prototype.attemptRefresh=function(cb){
+    var dataAgent = this.getDataAgent();
+    var self=this;
+    dataAgent.attemptRead(this,function(err,res){
+      if (!err && res){
+        self.fromJSON(res);
+        cb(null,self);
+      }else{
+        cb(err,self);
+      }
+    });
+  };
   /**
      * Retrieve model from local storage store
      * @param  {Function} cb (err, curModel)
@@ -1209,14 +1216,25 @@ appForm.models = function (module) {
   module.Model = Model;
   return module;
 }(appForm.models || {});
-appForm.models = function (module) {
+appForm.models = function(module) {
   var Model = appForm.models.Model;
+
   function Config() {
-    Model.call(this, { '_type': 'config' });
+    Model.call(this, {
+      '_type': 'config',
+      "_ludid": "config"
+    });
+
   }
   appForm.utils.extend(Config, Model);
   //call in appForm.init
-  Config.prototype.init = function (config, cb) {
+  Config.prototype.init = function(config, cb) {
+    //load hard coded static config first
+    this.staticConfig();
+    //attempt load config from mbaas then local storage.
+    this.refresh(cb);
+  };
+  Config.prototype.staticConfig = function(config) {
     var appid = $fh && $fh.app_props ? $fh.app_props.appid : config.appid;
     var mode = $fh && $fh.app_props ? $fh.app_props.mode : 'dev';
     this.set('appId', appid);
@@ -1224,24 +1242,41 @@ appForm.models = function (module) {
     this.set('timeoutTime', 30000);
     var self = this;
     if ($fh && 'function' === typeof $fh.env) {
-      $fh.env(function (env) {
+      $fh.env(function(env) {
         self.set('deviceId', env.uuid);
       });
     }
     this._initMBaaS();
     //Setting default retry attempts if not set in the config
+    if (config === undefined) {
+      config = {};
+    }
     if (typeof config.submissionRetryAttempts === 'undefined') {
       config.submissionRetryAttempts = 2;
     }
 
-    if(config.submissionTimeout == null){
-      config.submissionTimeout = 20;//Default 20 seconds timeout
+    if (config.submissionTimeout == null) {
+      config.submissionTimeout = 20; //Default 20 seconds timeout
     }
-    
     this.fromJSON(config);
-    cb();
+    this.fromJSON({
+      "sent_save_min": 5,
+      "sent_save_max": 1000,
+      "targetWidth": 100,
+      "targetHeight": 100,
+      "quality": 75,
+      "debug_mode": false,
+      "logger": false,
+      "max_retries": 0,
+      "timeout": 30,
+      "log_line_limit": 300,
+      "log_email": "logs.enterpriseplc@feedhenry.com",
+      "log_level":2,
+      "log_levels":["error","warning","log","debug"],
+      "config_admin_user": true
+    });
   };
-  Config.prototype._initMBaaS = function () {
+  Config.prototype._initMBaaS = function() {
     var cloud_props = $fh.cloud_props;
     var app_props = $fh.app_props;
     var cloudUrl;
@@ -1271,7 +1306,8 @@ appForm.models = function (module) {
       'fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFile',
       'base64fileSubmission': '/forms/:submissionId/:fieldId/:hashName/submitFormFileBase64',
       'submissionStatus': '/forms/:submissionId/status',
-      'completeSubmission': '/forms/:submissionId/completeSubmission'
+      'completeSubmission': '/forms/:submissionId/completeSubmission',
+      "config": '/forms/:appid/config'
     });
   };
   module.config = new Config();
@@ -1343,8 +1379,8 @@ appForm.models = function (module) {
   function Form(params, cb) {
     //console.log(params, cb);
     var that = this;
-    var rawMode = params.rawMode || false;
-    var rawData = params.rawData || null;
+    var rawMode = params.rawMode;
+    var rawData = params.rawData;
     var formId = params.formId;
     var fromRemote = params.fromRemote;
 
@@ -1367,19 +1403,17 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
-    if (!appForm.models.forms.isFormUpdated(that)) {
-      if (rawMode === false && _forms[formId]) {
-        //found form object in mem return it.
-        cb(null, _forms[formId]);
-        return _forms[formId];
-      }
+    if (_forms[formId]) {
+      //found form object in mem return it.
+      cb(null, _forms[formId]);
+      return _forms[formId];
     }
 
     function processRawFormJSON(){
       that.fromJSON(rawData);
       that.initialise();
 
-      _forms[formId] = that;
+      _forms[formId] = this;
       return cb(null, that);
     }
 
@@ -2477,19 +2511,6 @@ appForm.models = function (module) {
       'definition': {}
     });
   };
-  Field.prototype.getPhotoOptions = function(){
-    var photoOptions = {
-      "photoWidth" : null,
-      "photoHeight" : null,
-      "photoQuality" : null
-    };
-
-    var fieldDef = this.getFieldDefinition();
-    photoOptions.photoWidth = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.photoHeight = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.photoQuality = fieldDef.photoQuality || appForm.config.photoQuality || 50;
-    return photoOptions;
-  };
   Field.prototype.isRepeating = function () {
     return this.get('repeating', false);
   };
@@ -3418,50 +3439,38 @@ appForm.models = function (module) {
    * @return {[type]}      [description]
    */
   UploadTask.prototype.uploadForm = function (cb) {
-    var that = this;
-
-    function processUploadDataResult(res){
-      if(res.error){
-        console.error("Error submitting form " + res.error);
-        return cb("Error submitting form " + res.error);
-      } else {
-        var submissionId = res.submissionId;
-        // form data submitted successfully.
-        formSub.lastUpdate = appForm.utils.getTime();
-        that.set('submissionId', submissionId);
-        that.increProgress();
-        that.saveLocal(function (err) {
-          if (err) {
-            console.error(err);
-          }
-        });
-        that.emit('progress', that.getProgress());
-        return cb(null);
-      }
-    }
-
     var formSub = this.get('jsonTask');
-
+    var that = this;
     var formSubmissionModel = new appForm.models.FormSubmission(formSub);
     this.getRemoteStore().create(formSubmissionModel, function (err, res) {
       if (err) {
-        return cb(err);
+        cb(err);
       } else {
+        var submissionId = res.submissionId;
         var updatedFormDefinition = res.updatedFormDefinition;
-
         if (updatedFormDefinition) {
           // remote form definition is updated
-          that.refreshForm(updatedFormDefinition, function (err) {
+          that.refreshForm(function (err) {
             //refresh form def in parallel. maybe not needed.
-            console.log("Form Updated, refreshed");
             if (err) {
               console.error(err);
             }
-
-            processUploadDataResult(res);
           });
+          var errMsg = 'Form definition is out of date.';
+          cb(errMsg);
         } else {
-          processUploadDataResult(res);
+          // form data submitted successfully.
+          formSub.lastUpdate = appForm.utils.getTime();
+          that.set('submissionId', submissionId);
+          // that.set("currentTask", 0);
+          that.increProgress();
+          that.saveLocal(function (err) {
+            if (err) {
+              console.error(err);
+            }
+          });
+          that.emit('progress', that.getProgress());
+          return cb(null);
         }
       }
     });
@@ -3825,15 +3834,18 @@ appForm.models = function (module) {
    * @param  {Function} cb [description]
    * @return {[type]}      [description]
    */
-  UploadTask.prototype.refreshForm = function (updatedForm, cb) {
+  UploadTask.prototype.refreshForm = function (cb) {
     var formId = this.get('formId');
-    new appForm.models.Form({'formId': formId, 'rawMode': true, 'rawData' : updatedForm }, function (err, form) {
+    new appForm.models.Form({ 'formId': formId }, function (err, form) {
       if (err) {
         console.error(err);
       }
-
-      console.log('successfully updated form the form with id ' + updatedForm._id);
-      cb();
+      form.refresh(true, function (err) {
+        if (err) {
+          console.error(err);
+        }
+        cb();
+      });
     });
   };
   UploadTask.prototype.submissionModel = function (cb) {

@@ -116,7 +116,7 @@ HeaderView = Backbone.View.extend({
     App.views.drafts_list.hide();
     App.views.pending_list.hide();
     App.views.sent_list.hide();
-    // App.views.settings.hide();
+    App.views.settings.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.el.hide();
       //App.views.form = null;

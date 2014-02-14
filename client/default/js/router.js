@@ -36,35 +36,39 @@ App.Router = Backbone.Router.extend({
     this.loadingView = new LoadingCollectionView();
     this.loadingView.show("App Starting");
 
-    App.views.form_list = new FormListView();
-    App.views.drafts_list = new DraftListView();
-    App.views.pending_list = new PendingListView();
-    App.views.sent_list = new SentListView();
-    App.views.settings = new SettingsView();
-    App.views.header = new HeaderView();
-    App.views.header.showHome();
 
-    // store error handling
-    _(App.collections).forEach(function(collection) {
-      collection.on('error', function(collection, msg, options) {
-        $fh.logger.error('collection error:\"' + msg + '\"');
-      });
-    });
-    var self=this;
+    var self = this;
     $fh.ready({}, function() {
       $fh.init({}, function() {
         /**** LOCAL DEV USAGE *****/
-//        $fh.cloud_props.hosts.debugCloudUrl="http://127.0.0.1:3001";
-//        $fh.app_props.host="http://127.0.0.1:3001";
+        $fh.cloud_props.hosts.debugCloudUrl = "http://127.0.0.1:3001";
+        $fh.app_props.host = "http://127.0.0.1:3001";
         $fh.forms.init({}, function() {
-          $fh.forms.getTheme({"fromRemote" : false, "css" : true}, function(err, themeCSS){
 
-            if($('#fh_appform_style').length > 0){
+          $fh.forms.getTheme({
+            "fromRemote": false,
+            "css": true
+          }, function(err, themeCSS) {
+            App.views.form_list = new FormListView();
+            App.views.drafts_list = new DraftListView();
+            App.views.pending_list = new PendingListView();
+            App.views.sent_list = new SentListView();
+            App.views.settings = new SettingsView();
+            App.views.header = new HeaderView();
+            App.views.header.showHome();
+
+            // store error handling
+            _(App.collections).forEach(function(collection) {
+              collection.on('error', function(collection, msg, options) {
+                $fh.logger.error('collection error:\"' + msg + '\"');
+              });
+            });
+            if ($('#fh_appform_style').length > 0) {
               $('#fh_appform_style').html(themeCSS);
             } else {
               $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
             }
-            if(err) console.error(err);
+            if (err) console.error(err);
             self.onReady();
           });
         });

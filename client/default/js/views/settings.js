@@ -1,115 +1,33 @@
-SettingsView = Backbone.View.extend({
-  el: $('#fh_wufoo_settings'),
+$(function() {
+  SettingsView = $fh.forms.backbone.ConfigView.extend({
+    el: $('#fh_wufoo_settings'),
+    events:{
+      "click #cancelBtn":"cancel",
+      "click #saveBtn":"save"
+    },
+    buttons:"<div><button type='button' id='cancelBtn'>Cancel</button><button type='button' id='saveBtn'>Save</button></div>",
+    render:function(){
+      SettingsView.__super__.render.apply(this);
+      this.$el.append(this.buttons);
+      return this;
+    },
+    show: function() {
+      App.views.header.hideAll();
+      this.render();
+      this.$el.show();
+    },
 
-  events: {
-    "toggle .toggle": "settingChanged",
-    "click a.button-positive": "save",
-    "click a.button-negative": "cancel"
-  },
-
-  templates: {
-    "form": '<form><div class="input-group"></div></form>',
-    "toggle": '<div class="input-row"><label><%= list_item %></label><div class="toggle <%= toggle_class %>" data-key="<%= key %>"><div class="toggle-handle"></div></div></div>',
-    "input": '<div class="input-row"><label><%= list_item %></label><input type="<%= type %>" value="<%= value %>" data-key="<%= key %>"></div>',
-    "other": '<div class="input-row"><label><%= list_item %></label><input readonly type="text" value="<%= value %>"></div>',
-    "footer": '<a class="button-negative">Cancel</a><a class="button-positive">Save & Apply</a>'
-  },
-
-  initialize: function() {
-  },
-
-  render: function () {
-    var purtyKey = function (key) {
-      // replace '_' with ' ' and capitalise each word
-      return _.map(key.split('_'), function (part) {
-        return part.charAt(0).toUpperCase() + part.substring(1).toLowerCase();
-      }).join(' ');
-    };
-
-    this.$el.empty();
-
-    this.$el.append(this.templates.form);
-
-    var div = this.$el.find('.input-group');
-
-    var processed = {};
-    var config = App.config.attributes;
-    var keys = _.union(_.keys(config) , _.keys(config.defaults));
-    _.each(keys, function (key){
-      if('defaults' !== key && 'white_list' !== key && 'force_cloud_config_updates' !== key) {
-        var val = (config.hasOwnProperty(key) ? config[key] : config.defaults[key]);
-        var el;
-        if ('boolean' === typeof val) {
-          // special toggle field
-          el = _.template(this.templates.toggle, {
-            "list_item": purtyKey(key),
-            "key": key,
-            "toggle_class": val ? "active": ""
-          });
-        } else if ('number' === typeof val || 'string' === typeof val) {
-          // plain input field
-          el = _.template(this.templates.input, {
-            "list_item": purtyKey(key),
-            "key": key,
-            "value": val,
-            "type": 'number' === typeof val ? 'number' : 'text'
-          });
-        } else {
-          // readonly field showing stringifed value
-          el = _.template(this.templates.other, {
-            "list_item": purtyKey(key),
-            "value": JSON.stringify(val)
-          });
-        }
-        div.append(el);
-      }
-    },this);
-    div.append(this.templates.footer);
-  },
-
-  settingChanged: function () {
-    // won't be doing anything with settings unless save is pressed
-  },
-
-  save: function () {
-    var config = {};
-
-    // get settings values from form, building up config object
-    this.$el.find('input:not([readonly])').each(function () {
-      var jqEl = $(this);
-      var key = jqEl.data('key');
-      var val = jqEl.val();
-      if (jqEl.is('[type=number]')) {
-        val = parseInt(val, 10);
-      }
-      config[key] = val;
-    });
-
-    this.$el.find('.toggle').each(function () {
-      var jqEl = $(this);
-      var key = jqEl.data('key');
-      var val = jqEl.hasClass('active');
-      config[key] = val;
-    });
-
-    // update config
-    App.config.set(_.extend({}, App.config.attributes, config));
-
-    // back to home screen
-    App.views.header.showHome();
-  },
-
-  cancel: function () {
-    App.views.header.showHome();
-  },
-
-  show: function() {
-    App.views.header.hideAll();
-    this.render();
-    this.$el.show();
-  },
-
-  hide: function() {
-    this.$el.hide();
-  }
+    hide: function() {
+      this.$el.hide();
+    },
+    save:function(){
+      SettingsView.__super__.save.call(this,function(){
+        App.views.header.showHome();  
+      });
+      
+    },
+    cancel:function(){
+      App.views.header.showHome();
+    }
+  });
 });
