@@ -36,7 +36,10 @@ var appForm = function (module) {
               appForm.models.forms.refresh(true, function (err) {
                 if (err)
                   console.error(err);
-                cb();
+                appForm.models.log.loadLocal(function(){
+                  cb();
+                });
+
               });
             } else {
               cb();
@@ -796,21 +799,22 @@ appForm.stores = function(module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     // console.log(options);
-    if($fh.data){
-      $fh.data(options, function (res) {
-        if (typeof res == 'undefined') {
-          res = {
-            key: options.key,
-            val: options.val
-          };
-        }
-        //unify the interfaces
-        if (options.act.toLowerCase() == 'remove') {
-          success(null, null);
-        }
-        success(null, res.val ? res.val : null);
-      }, failure);
-    }
+    //allow for no $fh api in studio
+    if(! $fh || ! $fh.data) return success();
+
+    $fh.data(options, function (res) {
+      if (typeof res == 'undefined') {
+        res = {
+          key: options.key,
+          val: options.val
+        };
+      }
+      //unify the interfaces
+      if (options.act.toLowerCase() == 'remove') {
+        success(null, null);
+      }
+      success(null, res.val ? res.val : null);
+    }, failure);
   }
   //use file system
   function _fhFileData(options, success, failure) {
@@ -822,7 +826,7 @@ appForm.stores = function(module) {
     }
 
     function filenameForKey(key, cb) {
-      var appid = $fh && $fh.app_props ? $fh.app_props.appid : '';
+      var appid =appForm.config.get("appId","unknownAppId");
       key = key + appid;
       utils.md5(key, function(err, hash) {
         if (err) {
@@ -921,22 +925,29 @@ appForm.stores = function(module) {
     Store.call(this, 'MBaaS');
   }
   appForm.utils.extend(MBaaS, Store);
-  MBaaS.prototype.create = function(model, cb) {
-    var url = _getUrl(model);
-    if((model.get("_type") == "fileSubmission" || model.get("_type") == "base64fileSubmission") && (typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
-      appForm.web.uploadFile(url, model.getProps(), cb);
-    } else {
-      appForm.web.ajax.post(url, model.getProps(), cb);
-    }
+  MBaaS.prototype.checkStudio = function() {
+    return appForm.config.get("studioMode");
   };
-  MBaaS.prototype.read = function(model, cb) {
-    if (model.get("_type") == "offlineTest") {
-      cb("offlinetest. ignore");
+  MBaaS.prototype.create = function(model, cb) {
+    if (this.checkStudio()) {
+      cb("Studio mode not supported");
     } else {
       var url = _getUrl(model);
-      appForm.web.ajax.get(url, cb);
+      appForm.web.ajax.post(url, model.getProps(), cb);
     }
 
+  };
+  MBaaS.prototype.read = function(model, cb) {
+    if (this.checkStudio()) {
+      cb("Studio mode not supported");
+    } else {
+      if (model.get("_type") == "offlineTest") {
+        cb("offlinetest. ignore");
+      } else {
+        var url = _getUrl(model);
+        appForm.web.ajax.get(url, cb);
+      }
+    }
   };
   MBaaS.prototype.update = function(model, cb) {};
   MBaaS.prototype["delete"] = function(model, cb) {};
@@ -967,8 +978,8 @@ appForm.stores = function(module) {
     //Theme and forms do not require any parameters that are not in _fh
     switch (type) {
       case 'config':
-        props.appid=model.get("appId");
-      break;
+        props.appid = model.get("appId");
+        break;
       case 'form':
         props.formId = model.get('_id');
         break;
@@ -1196,7 +1207,7 @@ appForm.models = function (module) {
       fromRemote = false;
     }
     if (fromRemote) {
-      dataAgent.refreshRead(this, _handler);
+      dataAgent.attemptRead(this, _handler);
     } else {
       dataAgent.read(this, _handler);
     }
@@ -1283,10 +1294,17 @@ appForm.models = function(module) {
   appForm.utils.extend(Config, Model);
   //call in appForm.init
   Config.prototype.init = function(config, cb) {
-    //load hard coded static config first
-    this.staticConfig();
-    //attempt load config from mbaas then local storage.
-    this.refresh(cb);
+    if (config.studioMode) { //running in studio
+      this.set("studioMode", true);
+      this.fromJSON(config);
+      cb();
+    } else {
+      //load hard coded static config first
+      this.staticConfig();
+      //attempt load config from mbaas then local storage.
+      this.refresh(cb);
+    }
+
   };
   Config.prototype.staticConfig = function(config) {
     var appid = $fh && $fh.app_props ? $fh.app_props.appid : config.appid;
@@ -1325,8 +1343,8 @@ appForm.models = function(module) {
       "timeout": 30,
       "log_line_limit": 300,
       "log_email": "logs.enterpriseplc@feedhenry.com",
-      "log_level":2,
-      "log_levels":["error","warning","log","debug"],
+      "log_level": 2,
+      "log_levels": ["error", "warning", "log", "debug"],
       "config_admin_user": true
     });
   };
@@ -1363,6 +1381,18 @@ appForm.models = function(module) {
       'completeSubmission': '/forms/:appId/:submissionId/completeSubmission',
       "config": '/forms/:appid/config'
     });
+  };
+  Config.prototype.saveLocal = function(cb){
+    if(this.get("config_admin_user") === true){
+      Model.prototype.saveLocal.call(this, cb);
+    } else {
+      cb("Must be an admin user to change client settings.");
+    }
+  };
+  Config.prototype.set = function(key, value){
+    if(this.get("config_admin_user") === true){
+      Model.prototype.set.call(this, key, value);
+    }
   };
   module.config = new Config();
   return module;
@@ -3002,7 +3032,7 @@ appForm.models = function (module) {
   Page.prototype.checkForSectionBreaks=function(){ //Checking for any sections
     for (var i=0;i<this.fieldsIds.length;i++){
       var fieldModel = this.form.getFieldModelById(this.fieldsIds[i]);
-      if(fieldModel.getType() == "sectionBreak"){
+      if(fieldModel && fieldModel.getType() == "sectionBreak"){
         return true;
       }
     }
@@ -3148,8 +3178,7 @@ appForm.models = function (module) {
       '_ludid': 'uploadManager_queue'
     });
     this.set('taskQueue', []);
-    this.timeOut = 60;
-    //60 seconds. TODO: define in config
+    this.timeOut = appform.config.get("timeout");
     this.sending = false;
     this.timerInterval = 200;
     this.sendingStart = appForm.utils.getTime();
@@ -3766,7 +3795,7 @@ appForm.models = function (module) {
         console.error('Err, retrying:', err);
         //If the upload has encountered an error -- flag the submission as needing a retry on the next tick -- User should be insulated from an error until the retries are finished.
         that.increRetryAttempts();
-        if (that.getRetryAttempts() <= appForm.config.get('submissionRetryAttempts')) {
+        if (that.getRetryAttempts() <= appForm.config.get('max_retries')) {
           that.setRetryNeeded(true);
           that.saveLocal(function (err) {
             if (err)
@@ -4012,51 +4041,91 @@ appForm.models = (function(module) {
     this.set("logs", []);
     this.isWriting = false;
     this.moreToWrite = false;
-    this.loadLocal(function() {});
+    //    appForm.
+    //    this.loadLocal(function() {});
   }
   appForm.utils.extend(Log, Model);
 
   Log.prototype.info = function(logLevel, msgs) {
-    // debugger;
-    var levelString = "";
-    var curLevel = appForm.config.get("log_level");
-    var log_levels = appForm.config.get("log_levels");
-    var self = this;
-    if (typeof logLevel == "string") {
-      levelString = logLevel;
-      logLevel = log_levels.indexOf(logLevel.toLowerCase());
-    } else {
-      if (logLevel >= log_levels.length) {
-        levelString = "Unknown";
-      }
-    }
-    if (curLevel < logLevel) {
-      return;
-    } else {
-      var args = Array.prototype.splice.call(arguments, 0);
-      var logs = self.get("logs");
-      args.shift();
-      while (args.length > 0) {
-        logs.push(self.wrap(args.shift()));
-        if (logs.length > appForm.config.get("log_line_limit")) {
-          logs.shift();
+    if (appForm.config.get("logger") == "true") {
+      var levelString = "";
+      var curLevel = appForm.config.get("log_level");
+      var log_levels = appForm.config.get("log_levels");
+      var self = this;
+      if (typeof logLevel == "string") {
+        levelString = logLevel;
+        logLevel = log_levels.indexOf(logLevel.toLowerCase());
+      } else {
+        levelString = log_levels[logLevel];
+        if (logLevel >= log_levels.length) {
+          levelString = "Unknown";
         }
       }
-      if (self.isWriting) {
-        self.moreToWrite = true;
+      if (curLevel < logLevel) {
+        return;
       } else {
-        var _recursiveHandler=function () {
-          if (self.moreToWrite) {
-            self.moreToWrite = false;
-            self.write(_recursiveHandler);
+        var args = Array.prototype.splice.call(arguments, 0);
+        var logs = self.get("logs");
+        args.shift();
+        while (args.length > 0) {
+          logs.push(self.wrap(args.shift(), levelString));
+          if (logs.length > appForm.config.get("log_line_limit")) {
+            logs.shift();
           }
-        };
-        self.write(_recursiveHandler);
+        }
+        if (self.isWriting) {
+          self.moreToWrite = true;
+        } else {
+          var _recursiveHandler = function() {
+            if (self.moreToWrite) {
+              self.moreToWrite = false;
+              self.write(_recursiveHandler);
+            }
+          };
+          self.write(_recursiveHandler);
+        }
       }
     }
   };
-  Log.prototype.wrap = function(msg) {
-    return msg;
+  Log.prototype.wrap = function(msg, levelString) {
+    var now = new Date();
+    var dateStr = now.toISOString();
+    if (typeof msg == "object") {
+      msg = JSON.stringify(msg);
+    }
+    var finalMsg = dateStr + " " + levelString.toUpperCase() + " " + msg;
+    return finalMsg;
+  };
+  Log.prototype.getPolishedLogs = function() {
+    var arr = [];
+    var logs = this.getLogs();
+    var patterns = [{
+      reg: /^.+\sERROR\s.*/,
+      color: appForm.config.get('color_error') || "#FF0000"
+    }, {
+      reg: /^.+\sWARNING\s.*/,
+      color: appForm.config.get('color_warning') || "#FF9933"
+    }, {
+      reg: /^.+\sLOG\s.*/,
+      color: appForm.config.get('color_log') || "#009900"
+    }, {
+      reg: /^.+\sDEBUG\s.*/,
+      color: appForm.config.get('color_debug') || "#3366FF"
+    }, {
+      reg: /^.+\sUNKNOWN\s.*/,
+      color: appForm.config.get('color_unknown') || "#000000"
+    }];
+    for (var i = 0; i < logs.length; i++) {
+      var log = logs[i];
+      for (var j = 0; j < patterns.length; j++) {
+        var p = patterns[j];
+        if (p.reg.test(log)) {
+          arr.unshift("<div style='color:" + p.color + ";'>" + log + "</div>");
+          break;
+        }
+      }
+    }
+    return arr;
   };
   Log.prototype.write = function(cb) {
     var self = this;
@@ -4092,7 +4161,7 @@ appForm.models = (function(module) {
   Log.prototype.clearLogs = function(cb) {
     this.set("logs", []);
     this.saveLocal(function() {
-      if (cb){
+      if (cb) {
         cb();
       }
     });
@@ -4110,6 +4179,7 @@ appForm.models = (function(module) {
     appForm.utils.send(params, cb);
   };
   module.log = new Log();
+  appForm.log = module.log;
   return module;
 })(appForm.models || {});
 /**
