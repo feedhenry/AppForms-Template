@@ -1396,7 +1396,7 @@ appForm.models = function(module) {
   };
   module.config = new Config();
   return module;
-}(appForm.models || {});
+}(appForm || {});
 appForm.models = function (module) {
   var Model = appForm.models.Model;
   function Forms() {
