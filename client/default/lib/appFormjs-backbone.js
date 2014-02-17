@@ -1555,7 +1555,6 @@ var FormListView = BaseView.extend({
 
     App.collections.forms.bind('reset', function (collection, options) {
        if (options == null || !options.noFetch) {
-         $fh.logger.debug('reset forms collection');
          App.collections.forms.each(function (form) {
            form.fetch();
          });
@@ -1869,7 +1868,7 @@ var FieldView = Backbone.View.extend({
   },
 
   validate: function(e) {
-    if (App.config.validationOn) {
+    if (!$fh.forms.config.get("studioMode")) {
       var self = this;
       var target = $(e.currentTarget);
       var index = target.data().index;
@@ -2123,13 +2122,13 @@ FieldCameraView = FieldView.extend({
   addFromCamera: function (e, index) {
     e.preventDefault();
     var self = this;
-    var params = self.model.getPhotoOptions();
+    var params = {};
     if (this.model.utils.isPhoneGapCamAvailable()) {
-      this.model.utils.takePhoto(params, function (err, imageURI) {
+      this.model.utils.takePhoto(params, function (err, base64Img) {
         if (err) {
           console.error(err);
         } else {
-          self.setImage(index, imageURI);
+          self.setImage(index, base64Img);
         }
       });
     } else if (this.model.utils.isHtml5CamAvailable()) {
@@ -2187,15 +2186,12 @@ FieldCameraView = FieldView.extend({
   },
   addFromLibrary: function (e, index) {
     var self = this;
-    var params = {
-        width: App.config.getValueOrDefault('cam_targetWidth'),
-        height: App.config.getValueOrDefault('cam_targetHeight')
-      };
+    var params = {};
     if (self.model.utils.isPhoneGapCamAvailable()) {
       e.preventDefault();
       params.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-      self.model.utils.takePhoto(params, function (err, imageURI) {
-        self.setImage(index, imageURI);
+      self.model.utils.takePhoto(params, function (err, base64Img) {
+        self.setImage(index, base64Img);
       });
     } else {
       var file = document.createElement('input');
@@ -2250,7 +2246,6 @@ FieldCameraGroupView = FieldCameraView.extend({
     // pass visible event down to all fields
     var parent = this;
     this.on('visible', function () {
-      $fh.logger.debug('group visible');
       var subviews = this.subviews;
       _(subviews).forEach(function (fieldView) {
         // this group is a camera view and contains itself
@@ -2486,6 +2481,21 @@ FieldFileView = FieldView.extend({
   input: "<button style='' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
     "<input style='display:none;' class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
+  // dumpContent: function() {
+  //   var tmp = "<empty>";
+  //   if (this.fileData) {
+  //     var size = this.fileData.fileBase64.length + " bytes";
+  //     if (this.fileData.fileBase64.length > 1024) {
+  //       size = (Math.floor((this.fileData.fileBase64.length / 1024) * 1000) / 1000) + " Kilo bytes";
+  //     }
+  //     tmp = {
+  //       content_type: this.fileData.content_type,
+  //       filename: this.fileData.filename,
+  //       size: size
+  //     };
+  //   }
+  //   console.debug("Value changed :: " + JSON.stringify(tmp));
+  // },
   initialize: function () {
     var self = this;
 
@@ -2543,6 +2553,17 @@ FieldFileView = FieldView.extend({
       fileEle.click();
     });
   },
+//  showFile: function (index) {
+//    var wrapperObj = this.getWrapper(index);
+//    var button = wrapperObj.find("button");
+//    var fileEle = wrapperObj.find(".fh_appform_field_input");
+//    button.off("click");
+//    button.hide();
+////    fileEle.show();
+//    if (this.fileObjs[index]) {
+//      this.fileObjs[index] = null;
+//    }
+//  },
   valuePopulateToElement: function (index, value) {
     if (value) {
       this.fileObjs[index] = value;
@@ -2911,7 +2932,7 @@ FieldSignatureView = FieldView.extend({
     });
   },
   validate: function(e) {
-    if (App.config.validationOn) {
+    if (!$fh.forms.config.get("studioMode")) {
       this.trigger("checkrules");
     }
   },
@@ -3911,43 +3932,61 @@ StepsView = Backbone.View.extend({
   }
 
 });
-var ConfigView=Backbone.View.extend({
-  "templates":[
-  '<div class="config_camera">'+
-  '<fieldset>'+
-    '<legend>Camera</legend>'+
-      '<div class="form-group">'+
-        '<label>Quality</label>'+
-        '<input data-key="quality" value="<%= quality%>"/>'+
-      '</div>'+
-      '<div class="form-group">'+
-        '<label>Target Width</label>'+
-        '<input data-key="targetWidth" value="<%= targetWidth%>"/>'+
-      '</div><div class="form-group">'+
-        '<label>Target Height</label>'+
-        '<input data-key="targetHeight" value="<%= targetHeight%>"/>'+
-      '</div>'+
-  '</fieldset>'+
-'</div>',
-'<div class="config_submission">'+
-  '<fieldset>'+
-    '<legend>Submission</legend>'+
-      '<div class="form-group">'+
-        '<label>Max Retries</label>'+
-        '<input data-key="max_retries" value="<%= max_retries%>"/>'+
-      '</div>'+
-      '<div class="form-group">'+
-        '<label>Timeout</label>'+
-        '<input data-key="timeout" value="<%= timeout%>"/>'+
-      '</div><div class="form-group">'+
-        '<label>Min Sent Items to Save</label>'+
-        '<input data-key="sent_save_min" value="<%= sent_save_min%>"/>'+
-      '</div><div class="form-group">'+
-        '<label>Max Sent Items to Save</label>'+
-        '<input data-key="sent_save_max" value="<%= sent_save_max%>"/>'+
-      '</div>'+
-  '</fieldset>'+
-'</div>',
+var ConfigView = Backbone.View.extend({
+  "templates": [
+    '<div class="config_camera">' +
+    '<fieldset>' +
+    '<legend>Camera</legend>' +
+    '<div class="form-group">' +
+    '<label>Quality</label>' +
+    '<input data-key="quality" value="<%= quality%>"/>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label>Target Width</label>' +
+    '<input data-key="targetWidth" value="<%= targetWidth%>"/>' +
+    '</div><div class="form-group">' +
+    '<label>Target Height</label>' +
+    '<input data-key="targetHeight" value="<%= targetHeight%>"/>' +
+    '</div>' +
+    '</fieldset>' +
+    '</div>',
+    '<div class="config_submission">' +
+    '<fieldset>' +
+    '<legend>Submission</legend>' +
+    '<div class="form-group">' +
+    '<label>Max Retries</label>' +
+    '<input data-key="max_retries" value="<%= max_retries%>"/>' +
+    '</div>' +
+    '<div class="form-group">' +
+    '<label>Timeout</label>' +
+    '<input data-key="timeout" value="<%= timeout%>"/>' +
+    '</div><div class="form-group">' +
+    '<label>Min Sent Items to Save</label>' +
+    '<input data-key="sent_save_min" value="<%= sent_save_min%>"/>' +
+    '</div><div class="form-group">' +
+    '<label>Max Sent Items to Save</label>' +
+    '<input data-key="sent_save_max" value="<%= sent_save_max%>"/>' +
+    '</div>' +
+    '</fieldset>' +
+    '</div>',
+    '<style type="text/css">'+
+  '#_logsViewPanel{'+
+    'position:fixed;'+
+    'left:10px;'+
+    'top:10px;'+
+    'right:10px;'+
+    'bottom:10px;'+
+    'padding:8px;'+
+    'background: white;'+
+    '-webkit-border-radius: 8px;'+
+    'border-radius: 8px;'+
+    'overflow: auto;'+
+  '}'+
+  '#_closeViewBtn{'+
+    'border: 1px solid;'+
+    'padding:3px;'+
+  '}'+
+'</style>'+
 '<div class="config_debugging">'+
   '<fieldset>'+
     '<legend>Debugging</legend>'+
@@ -3975,33 +4014,79 @@ var ConfigView=Backbone.View.extend({
         '<label>Log Email Address</label>'+
         '<input data-key="log_email" value="<%= log_email%>"/>'+
       '</div>'+
+      '<div class="log_buttons">'+
+        '<button type="button" id="_viewLogsBtn">View Logs</button>'+
+        '<button type="button" id="_clearLogsBtn">Clear Logs</button>'+
+        '<button type="button" id="_sendLogsBtn">Send Logs</button>'+
+      '</div>'+
   '</fieldset>'+
-'</div>'],
-  "render":function(){
+'</div>'+
+'<div class="hidden" id="_logsViewPanel">'+
+  '<div><span id="_closeViewBtn">Close</span></div>'+
+  '<div id="_logViewDiv"></div>'+
+'</div>'
+  ],
+  "_myEvents": {
+    "click #_viewLogsBtn": "viewLogs",
+    "click #_clearLogsBtn": "clearLogs",
+    "click #_sendLogsBtn": "sendLogs",
+    "click #_closeViewBtn": "closeViewLogs"
+  },
+  "viewLogs": function() {
+    var logs = $fh.forms.log.getPolishedLogs();
+    var logStr = logs.join("");
+    this.$el.find("#_logViewDiv").html(logStr);
+    this.$el.find("#_logsViewPanel").show();
+  },
+
+  "clearLogs":function(){
+    var self=this;
+    $fh.forms.log.clearLogs(function(){
+      self.$el.find("#_logViewDiv").html("");
+      alert("Logs cleared.");
+    });
+  },
+  "sendLogs":function(){
+    $fh.forms.log.sendLogs(function(err){
+      if (err){
+        alert(err);
+      }else{
+        alert("Log has been sent to:"+$fh.forms.config.get("log_email"));
+      }
+    });
+  },  
+  "closeViewLogs":function(){
+    this.$el.find("#_logsViewPanel").hide();
+  },
+  "events": {},
+  "initialize": function() {
+    this.events = _.extend({}, this._myEvents, this.events);
+  },
+  "render": function() {
     this.$el.html("");
-    var props=this.getConfigModel().getProps();
-    var html=_.template(this.templates.join(""),props);
+    var props = this.getConfigModel().getProps();
+    var html = _.template(this.templates.join(""), props);
     this.$el.append(html);
     return this;
   },
-  "getConfigModel":function(){
+  "getConfigModel": function() {
     return $fh.forms.config;
   },
-  "save":function(cb){
-    var inputs=this.$el.find("input,select,textarea");
-    var data={};
+  "save": function(cb) {
+    var inputs = this.$el.find("input,select,textarea");
+    var data = {};
 
-    inputs.each(function(){
-      var key=$(this).data().key;
-      var val=$(this).val();
-      data[key]=val;
-      if ($(this).attr("type") && $(this).attr("type").toLowerCase()=="checkbox"){
-        if (!$(this).attr("checked")){
-          data[key]=false;
+    inputs.each(function() {
+      var key = $(this).data().key;
+      var val = $(this).val();
+      data[key] = val;
+      if ($(this).attr("type") && $(this).attr("type").toLowerCase() == "checkbox") {
+        if (!$(this).attr("checked")) {
+          data[key] = false;
         }
       }
     });
-    var model=this.getConfigModel();
+    var model = this.getConfigModel();
     model.fromJSON(data);
     model.saveLocal(cb);
   }

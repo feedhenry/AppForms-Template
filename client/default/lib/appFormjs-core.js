@@ -36,7 +36,10 @@ var appForm = function (module) {
               appForm.models.forms.refresh(true, function (err) {
                 if (err)
                   console.error(err);
-                cb();
+                appForm.models.log.loadLocal(function(){
+                  cb();
+                });
+
               });
             } else {
               cb();
@@ -153,7 +156,6 @@ appForm.utils = function (module) {
   };
   var fileSystemAvailable = false;
   var _requestFileSystem = function () {
-    console.error("No file system available");
   };
   //placeholder
   var PERSISTENT = 1;
@@ -190,7 +192,7 @@ appForm.utils = function (module) {
         size = saveObj.size;
       } else if (content instanceof Blob) {
         saveObj = content;
-        size = saveObj.size;
+        size = b.size;
       } else {
         //JSON object
         var stringify = JSON.stringify(content);
@@ -337,7 +339,6 @@ appForm.utils = function (module) {
     });
   }
   function _getFileEntry(fileName, size, params, cb) {
-    _checkEnv();
     _requestFileSystem(PERSISTENT, size, function gotFS(fileSystem) {
       fileSystem.root.getFile(fileName, params, function gotFileEntry(fileEntry) {
         cb(null, fileEntry);
@@ -405,15 +406,12 @@ appForm.utils = function (module) {
   var ctx = null;
   var localMediaStream = null;
   function isHtml5CamAvailable() {
-    checkEnv();
     return isHtml5;
   }
   function isPhoneGapAvailable() {
-    checkEnv();
     return isPhoneGap;
   }
   function initHtml5Camera(params, cb) {
-    checkEnv();
     _html5Camera(params, cb);
   }
   function cancelHtml5Camera() {
@@ -432,10 +430,9 @@ appForm.utils = function (module) {
         quality: quality,
         targetWidth: width,
         targetHeight: height,
-        sourceType: params.sourceType,
         saveToPhotoAlbum: false,
-        destinationType: Camera.DestinationType.FILE_URI,
-        encodingType: Camera.EncodingType.JPEG
+        destinationType: Camera.DestinationType.DATA_URL,
+        encodingType: Camera.EncodingType.PNG
       });
     } else if (isHtml5) {
       snapshot(params, cb);
@@ -517,34 +514,6 @@ appForm.utils = function (module) {
   return module;
 }(appForm.utils || {});
 appForm.web = function (module) {
-
-  module.uploadFile = function(url, fileProps, cb){
-    var filePath = fileProps.fullPath;
-
-    var success = function (r) {
-      console.log("upload to url ", url, " sucessfull");
-      r.response = r.response || {};
-      if(typeof r.response == "string"){
-        r.response = JSON.parse(r.response);
-      }
-      cb(null, r.response);
-    };
-
-    var fail = function (error) {
-      console.error("An error uploading a file has occurred: Code = " + error.code);
-      console.log("upload error source " + error.source);
-      console.log("upload error target " + error.target);
-      cb(error);
-    };
-
-    var options = new FileUploadOptions();
-    options.fileName = fileProps.fileName;
-    options.mimeType = fileProps.contentType;
-
-    var ft = new FileTransfer();
-    ft.upload(filePath, encodeURI(url), success, fail, options);
-  };
-
   return module;
 }(appForm.web || {});
 appForm.web.ajax = function (module) {
@@ -796,21 +765,22 @@ appForm.stores = function(module) {
   //use $fh data
   function _fhLSData(options, success, failure) {
     // console.log(options);
-    if($fh.data){
-      $fh.data(options, function (res) {
-        if (typeof res == 'undefined') {
-          res = {
-            key: options.key,
-            val: options.val
-          };
-        }
-        //unify the interfaces
-        if (options.act.toLowerCase() == 'remove') {
-          success(null, null);
-        }
-        success(null, res.val ? res.val : null);
-      }, failure);
-    }
+    //allow for no $fh api in studio
+    if(! $fh || ! $fh.data) return success();
+
+    $fh.data(options, function (res) {
+      if (typeof res == 'undefined') {
+        res = {
+          key: options.key,
+          val: options.val
+        };
+      }
+      //unify the interfaces
+      if (options.act.toLowerCase() == 'remove') {
+        success(null, null);
+      }
+      success(null, res.val ? res.val : null);
+    }, failure);
   }
   //use file system
   function _fhFileData(options, success, failure) {
@@ -822,7 +792,7 @@ appForm.stores = function(module) {
     }
 
     function filenameForKey(key, cb) {
-      var appid = $fh && $fh.app_props ? $fh.app_props.appid : '';
+      var appid =appForm.config.get("appId","unknownAppId");
       key = key + appid;
       utils.md5(key, function(err, hash) {
         if (err) {
@@ -921,22 +891,29 @@ appForm.stores = function(module) {
     Store.call(this, 'MBaaS');
   }
   appForm.utils.extend(MBaaS, Store);
-  MBaaS.prototype.create = function(model, cb) {
-    var url = _getUrl(model);
-    if((model.get("_type") == "fileSubmission" || model.get("_type") == "base64fileSubmission") && (typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
-      appForm.web.uploadFile(url, model.getProps(), cb);
-    } else {
-      appForm.web.ajax.post(url, model.getProps(), cb);
-    }
+  MBaaS.prototype.checkStudio = function() {
+    return appForm.config.get("studioMode");
   };
-  MBaaS.prototype.read = function(model, cb) {
-    if (model.get("_type") == "offlineTest") {
-      cb("offlinetest. ignore");
+  MBaaS.prototype.create = function(model, cb) {
+    if (this.checkStudio()) {
+      cb("Studio mode not supported");
     } else {
       var url = _getUrl(model);
-      appForm.web.ajax.get(url, cb);
+      appForm.web.ajax.post(url, model.getProps(), cb);
     }
 
+  };
+  MBaaS.prototype.read = function(model, cb) {
+    if (this.checkStudio()) {
+      cb("Studio mode not supported");
+    } else {
+      if (model.get("_type") == "offlineTest") {
+        cb("offlinetest. ignore");
+      } else {
+        var url = _getUrl(model);
+        appForm.web.ajax.get(url, cb);
+      }
+    }
   };
   MBaaS.prototype.update = function(model, cb) {};
   MBaaS.prototype["delete"] = function(model, cb) {};
@@ -967,8 +944,8 @@ appForm.stores = function(module) {
     //Theme and forms do not require any parameters that are not in _fh
     switch (type) {
       case 'config':
-        props.appid=model.get("appId");
-      break;
+        props.appid = model.get("appId");
+        break;
       case 'form':
         props.formId = model.get('_id');
         break;
@@ -1196,7 +1173,7 @@ appForm.models = function (module) {
       fromRemote = false;
     }
     if (fromRemote) {
-      dataAgent.refreshRead(this, _handler);
+      dataAgent.attemptRead(this, _handler);
     } else {
       dataAgent.read(this, _handler);
     }
@@ -1283,10 +1260,17 @@ appForm.models = function(module) {
   appForm.utils.extend(Config, Model);
   //call in appForm.init
   Config.prototype.init = function(config, cb) {
-    //load hard coded static config first
-    this.staticConfig();
-    //attempt load config from mbaas then local storage.
-    this.refresh(cb);
+    if (config.studioMode) { //running in studio
+      this.set("studioMode", true);
+      this.fromJSON(config);
+      cb();
+    } else {
+      //load hard coded static config first
+      this.staticConfig();
+      //attempt load config from mbaas then local storage.
+      this.refresh(cb);
+    }
+
   };
   Config.prototype.staticConfig = function(config) {
     var appid = $fh && $fh.app_props ? $fh.app_props.appid : config.appid;
@@ -1325,8 +1309,8 @@ appForm.models = function(module) {
       "timeout": 30,
       "log_line_limit": 300,
       "log_email": "logs.enterpriseplc@feedhenry.com",
-      "log_level":2,
-      "log_levels":["error","warning","log","debug"],
+      "log_level": 2,
+      "log_levels": ["error", "warning", "log", "debug"],
       "config_admin_user": true
     });
   };
@@ -1445,7 +1429,7 @@ appForm.models = function (module) {
         fromRemote = false;
       }
     } else {
-      console.error('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
+      console.log('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
     }
 
     if (!formId) {
@@ -1457,32 +1441,10 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
-    function checkForUpdate(form){
-      form.refresh(false, function (err, obj) {
-        if (appForm.models.forms.isFormUpdated(form)) {
-          form.refresh(true, function (err, obj1) {
-            if(err){
-              return cb(err, null);
-            }
-            form.initialise();
-
-            _forms[formId] = obj1;
-            return cb(err, obj1);
-          });
-        } else {
-          form.initialise();
-          _forms[formId] = obj;
-          cb(err, obj);
-        }
-      });
-    }
-
     if (rawMode === false && _forms[formId]) {
       //found form object in mem return it.
-      if(!appForm.models.forms.isFormUpdated(_forms[formId])){
-        cb(null, _forms[formId]);
-        return _forms[formId];
-      }
+      cb(null, _forms[formId]);
+      return _forms[formId];
     }
 
     function processRawFormJSON(){
@@ -1496,7 +1458,23 @@ appForm.models = function (module) {
     if (rawMode === true) {
       processRawFormJSON();
     } else {
-      checkForUpdate(that);
+      that.refresh(fromRemote, function (err, obj) {
+        if (appForm.models.forms.isFormUpdated(that)) {
+          that.refresh(true, function (err, obj1) {
+            if(err){
+              return cb(err, null);
+            }
+            that.initialise();
+
+            _forms[formId] = obj1;
+            return cb(err, obj1);
+          });
+        } else {
+          that.initialise();
+          _forms[formId] = obj;
+          cb(err, obj);
+        }
+      });
     }
   }
   appForm.utils.extend(Form, Model);
@@ -2612,19 +2590,6 @@ appForm.models = function (module) {
       'definition': {}
     });
   };
-  Field.prototype.getPhotoOptions = function(){
-    var photoOptions = {
-      "targetWidth" : null,
-      "targetHeight" : null,
-      "quality" : null
-    };
-
-    var fieldDef = this.getFieldDefinition();
-    photoOptions.targetWidth = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.targetHeight = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.quality = fieldDef.photoQuality || appForm.config.photoQuality || 50;
-    return photoOptions;
-  };
   Field.prototype.isRepeating = function () {
     return this.get('repeating', false);
   };
@@ -3002,7 +2967,7 @@ appForm.models = function (module) {
   Page.prototype.checkForSectionBreaks=function(){ //Checking for any sections
     for (var i=0;i<this.fieldsIds.length;i++){
       var fieldModel = this.form.getFieldModelById(this.fieldsIds[i]);
-      if(fieldModel.getType() == "sectionBreak"){
+      if(fieldModel && fieldModel.getType() == "sectionBreak"){
         return true;
       }
     }
@@ -4012,51 +3977,90 @@ appForm.models = (function(module) {
     this.set("logs", []);
     this.isWriting = false;
     this.moreToWrite = false;
-    this.loadLocal(function() {});
+    //    appForm.
+    //    this.loadLocal(function() {});
   }
   appForm.utils.extend(Log, Model);
 
   Log.prototype.info = function(logLevel, msgs) {
-    // debugger;
-    var levelString = "";
-    var curLevel = appForm.config.get("log_level");
-    var log_levels = appForm.config.get("log_levels");
-    var self = this;
-    if (typeof logLevel == "string") {
-      levelString = logLevel;
-      logLevel = log_levels.indexOf(logLevel.toLowerCase());
-    } else {
-      if (logLevel >= log_levels.length) {
-        levelString = "Unknown";
-      }
-    }
-    if (curLevel < logLevel) {
-      return;
-    } else {
-      var args = Array.prototype.splice.call(arguments, 0);
-      var logs = self.get("logs");
-      args.shift();
-      while (args.length > 0) {
-        logs.push(self.wrap(args.shift()));
-        if (logs.length > appForm.config.get("log_line_limit")) {
-          logs.shift();
+    if (appForm.config.get("logger") == "true") {
+      var levelString = "";
+      var curLevel = appForm.config.get("log_level");
+      var log_levels = appForm.config.get("log_levels");
+      var self = this;
+      if (typeof logLevel == "string") {
+        levelString = logLevel;
+        logLevel = log_levels.indexOf(logLevel.toLowerCase());
+      } else {
+        if (logLevel >= log_levels.length) {
+          levelString = "Unknown";
         }
       }
-      if (self.isWriting) {
-        self.moreToWrite = true;
+      if (curLevel < logLevel) {
+        return;
       } else {
-        var _recursiveHandler=function () {
-          if (self.moreToWrite) {
-            self.moreToWrite = false;
-            self.write(_recursiveHandler);
+        var args = Array.prototype.splice.call(arguments, 0);
+        var logs = self.get("logs");
+        args.shift();
+        while (args.length > 0) {
+          logs.push(self.wrap(args.shift(), levelString));
+          if (logs.length > appForm.config.get("log_line_limit")) {
+            logs.shift();
           }
-        };
-        self.write(_recursiveHandler);
+        }
+        if (self.isWriting) {
+          self.moreToWrite = true;
+        } else {
+          var _recursiveHandler = function() {
+            if (self.moreToWrite) {
+              self.moreToWrite = false;
+              self.write(_recursiveHandler);
+            }
+          };
+          self.write(_recursiveHandler);
+        }
       }
     }
   };
-  Log.prototype.wrap = function(msg) {
-    return msg;
+  Log.prototype.wrap = function(msg, levelString) {
+    var now = new Date();
+    var dateStr = now.toISOString();
+    if (typeof msg == "object") {
+      msg = JSON.stringify(msg);
+    }
+    var finalMsg = dateStr + " " + levelString.toUpperCase() + " " + msg;
+    return finalMsg;
+  };
+  Log.prototype.getPolishedLogs = function() {
+    var arr = [];
+    var logs = this.getLogs();
+    var patterns = [{
+      reg: /^.+\sERROR\s.*/,
+      color: appForm.config.get('color_error') || "#FF0000"
+    }, {
+      reg: /^.+\sWARNING\s.*/,
+      color: appForm.config.get('color_warning') || "#FF9933"
+    }, {
+      reg: /^.+\sLOG\s.*/,
+      color: appForm.config.get('color_log') || "#009900"
+    }, {
+      reg: /^.+\sDEBUG\s.*/,
+      color: appForm.config.get('color_debug') || "#3366FF"
+    }, {
+      reg: /^.+\sUNKNOWN\s.*/,
+      color: appForm.config.get('color_unknown') || "#000000"
+    }];
+    for (var i = 0; i < logs.length; i++) {
+      var log = logs[i];
+      for (var j = 0; j < patterns.length; j++) {
+        var p = patterns[j];
+        if (p.reg.test(log)) {
+          arr.unshift("<div style='color:" + p.color + ";'>" + log + "</div>");
+          break;
+        }
+      }
+    }
+    return arr;
   };
   Log.prototype.write = function(cb) {
     var self = this;
@@ -4092,7 +4096,7 @@ appForm.models = (function(module) {
   Log.prototype.clearLogs = function(cb) {
     this.set("logs", []);
     this.saveLocal(function() {
-      if (cb){
+      if (cb) {
         cb();
       }
     });
@@ -4110,6 +4114,7 @@ appForm.models = (function(module) {
     appForm.utils.send(params, cb);
   };
   module.log = new Log();
+  appForm.log = module.log;
   return module;
 })(appForm.models || {});
 /**
