@@ -427,9 +427,11 @@ appForm.utils = function (module) {
   }
   function takePhoto(params, cb) {
     //use configuration
-    var width = params.width || $fh.forms.config.get("targetWidth");
-    var height = params.height || $fh.forms.config.get("targetHeight");
-    var quality=params.quality || $fh.forms.config.get("quality");
+    var width = $fh.forms.config.get("targetWidth", 200);
+    var height = $fh.forms.config.get("targetHeight", 200);
+    var quality= $fh.forms.config.get("quality", 200);
+
+    params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
     if (isPhoneGap) {
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
         quality: quality,
@@ -437,8 +439,8 @@ appForm.utils = function (module) {
         targetHeight: height,
         sourceType: params.sourceType,
         saveToPhotoAlbum: false,
-        destinationType: Camera.DestinationType.FILE_URI,
-        encodingType: Camera.EncodingType.JPEG
+        destinationType: Camera.DestinationType.DATA_URL,
+        encodingType: Camera.EncodingType.PNG
       });
     } else if (isHtml5) {
       snapshot(params, cb);
@@ -4287,9 +4289,9 @@ if ($fh.forms === undefined) {
 }
 appForm.RulesEngine=rulesEngine;
 
-/*! fh-forms - v0.2.23 -  */
+/*! fh-forms - v0.2.30 -  */
 /*! async - v0.2.9 -  */
-/*! 2014-02-10 */
+/*! 2014-02-17 */
 /* This is the prefix file */
 function rulesEngine (formDef) {
   var define = {};
@@ -5770,7 +5772,7 @@ function rulesEngine (formDef) {
 
         function checkRepeat(numSubmittedValues, fieldDefinition, cb) {
 
-          if(fieldDefinition.repeating && fieldDefinition.fieldOptions && fieldDefinition.fieldOptions.definition){
+          if(fieldDefinition.repeating && fieldDefinition.fieldOptions.definition){
             if(fieldDefinition.fieldOptions.definition.minRepeat){
               if(numSubmittedValues < fieldDefinition.fieldOptions.definition.minRepeat){
                 return cb(undefined, "Expected min of " + fieldDefinition.fieldOptions.definition.minRepeat + " values for field " + fieldDefinition.name + " but got " + numSubmittedValues);
