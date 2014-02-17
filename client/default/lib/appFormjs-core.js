@@ -53,12 +53,13 @@ var appForm = function (module) {
     // });
     return module;
   }(appForm || {});
-appForm.utils = function (module) {
+appForm.utils = function(module) {
   module.extend = extend;
   module.localId = localId;
   module.md5 = md5;
   module.getTime = getTime;
   module.isPhoneGap = isPhoneGap;
+  module.send=send;
   function extend(child, parent) {
 
     if (parent.constructor && parent.constructor == Function) {
@@ -71,6 +72,7 @@ appForm.utils = function (module) {
       }
     }
   }
+
   function getTime(timezoneOffset) {
     var now = new Date();
     if (timezoneOffset) {
@@ -79,6 +81,7 @@ appForm.utils = function (module) {
       return now;
     }
   }
+
   function localId(model) {
     var props = model.getProps();
     var _id = props._id;
@@ -95,17 +98,17 @@ appForm.utils = function (module) {
     }
   }
   /**
-     * md5 hash a string
-     * @param  {[type]}   str [description]
-     * @param  {Function} cb  (err,md5str)
-     * @return {[type]}       [description]
-     */
+   * md5 hash a string
+   * @param  {[type]}   str [description]
+   * @param  {Function} cb  (err,md5str)
+   * @return {[type]}       [description]
+   */
   function md5(str, cb) {
     if (typeof $fh != 'undefined' && $fh.hash) {
       $fh.hash({
         algorithm: 'MD5',
         text: str
-      }, function (result) {
+      }, function(result) {
         if (result && result.hashvalue) {
           cb(null, result.hashvalue);
         } else {
@@ -116,6 +119,7 @@ appForm.utils = function (module) {
       cb('Crypto not found');
     }
   }
+
   function isPhoneGap() {
     //http://stackoverflow.com/questions/10347539/detect-between-a-mobile-browser-or-a-phonegap-application
     //may break.
@@ -125,6 +129,14 @@ appForm.utils = function (module) {
     } else {
       return false;
     }
+  }
+
+  function send(params,cb){
+    $fh.send(params,function(){
+      cb(null);
+    },function(msg){
+      cb(msg);
+    });
   }
   return module;
 }(appForm.utils || {});
@@ -412,12 +424,14 @@ appForm.utils = function (module) {
   }
   function takePhoto(params, cb) {
     //use configuration
-    params.sourceType = params.sourceType || Camera.PictureSourceType.SAVEDPHOTOALBUM;
+    var width = params.width || $fh.forms.config.get("targetWidth");
+    var height = params.height || $fh.forms.config.get("targetHeight");
+    var quality=params.quality || $fh.forms.config.get("quality");
     if (isPhoneGap) {
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
-        quality: params.quality,
-        targetWidth: params.targetWidth,
-        targetHeight: params.targetHeight,
+        quality: quality,
+        targetWidth: width,
+        targetHeight: height,
         sourceType: params.sourceType,
         saveToPhotoAlbum: false,
         destinationType: Camera.DestinationType.FILE_URI,
@@ -436,8 +450,8 @@ appForm.utils = function (module) {
     };
   }
   function _html5Camera(params, cb) {
-    var width = params.width;
-    var height = params.height;
+    var width = params.width || $fh.forms.config.get("targetWidth");
+    var height = params.height || $fh.forms.config.get("targetHeight");
     video.width = 1024;
     //TODO configuration-webcam resolution
     video.height = 768;
@@ -1775,8 +1789,12 @@ appForm.models = function (module) {
      * @return {[type]}              [description]
      */
   Submissions.prototype.saveSubmission = function (submission, cb) {
+    var self=this;
     this.updateSubmissionWithoutSaving(submission);
-    this.saveLocal(cb);
+    this.clearSentSubmission(function(){
+      self.saveLocal(cb);  
+    });
+    
   };
   Submissions.prototype.updateSubmissionWithoutSaving = function (submission) {
     var pruneData = this.pruneSubmission(submission);
@@ -1795,6 +1813,43 @@ appForm.models = function (module) {
     } else {
       // invalid local id.
       console.error('Invalid submission:' + JSON.stringify(submission));
+    }
+  };
+  Submissions.prototype.clearSentSubmission=function(cb){
+    var self=this;
+    var maxSent=$fh.forms.config.get("sent_save_max");
+    var submissions=this.get("submissions");
+    var sentSubmissions=this.getSubmitted();
+    // var maxSent=1;
+    if (sentSubmissions.length>maxSent){
+      sentSubmissions=sentSubmissions.sort(function(a,b){
+        if (a.submittedDate<b.submittedDate){
+          return -1;
+        }else {
+          return 1;
+        }
+      });
+      var toBeRemoved=[];
+      while (sentSubmissions.length>maxSent){
+        toBeRemoved.push(sentSubmissions.pop());
+      }
+      var count=toBeRemoved.length;
+      for (var i=0;i<toBeRemoved.length;i++){
+        var subMeta=toBeRemoved[i];
+        self.getSubmissionByMeta(subMeta,function(err,submission){
+          submission.clearLocal(function(err){
+            if (err){
+              console.error(err);
+            }
+            count--;
+            if (count===0){
+              cb(null,null);
+            }
+          });
+        });
+      }
+    }else{
+      cb(null,null);
     }
   };
   Submissions.prototype.findByFormId = function (formId) {
@@ -1836,7 +1891,7 @@ appForm.models = function (module) {
         'deviceFormTimestamp',
         'errorMessage',
         'submissionStartedTimestamp',
-        'submitDate'
+        'submittedDate'
       ];
     var data = submission.getProps();
     var rtn = {};
@@ -3942,6 +3997,122 @@ appForm.models = function (module) {
   return module;
 }(appForm.models || {});
 /**
+ * Async log module
+ * @param  {[type]} module [description]
+ * @return {[type]}        [description]
+ */
+appForm.models = (function(module) {
+  var Model = appForm.models.Model;
+
+  function Log() {
+    Model.call(this, {
+      '_type': 'log',
+      "_ludid": "log"
+    });
+    this.set("logs", []);
+    this.isWriting = false;
+    this.moreToWrite = false;
+    this.loadLocal(function() {});
+  }
+  appForm.utils.extend(Log, Model);
+
+  Log.prototype.info = function(logLevel, msgs) {
+    // debugger;
+    var levelString = "";
+    var curLevel = appForm.config.get("log_level");
+    var log_levels = appForm.config.get("log_levels");
+    var self = this;
+    if (typeof logLevel == "string") {
+      levelString = logLevel;
+      logLevel = log_levels.indexOf(logLevel.toLowerCase());
+    } else {
+      if (logLevel >= log_levels.length) {
+        levelString = "Unknown";
+      }
+    }
+    if (curLevel < logLevel) {
+      return;
+    } else {
+      var args = Array.prototype.splice.call(arguments, 0);
+      var logs = self.get("logs");
+      args.shift();
+      while (args.length > 0) {
+        logs.push(self.wrap(args.shift()));
+        if (logs.length > appForm.config.get("log_line_limit")) {
+          logs.shift();
+        }
+      }
+      if (self.isWriting) {
+        self.moreToWrite = true;
+      } else {
+        var _recursiveHandler=function () {
+          if (self.moreToWrite) {
+            self.moreToWrite = false;
+            self.write(_recursiveHandler);
+          }
+        };
+        self.write(_recursiveHandler);
+      }
+    }
+  };
+  Log.prototype.wrap = function(msg) {
+    return msg;
+  };
+  Log.prototype.write = function(cb) {
+    var self = this;
+    self.isWriting = true;
+    self.saveLocal(function() {
+      self.isWriting = false;
+      cb();
+    });
+  };
+  Log.prototype.e = function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    args.unshift("error");
+    this.info.apply(this, args);
+  };
+  Log.prototype.w = function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    args.unshift("warning");
+    this.info.apply(this, args);
+  };
+  Log.prototype.l = function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    args.unshift("log");
+    this.info.apply(this, args);
+  };
+  Log.prototype.d = function() {
+    var args = Array.prototype.splice.call(arguments, 0);
+    args.unshift("debug");
+    this.info.apply(this, args);
+  };
+  Log.prototype.getLogs = function() {
+    return this.get("logs");
+  };
+  Log.prototype.clearLogs = function(cb) {
+    this.set("logs", []);
+    this.saveLocal(function() {
+      if (cb){
+        cb();
+      }
+    });
+  };
+  Log.prototype.sendLogs = function(cb) {
+    var email = appForm.config.get("log_email");
+    var config = appForm.config.getProps();
+    var logs = this.getLogs();
+    var params = {
+      "type": "email",
+      "to": email,
+      "subject": "App Forms App Logs",
+      "body": "Configuration:\n" + JSON.stringify(config) + "\n\nApp Logs:\n" + logs.join("\n")
+    };
+    appForm.utils.send(params, cb);
+  };
+  module.log = new Log();
+  return module;
+})(appForm.models || {});
+/**
  * FeedHenry License
  */
 appForm.api = function (module) {
@@ -3952,6 +4123,7 @@ appForm.api = function (module) {
   module.getSubmissions = getSubmissions;
   module.init = appForm.init;
   module.config = appForm.models.config;
+  module.log=appForm.models.log;
   var _submissions = null;
   /**
      * Retrieve forms model. It contains forms list. check forms model usage
