@@ -1,6 +1,12 @@
 /* Phase2 styles */
 
 
+.fh_appform_field_input.pending_submission{
+    width: 98%;
+    margin-left: 10px;
+}
+
+
 /*TODO All the pending, drafts, sent screens need to be customised*/
 
 
