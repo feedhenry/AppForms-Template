@@ -353,7 +353,7 @@ appForm.utils = function (module) {
             _getFileEntry(fileName, size, params, cb);
           });
         } else {
-          // console.error('Failed to get file entry:' + err.message)
+          console.error('Failed to get file entry:' + err.message);
           cb(err);
         }
       });
@@ -963,6 +963,7 @@ appForm.stores = function(module) {
 
   function _getUrl(model) {
     var type = model.get('_type');
+    console.log("appForm.config: ", appForm.config);
     var host = appForm.config.get('cloudHost');
     var mBaaSBaseUrl = appForm.config.get('mbaasBaseUrl');
     var formUrls = appForm.config.get('formUrls');
@@ -1390,13 +1391,11 @@ appForm.models = function(module) {
     }
   };
   Config.prototype.set = function(key, value){
-    if(this.get("config_admin_user") === true){
-      Model.prototype.set.call(this, key, value);
-    }
+    Model.prototype.set.call(this, key, value);
   };
   module.config = new Config();
   return module;
-}(appForm || {});
+}(appForm.models || {});
 appForm.models = function (module) {
   var Model = appForm.models.Model;
   function Forms() {
@@ -3178,7 +3177,7 @@ appForm.models = function (module) {
       '_ludid': 'uploadManager_queue'
     });
     this.set('taskQueue', []);
-    this.timeOut = appForm.config.get("timeout");
+    this.timeOut = 60;
     this.sending = false;
     this.timerInterval = 200;
     this.sendingStart = appForm.utils.getTime();
