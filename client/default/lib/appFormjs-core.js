@@ -1303,7 +1303,8 @@ appForm.models = function(module) {
       //load hard coded static config first
       this.staticConfig();
       //attempt load config from mbaas then local storage.
-      this.refresh(cb);
+      //this.refresh(cb); //TODO, put back in when mbaas is complete for config.
+      cb();
     }
 
   };
