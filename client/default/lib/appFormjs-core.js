@@ -23,7 +23,8 @@ var appForm = function (module) {
       //init config module
       var config = def.config || {};
       appForm.config = appForm.models.config;
-      appForm.config.init(config, function () {
+      appForm.config.init(config, function (err) {
+        if(err) console.error(err);
         //Loading the current state of the uploadManager for any upload tasks that are still in progress.
         appForm.models.uploadManager.loadLocal(function (err) {
           if (err)
@@ -39,7 +40,6 @@ var appForm = function (module) {
                 appForm.models.log.loadLocal(function(){
                   cb();
                 });
-
               });
             } else {
               cb();
@@ -742,7 +742,7 @@ appForm.stores = function(module) {
     }
 
     function filenameForKey(key, cb) {
-      var appid =appForm.config.get("appId","unknownAppId");
+      var appid = appForm.config.get("appId","unknownAppId");
       key = key + appid;
       utils.md5(key, function(err, hash) {
         if (err) {
@@ -1222,8 +1222,7 @@ appForm.models = function(module) {
       //load hard coded static config first
       this.staticConfig();
       //attempt load config from mbaas then local storage.
-      //this.refresh(cb); //TODO, put back in when mbaas is complete for config.
-      cb();
+      this.refresh(cb);
     }
 
   };
@@ -1232,7 +1231,7 @@ appForm.models = function(module) {
     var mode = $fh && $fh.app_props ? $fh.app_props.mode : 'dev';
     this.set('appId', appid);
     this.set('env', mode);
-    this.set('timeoutTime', 30000);
+    this.set('timeoutTime', 15000);
     var self = this;
     if ($fh && 'function' === typeof $fh.env) {
       $fh.env(function(env) {
@@ -1260,7 +1259,7 @@ appForm.models = function(module) {
       "quality": 75,
       "debug_mode": false,
       "logger": false,
-      "max_retries": 0,
+      "max_retries": 2,
       "timeout": 30,
       "log_line_limit": 300,
       "log_email": "logs.enterpriseplc@feedhenry.com",
@@ -2042,7 +2041,7 @@ appForm.models = function(module) {
     this.set('submittedDate', null);
     this.set('userId', null);
     this.set('filesInSubmission', {});
-    this.set('deviceId', appForm.models.config.get('deviceId'));
+    this.set('deviceId', appForm.config.get('deviceId'));
     this.transactionMode = false;
     this.genLocalId();
     var localId = this.getLocalId();
@@ -3010,7 +3009,7 @@ appForm.models = function (module) {
       '_ludid': 'uploadManager_queue'
     });
     this.set('taskQueue', []);
-    this.timeOut = 60;
+    this.timeOut = appForm.config.get("timeout");
     this.sending = false;
     this.timerInterval = 200;
     this.sendingStart = appForm.utils.getTime();
