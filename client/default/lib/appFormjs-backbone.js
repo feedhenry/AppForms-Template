@@ -1515,23 +1515,6 @@ var App=(function(module){
     module.collections={};
     module.config={};
 
-    // ---- App Configs --------
-    module.config.validationOn = true;
-
-    // TODO - get this to read from field definition
-    module.config.getValueOrDefault = function(key){
-        switch(key){
-            case "cam_quality":
-            return 50;
-
-            case "cam_targetWidth":
-            return 300;
-
-            case "cam_targetHeight":
-            return 200;
-        }
-    };
-
     return module;
 })(App || {});
 var BaseView=Backbone.View.extend({
@@ -2123,6 +2106,9 @@ FieldCameraView = FieldView.extend({
     e.preventDefault();
     var self = this;
     var params = {};
+
+    params = this.model.getPhotoOptions();
+
     if (this.model.utils.isPhoneGapCamAvailable()) {
       this.model.utils.takePhoto(params, function (err, imageURI) {
         if (err) {
@@ -2162,7 +2148,6 @@ FieldCameraView = FieldView.extend({
       this.model.utils.initHtml5Camera(params, function (err, video) {
         if (err) {
           console.error(err);
-          alert(err);
           camObj.remove();
         } else {
           $(video).css('width', '100%');
@@ -2181,7 +2166,7 @@ FieldCameraView = FieldView.extend({
       });
     } else {
       var sampleImg = self.sampleImage();
-      self.setImage(index, sampleImage);
+      self.setImage(index, sampleImg);
     }
   },
   addFromLibrary: function (e, index) {
@@ -2190,8 +2175,8 @@ FieldCameraView = FieldView.extend({
     if (self.model.utils.isPhoneGapCamAvailable()) {
       e.preventDefault();
       params.sourceType = Camera.PictureSourceType.PHOTOLIBRARY;
-      self.model.utils.takePhoto(params, function (err, imageURI) {
-        self.setImage(index, imageURI);
+      self.model.utils.takePhoto(params, function (err, base64Image) {
+        self.setImage(index, base64Image);
       });
     } else {
       var file = document.createElement('input');
@@ -2207,7 +2192,6 @@ FieldCameraView = FieldView.extend({
           self.model.utils.fileSystem.fileToBase64(file, function (err, base64Img) {
             if (err) {
               console.error(err);
-              alser(err);
             } else {
               self.setImage(index, base64Img);
             }
@@ -2384,19 +2368,7 @@ FieldCameraGroupView = FieldCameraView.extend({
 FieldCheckboxView = FieldView.extend({
   checkboxes: '<div class="fh_appform_field_input"><div class="checkboxes"><%= choices %></div></div>',
   choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
-  // contentChanged: function(e) {
-  //   var self = this;
-  //   this.dumpContent();
-  //   this.getTopView().trigger('change:field');
-  //   // var val = this.value();
-  //   // if (this.model.validate(val) === true) {
-  //   //   // self.model.set('value', val);
-  //   //   this.options.formView.setInputValue(self.model.get("_id"), val);
 
-  //   // } else {
-  //   //   alert('Value not valid for this field: ' + this.model.validate(val));
-  //   // }
-  // },
 
   renderInput: function(index) {
     var subfields = this.model.getCheckBoxOptions();
@@ -2422,29 +2394,6 @@ FieldCheckboxView = FieldView.extend({
 
     return checkboxesHtml;
   },
-  // addValidationRules: function() {
-  //   if (this.model.get('IsRequired') === '1') {
-  //     // special required rule for checkbox fields
-  //     this.$el.find('[name="' + this.model.get('_id') + '[]"]').first().rules('add', {
-  //       "required": true,
-  //       "minlength": 1,
-  //       messages: {
-  //         required: "Please choose at least 1"
-  //       }
-  //     });
-  //   }
-  // },
-
-  // defaultValue: function() {
-  //   var defaultValue = {};
-  //   var subfields = this.model.get('SubFields');
-  //   $.each(subfields, function(i, subfield) {
-  //     if (subfield.DefaultVal && subfield.DefaultVal == 1) {
-  //       defaultValue[subfield.ID] = subfield.Label;
-  //     }
-  //   });
-  //   return defaultValue;
-  // },
   valueFromElement: function(index) {
     var value=[];
     var wrapperObj=this.getWrapper(index);
@@ -2467,15 +2416,6 @@ FieldCheckboxView = FieldView.extend({
 });
 FieldEmailView = FieldView.extend({
    type:"email"
-  // addValidationRules: function () {
-  //   // call super
-  //   FieldView.prototype.addValidationRules.call(this);
-
-  //   // email validation
-  //   this.$el.find('#' + this.model.get('_id')).rules('add', {
-  //     "email": true
-  //   });
-  // }
 });
 FieldFileView = FieldView.extend({
   input: "<button style='' data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
@@ -2487,11 +2427,6 @@ FieldFileView = FieldView.extend({
     self.fileObjs = [];
     FieldView.prototype.initialize.apply(self, arguments);
   },
-  // validate: function(e) {
-  //   if (App.config.validationOn) {
-  //     this.trigger("checkrules");
-  //   }
-  // },
   contentChanged: function (e) {
     var self = this;
     var fileEle = e.target;
@@ -2736,18 +2671,6 @@ FieldMapView = FieldView.extend({
             'long': marker.getPosition().lng(),
             'zoom': self.mapSettings.defaultZoom
           };
-          // google.maps.event.addListener(marker, "dragend", function() {
-          //   self.mapData[index].lat = marker.getPosition().lat();
-          //   self.mapData[index].long = marker.getPosition().lng();
-          //   self.mapData[index].zoom=zoomLevel;
-          //   // self.contentChanged();
-          // });
-          // google.maps.event.addListener(res.map, 'zoom_changed', function() {
-          //   var zoomLevel = res.map.getZoom();
-          //   self.mapData[index].zoom=zoomLevel;
-          //   self.mapData[index].lat = marker.getPosition().lat();
-          //   self.mapData[index].long = marker.getPosition().lng();
-          // });
           self.onMapInit(index);
         }, function(err) {
           console.error(err);
@@ -2802,15 +2725,6 @@ FieldNumberView = FieldView.extend({
         var wrapperObj = this.getWrapper(index);
         return parseFloat(wrapperObj.find("input,select,textarea").val()) || 0;
     }
-  // addValidationRules: function () {
-  //   // call super
-  //   FieldView.prototype.addValidationRules.call(this);
-
-  //   // make sure value is a number
-  //   this.$el.find('#' + this.model.get('_id')).rules("add", {
-  //     "number": true
-  //   });
-  // }
 });
 // We only capture this as text
 // NOTE: validate plugin has a 'phoneUS' type. Could use this if needed
@@ -2889,7 +2803,6 @@ FieldSelectView = FieldView.extend({
 FieldSignatureView = FieldView.extend({
   extension_type: 'fhsig',
   input: "<img class='sigImage' style='width: 100%;' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
-//  signaturePadStyle: "@font-face{font-family:Journal;src:url(journal.eot);src:url(journal.eot?#iefix) format('embedded-opentype'),url(journal.woff) format('woff'),url(journal.ttf) format('truetype'),url(journal.svg#JournalRegular) format('svg');font-weight:400;font-style:normal}.sigPad{margin:0;padding:0;width:250px;height:200px}.sigPad label{display:block;margin:0 0 .515em;padding:0;color:#000;font:italic normal 1em/1.375 Georgia,Times,serif}.sigPad label.error{color:#f33}.sigPad input{margin:0;padding:.2em 0;width:198px;border:1px solid #666;font-size:1em}.sigPad input.error{border-color:#f33}.sigPad button{margin:1em 0 0;padding:.6em .6em .7em;background-color:#ccc;border:0;-moz-border-radius:8px;-webkit-border-radius:8px;border-radius:8px;cursor:pointer;color:#555;font:700 1em/1.375 sans-serif;text-align:left}.sigPad button:hover{background-color:#333;color:#fff}.sig{display:none}.sigNav{display:none;height:2.25em;margin:0;padding:0;position:relative;list-style-type:none}.sigNav li{display:inline;float:left;margin:0;padding:0}.sigNav a,.sigNav a:link,.sigNav a:visited{display:block;margin:0;padding:0 .6em;border:0;color:#333;font-weight:700;line-height:2.25em;text-decoration:underline}.sigNav a.current,.sigNav a.current:link,.sigNav a.current:visited{background-color:#666;-moz-border-radius-topleft:8px;-moz-border-radius-topright:8px;-webkit-border-top-left-radius:8px;-webkit-border-top-right-radius:8px;border-radius:8px 8px 0 0;color:#fff;text-decoration:none}.sigNav .typeIt a.current,.sigNav .typeIt a.current:link,.sigNav .typeIt a.current:visited{background-color:#ccc;color:#555}.sigWrapper{clear:both;height:100px;border:1px solid #ccc}.sigWrapper.current{border-color:#666}.signed .sigWrapper{border:0}.pad{position:relative}.typed{height:55px;margin:0;padding:0 5px;position:absolute;z-index:90;cursor:default;color:#145394;font:400 1.875em/50px Journal,Georgia,Times,serif}.drawItDesc,.typeItDesc{display:none;margin:.75em 0 .515em;padding:.515em 0 0;border-top:3px solid #ccc;color:#000;font:italic normal 1em/1.375 Georgia,Times,serif}",
   templates: {
     signaturePad: ['<div class="sigPad">', '<ul class="sigNav" style="text-align: center;">', '<button class="clearButton fh_appform_button_cancel">Clear</button><button class="cap_sig_done_btn fh_appform_button_action">Done</button>', '<br style="clear:both;" />', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
   },
@@ -2910,12 +2823,6 @@ FieldSignatureView = FieldView.extend({
     if (!$fh.forms.config.get("studioMode")) {
       this.trigger("checkrules");
     }
-  },
-  onRender: function() {
-    var style = $("<style />");
-    //style.text(this.signaturePadStyle);
-
-    //this.$el.append(style);
   },
   showSignatureCapture: function(index) {
     var self = this;
@@ -3290,12 +3197,6 @@ var PageView=BaseView.extend({
     // Page Model will emit events if user input meets page rule to hide / show the page.
     this.model.on("visible",self.show);
     this.model.on("hidden",self.hide);
-    // // pass visible event down to all fields
-    // this.on('visible', function () {
-    //   _(self.fieldViews).forEach(function (fieldView) {
-    //         fieldView.trigger('visible');
-    //   });
-    // });
     this.render();
   },
 
@@ -3307,7 +3208,6 @@ var PageView=BaseView.extend({
     this.$el.empty().addClass('fh_appform_page fh_appform_hidden');
 
     //Need to add the page title and description
-//    this.$el.append(_.template(this.templates.pageTitle, {pageTitle: this.model.getName()}));
     this.$el.append(_.template(this.templates.pageDescription, {pageDescription: this.model.getDescription()}));
 
     // add to parent before init fields so validation can work
@@ -3738,13 +3638,9 @@ var FormView = BaseView.extend({
   },
   saveToDraft: function() {
     var self = this;
-    // if ($('.error').length > 0) {
-    //   alert('Please resolve all field validation errors');
-    //   return;
-    // }
     this.populateFieldViewsToSubmission(function() {
       self.submission.saveDraft(function(err, res) {
-        // console.log(err, res);
+        if(err) console.error(err, res);
         self.el.empty();
       });
     });

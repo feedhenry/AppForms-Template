@@ -61,7 +61,6 @@ appForm.utils = function(module) {
   module.localId = localId;
   module.md5 = md5;
   module.getTime = getTime;
-  module.isPhoneGap = isPhoneGap;
   module.send=send;
   function extend(child, parent) {
 
@@ -120,17 +119,6 @@ appForm.utils = function(module) {
       });
     } else {
       cb('Crypto not found');
-    }
-  }
-
-  function isPhoneGap() {
-    //http://stackoverflow.com/questions/10347539/detect-between-a-mobile-browser-or-a-phonegap-application
-    //may break.
-    var app = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
-    if (app) {
-      return true;
-    } else {
-      return false;
     }
   }
 
@@ -427,11 +415,12 @@ appForm.utils = function (module) {
   }
   function takePhoto(params, cb) {
     //use configuration
-    var width = $fh.forms.config.get("targetWidth", 200);
-    var height = $fh.forms.config.get("targetHeight", 200);
-    var quality= $fh.forms.config.get("quality", 200);
+    var width =  params.targetWidth ? params.targetWidth : $fh.forms.config.get("targetWidth", 640);
+    var height = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
+    var quality= params.quality ? params.quality : $fh.forms.config.get("quality", 50);
 
     params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
+
     if (isPhoneGap) {
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
         quality: quality,
@@ -455,11 +444,10 @@ appForm.utils = function (module) {
     };
   }
   function _html5Camera(params, cb) {
-    var width = params.width || $fh.forms.config.get("targetWidth");
-    var height = params.height || $fh.forms.config.get("targetHeight");
-    video.width = 1024;
-    //TODO configuration-webcam resolution
-    video.height = 768;
+    var width = params.targetWidth || $fh.forms.config.get("targetWidth");
+    var height = params.targetHeight || $fh.forms.config.get("targetHeight");
+    video.width = width;
+    video.height = height;
     canvas.width = width;
     canvas.height = height;
     if (!localMediaStream) {
@@ -543,8 +531,16 @@ appForm.web = function (module) {
     };
 
     var options = new FileUploadOptions();
-    options.fileName = fileProps.fileName;
-    options.mimeType = fileProps.contentType;
+    options.fileName = fileProps.name;
+    options.mimeType = fileProps.contentType ? fileProps.contentType : "application/octet-stream";
+    options.httpMethod = "https";
+    options.chunkedMode = true;
+    options.fileKey = "file";
+
+    //http://grandiz.com/phonegap-development/phonegap-file-transfer-error-code-3-solved/
+    options.headers = {
+      "Connection": "close"
+    };
 
     var ft = new FileTransfer();
     ft.upload(filePath, encodeURI(url), success, fail, options);
@@ -603,88 +599,6 @@ appForm.web.ajax = function (module) {
     }
     _ajax(param);
   }
-  // function createXMLHttpRequest() {
-  //     try {
-  //         return new XMLHttpRequest();
-  //     } catch (e) {}
-  //     try {
-  //         return new ActiveXObject("Msxml2.XMLHTTP");
-  //     } catch (e) {}
-  //     return null;
-  // }
-  // function get(url, cb) {
-  //     var xhReq = createXMLHttpRequest();
-  //     if (!xhReq) {
-  //         cb({
-  //             error: 'XMLHttpRequest is not supported',
-  //             status: 'not ok'
-  //         }, null);
-  //     }
-  //     xhReq.open("get", url, true);
-  //     xhReq.send(null);
-  //     var requestTimer = setTimeout(function() {
-  //         xhReq.abort();
-  //     }, appForm.config.get("timeoutTime"));
-  //     xhReq.onreadystatechange = function() {
-  //         if (xhReq.readyState !== 4) {
-  //             return;
-  //         }
-  //         //Clear the timer. Request was succesful.
-  //         clearTimeout(requestTimer);
-  //         var serverResponse = xhReq.responseText;
-  //         if (xhReq.status !== 200) {
-  //             return cb({
-  //                 error: 'Status not 200!',
-  //                 status: 'not ok',
-  //                 statusCode: xhReq.status,
-  //                 body: serverResponse
-  //             }, null);
-  //         }
-  //         return cb(null, {
-  //             status: 'ok',
-  //             statusCode: xhReq.status,
-  //             response: serverResponse
-  //         });
-  //     };
-  // }
-  // function post(url, body, cb) {
-  //     var xhReq = createXMLHttpRequest();
-  //     if (!xhReq) {
-  //         cb({
-  //             error: 'XMLHttpRequest is not supported',
-  //             status: 'not ok'
-  //         }, null);
-  //     }
-  //     xhReq.open("POST", url, true);
-  //     //Send the header information along with the request
-  //     xhReq.setRequestHeader("Content-type", "application/json");
-  //     xhReq.setRequestHeader("Connection", "close");
-  //     xhReq.send(body);
-  //     var requestTimer = setTimeout(function() {
-  //         xhReq.abort();
-  //     }, appForm.config.get("timeoutTime"));
-  //     xhReq.onreadystatechange = function() {
-  //         if (xhReq.readyState !== 4) {
-  //             return;
-  //         }
-  //         //Clear the timer. Request was succesful.
-  //         clearTimeout(requestTimer);
-  //         var serverResponse = xhReq.responseText;
-  //         if (xhReq.status !== 200) {
-  //             return cb({
-  //                 error: 'Status not 200!',
-  //                 status: 'not ok',
-  //                 statusCode: xhReq.status,
-  //                 body: serverResponse
-  //             }, null);
-  //         }
-  //         return cb(null, {
-  //             status: 'ok',
-  //             statusCode: xhReq.status,
-  //             response: serverResponse
-  //         });
-  //     };
-  // }
   return module;
 }(appForm.web.ajax || {});
 appForm.stores = function (module) {
@@ -1680,31 +1594,13 @@ appForm.models = function (module) {
     }
     return fieldsId;
   };
-  // Form.prototype.getImageFieldsId=function(){
-  //     var fieldsId=[]
-  //     for (var fieldId in this.fields){
-  //         var field=this.fields[fieldId];
-  //         if (field.getType()=="photo" || field.getType()=="signature"  ){
-  //             fieldsId.push(fieldId);
-  //         }
-  //     }
-  //     return fieldsId;
-  // }
+
   Form.prototype.getRuleEngine = function () {
     if (this.rulesEngine) {
       return this.rulesEngine;
     } else {
       var formDefinition = this.getProps();
       this.rulesEngine = new appForm.RulesEngine(formDefinition);
-      // //DEBUG ONLY  BY PASS VALIDATE FORM
-      // this.rulesEngine.validateForm=function(a,cb){
-      //     cb(null,{
-      //         validation:{
-      //             valid:true    
-      //         }
-      //     });
-      // }
-      // //END OF DEBUG
       return this.rulesEngine;
     }
   };
@@ -2555,14 +2451,7 @@ appForm.models = function(module) {
     var fileFieldIds = this.form.getFileFieldsId();
     return this.getInputValueArray(fileFieldIds);
   };
-  // /**
-  //  * Retrieve all image fields related value
-  //  * @return {[type]} [description]
-  //  */
-  // Submission.prototype.getImageInputValues = function() {
-  //     var imageFieldIds = this.form.getImageFieldsId();
-  //     return this.getInputValueArray(imageFieldIds);
-  // }
+
   Submission.prototype.getInputValueArray = function(fieldIds) {
     var rtn = [];
     for (var i = 0; i< fieldIds.length; i++) {
@@ -2655,9 +2544,9 @@ appForm.models = function (module) {
     };
 
     var fieldDef = this.getFieldDefinition();
-    photoOptions.targetWidth = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.targetHeight = fieldDef.photoHeight || appForm.config.photoHeight || 200;
-    photoOptions.quality = fieldDef.photoQuality || appForm.config.photoQuality || 50;
+    photoOptions.targetWidth = fieldDef.photoWidth;
+    photoOptions.targetHeight = fieldDef.photoHeight;
+    photoOptions.quality = fieldDef.photoQuality;
     return photoOptions;
   };
   Field.prototype.isRepeating = function () {
@@ -3109,69 +2998,7 @@ appForm.models = function (module) {
 
     return module;
 }(appForm.models || {});
-// /**
-//  * Validate field value
-//  * extend this module to add more validations
-//  */
-// appForm.models = function (module) {
-//   var Model = appForm.models.Model;
-//   function FieldValidate() {
-//     Model.call(this, { '_type': 'fieldvalidate' });
-//   }
-//   appForm.utils.extend(FieldValidate, Model);
-//   /**
-//      * Validate input value with field model input constraints  (not definitions)
-//      * @param  {[type]} fieldModel [description]
-//      * @return {[type]}            [description]
-//      */
-//   FieldValidate.prototype.validate = function (inputValue, fieldModel) {
-//     var isRequired = fieldModel.isRequired();
-//     var validation = fieldModel.getFieldValidation();
-//     for (var act in validation) {
-//       if (!this[act] || typeof this[act] != 'function') {
-//         console.error('Validation method is not found:' + act);
-//       } else {
-//         var res = this[act](inputValue, validation[act]);
-//         if (res === true) {
-//           continue;
-//         } else {
-//           return res;
-//         }
-//       }
-//     }
-//     return true;
-//   };
-//   FieldValidate.prototype.min = function (inputValue, targetVal) {
-//     if (inputValue >= targetVal) {
-//       return true;
-//     } else {
-//       return 'Min value is ' + targetVal + ' while input value is ' + inputValue;
-//     }
-//   };
-//   FieldValidate.prototype.max = function (inputValue, targetVal) {
-//     if (inputValue <= targetVal) {
-//       return true;
-//     } else {
-//       return 'Max value is ' + targetVal + ' while input value is ' + inputValue;
-//     }
-//   };
-//   FieldValidate.prototype.minSelected = function (inputValue, targetVal) {
-//     if (typeof inputValue == 'array' && inputValue.length >= targetVal) {
-//       return true;
-//     } else {
-//       return 'Min selected number is ' + targetVal;
-//     }
-//   };
-//   FieldValidate.prototype.maxSelected = function (inputValue, targetVal) {
-//     if (typeof inputValue == 'array' && inputValue.length <= targetVal) {
-//       return true;
-//     } else {
-//       return 'Max selected number is ' + targetVal;
-//     }
-//   };
-//   module.fieldValidate = new FieldValidate();
-//   return module;
-// }(appForm.models || {});
+
 /**
  * Manages submission uploading tasks
  */
@@ -3260,25 +3087,7 @@ appForm.models = function (module) {
       cb(null, null);
     }
   };
-  // /**
-  //  * Queue all pending submission
-  //  * @param  {Function} cb [description]
-  //  * @return {[type]}      [description]
-  //  */
-  // UploadManager.prototype.queueAllPending=function(cb){
-  //     var submissionsModel=appForm.models.submissions;
-  //     var submissionMetaList=submissionsModel.getPending();
-  //     var self=this;
-  //     for (var i=0,subMeta;subMeta=submissionMetaList[i];i++){
-  //         submissionsModel.getSubmissionByMeta(subMeta,function(err,submission){
-  //             if(err){
-  //                 console.error(err);
-  //             }else{
-  //                 self.queueSubmission(submission)
-  //             }
-  //         });
-  //     }
-  // }
+
   UploadManager.prototype.getTaskQueue = function () {
     return this.get('taskQueue', []);
   };
