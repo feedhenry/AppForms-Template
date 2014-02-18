@@ -1,6 +1,12 @@
 /* Phase2 styles */
 
 
+.fh_appform_field_input.pending_submission{
+    width: 85%;
+    margin-left: 10px;
+}
+
+
 /*TODO All the pending, drafts, sent screens need to be customised*/
 
 
@@ -55,7 +61,6 @@
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
   /*width: 97%;*/
   margin: 0 auto;
-  margin-top: 50px;/*TODO -- this may have to be calculated */
   /*-webkit-border-radius: 5px;*/
   /*-moz-border-radius: 5px;*/
   /*border-radius: 5px;*/

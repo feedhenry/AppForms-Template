@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-02-13
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-02-18
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -68,38 +68,6 @@ ConfigModel = Backbone.Model.extend({
     var self = this;
     self.set($fh.forms.config.props);
     self.trigger("config:loaded");
-  //   // TODO : check if there is a better way of ensuring fh.data has been monkey patched
-  //   overrideFHData();
-  //   //initialise config
-  //   $fh.data({
-  //     act: 'load',
-  //     key: 'client_config'
-  //   }, function (res) {
-  //     try {
-  //       $fh.logger.info('ConfigModel :: loaded=' + res.val);
-  //       if (res && res.val !== null) {
-  //         try {
-  //           // overwrite config with whats in local storage. May be overwritten again by initial act, depending on local storage vs. act call time.
-  //           $fh.logger.debug('ConfigModel :: loaded=' + res.val);
-  //           var read =JSON.parse(res.val);
-  //           self.set(read);
-  //         } catch(e) {
-  //           //log error, but no action
-  //           $fh.logger.error('ERROR: parsing config from local storage. Using config defaults:', e);
-  //         }
-  //       } else {
-  //         $fh.logger.warn('No config in local storage. Using config defaults');
-  //       }
-  //     } finally {
-  //       self.trigger("config:loaded");
-  //     }
-  //   }, function (msg,err) {
-  //     try {
-  //       $fh.logger.info('ConfigModel :: error msg=' + msg, "err=" , err);
-  //     } finally {
-  //       self.trigger("config:loaded");
-  //     }
-  //   } );
   }
 });
 
@@ -149,68 +117,12 @@ FormModel = Backbone.Model.extend({
   initialize: function() {
     _.bindAll(this);
 
-    // this.initPages();
-
     // if model changes, re-initialise sub-collection of pages
     this.bind('change', this.reInitPages, this);
     this.on('change:page_history', function(model, history) {
       model.set('active_page', _(history).last());
     });
   },
-
-  // load: function(cb) {
-  //   if (this.get("flyweight")) {
-  //     var ctor = this.model || this.collection.model;
-  //     var store = this.store || this.collection.store;
-  //     store._read(this.id, function(err, resp) {
-  //       var model = (err ? null : new ctor(resp));
-  //       cb(err, model);
-  //     });
-  //   } else {
-  //     cb(null, this);
-  //   }
-  // },
-
-  // reInitPages: function() {
-  //   this.initPages();
-  // },
-
-  // initPages: function() {
-  //   var pages = this.get('Pages');
-  //   this.pages = new Pages(pages);
-  // },
-
-  // pushPage: function(page) {
-  //   this.attributes.page_history.push(page);
-  //   // manually trigger change event as we're modifying an array
-  //   this.trigger('change:page_history', this, this.attributes.page_history);
-  // },
-
-  // popPage: function() {
-  //   this.attributes.page_history.pop();
-  //   // manually trigger change event as we're modifying an array
-  //   this.trigger('change:page_history', this, this.attributes.page_history);
-  // },
-
-  // emptyPageHistory: function() {
-  //   this.attributes.page_history = [];
-  //   this.attributes.active_page = null;
-  // },
-
-  // toJSON: function() {
-  //   var self = this;
-  //   var form = Backbone.Model.prototype.toJSON.apply(this, arguments);
-  //   form.Pages = self.pages.toJSON();
-  //   return form;
-  // },
-
-  // getTimeout: function(millis) {
-  //   var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
-  //   if (millis) {
-  //     timeout = timeout * 1000;
-  //   }
-  //   return timeout;
-  // },
 
   handleError: function(e, cb) {
     var type = e.msg || "unknown";
@@ -281,456 +193,6 @@ FormModel = Backbone.Model.extend({
       type: "unknown"
     }, msg);
   }
-
-  // toBytes: function(len) {
-  //   var size = len + " bytes";
-  //   if (len > 1024) {
-  //     size = (Math.floor((len / 1024) * 1000) / 1000) + " Kilo bytes";
-  //   }
-  //   return size;
-  // },
-
-  // /**
-  //  * poll the request, function will poll for up timeout seconds every second
-  //  *
-  //  * @param req memo of the request
-  //  * @param form_id the form id
-  //  * @param res the results from the tasks
-  //  * @param cb
-  //  */
-  // pollRemoteFormSubmissionComplete: function(req, form_id, res, cb) {
-  //   var self = this;
-  //   AlertView.showAlert({
-  //     text: "Form Submitted to cloud"
-  //   }, "success", self.getTimeout(true));
-  //   $fh.logger.debug('Form Submitted to cloud: res:' + Utils.truncate(res));
-  //   var timeout = this.getTimeout();
-  //   var start = Math.floor(Date.now() / 1000);
-  //   var complete = false;
-
-  //   async.whilst(
-  //     function check() {
-  //       var end = Math.floor(Date.now() / 1000);
-  //       var delta = end - start;
-  //       $fh.logger.debug('pollRemoteFormSubmissionComplete check : delta < timeout=' + delta < timeout);
-  //       return delta < timeout;
-  //     },
-  //     function process(callback) {
-  //       setTimeout(function() {
-  //         $fh.act({
-  //             "act": "pollRemoteFormSubmissionComplete",
-  //             "req": {
-  //               "form_id": form_id
-  //             }
-  //           },
-  //           function(res) {
-  //             $fh.logger.debug('pollRemoteFormSubmissionComplete process : res=' + Utils.truncate(res));
-  //             if ((res.Success && res.Success === 1 && (res.stat && res.stat.completedAt)) || res.err) {
-  //               return callback(res);
-  //             } else {
-  //               return callback();
-  //             }
-
-  //           },
-  //           function onError(msg, err) {
-  //             $fh.logger.debug('pollRemoteFormSubmissionComplete failed : res=' + Utils.truncate(msg) + 'err=' + Utils.truncate(err));
-  //             return callback();
-  //           });
-  //       }, 1000);
-  //     },
-  //     function complete(res) {
-  //       $fh.logger.debug('pollRemoteFormSubmissionComplete complete : res=' + Utils.truncate(res));
-  //       if (res) {
-  //         if (res.Success === 1) {
-
-  //           if (res.stat && res.stat.completedAt) {
-  //             AlertView.showAlert({
-  //               text: "Form Submission complete"
-  //             }, "success", 5000);
-  //             cb(null, res);
-  //           }
-  //         } else if (res.err || res.Error) {
-  //           return cb({
-  //             err: (res.err || res.Error)
-  //           });
-  //         }
-
-  //       } else {
-  //         console.log("test");
-  //       }
-  //     }
-  //   );
-  // },
-  // /**
-  //  * submitFormBody the form body to the cloud, if there are no file form elements then
-  //  * validate form submission can be called immediately
-  //  * @param req memo for the request
-  //  * @param form the form
-  //  * @param callback
-  //  */
-  // submitFormBody: function(req, form, callback) {
-  //   var self = this;
-  //   var data = {
-  //     "act": "submitFormBody",
-  //     "req": form
-  //   };
-  //   req.total += JSON.stringify(data).length;
-  //   var timeout = self.getTimeout(true);
-
-  //   AlertView.showAlert({
-  //     text: "Form body : start ",
-  //     current: req.size,
-  //     total: req.total
-  //   }, "success", timeout);
-  //   var start = Date.now();
-  //   req.to = setTimeout(function() {
-  //     $fh.logger.debug("submitFormBody timeout");
-  //     clearTimeout(req.to);
-  //     delete req.to;
-  //     req.error = {
-  //       msg: "network",
-  //       err: "timeout"
-  //     };
-  //     callback({
-  //       msg: "network",
-  //       err: "timeout"
-  //     });
-
-  //   }, timeout + 1000);
-
-  //   $fh.act(data, function(res) {
-  //     clearTimeout(req.to);
-  //     delete req.to;
-
-  //     var end = Date.now();
-  //     $fh.logger.debug("submit res=" + Utils.truncate(res));
-  //     if (res.Success && res.Success === 1) {
-  //       var json = JSON.stringify(data);
-  //       req.size += json.length;
-  //       AlertView.showAlert({
-  //         text: "Form body : complete",
-  //         current: req.size,
-  //         total: req.total
-  //       }, "success", timeout);
-  //       callback(null, {
-  //         name: "submitFormBody",
-  //         start: start,
-  //         end: end,
-  //         size: req.size
-  //       });
-  //     } else {
-  //       callback({
-  //         msg: "validation",
-  //         err: "Please fix the highlighted errors",
-  //         res: res
-  //       });
-  //     }
-  //   }, function(msg, err) {
-  //     clearTimeout(req.to);
-  //     delete req.to;
-
-  //     $fh.logger.debug("submitFormBody failed : msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err, 150) + "'");
-  //     callback({
-  //       msg: msg,
-  //       err: err
-  //     });
-  //   });
-
-  // },
-
-  // /**
-  //  * submit a file chunk to the cloud
-  //  * @param req memo for form sumission
-  //  * @param chunk e.g. {form_id:form_id, "name":name,"value":value , "size":value.length};
-  //  * @param callback
-  //  */
-  // submitChunk: function(req, chunk, callback) {
-  //   var self = this;
-  //   $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "]");
-  //   var value = chunk.value;
-  //   var len = value.fileBase64.length;
-  //   var timeout = self.getTimeout(true);
-  //   req.current_chunk += 1;
-  //   var title = "Field " + req.current_chunk + " of " + req.num_chunks;
-  //   //AlertView.showAlert({text : "Chunk[field=" + chunk.name + "] started", current : req.size, total : req.total}, "success", timeout);
-  //   AlertView.showAlert({
-  //     text: (title + " started"),
-  //     current: req.size,
-  //     total: req.total
-  //   }, "success", timeout);
-
-  //   $fh.logger.debug("submitChunk starting value=" + Utils.truncate(value, 50));
-  //   $fh.act({
-  //     "act": "submitChunk",
-  //     "retries": App.config.getValueOrDefault("max_retries"),
-  //     "req": chunk
-  //   }, function onSuccess(res) {
-  //     $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "] res='" + Utils.truncate(res) + "'");
-  //     if (res.Success && res.Success === 1) {
-  //       req.size += len;
-  //       AlertView.showAlert({
-  //         text: (title + " complete"),
-  //         current: req.size,
-  //         total: req.total
-  //       }, "success", timeout);
-  //       return callback(null, res);
-  //     } else {
-  //       return callback({
-  //         err: 'unknown',
-  //         msg: JSON.stringify(res)
-  //       }, res);
-  //     }
-  //   }, function onError(msg, err) {
-  //     $fh.logger.debug("submitChunk starting form[" + chunk.form_id + "][" + chunk.name + "] msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
-  //     return callback({
-  //       msg: msg,
-  //       err: err
-  //     });
-  //   });
-  // },
-
-  // /**
-  //  * confirm with the cloud server that the form is all in place
-  //  * @param req the form request memo
-  //  * @param form_id the id of the form
-  //  * @param callback
-  //  */
-  // validateFormTransmission: function(req, form_id, callback) {
-  //   var self = this;
-  //   var data = {
-  //     "act": "validateFormTransmission",
-  //     "req": {
-  //       form_id: form_id
-  //     }
-  //   };
-  //   var start = Date.now();
-  //   var timeout = self.getTimeout(true);
-  //   $fh.logger.debug("validateFormTransmission [" + form_id + "] started");
-  //   AlertView.showAlert({
-  //     text: "Form check started ",
-  //     current: req.total,
-  //     total: req.total
-  //   }, "success", timeout);
-  //   $fh.act(data, function(res) {
-  //     var end = Date.now();
-  //     $fh.logger.debug("submit res=" + Utils.truncate(res));
-  //     if (res.Success && res.Success === 1) {
-  //       AlertView.showAlert({
-  //         text: "Form check complete",
-  //         current: req.total,
-  //         total: req.total
-  //       }, "success", timeout);
-  //       return callback(null, {
-  //         name: "validateFormTransmission",
-  //         start: start,
-  //         end: end,
-  //         size: req.size
-  //       });
-  //     } else {
-  //       return callback({
-  //         msg: "validation",
-  //         err: "Please fix the highlighted errors",
-  //         res: res
-  //       });
-  //     }
-  //   }, function onError(msg, err) {
-  //     $fh.logger.debug("validateFormTransmission [" + form_id + "] failed msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
-  //     return callback({
-  //       msg: msg,
-  //       err: err
-  //     });
-  //   });
-  // },
-
-  // /**
-  //  * tell the cloud to submit the request to wufoo (you should have called validateFormTransmission first)
-  //  * @param req the memo for the form submission
-  //  * @param form_id the form id
-  //  * @param callback
-  //  */
-  // doRemoteFormSubmission: function(req, form_id, callback) {
-  //   var self = this;
-  //   var data = {
-  //     "act": "doRemoteFormSubmission",
-  //     "req": {
-  //       form_id: form_id
-  //     }
-  //   };
-  //   var start = Date.now();
-  //   $fh.logger.debug("doRemoteFormSubmission[" + form_id + "] started");
-  //   AlertView.showAlert({
-  //     text: "Remote form submission: started"
-  //   }, "success", 5000);
-  //   $fh.act(data, function(res) {
-  //     var end = Date.now();
-  //     $fh.logger.debug("submit res=" + Utils.truncate(res));
-  //     if (res.Success && res.Success === 1) {
-  //       AlertView.showAlert({
-  //         text: "Remote form submission: complete"
-  //       }, "success", 5000);
-  //       return callback(null, {
-  //         name: "doRemoteFormSubmission",
-  //         start: start,
-  //         end: end,
-  //         size: req.total
-  //       });
-  //     } else {
-  //       return callback({
-  //         msg: "validation",
-  //         err: "Please fix the highlighted errors",
-  //         res: res
-  //       });
-  //     }
-  //   }, function onError(msg, err) {
-  //     $fh.logger.debug("doRemoteFormSubmission[" + form_id + "] failed msg='" + Utils.truncate(msg) + "' err='" + Utils.truncate(err) + "'");
-  //     return callback({
-  //       msg: msg,
-  //       err: err
-  //     });
-  //   });
-  // },
-
-  // /**
-  //  * split the current form into separate, ordered tasks that can be executed serially :
-  //  * The tasks are :
-  //  *   - submitFormBody (once only and bound to the req, form)
-  //  *   - submitChunk (0 or more , bound to the req, chunk)
-  //  *   - validateFormTransmission (once only and bound to the req, form id)
-  //  *
-  //  * @param req a memo object for this submission
-  //  * @param form the serialized form
-  //  * @return an array of tasks
-  //  */
-  // splitFormIntoTasks: function(req, form) {
-  //   $fh.logger.debug("splitFormIntoTasks starting");
-  //   var self = this;
-  //   var tasks = [];
-  //   var serialized_form = form.data;
-  //   var form_id = req.form_id;
-  //   if (App.config.getValueOrDefault("use_chunking")) {
-  //     _.each(serialized_form, function chunkHandler(value, name) {
-  //       if (_.isObject(value) && !_.isUndefined(value.filename)) {
-  //         var str = JSON.stringify(value);
-  //         var size = str.length;
-  //         $fh.logger.debug("field name=" + name + ",value=" + Utils.truncate(str) + ",size=" + size);
-  //         req.max = Math.max(req.max, size);
-  //         req.chunks.push({
-  //           name: name,
-  //           size: size
-  //         });
-  //         req.total += size;
-  //         var chunk = {
-  //           form_id: form_id,
-  //           "name": name,
-  //           "value": value,
-  //           "size": size
-  //         };
-  //         serialized_form[name] = {
-  //           content_type: "ref",
-  //           form_id: form_id,
-  //           name: name
-  //         };
-  //         var func = async.apply(self.submitChunk, req, chunk);
-  //         func.name = name;
-  //         tasks.push(func);
-  //       }
-  //     });
-  //   }
-  //   req.num_chunks = req.chunks.length;
-  //   req.current_chunk = 0;
-  //   // NOTE : put first task at start of array
-  //   tasks.unshift(async.apply(this.submitFormBody, req, form));
-
-  //   tasks.push(async.apply(this.validateFormTransmission, req, form_id));
-
-  //   $fh.logger.debug("splitFormIntoTasks complete tasks.length=" + tasks.length);
-  //   return tasks;
-  // },
-
-  // /**
-  //  * submit the current form :
-  //  *
-  //  * Algorithm works some thing like :
-  //  *
-  //  *   generate a form_id (from the form hash , form.id , device uuid)
-  //  *   FOR each file element in the the form
-  //  *     remove the current file element and add a reference in its place
-  //  *     add a task to the list for this form element containing the form_id and element field name
-  //  *   start a timer
-  //  *   Submit the form keyed on the form id
-  //  *   IF submission failed
-  //  *     inform the user user and exit
-  //  *   ELSE submission succeeded
-  //  *     stop the timer and calculate KBps
-  //  *     FOR each task in the list
-  //  *       execute the task to submit the form element
-  //  *       IF task fails
-  //  *         inform the user of failure and exit
-  //  *     IF !cloud.validateFormTransmission form_id
-  //  *       inform the user of failure and exit
-  //  *     IF !cloud.doRemoteFormSubmission form_id
-  //  *       inform the user of failure and exit
-  //  *     start timer
-  //  *     WHILE !timer timed out
-  //  *       IF cloud.pollRemoteFormSubmissionComplete form_id
-  //  *         inform the user of success and exit
-  //  *
-  //  *     inform the user of timeout and exit (note, in this case since the submission has started, it is still possible to manual poll the request)
-  //  *
-  //  * @param cb callback called on completion
-  //  */
-  // submit: function(cb) {
-  //   var self = this;
-  //   $fh.env({}, function(props) {
-  //     Utils.isOnline(function(online) {
-  //       if (online) {
-  //         var serialized_form = self.serialize();
-  //         var form_hash = self.attributes.Hash;
-  //         var form_id = [form_hash, props.uuid, self.id].join("/");
-  //         var form = {
-  //           "form_hash": form_hash,
-  //           "form_id": form_id,
-  //           "data": serialized_form
-  //         };
-  //         var req = {
-  //           start: Date.now(),
-  //           size: 0,
-  //           total: 0,
-  //           max: -1,
-  //           chunks: [],
-  //           form_id: form.form_id
-  //         };
-  //         var tasks = self.splitFormIntoTasks(req, form);
-  //         async.series(tasks, function(err, results) {
-  //           if (err) {
-  //             return self.handleError(err, cb);
-  //           }
-  //           self.doRemoteFormSubmission(req, form_id, function handleResponse(err) {
-  //             if (err) {
-  //               return self.handleError(err, cb);
-  //             }
-  //             self.pollRemoteFormSubmissionComplete(req, form_id, results, cb);
-  //           });
-  //         });
-  //       } else {
-  //         self.handleError({
-  //           msg: "offline",
-  //           err: "Unable to submit the form : you are currently offline"
-  //         }, cb);
-  //       }
-  //     });
-  //   });
-  // },
-
-  // serialize: function() {
-  //   var self = this;
-  //   var serialized_form = {};
-  //   self.pages.each(function(page) {
-  //     $.extend(serialized_form, page.serialize());
-  //   });
-  //   return serialized_form;
-  // }
-
 });
 
 FormsCollection = Backbone.Collection.extend({
@@ -769,7 +231,6 @@ SubmissionModel = Backbone.Model.extend({
         } else {
 
         }
-
     },
     loadSubmission: function(submissionMeta, cb) {
         var self = this;
@@ -834,7 +295,6 @@ SubmissionModel = Backbone.Model.extend({
         }
     },
     initialize: function(submissionMeta, options) {
-
         var self = this;
         this.submissionMeta = submissionMeta;
         this.loadSubmission(submissionMeta, function(err, sub) {});
@@ -916,7 +376,6 @@ App.collections.pending_review = new PendingReviewCollection();
 App.collections.pending_waiting = new PendingWaitingCollection();
 
 function refreshSubmissionCollections() {
-
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();
@@ -1087,6 +546,7 @@ LoadingCollectionView = LoadingView.extend({
 
   modelLoaded: function(a, b, c) {
     this.percent += 100 / App.collections.forms.length;
+    if(this.percent > 100) this.percent = 100;
     this.updateLoadedCount();
     this.totalCounter += 1;
     this.updateProgress(this.percent);
@@ -1096,6 +556,7 @@ LoadingCollectionView = LoadingView.extend({
   modelLoadError: function(model, b, c) {
     model.set('fh_error_loading', true);
     this.percent += 100 / App.collections.forms.length;
+    if(this.percent > 100) this.percent = 100;
     $fh.logger.debug(' !! error loading model. ID: ' + model.id + this.percent);
     this.totalCounter += 1;
     this.updateProgress(this.percent);
@@ -1229,14 +690,16 @@ var FormListView = Backbone.View.extend({
 
   events: {
     'click .settings': 'showSettings',
-    'click button.reload': 'reload'
+    'click button.reload': 'reload',
+    'click #refresh_forms_list': 'reload'
   },
 
   templates: {
     list: '<ul class="form_list"></ul>',
     header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings hidden"></a><br style="clear:both;">'
+    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
+    refreshForms: '<div id="refresh_forms_list" class="fh_appform_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
   },
 
   initialize: function() {
@@ -1289,6 +752,7 @@ var FormListView = Backbone.View.extend({
   render: function() {
     // Empty our existing view
     $(this.el).empty();
+    $(this.el).append(this.templates.refreshForms);
 
     // Add list
     $(this.el).append(this.templates.list);
@@ -1465,122 +929,38 @@ DraftListView = Backbone.View.extend({
     $('.draft_list', this.el).append(view.render().el);
   }
 });
-SettingsView = Backbone.View.extend({
-  el: $('#fh_wufoo_settings'),
+$(function() {
+  SettingsView = $fh.forms.backbone.ConfigView.extend({
+    el: $('#fh_wufoo_settings'),
+    events:{
+      "click #cancelBtn":"cancel",
+      "click #saveBtn":"save"
+    },
+    buttons:"<div><button type='button' id='cancelBtn'>Cancel</button><button type='button' id='saveBtn'>Save</button></div>",
+    render:function(){
+      SettingsView.__super__.render.apply(this);
+      this.$el.append(this.buttons);
+      return this;
+    },
+    show: function() {
+      App.views.header.hideAll();
+      this.render();
+      this.$el.show();
+    },
 
-  events: {
-    "toggle .toggle": "settingChanged",
-    "click a.button-positive": "save",
-    "click a.button-negative": "cancel"
-  },
-
-  templates: {
-    "form": '<form><div class="input-group"></div></form>',
-//    "list": '<ul class="list"><form><div class="input-group"></div></form></ul>',
-//    "toggle": '<li><label><%= list_item %><div class="toggle <%= toggle_class %>"><div class="toggle-handle"></div></div></li>',
-    "toggle": '<div class="input-row"><label><%= list_item %></label><div class="toggle <%= toggle_class %>" data-key="<%= key %>"><div class="toggle-handle"></div></div></div>',
-    "input": '<div class="input-row"><label><%= list_item %></label><input type="<%= type %>" value="<%= value %>" data-key="<%= key %>"></div>',
-    "other": '<div class="input-row"><label><%= list_item %></label><input readonly type="text" value="<%= value %>"></div>',
-    "footer": '<a class="button-negative">Cancel</a><a class="button-positive">Save & Apply</a>'
-  },
-
-  initialize: function() {
-  },
-
-  render: function () {
-    var purtyKey = function (key) {
-      // replace '_' with ' ' and capitalise each word
-      return _.map(key.split('_'), function (part) {
-        return part.charAt(0).toUpperCase() + part.substring(1).toLowerCase();
-      }).join(' ');
-    };
-
-    this.$el.empty();
-
-    this.$el.append(this.templates.form);
-
-    var div = this.$el.find('.input-group');
-
-    var processed = {};
-    var config = App.config.attributes;
-    var keys = _.union(_.keys(config) , _.keys(config.defaults));
-    _.each(keys, function (key){
-      if('defaults' !== key && 'white_list' !== key && 'force_cloud_config_updates' !== key) {
-        var val = (config.hasOwnProperty(key) ? config[key] : config.defaults[key]);
-        var el;
-        if ('boolean' === typeof val) {
-          // special toggle field
-          el = _.template(this.templates.toggle, {
-            "list_item": purtyKey(key),
-            "key": key,
-            "toggle_class": val ? "active": ""
-          });
-        } else if ('number' === typeof val || 'string' === typeof val) {
-          // plain input field
-          el = _.template(this.templates.input, {
-            "list_item": purtyKey(key),
-            "key": key,
-            "value": val,
-            "type": 'number' === typeof val ? 'number' : 'text'
-          });
-        } else {
-          // readonly field showing stringifed value
-          el = _.template(this.templates.other, {
-            "list_item": purtyKey(key),
-            "value": JSON.stringify(val)
-          });
-        }
-        div.append(el);
-      }
-    },this);
-    div.append(this.templates.footer);
-  },
-
-  settingChanged: function () {
-    // won't be doing anything with settings unless save is pressed
-  },
-
-  save: function () {
-    var config = {};
-
-    // get settings values from form, building up config object
-    this.$el.find('input:not([readonly])').each(function () {
-      var jqEl = $(this);
-      var key = jqEl.data('key');
-      var val = jqEl.val();
-      if (jqEl.is('[type=number]')) {
-        val = parseInt(val, 10);
-      }
-      config[key] = val;
-    });
-
-    this.$el.find('.toggle').each(function () {
-      var jqEl = $(this);
-      var key = jqEl.data('key');
-      var val = jqEl.hasClass('active');
-      config[key] = val;
-    });
-
-    // update config
-    App.config.set(_.extend({}, App.config.attributes, config));
-
-    // back to home screen
-    App.views.header.showHome();
-  },
-
-  cancel: function () {
-    App.views.header.showHome();
-  },
-
-  show: function() {
-    App.views.header.hideAll();
-    this.render();
-    this.$el.show();
-  },
-
-  hide: function() {
-    this.$el.hide();
-  }
+    hide: function() {
+      this.$el.hide();
+    },
+    save:function(){
+      SettingsView.__super__.save.call(this,function(){
+        App.views.header.showHome();  
+      });
+      
+    },
+    cancel:function(){
+      App.views.header.showHome();
+    }
+  });
 });
 ItemView = Backbone.View.extend({
   tagName: 'li',
@@ -1655,12 +1035,6 @@ ItemView = Backbone.View.extend({
   submit: function() {
     var model = this.model;
     model.coreModel.upload(function() {});
-    // model.load(function (err,actual ){
-    //   var json = actual.toJSON();
-    //   model.destroy();
-    //   App.collections.pending_submitting.create(json);
-    // });
-
     return false;
   },
 
@@ -1694,10 +1068,6 @@ DraftItemView = ItemView.extend({
       "autoShow":true,
       "submission":submission
     });
-    // this.model.load(function (err,actual ){
-    //   App.views.form = new DraftView({model: new DraftModel(actual.toJSON()) , silent:true});
-    //   App.views.form.render();
-    // });
   },
   getItemTime:function(){
     return "Saved: "+this.model.get("saveDate");
@@ -1754,10 +1124,6 @@ PendingWaitingView = ItemView.extend({
     return "Submit: "+this.model.get("submitDate");
   },
   show: function() {
-    // this.model.load(function (err,actual ){
-    //   App.views.form = new SentView({model: new DraftModel(actual.toJSON())});
-    //   App.views.form.render();
-    // });
    App.views.header.hideAll();
     var submission=this.model.coreModel;
     App.views.form=new FormView({
@@ -1768,7 +1134,6 @@ PendingWaitingView = ItemView.extend({
     });
     App.views.form.readOnly();
   }
-
 });
 PendingSubmittingItemView = ItemView.extend({
   templates: {
@@ -1786,11 +1151,6 @@ PendingSubmittingItemView = ItemView.extend({
 
     $(this.el).html(item);
     return this;
-  },
-
-  show: function() {
-    //TODO: Impl?
-    $fh.logger.debug('show for submitting not implemented');
   }
 });
 PendingSubmittedItemView = ItemView.extend({
@@ -1875,27 +1235,6 @@ PendingListView = Backbone.View.extend({
           }
           callback(null);
         });
-        // model.load(function (err,actual){
-        //   var json = actual.toJSON();
-        //   loadingView.updateMessage("Starting " + c + " of "  + tasks.length);
-        //   $fh.logger.debug("pending_list submitAll destroy model="+ model.id );
-        //   model.destroy();
-
-        //   return App.collections.pending_submitting.create(json,{},function (err){
-        //     loadingView.updateMessage("Starting " + c + " of "  + tasks.length + "<br/> err " + JSON.stringify(err));
-        //     c += 1;
-        //     loadingView.updateProgress(c * 100 / tasks.length);
-        //     if(!err) {
-        //       loadingView.updateMessage("Completed " + c + " of "  + tasks.length);
-        //       //If create is in charge of adding items to pending_waiting on submit failure, id's will have to be removed
-        //       // to make sure it is re-created and not removed below by model.destroy.
-        //     } else {
-        //       loadingView.updateMessage("Submitting " + c + " failed");
-        //     }
-
-        //     callback.apply(self,arguments);
-        //   });
-        // });
       };
     });    // Kick things off by fetching when all stores are initialised
 
@@ -2093,7 +1432,7 @@ HeaderView = Backbone.View.extend({
     App.views.drafts_list.hide();
     App.views.pending_list.hide();
     App.views.sent_list.hide();
-    // App.views.settings.hide();
+    App.views.settings.hide();
     if (_.isObject(App.views.form)) {
       App.views.form.el.hide();
       //App.views.form = null;
@@ -2158,9 +1497,10 @@ AlertView = Backbone.View.extend({
     this.$el.show();
     clearTimeout(this.to);
     this.to = setTimeout(function() {
-      self.$el.slideUp(function() {
-        $(self.$el).empty();
-      });
+//      self.$el.slideUp(function() {
+//
+//      });
+      $(self.$el).empty();
     }, opts.timeout || 10000);
     return this;
   }
@@ -2209,35 +1549,39 @@ App.Router = Backbone.Router.extend({
     this.loadingView = new LoadingCollectionView();
     this.loadingView.show("App Starting");
 
-    App.views.form_list = new FormListView();
-    App.views.drafts_list = new DraftListView();
-    App.views.pending_list = new PendingListView();
-    App.views.sent_list = new SentListView();
-    App.views.settings = new SettingsView();
-    App.views.header = new HeaderView();
-    App.views.header.showHome();
 
-    // store error handling
-    _(App.collections).forEach(function(collection) {
-      collection.on('error', function(collection, msg, options) {
-        $fh.logger.error('collection error:\"' + msg + '\"');
-      });
-    });
-    var self=this;
+    var self = this;
     $fh.ready({}, function() {
       $fh.init({}, function() {
         /**** LOCAL DEV USAGE *****/
-//        $fh.cloud_props.hosts.debugCloudUrl="http://127.0.0.1:3001";
-//        $fh.app_props.host="http://127.0.0.1:3001";
+//       $fh.cloud_props.hosts.debugCloudUrl = "http://127.0.0.1:3001";
+//       $fh.app_props.host = "http://127.0.0.1:3001";
         $fh.forms.init({}, function() {
-          $fh.forms.getTheme({"fromRemote" : false, "css" : true}, function(err, themeCSS){
 
-            if($('#fh_appform_style').length > 0){
+          $fh.forms.getTheme({
+            "fromRemote": false,
+            "css": true
+          }, function(err, themeCSS) {
+            App.views.form_list = new FormListView();
+            App.views.drafts_list = new DraftListView();
+            App.views.pending_list = new PendingListView();
+            App.views.sent_list = new SentListView();
+            App.views.settings = new SettingsView();
+            App.views.header = new HeaderView();
+            App.views.header.showHome();
+
+            // store error handling
+            _(App.collections).forEach(function(collection) {
+              collection.on('error', function(collection, msg, options) {
+                $fh.logger.error('collection error:\"' + msg + '\"');
+              });
+            });
+            if ($('#fh_appform_style').length > 0) {
               $('#fh_appform_style').html(themeCSS);
             } else {
               $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
             }
-            if(err) console.error(err);
+            if (err) console.error(err);
             self.onReady();
           });
         });
