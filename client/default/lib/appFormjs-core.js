@@ -3009,7 +3009,6 @@ appForm.models = function (module) {
       '_ludid': 'uploadManager_queue'
     });
     this.set('taskQueue', []);
-    this.timeOut = appForm.config.get("timeout");
     this.sending = false;
     this.timerInterval = 200;
     this.sendingStart = appForm.utils.getTime();
@@ -3134,7 +3133,7 @@ appForm.models = function (module) {
     if (this.sending) {
       var now = appForm.utils.getTime();
       var timePassed = now.getTime() - this.sendingStart.getTime();
-      if (timePassed > this.timeOut * 1000) {
+      if (timePassed > appForm.config.get("timeout", 30) * 1000) {
         //time expired. roll current task to the end of queue
         console.error('Uploading content timeout. it will try to reupload.');
         this.sending = false;
