@@ -5978,7 +5978,7 @@ function rulesEngine (formDef) {
           return cb(new Error("Expected string but got " + typeof(fieldValue)));
         }
 
-        switch (fieldDefinition.fieldOptions.definition.dateTimeUnit)
+        switch (fieldDefinition.fieldOptions.definition.datetimeUnit)
         {
           case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
             try{
@@ -6025,7 +6025,7 @@ function rulesEngine (formDef) {
             }
             break;
           default:
-            return cb(new Error("Invalid dateTime fieldtype " + fieldOptions.definition.dateTimeUnit));
+            return cb(new Error("Invalid dateTime fieldtype " + fieldDefinition.fieldOptions.definition.datetimeUnit));
         }
       }
 
@@ -6251,7 +6251,7 @@ function rulesEngine (formDef) {
       else if( "is at" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.dateTimeUnit)
+          switch (fieldOptions.definition.datetimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
@@ -6279,7 +6279,7 @@ function rulesEngine (formDef) {
       else if( "is before" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.dateTimeUnit)
+          switch (fieldOptions.definition.datetimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
@@ -6307,7 +6307,7 @@ function rulesEngine (formDef) {
       else if( "is after" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.dateTimeUnit)
+          switch (fieldOptions.definition.datetimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
