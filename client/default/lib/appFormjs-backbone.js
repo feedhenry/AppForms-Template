@@ -3805,38 +3805,38 @@ StepsView = Backbone.View.extend({
 });
 var ConfigView = Backbone.View.extend({
   "templates": [
-    '<div class="config_camera">' +
+    '<div class="fh_appform_field_area config_camera">' +
     '<fieldset>' +
-    '<div>Camera</div>' +
+    '<div class="fh_appform_field_title">Camera</div>' +
     '<div class="form-group">' +
     '<label>Quality</label>' +
-    '<input data-key="quality" value="<%= quality%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="quality" value="<%= quality%>"/>' +
     '</div>' +
     '<div class="form-group">' +
     '<label>Target Width</label>' +
-    '<input data-key="targetWidth" value="<%= targetWidth%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="targetWidth" value="<%= targetWidth%>"/>' +
     '</div><div class="form-group">' +
     '<label>Target Height</label>' +
-    '<input data-key="targetHeight" value="<%= targetHeight%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="targetHeight" value="<%= targetHeight%>"/>' +
     '</div>' +
     '</fieldset>' +
     '</div>',
-    '<div class="config_submission">' +
+    '<div class="fh_appform_field_area config_submission">' +
     '<fieldset>' +
-    '<div>Submission</div>' +
+    '<div class="fh_appform_field_title">Submission</div>' +
     '<div class="form-group">' +
     '<label>Max Retries</label>' +
-    '<input data-key="max_retries" value="<%= max_retries%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="max_retries" value="<%= max_retries%>"/>' +
     '</div>' +
     '<div class="form-group">' +
     '<label>Timeout</label>' +
-    '<input data-key="timeout" value="<%= timeout%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="timeout" value="<%= timeout%>"/>' +
     '</div><div class="form-group">' +
     '<label>Min Sent Items to Save</label>' +
-    '<input data-key="sent_save_min" value="<%= sent_save_min%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="sent_save_min" value="<%= sent_save_min%>"/>' +
     '</div><div class="form-group">' +
     '<label>Max Sent Items to Save</label>' +
-    '<input data-key="sent_save_max" value="<%= sent_save_max%>"/>' +
+    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="sent_save_max" value="<%= sent_save_max%>"/>' +
     '</div>' +
     '</fieldset>' +
     '</div>',
@@ -3858,16 +3858,16 @@ var ConfigView = Backbone.View.extend({
     'padding:3px;'+
   '}'+
 '</style>'+
-'<div class="config_debugging">'+
+'<div class="fh_appform_field_area config_debugging">'+
   '<fieldset>'+
-    '<div>Debugging</div>'+
+    '<div class="fh_appform_field_title">Debugging</div>'+
       '<div class="form-group">'+
         '<label>Log Enabled</label>'+
-        '<input type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
+        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
       '</div>'+
       '<div class="form-group">'+
         '<label>Log Level</label>'+
-        '<select data-key="log_level">'+
+        '<select class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_level">'+
           '<%'+
               'for (var i=0;i<log_levels.length;i++){'+
                 'var val=log_levels[i];'+
@@ -3880,21 +3880,21 @@ var ConfigView = Backbone.View.extend({
         '</select>'+
       '</div><div class="form-group">'+
         '<label>Log Line Number</label>'+
-        '<input data-key="log_line_limit" value="<%= log_line_limit%>"/>'+
+        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_line_limit" value="<%= log_line_limit%>"/>'+
       '</div><div class="form-group">'+
         '<label>Log Email Address</label>'+
-        '<input data-key="log_email" value="<%= log_email%>"/>'+
+        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_email" value="<%= log_email%>"/>'+
       '</div>'+
       '<div class="log_buttons">'+
-        '<button type="button" id="_viewLogsBtn">View Logs</button>'+
-        '<button type="button" id="_clearLogsBtn">Clear Logs</button>'+
-        '<button type="button" id="_sendLogsBtn">Send Logs</button>'+
+        '<button class="fh_appform_button_navigation" type="button" id="_viewLogsBtn">View Logs</button>'+
+        '<button class="fh_appform_button_cancel" type="button" id="_clearLogsBtn">Clear Logs</button>'+
+        '<button class="fh_appform_button_action" type="button" id="_sendLogsBtn">Send Logs</button>'+
       '</div>'+
   '</fieldset>'+
 '</div>'+
 '<div class="hidden" id="_logsViewPanel">'+
-  '<div><span id="_closeViewBtn">Close</span></div>'+
-  '<div id="_logViewDiv"></div>'+
+  '<div><span class="fh_appform_button_cancel" id="_closeViewBtn">Close</span></div>'+
+  '<div class="fh_appform_field_area" id="_logViewDiv"></div>'+
 '</div>'
   ],
   "_myEvents": {
