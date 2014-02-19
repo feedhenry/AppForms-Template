@@ -3888,10 +3888,10 @@ var ConfigView = Backbone.View.extend({
         '<label>Log Email Address</label>'+
         '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_email" value="<%= log_email%>"/>'+
       '</div>'+
-      '<div class="log_buttons">'+
-        '<button class="fh_appform_button_navigation" type="button" id="_viewLogsBtn">View Logs</button>'+
-        '<button class="fh_appform_button_cancel" type="button" id="_clearLogsBtn">Clear Logs</button>'+
-        '<button class="fh_appform_button_action" type="button" id="_sendLogsBtn">Send Logs</button>'+
+      '<div class="log_buttons" style="width:100%;margin: 20px 20px 20px 20px;">'+
+        '<button class="fh_appform_button_navigation" style="width:30%" type="button" id="_viewLogsBtn">View Logs</button>'+
+        '<button class="fh_appform_button_cancel" style="width:30%" type="button" id="_clearLogsBtn">Clear Logs</button>'+
+        '<button class="fh_appform_button_action" style="width:30%" type="button" id="_sendLogsBtn">Send Logs</button>'+
       '</div>'+
   '</fieldset>'+
 '</div>'+
