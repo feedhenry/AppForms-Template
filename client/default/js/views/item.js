@@ -79,13 +79,15 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    
-    this.model.load(function(err, actual) {
-      var draft = new DraftModel(actual.toJSON());
-      App.views.form = new DraftView({
-        model: draft
+
+    if(this.model.load){
+      this.model.load(function(err, actual) {
+        var draft = new DraftModel(actual.toJSON());
+        App.views.form = new DraftView({
+          model: draft
+        });
+        App.views.form.render();
       });
-      App.views.form.render();
-    });
+    }
   }
 });
