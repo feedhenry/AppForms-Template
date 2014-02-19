@@ -3812,10 +3812,11 @@ var ConfigView = Backbone.View.extend({
     '<label>Quality</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="quality" value="<%= quality%>"/>' +
     '</div>' +
+    '<br/>' +
     '<div class="form-group">' +
     '<label>Target Width</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="targetWidth" value="<%= targetWidth%>"/>' +
-    '</div><div class="form-group">' +
+    '</div><br/><div class="form-group">' +
     '<label>Target Height</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="targetHeight" value="<%= targetHeight%>"/>' +
     '</div>' +
@@ -3828,13 +3829,14 @@ var ConfigView = Backbone.View.extend({
     '<label>Max Retries</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="max_retries" value="<%= max_retries%>"/>' +
     '</div>' +
+    '<br/>' +
     '<div class="form-group">' +
     '<label>Timeout</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="timeout" value="<%= timeout%>"/>' +
-    '</div><div class="form-group">' +
+    '</div><br/><div class="form-group">' +
     '<label>Min Sent Items to Save</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="sent_save_min" value="<%= sent_save_min%>"/>' +
-    '</div><div class="form-group">' +
+    '</div><br/><div class="form-group">' +
     '<label>Max Sent Items to Save</label>' +
     '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="sent_save_max" value="<%= sent_save_max%>"/>' +
     '</div>' +
@@ -3865,6 +3867,7 @@ var ConfigView = Backbone.View.extend({
         '<label>Log Enabled</label>'+
         '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
       '</div>'+
+      '<br/>' +
       '<div class="form-group">'+
         '<label>Log Level</label>'+
         '<select class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_level">'+
@@ -3878,10 +3881,10 @@ var ConfigView = Backbone.View.extend({
               '}'+
             '%>'+
         '</select>'+
-      '</div><div class="form-group">'+
+      '</div><br/><div class="form-group">'+
         '<label>Log Line Number</label>'+
         '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_line_limit" value="<%= log_line_limit%>"/>'+
-      '</div><div class="form-group">'+
+      '</div><br/><div class="form-group">'+
         '<label>Log Email Address</label>'+
         '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 70%;float: right;" data-key="log_email" value="<%= log_email%>"/>'+
       '</div>'+
