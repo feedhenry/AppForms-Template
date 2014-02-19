@@ -476,6 +476,7 @@ textarea {
     align-self: center;
     position: relative;
     right: 0px;
+    margin-top:0px;
 }
 
 .pending_submission {
