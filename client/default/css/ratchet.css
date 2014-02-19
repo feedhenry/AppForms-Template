@@ -806,7 +806,7 @@ select {
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
-  border-left: 1px solid #aaa;
+  /*border-left: 1px solid #aaa;*/
   box-shadow: inset 1px 0 rgba(255, 255, 255, .5);
   -webkit-box-flex: 1;
           box-flex: 1;
