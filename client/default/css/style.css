@@ -447,7 +447,7 @@ textarea {
 }
 
 .list.inset .second_button {
-  right: 33px;
+  /*right: 33px;*/
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
