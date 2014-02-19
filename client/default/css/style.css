@@ -472,6 +472,10 @@ textarea {
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
   /*font-size: 12px;*/
+    width: 97%;
+    align-self: center;
+    position: relative;
+    right: 0px;
 }
 
 .pending_submission {
