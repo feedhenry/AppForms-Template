@@ -3866,12 +3866,12 @@ var ConfigView = Backbone.View.extend({
   '<fieldset>'+
     '<div class="fh_appform_field_title">Debugging</div>'+
       '<div class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Enabled</label>'+
+        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Enabled</label>'+
         '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
       '</div>'+
       '<br/>' +
       '<div class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Level</label>'+
+        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Level</label>'+
         '<select class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="log_level">'+
           '<%'+
               'for (var i=0;i<log_levels.length;i++){'+
