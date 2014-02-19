@@ -10,7 +10,7 @@ PendingListView = Backbone.View.extend({
     pending_waiting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms Awaiting Submission</div></li>',
     pending_waiting_submitall: '<li><button class="fh_appform_button_action submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
     pending_submitting_list: '<ul class="fh_appform_field_area list inset pending_submitting_list"></ul>',
-    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div><div class="loading hidden"></div></li>',
+    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div></li>',
     pending_review_list: '<ul class="fh_appform_field_area list inset pending_review_list"></ul>',
     pending_review_header: '<li class="list-divider"><div class="fh_appform_field_title">These submissions need to be reviewed</div></li>'
   },

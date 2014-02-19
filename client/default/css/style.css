@@ -3,7 +3,7 @@
 
 .fh_appform_field_input.pending_submission{
     width: 85%;
-    margin-left: 10px;
+    margin: 10px 0px 10px 25px;
 }
 
 
@@ -429,7 +429,7 @@ textarea {
 
 #fh_wufoo_header .count {
     float: right;
-    display: inline-block; padding-top: 6px; padding-bottom: 3px; padding-left: 9px; padding-right: 9px;
+    display: inline-block; padding-top: 4px; padding-bottom: 4px; padding-left: 9px; padding-right: 9px;
 }
 
 .segmented-controller li > a {
@@ -451,7 +451,7 @@ textarea {
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
-  font-size: 14px;
+  /*font-size: 18px;*/
 }
 
 #fh_wufoo_pending .list.inset .ts,
@@ -459,6 +459,7 @@ textarea {
 #fh_wufoo_sent .list.inset .ts {
   font-size: 10px;
   font-style: italic;
+  font-weight: bold;
 }
 
 #fh_wufoo_pending .list.inset .title,
@@ -466,7 +467,7 @@ textarea {
 #fh_wufoo_sent .list.inset .title {
   font-size: 12px;
   font-style: italic;
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
