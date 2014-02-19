@@ -3807,7 +3807,7 @@ var ConfigView = Backbone.View.extend({
   "templates": [
     '<div class="config_camera">' +
     '<fieldset>' +
-    '<legend>Camera</legend>' +
+    '<div>Camera</div>' +
     '<div class="form-group">' +
     '<label>Quality</label>' +
     '<input data-key="quality" value="<%= quality%>"/>' +
@@ -3823,7 +3823,7 @@ var ConfigView = Backbone.View.extend({
     '</div>',
     '<div class="config_submission">' +
     '<fieldset>' +
-    '<legend>Submission</legend>' +
+    '<div>Submission</div>' +
     '<div class="form-group">' +
     '<label>Max Retries</label>' +
     '<input data-key="max_retries" value="<%= max_retries%>"/>' +
@@ -3860,7 +3860,7 @@ var ConfigView = Backbone.View.extend({
 '</style>'+
 '<div class="config_debugging">'+
   '<fieldset>'+
-    '<legend>Debugging</legend>'+
+    '<div>Debugging</div>'+
       '<div class="form-group">'+
         '<label>Log Enabled</label>'+
         '<input type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
