@@ -3427,6 +3427,10 @@ var FormView = BaseView.extend({
     var pageViews = [];
     for (var i = 0; i<pageModelList.length; i++) {
       var pageModel = pageModelList[i];
+      var pageId = pageModel.getPageId();
+
+      self.pageViewStatus[pageId] = {"targetId" : pageId, "action" : "show"};
+
       // get fieldModels
       var list = pageModel.getFieldModelList();
       self.fieldModels = self.fieldModels.concat(list);
@@ -3476,7 +3480,7 @@ var FormView = BaseView.extend({
           self.pageViewStatus = actions.pages;
           var fields = actions.fields;
           var targetId;
-          
+
           for (targetId in fields) {
             self.performRuleAction("field", targetId, fields[targetId]["action"]);
           }
