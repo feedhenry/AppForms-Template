@@ -3434,6 +3434,9 @@ var FormView = BaseView.extend({
 
     for (var i = 0; i<pageModelList.length; i++) {
       var pageModel = pageModelList[i];
+      var pageId = pageModel.getPageId();
+
+      self.pageViewStatus[pageId] = {"targetId" : pageId, "action" : "show"};
 
       // get fieldModels
       var list = pageModel.getFieldModelList();
