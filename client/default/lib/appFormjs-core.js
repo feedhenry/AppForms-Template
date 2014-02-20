@@ -1379,13 +1379,11 @@ appForm.models = function (module) {
      * @param {Function} cb         [description]
      */
   function Form(params, cb) {
-    //console.log(params, cb);
     var that = this;
     var rawMode = params.rawMode || false;
     var rawData = params.rawData || null;
     var formId = params.formId;
     var fromRemote = params.fromRemote;
-
 
     if (typeof fromRemote == 'function' || typeof cb == 'function') {
       if (typeof fromRemote == 'function') {
@@ -1393,7 +1391,7 @@ appForm.models = function (module) {
         fromRemote = false;
       }
     } else {
-      console.error('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
+      return console.error('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
     }
 
     if (!formId) {
@@ -1405,46 +1403,65 @@ appForm.models = function (module) {
       '_type': 'form'
     });
 
-    function checkForUpdate(form){
-      form.refresh(false, function (err, obj) {
-        if (appForm.models.forms.isFormUpdated(form)) {
-          form.refresh(true, function (err, obj1) {
-            if(err){
-              return cb(err, null);
-            }
-            form.initialise();
 
-            _forms[formId] = obj1;
-            return cb(err, obj1);
-          });
-        } else {
-          form.initialise();
-          _forms[formId] = obj;
-          cb(err, obj);
-        }
-      });
-    }
-
-    if (rawMode === false && _forms[formId]) {
-      //found form object in mem return it.
-      if(!appForm.models.forms.isFormUpdated(_forms[formId])){
+    function loadFromLocal(){
+      if (_forms[formId]) {
+        //found form object in mem return it.
         cb(null, _forms[formId]);
         return _forms[formId];
       }
+
+      function processRawFormJSON(){
+        that.fromJSON(rawData);
+        that.initialise();
+
+        _forms[formId] = that;
+        return cb(null, that);
+      }
+
+      if(rawData){
+        return processRawFormJSON();
+      }
     }
 
-    function processRawFormJSON(){
-      that.fromJSON(rawData);
-      that.initialise();
 
-      _forms[formId] = that;
-      return cb(null, that);
-    }
+    function loadFromRemote(){
+      function checkForUpdate(form){
+        form.refresh(false, function (err, obj) {
+          if (appForm.models.forms.isFormUpdated(form)) {
+            form.refresh(true, function (err, obj1) {
+              if(err){
+                return cb(err, null);
+              }
+              form.initialise();
 
-    if (rawMode === true) {
-      processRawFormJSON();
-    } else {
+              _forms[formId] = obj1;
+              return cb(err, obj1);
+            });
+          } else {
+            form.initialise();
+            _forms[formId] = obj;
+            cb(err, obj);
+          }
+        });
+      }
+
+      if (_forms[formId]) {
+        //found form object in mem return it.
+        if(!appForm.models.forms.isFormUpdated(_forms[formId])){
+          cb(null, _forms[formId]);
+          return _forms[formId];
+        }
+      }
+
       checkForUpdate(that);
+    }
+
+    //Raw mode is for avoiding interaction with the mbaas
+    if(rawMode === true){
+      loadFromLocal();
+    } else {
+      loadFromRemote();
     }
   }
   appForm.utils.extend(Form, Model);
@@ -2421,7 +2438,8 @@ appForm.models = function(module) {
     var Form = appForm.models.Form;
     var formId = this.get('formId');
     new Form({
-      'formId': formId
+      'formId': formId,
+      'rawMode': true
     }, cb);
   };
   Submission.prototype.reloadForm = function(cb) {
@@ -2429,7 +2447,8 @@ appForm.models = function(module) {
     var formId = this.get('formId');
     var self = this;
     new Form({
-      formId: formId
+      formId: formId,
+      'rawMode': true
     }, function(err, form) {
       if (err) {
         cb(err);
