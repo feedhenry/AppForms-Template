@@ -3417,13 +3417,6 @@ var FormView = BaseView.extend({
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {title: this.model.getName()}));
     self.el.find(this.elementNames.formContainer).append(_.template(this.templates.formDescription, {description: this.model.getDescription()}));
 
-    self.steps = new StepsView({
-      parentEl: self.el.find(this.elementNames.formContainer),
-      parentView: self,
-      model: self.model
-    });
-
-
     if (!params.submission) {
       params.submission = self.model.newSubmission();
     }
@@ -3458,9 +3451,18 @@ var FormView = BaseView.extend({
         }
       }
     }
+
     self.fieldViews = fieldViews;
     self.pageViews = pageViews;
     self.pageCount = pageViews.length;
+
+    self.checkRules();
+
+    self.steps = new StepsView({
+      parentEl: self.el.find(this.elementNames.formContainer),
+      parentView: self,
+      model: self.model
+    });
   },
   checkRules: function() {
     var self = this;
