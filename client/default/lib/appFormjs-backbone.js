@@ -3291,36 +3291,36 @@ var PageView=BaseView.extend({
     // only validate form inputs on this page that are visible or type=hidden, or have validate_ignore class
     var validateEls = this.$el.find('.fh_appform_field_input').not('.validate_ignore]:hidden');
     return validateEls.length ? validateEls.valid() : true;
-  },
-
-  checkRules: function () {
-    var self = this;
-    var result = {};
-
-    var rules = {
-      SkipToPage: function (rulePasses, params) {
-        var pageToSkipTo = params.Setting.Page;
-        if (rulePasses) {
-          result.skipToPage = pageToSkipTo;
-        }
-      }
-    };
-
-    // iterate over page rules, if any, calling relevant rule function
-    _(this.model.get('Rules') || []).forEach(function (rule, index) {
-      // get element that rule condition is based on
-      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
-      rule.fn = rules[rule.Type];
-      if(jqEl.data("type") === 'radio') {
-        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
-        rEl.wufoo_rules('exec', rule);
-      } else {
-        jqEl.wufoo_rules('exec', rule);
-      }
-    });
-
-    return result;
   }
+
+//  checkRules: function () {
+//    var self = this;
+//    var result = {};
+//
+//    var rules = {
+//      SkipToPage: function (rulePasses, params) {
+//        var pageToSkipTo = params.Setting.Page;
+//        if (rulePasses) {
+//          result.skipToPage = pageToSkipTo;
+//        }
+//      }
+//    };
+//
+//    // iterate over page rules, if any, calling relevant rule function
+//    _(this.model.get('Rules') || []).forEach(function (rule, index) {
+//      // get element that rule condition is based on
+//      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
+//      rule.fn = rules[rule.Type];
+//      if(jqEl.data("type") === 'radio') {
+//        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
+//        rEl.wufoo_rules('exec', rule);
+//      } else {
+//        jqEl.wufoo_rules('exec', rule);
+//      }
+//    });
+//
+//    return result;
+//  }
 
 });
 var FormView = BaseView.extend({
@@ -3356,7 +3356,6 @@ var FormView = BaseView.extend({
   },
   loadForm: function(params, cb) {
     var self = this;
-
 
     if (params.formId) {
       self.onLoad();
@@ -3422,14 +3421,19 @@ var FormView = BaseView.extend({
     }
     self.submission = params.submission;
     self.submission.on("validationerror", self.onValidateError);
+
     // Init Pages --------------
     var pageModelList = form.getPageModelList();
     var pageViews = [];
+
+    self.steps = new StepsView({
+      parentEl: self.el.find(this.elementNames.formContainer),
+      parentView: self,
+      model: self.model
+    });
+
     for (var i = 0; i<pageModelList.length; i++) {
       var pageModel = pageModelList[i];
-      var pageId = pageModel.getPageId();
-
-      self.pageViewStatus[pageId] = {"targetId" : pageId, "action" : "show"};
 
       // get fieldModels
       var list = pageModel.getFieldModelList();
@@ -3461,16 +3465,10 @@ var FormView = BaseView.extend({
     self.pageCount = pageViews.length;
 
     self.checkRules();
-
-    self.steps = new StepsView({
-      parentEl: self.el.find(this.elementNames.formContainer),
-      parentView: self,
-      model: self.model
-    });
   },
   checkRules: function() {
     var self = this;
-    this.populateFieldViewsToSubmission(false, function() {
+    self.populateFieldViewsToSubmission(false, function() {
       var submission = self.submission;
       submission.checkRules(function(err, res) {
         if (err) {
@@ -3488,7 +3486,6 @@ var FormView = BaseView.extend({
             self.performRuleAction("field", targetId, fields[targetId]["action"]);
           }
         }
-
         self.checkPages();
       });
     });
@@ -3831,7 +3828,7 @@ StepsView = Backbone.View.extend({
 
     _.bindAll(this, 'render');
     this.parentView = this.options.parentView;
-    this.render();
+    this.options.parentEl.append(this.$el);
   },
 
   render: function() {
@@ -3858,8 +3855,6 @@ StepsView = Backbone.View.extend({
     });
 
     this.$el.append(table);
-    this.options.parentEl.append(this.$el);
-    //$('#fh_appform_container', this.options.parentEl).after(self.$el);
   },
 
   activePageChange: function() {
