@@ -3616,8 +3616,9 @@ var FormView = BaseView.extend({
     }
   },
   getPrevPageIndex: function(currentPageIndex){
+    var self = this;
     for(var pageIndex = currentPageIndex - 1; pageIndex >= 0; pageIndex--){
-      var pageId = this.pageViews[pageIndex].model.getPageId();
+      var pageId = self.pageViews[pageIndex].model.getPageId();
       var pageAction = self.pageViewStatus[pageId].action;
 
       if(pageAction == "show"){
