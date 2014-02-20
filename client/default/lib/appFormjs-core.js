@@ -1415,7 +1415,7 @@ appForm.models = function (module) {
         that.fromJSON(rawData);
         that.initialise();
 
-        _forms[formId] = that;
+        _forms[that.getFormId()] = that;
         return cb(null, that);
       }
 
