@@ -3476,11 +3476,7 @@ var FormView = BaseView.extend({
           self.pageViewStatus = actions.pages;
           var fields = actions.fields;
           var targetId;
-
-
-          for (targetId in pages) {
-            //self.performRuleAction("page", targetId, pages[targetId]["action"]);
-          }
+          
           for (targetId in fields) {
             self.performRuleAction("field", targetId, fields[targetId]["action"]);
           }
