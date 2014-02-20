@@ -3537,7 +3537,7 @@ var FormView = BaseView.extend({
     return this.submission;
   },
   getPageViewById: function(pageId) {
-    for (var i = 0; i<pageViews.length ; i++) {
+    for (var i = 0; i< this.pageViews.length ; i++) {
       var pageView = this.pageViews[i];
       var pId = pageView.model.getPageId();
       if (pId == pageId) {
