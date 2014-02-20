@@ -3351,6 +3351,7 @@ var FormView = BaseView.extend({
     _.bindAll(this, "checkRules", "onValidateError");
     this.el = this.options.parentEl;
     this.fieldModels = [];
+    this.pageViewStatus = {};
     this.el.empty();
   },
   loadForm: function(params, cb) {
@@ -3460,9 +3461,6 @@ var FormView = BaseView.extend({
     self.fieldViews = fieldViews;
     self.pageViews = pageViews;
     self.pageCount = pageViews.length;
-
-    //self.onLoadEnd();
-    //self.render();
   },
   checkRules: function() {
     var self = this;
@@ -3473,27 +3471,26 @@ var FormView = BaseView.extend({
           console.error(err);
         } else {
           var actions = res.actions;
-          var pages = actions.pages;
+          self.pageViewStatus = actions.pages;
           var fields = actions.fields;
           var targetId;
+
+
           for (targetId in pages) {
-            self.performRuleAction("page", targetId, pages[targetId]["action"]);
+            //self.performRuleAction("page", targetId, pages[targetId]["action"]);
           }
           for (targetId in fields) {
             self.performRuleAction("field", targetId, fields[targetId]["action"]);
           }
-          //TODO trigger an event with status of pages
-          //TODO subscribe to status of pages (form and stepsView)
         }
+
+        self.checkPages();
       });
     });
   },
   performRuleAction: function(type, targetId, action) {
     var target = null;
-    if (type == "page") {
-      target = this.getPageViewById(targetId);
-      target.skipPage();
-    } else if (type == "field") {
+    if (type == "field") {
       target = this.getFieldViewById(targetId);
     }
     if (target == null) {
@@ -3555,21 +3552,25 @@ var FormView = BaseView.extend({
     return null;
   },
   checkPages: function() {
-    if (this.pageNum === 0 && this.pageNum === this.pageCount - 1) {
+
+    var displayedPages = this.getNumDisplayedPages();
+    var displayedIndex = this.getDisplayIndex();
+
+    if (displayedIndex === 0 && displayedIndex === displayedPages - 1) {
       this.el.find(" button.fh_appform_button_previous").hide();
       this.el.find("button.fh_appform_button_next").hide();
       this.el.find("button.fh_appform_button_saveDraft").show();
       this.el.find(" button.fh_appform_button_submit").show();
       this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_three_button');
       this.el.find(".fh_appform_action_bar button").addClass('fh_appform_two_button');
-    } else if (this.pageNum === 0) {
+    } else if (displayedIndex === 0) {
       this.el.find(" button.fh_appform_button_previous").hide();
       this.el.find("button.fh_appform_button_next").show();
       this.el.find("button.fh_appform_button_saveDraft").show();
       this.el.find(" button.fh_appform_button_submit").hide();
       this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_three_button');
       this.el.find(".fh_appform_action_bar button").addClass('fh_appform_two_button');
-    } else if (this.pageNum === this.pageCount - 1) {
+    } else if (displayedIndex === displayedPages - 1) {
       this.el.find(" button.fh_appform_button_previous").show();
       this.el.find(" button.fh_appform_button_next").hide();
       this.el.find(" button.fh_appform_button_saveDraft").show();
@@ -3591,26 +3592,78 @@ var FormView = BaseView.extend({
 
   },
   render: function() {
-    // this.initWithForm(this.form, this.params);
     this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
     this.rebindButtons();
     this.pageViews[0].show();
-    this.steps.activePageChange(null, 0);
-    this.checkPages();
+    this.pageNum = 0;
+    this.steps.activePageChange(this);
     this.checkRules();
+  },
+  getNextPageIndex: function(currentPageIndex){
+    var self = this;
+    for(var pageIndex = currentPageIndex + 1; pageIndex < this.pageViews.length; pageIndex += 1){
+      var pageId = this.pageViews[pageIndex].model.getPageId();
+      var pageAction = self.pageViewStatus[pageId].action;
+
+      if(pageAction == "show"){
+        return pageIndex;
+      }
+    }
+  },
+  getPrevPageIndex: function(currentPageIndex){
+    for(var pageIndex = currentPageIndex - 1; pageIndex > 0; pageIndex--){
+      var pageId = this.pageViews[pageIndex].model.getPageId();
+      var pageAction = self.pageViewStatus[pageId].action;
+
+      if(pageAction == "show"){
+        return pageIndex;
+      }
+    }
+  },
+  getDisplayIndex: function(){
+    var self = this;
+    var currentIndex = this.pageNum;
+
+    for(var pageIndex = this.pageNum; pageIndex > 0; pageIndex--){
+      var pageId = this.pageViews[pageIndex].model.getPageId();
+      var pageAction = self.pageViewStatus[pageId].action;
+
+      if(pageAction == "hide"){
+        currentIndex -= 1;
+      }
+    }
+
+    return currentIndex;
+  },
+  getNumDisplayedPages : function(){
+     return this.getDisplayedPages().length;
+  },
+  getDisplayedPages : function(){
+    var self = this;
+    var displayedPages = [];
+    for(var pageIndex = 0; pageIndex < self.pageViews.length; pageIndex++){
+      var pageId = this.pageViews[pageIndex].model.getPageId();
+      var pageAction = self.pageViewStatus[pageId].action;
+
+      if(pageAction == "show"){
+        displayedPages.push(pageId);
+      }
+    }
+
+    return displayedPages;
   },
   nextPage: function() {
     this.hideAllPages();
-    this.pageViews[this.pageNum + 1].show();
-    this.pageNum = this.pageNum + 1;
-    this.steps.activePageChange(null, this.pageNum);
+    this.pageNum = this.getNextPageIndex(this.pageNum);
+    this.pageViews[this.pageNum].show();
+    this.steps.activePageChange(this);
     this.checkPages();
   },
   prevPage: function() {
     this.hideAllPages();
-    this.pageViews[this.pageNum - 1].show();
-    this.pageNum = this.pageNum - 1;
-    this.steps.activePageChange(null, this.pageNum);
+    this.pageNum = this.getPrevPageIndex(this.pageNum);
+    this.pageViews[this.pageNum].show();
+    this.steps.activePageChange(this);
     this.checkPages();
   },
   hideAllPages: function() {
@@ -3777,13 +3830,21 @@ StepsView = Backbone.View.extend({
 
   render: function() {
     var self = this;
+    this.$el.empty();
     var table = $(self.templates.table);
 
-    var width = 100 / this.model.pages.length;
+    var displayedPages = this.parentView.getDisplayedPages();
+    var width = 100;
 
-    this.model.pages.forEach(function(page, index) {
+    if(displayedPages.length > 0){
+      width = 100 / displayedPages.length;
+    }
+
+    displayedPages.forEach(function(pageId, index) {
+
+      var pageModel = self.parentView.getPageModelById(pageId);
       var item = $(_.template(self.templates.step, {
-        step_name: page.getName(),
+        step_name: pageModel.getName(),
         step_num: index + 1
       }));
       item.css('width', width + '%');
@@ -3795,11 +3856,13 @@ StepsView = Backbone.View.extend({
     //$('#fh_appform_container', this.options.parentEl).after(self.$el);
   },
 
-  activePageChange: function(model, pageIndex) {
-    this.$el.find('td').removeClass('active');
-    this.$el.find('.fh_appform_page_title').hide();
-    this.$el.find('td:eq(' + pageIndex + ')').addClass('active');
-    this.$el.find('td:eq(' + pageIndex + ') .fh_appform_page_title').show();
+  activePageChange: function() {
+    var self = this;
+    self.render();
+    self.$el.find('td').removeClass('active');
+    self.$el.find('.fh_appform_page_title').hide();
+    self.$el.find('td:eq(' + self.parentView.getDisplayIndex() + ')').addClass('active');
+    self.$el.find('td:eq(' + self.parentView.getDisplayIndex() + ') .fh_appform_page_title').show();
   }
 
 });
