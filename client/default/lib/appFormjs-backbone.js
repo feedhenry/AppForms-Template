@@ -3825,6 +3825,7 @@ StepsView = Backbone.View.extend({
     var self = this;
 
     _.bindAll(this, 'render');
+    this.parentView = this.options.parentView;
     this.render();
   },
 
