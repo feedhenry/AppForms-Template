@@ -26,7 +26,6 @@ var appForm = function (module) {
       var config = def.config || {};
       appForm.config = appForm.models.config;
       appForm.config.init(config, function (err) {
-        $fh.forms.log.d("Form config loaded");
         if(err) $fh.forms.log.e("Form config loading error: ", err);
         //Loading the current state of the uploadManager for any upload tasks that are still in progress.
         appForm.models.uploadManager.loadLocal(function (err) {
@@ -966,7 +965,7 @@ appForm.stores = function (module) {
       if (err || !locRes) {
         //local loading failed
         if (err) {
-          console.error(err);
+          $fh.forms.log.e("Error reading model from localStore ", model, err);
         }
         that.refreshRead(model, cb);
       } else {
@@ -986,9 +985,10 @@ appForm.stores = function (module) {
     var that = this;
     this.remoteStore.read(model, function (err, res) {
       if (err) {
-        console.error(err);
+        $fh.forms.log.e("Error reading model from remoteStore ", model, err);
         cb(err);
       } else {
+        $fh.forms.log.d("Model refresh successfull from remoteStore ", model, res);
         //update model from remote response
         model.fromJSON(res);
         //update local storage for the model
@@ -1224,7 +1224,7 @@ appForm.models = function(module) {
       //load hard coded static config first
       this.staticConfig();
       //attempt load config from mbaas then local storage.
-      this.refresh(cb);
+      this.refresh(true, cb);
     }
   };
   Config.prototype.refresh = function (fromRemote, cb) {
@@ -1234,21 +1234,19 @@ appForm.models = function(module) {
       cb = fromRemote;
       fromRemote = false;
     }
-    if (fromRemote) {
-      dataAgent.attemptRead(this, _handler);
-    } else {
-      dataAgent.read(this, _handler);
-    }
+
     function _handler(err, res) {
       var configObj = {};
       var defaultConfig = {"defaultConfigValues": {}};
+      if(self.get("userConfigValues")){
+        defaultConfig.userConfigValues = self.get("userConfigValues");
+      }
       if (!err && res) {
-
         if(typeof(res) === "string"){
           try{
             configObj = JSON.parse(res);
           } catch(error){
-            $fh.forms.log.e("Invalid json config defintion", error);
+            $fh.forms.log.e("Invalid json config defintion from remote", error);
             configObj = {};
             return cb(error, null);
           }
@@ -1267,6 +1265,7 @@ appForm.models = function(module) {
         cb(err, that);
       }
     }
+    dataAgent.remoteStore.read(that, _handler);
   };
   Config.prototype.staticConfig = function(config) {
     var self = this;
