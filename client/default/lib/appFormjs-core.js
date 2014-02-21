@@ -1238,7 +1238,7 @@ appForm.models = function(module) {
     function _handler(err, res) {
       var configObj = {};
       var defaultConfig = {"defaultConfigValues": {}};
-      if(self.get("userConfigValues")){
+      if(that.get("userConfigValues")){
         defaultConfig.userConfigValues = self.get("userConfigValues");
       }
       if (!err && res) {
