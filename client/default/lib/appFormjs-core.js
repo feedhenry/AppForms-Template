@@ -1237,10 +1237,7 @@ appForm.models = function(module) {
 
     function _handler(err, res) {
       var configObj = {};
-      var defaultConfig = {"defaultConfigValues": {}};
-      if(self.get("userConfigValues")){
-        defaultConfig.userConfigValues = self.get("userConfigValues");
-      }
+
       if (!err && res) {
         if(typeof(res) === "string"){
           try{
@@ -1254,18 +1251,17 @@ appForm.models = function(module) {
           configObj = res;
         }
 
-        for(var key in configObj){
-          defaultConfig.defaultConfigValues[key] = configObj[key];
-        }
-
-        //Resetting the default json definition
-        self.fromJSON(defaultConfig);
-        cb(null, self);
+        self.set("defaultConfigValues", configObj);
+        self.saveLocal(cb);
       } else {
         cb(err, self);
       }
     }
-    dataAgent.remoteStore.read(self, _handler);
+    self.loadLocal(function(err, localConfig){
+      if(err) $fh.forms.log.e("Config loadLocal ", err);
+
+      dataAgent.remoteStore.read(self, _handler);
+    });
   };
   Config.prototype.staticConfig = function(config) {
     var self = this;
@@ -2128,7 +2124,6 @@ appForm.models = function(module) {
     this.set('appId', appForm.config.get('appId'));
     this.set('appEnvironment', appForm.config.get('env'));
     this.set('appCloudName', '');
-    //TODO check with eng
     this.set('comments', []);
     this.set('formFields', []);
     this.set('saveDate', null);
