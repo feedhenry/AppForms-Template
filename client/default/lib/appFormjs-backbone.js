@@ -4018,20 +4018,24 @@ var ConfigView = Backbone.View.extend({
     var inputs = this.$el.find("input,select,textarea");
     $fh.forms.log.d("Saving config ", inputs);
 
-    inputs.each(function() {
-      var key = $(this).data().key;
-      var val = $(this).val();
+    if($fh.forms.config.editAllowed()){
+      inputs.each(function() {
+        var key = $(this).data().key;
+        var val = $(this).val();
 
-      if ($(this).attr("type") && $(this).attr("type").toLowerCase() == "checkbox") {
-        if (!$(this).attr("checked")) {
-          val = false;
+        if ($(this).attr("type") && $(this).attr("type").toLowerCase() == "checkbox") {
+          if (!$(this).attr("checked")) {
+            val = false;
+          }
         }
-      }
 
-      $fh.forms.config.set(key, val);
-    });
+        $fh.forms.config.set(key, val);
+      });
 
-    $fh.forms.config.saveConfig(cb);
+      $fh.forms.config.saveConfig(cb);
+    } else {
+      alert("Editing config not permitted.");
+    }
   }
 });
 if (typeof $fh == 'undefined') {

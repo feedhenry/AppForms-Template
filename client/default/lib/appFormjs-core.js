@@ -1306,13 +1306,13 @@ appForm.models = function(module) {
       "quality": 50,
       "debug_mode": false,
       "logger": false,
-      "max_retries": 2,
+      "max_retries": 3,
       "timeout": 30,
-      "log_line_limit": 300,
+      "log_line_limit": 5000,
       "log_email": "test@example.com",
-      "log_level": 2,
+      "log_level": 3,
       "log_levels": ["error", "warning", "log", "debug"],
-      "config_admin_user": false
+      "config_admin_user": true
     };
 
     for(var key in staticConfig){
@@ -1383,7 +1383,11 @@ appForm.models = function (module) {
       return false;
     }
   };
+  Forms.prototype.setLocalId = function(){
+    $fh.forms.log.e("Forms setLocalId. Not Permitted for Forms.");
+  };
   Forms.prototype.getFormMetaById = function (formId) {
+    $fh.forms.log.d("Forms getFormMetaById ", formId);
     var forms = this.get('forms');
     for (var i = 0; i < forms.length; i++) {
       var form = forms[i];
@@ -1391,18 +1395,17 @@ appForm.models = function (module) {
         return form;
       }
     }
+    $fh.forms.log.e("Forms getFormMetaById: No form found for id: ", formId);
     return null;
   };
   Forms.prototype.size = function () {
     return this.get('forms').length;
   };
-  Forms.prototype.setLocalId = function () {
-    throw 'forms id cannot be set programmly';
-  };
   Forms.prototype.getFormsList = function () {
     return this.get('forms');
   };
   Forms.prototype.getFormIdByIndex = function (index) {
+    $fh.forms.log.d("Forms getFormIdByIndex: ", index);
     return this.getFormsList()[index]._id;
   };
   module.forms = new Forms();
@@ -1419,6 +1422,7 @@ appForm.models = function (module) {
      * @param {Function} cb         [description]
      */
   function Form(params, cb) {
+    $fh.forms.log.d("Form: ", params);
     var that = this;
     var rawMode = params.rawMode || false;
     var rawData = params.rawData || null;
@@ -1431,7 +1435,7 @@ appForm.models = function (module) {
         fromRemote = false;
       }
     } else {
-      return console.error('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
+      return $fh.forms.log.e('a callback function is required for initialising form data. new Form (formId, [isFromRemote], cb)');
     }
 
     if (!formId) {
@@ -1445,6 +1449,7 @@ appForm.models = function (module) {
 
 
     function loadFromLocal(){
+      $fh.forms.log.d("Form: loadFromLocal", params);
       if (_forms[formId]) {
         //found form object in mem return it.
         cb(null, _forms[formId]);
@@ -1466,7 +1471,9 @@ appForm.models = function (module) {
 
 
     function loadFromRemote(){
+      $fh.forms.log.d("Form: loadFromRemote", params);
       function checkForUpdate(form){
+        $fh.forms.log.d("Form: checkForUpdate", params);
         form.refresh(false, function (err, obj) {
           if (appForm.models.forms.isFormUpdated(form)) {
             form.refresh(true, function (err, obj1) {
@@ -1487,6 +1494,7 @@ appForm.models = function (module) {
       }
 
       if (_forms[formId]) {
+        $fh.forms.log.d("Form: loaded from cache", params);
         //found form object in mem return it.
         if(!appForm.models.forms.isFormUpdated(_forms[formId])){
           cb(null, _forms[formId]);
@@ -1506,6 +1514,7 @@ appForm.models = function (module) {
   }
   appForm.utils.extend(Form, Model);
   Form.prototype.getLastUpdate = function () {
+    $fh.forms.log.d("Form: getLastUpdate");
     return this.get('lastUpdatedTimestamp');
   };
   /**
@@ -1518,9 +1527,9 @@ appForm.models = function (module) {
     this.initialiseRules();
   };
   Form.prototype.initialiseFields = function () {
+    $fh.forms.log.d("Form: initialiseFields");
     var fieldsRef = this.getFieldRef();
     this.fields = {};
-    console.log('field Ref', fieldsRef);
     for (var fieldId in fieldsRef) {
       var fieldRef = fieldsRef[fieldId];
       var pageIndex = fieldRef.page;
@@ -1537,6 +1546,7 @@ appForm.models = function (module) {
     }
   };
   Form.prototype.initialiseRules = function () {
+    $fh.forms.log.d("Form: initialiseRules");
     this.rules = {};
     var pageRules = this.getPageRules();
     var fieldRules = this.getFieldRules();
@@ -1557,10 +1567,8 @@ appForm.models = function (module) {
     }
     for (i = 0; i<constructors.length ; i++) {
       var constructor = constructors[i];
-      console.log("constructor", constructor);
       var ruleObj = new appForm.models.Rule(constructor);
       var fieldIds = ruleObj.getRelatedFieldId();
-      console.log("fieldIds", fieldIds);
       for (var j = 0; j<fieldIds.length; j++) {
         var  fieldId = fieldIds[j];
         if (!this.rules[fieldId]) {
@@ -1571,9 +1579,11 @@ appForm.models = function (module) {
     }
   };
   Form.prototype.getRulesByFieldId = function (fieldId) {
+    $fh.forms.log.d("Form: getRulesByFieldId");
     return this.rules[fieldId];
   };
   Form.prototype.initialisePage = function () {
+    $fh.forms.log.d("Form: initialisePage");
     var pages = this.getPagesDef();
     this.pages = [];
     for (var i = 0; i < pages.length; i++) {
@@ -1610,6 +1620,7 @@ appForm.models = function (module) {
     return this.fields[fieldId];
   };
   Form.prototype.getFieldDefByIndex = function (pageIndex, fieldIndex) {
+    $fh.forms.log.d("Form: getFieldDefByIndex: ", pageIndex, fieldIndex);
     var pages = this.getPagesDef();
     var page = pages[pageIndex];
     if (page) {
@@ -1619,9 +1630,11 @@ appForm.models = function (module) {
         return field;
       }
     }
+    $fh.forms.log.e("Form: getFieldDefByIndex: No field found for page and field index: ", pageIndex, fieldIndex);
     return null;
   };
   Form.prototype.getPageModelById = function (pageId) {
+    $fh.forms.log.d("Form: getPageModelById: ", pageId);
     var index = this.getPageRef()[pageId];
     if (typeof index == 'undefined') {
       throw 'page id is not found';
@@ -1630,17 +1643,20 @@ appForm.models = function (module) {
     }
   };
   Form.prototype.newSubmission = function () {
+    $fh.forms.log.d("Form: newSubmission");
     return appForm.models.submission.newInstance(this);
   };
   Form.prototype.getFormId = function () {
     return this.get('_id');
   };
   Form.prototype.removeFromCache = function () {
+    $fh.forms.log.d("Form: removeFromCache");
     if (_forms[this.getFormId()]) {
       delete _forms[this.getFormId()];
     }
   };
   Form.prototype.getFileFieldsId = function () {
+    $fh.forms.log.d("Form: getFileFieldsId");
     var fieldsId = [];
     for (var fieldId in this.fields) {
       var field = this.fields[fieldId];
@@ -1652,6 +1668,7 @@ appForm.models = function (module) {
   };
 
   Form.prototype.getRuleEngine = function () {
+    $fh.forms.log.d("Form: getRuleEngine");
     if (this.rulesEngine) {
       return this.rulesEngine;
     } else {
@@ -1666,6 +1683,7 @@ appForm.models = function (module) {
   var Model = appForm.models.Model;
   module.FileSubmission = FileSubmission;
   function FileSubmission(fileData) {
+    $fh.forms.log.d("FileSubmission ", fileData);
     Model.call(this, {
       '_type': 'fileSubmission',
       'data': fileData
@@ -1673,13 +1691,15 @@ appForm.models = function (module) {
   }
   appForm.utils.extend(FileSubmission, Model);
   FileSubmission.prototype.loadFile = function (cb) {
+    $fh.forms.log.d("FileSubmission loadFile");
     var fileName = this.getHashName();
     var that = this;
     appForm.utils.fileSystem.readAsFile(fileName, function (err, file) {
       if (err) {
-        console.error(err);
+        $fh.forms.log.e("FileSubmission loadFile. Error reading file", fileName, err);
         cb(err);
       } else {
+        $fh.forms.log.d("FileSubmission loadFile. File read correctly", fileName, file);
         that.fileObj = file;
         cb(null);
       }
@@ -1689,6 +1709,7 @@ appForm.models = function (module) {
     return this.fileObj;
   };
   FileSubmission.prototype.setSubmissionId = function (submissionId) {
+    $fh.forms.log.d("FileSubmission setSubmissionId.", submissionId);
     this.set('submissionId', submissionId);
   };
   FileSubmission.prototype.getSubmissionId = function () {
@@ -1767,7 +1788,7 @@ appForm.models = function (module) {
   }
   appForm.utils.extend(Submissions, Model);
   Submissions.prototype.setLocalId = function () {
-    throw 'It is not allowed to set local id programmly for submissions model.';
+    $fh.forms.log.e("Submissions setLocalId. Not Permitted for submissions.");
   };
   /**
      * save a submission to list and store it immediately
@@ -1776,6 +1797,7 @@ appForm.models = function (module) {
      * @return {[type]}              [description]
      */
   Submissions.prototype.saveSubmission = function (submission, cb) {
+    $fh.forms.log.d("Submissions saveSubmission", submission);
     var self=this;
     this.updateSubmissionWithoutSaving(submission);
     this.clearSentSubmission(function(){
@@ -1784,6 +1806,7 @@ appForm.models = function (module) {
     
   };
   Submissions.prototype.updateSubmissionWithoutSaving = function (submission) {
+    $fh.forms.log.d("Submissions updateSubmissionWithoutSaving", submission);
     var pruneData = this.pruneSubmission(submission);
     var localId = pruneData._ludid;
     if (localId) {
@@ -1799,16 +1822,19 @@ appForm.models = function (module) {
       }
     } else {
       // invalid local id.
-      console.error('Invalid submission:' + JSON.stringify(submission));
+      $fh.forms.log.e('Invalid submission for localId:', localId, JSON.stringify(submission));
     }
   };
   Submissions.prototype.clearSentSubmission=function(cb){
+    $fh.forms.log.d("Submissions clearSentSubmission");
     var self=this;
     var maxSent=$fh.forms.config.get("sent_save_max");
     var submissions=this.get("submissions");
     var sentSubmissions=this.getSubmitted();
-    // var maxSent=1;
+
+
     if (sentSubmissions.length>maxSent){
+      $fh.forms.log.d("Submissions clearSentSubmission pruning sentSubmissions.length>maxSent");
       sentSubmissions=sentSubmissions.sort(function(a,b){
         if (a.submittedDate<b.submittedDate){
           return -1;
@@ -1826,7 +1852,7 @@ appForm.models = function (module) {
         self.getSubmissionByMeta(subMeta,function(err,submission){
           submission.clearLocal(function(err){
             if (err){
-              console.error(err);
+              $fh.forms.log.e("Submissions clearSentSubmission submission clearLocal", err);
             }
             count--;
             if (count===0){
@@ -1840,6 +1866,7 @@ appForm.models = function (module) {
     }
   };
   Submissions.prototype.findByFormId = function (formId) {
+    $fh.forms.log.d("Submissions findByFormId", formId);
     var rtn = [];
     var submissions = this.get('submissions');
     for (var i = 0; i < submissions.length; i++) {
@@ -1856,6 +1883,7 @@ appForm.models = function (module) {
   Submissions.prototype.getSubmissionMetaList = Submissions.prototype.getSubmissions;
   //function alias
   Submissions.prototype.findMetaByLocalId = function (localId) {
+    $fh.forms.log.d("Submissions findMetaByLocalId", localId);
     var submissions = this.get('submissions');
     for (var i = 0; i < submissions.length; i++) {
       var obj = submissions[i];
@@ -1863,9 +1891,12 @@ appForm.models = function (module) {
         return obj;
       }
     }
+
+    $fh.forms.log.e("Submissions findMetaByLocalId: No submissions for localId: ", localId);
     return null;
   };
   Submissions.prototype.pruneSubmission = function (submission) {
+    $fh.forms.log.d("Submissions pruneSubmission");
     var fields = [
         '_id',
         '_ludid',
@@ -1888,109 +1919,109 @@ appForm.models = function (module) {
     }
     return rtn;
   };
+
+  Submissions.prototype.clear = function(cb) {
+    $fh.forms.log.d("Submissions clear");
+    var that = this;
+    this.clearLocal(function(err) {
+        if (err) {
+            console.error(err);
+            cb(err);
+        } else {
+            that.set("submissions", []);
+            cb(null, null);
+        }
+    });
+  };
+  Submissions.prototype.getDrafts = function(params) {
+    $fh.forms.log.d("Submissions getDrafts: ", params);
+    if(!params){
+      params = {};
+    }
+    params.status = "draft";
+    return this.findByStatus(params);
+  };
+  Submissions.prototype.getPending = function(params) {
+    $fh.forms.log.d("Submissions getPending: ", params);
+    if(!params){
+      params = {};
+    }
+    params.status = "pending";
+    return this.findByStatus(params);
+  };
+  Submissions.prototype.getSubmitted = function(params) {
+    $fh.forms.log.d("Submissions getSubmitted: ", params);
+    if(!params){
+      params = {};
+    }
+    params.status = "submitted";
+    return this.findByStatus(params);
+  };
+  Submissions.prototype.getError = function(params) {
+    $fh.forms.log.d("Submissions getError: ", params);
+    if(!params){
+      params = {};
+    }
+    params.status = "error";
+    return this.findByStatus(params);
+  };
+  Submissions.prototype.getInProgress = function(params) {
+    $fh.forms.log.d("Submissions getInProgress: ", params);
+    if(!params){
+      params = {};
+    }
+    params.status = "inprogress";
+    return this.findByStatus(params);
+  };
+  Submissions.prototype.findByStatus = function(params) {
+    $fh.forms.log.d("Submissions findByStatus: ", params);
+    if(!params){
+      params = {};
+    }
+    if (typeof params =="string"){
+      params={status:params};
+    }
+    if(params.status == null){
+      return [];
+    }
+
+    var status = params.status;
+    var formId = params.formId;
+
+    var submissions = this.get("submissions");
+    var rtn = [];
+    for (var i = 0; i < submissions.length; i++) {
+        if (submissions[i].status == status) {
+          if(formId != null){
+            if(submissions[i].formId == formId){
+              rtn.push(submissions[i]);
+            }
+          } else {
+            rtn.push(submissions[i]);
+          }
+
+        }
+    }
+    return rtn;
+  };
   /**
-     * Validate current submission before submit
-     * 1. Input Value
-     * 2. Field
-     * 3. Rules
-     * @return {[type]} [description]
-     * @deprecated replaced by rule engine
-     */
-    Submissions.prototype.validateBeforeSubmission = function() {
-        return true;
-    };
-    Submissions.prototype.clear = function(cb) {
-        var that = this;
-        this.clearLocal(function(err) {
-            if (err) {
-                console.error(err);
-                cb(err);
-            } else {
-                that.set("submissions", []);
-                cb(null, null);
-            }
-        });
-    };
-    Submissions.prototype.getDrafts = function(params) {
-        if(!params){
-          params = {};
-        }
-        params.status = "draft";
-        return this.findByStatus(params);
-    };
-    Submissions.prototype.getPending = function(params) {
-        if(!params){
-          params = {};
-        }
-        params.status = "pending";
-        return this.findByStatus(params);
-    };
-    Submissions.prototype.getSubmitted = function(params) {
-        if(!params){
-          params = {};
-        }
-        params.status = "submitted";
-        return this.findByStatus(params);
-    };
-    Submissions.prototype.getError = function(params) {
-        if(!params){
-          params = {};
-        }
-        params.status = "error";
-        return this.findByStatus(params);
-    };
-    Submissions.prototype.getInProgress = function(params) {
-        if(!params){
-          params = {};
-        }
-        params.status = "inprogress";
-        return this.findByStatus(params);
-    };
-    Submissions.prototype.findByStatus = function(params) {
-        if(!params){
-          params = {};
-        }
-        if (typeof params =="string"){
-          params={status:params};
-        }
-        if(params.status == null){
-          return [];
-        }
-
-        var status = params.status;
-        var formId = params.formId;
-
-        var submissions = this.get("submissions");
-        var rtn = [];
-        for (var i = 0; i < submissions.length; i++) {
-            if (submissions[i].status == status) {
-              if(formId != null){
-                if(submissions[i].formId == formId){
-                  rtn.push(submissions[i]);
-                }
-              } else {
-                rtn.push(submissions[i]);
-              }
-
-            }
-        }
-        return rtn;
-    };
-    /**
-     * return a submission model object by the meta data passed in.
-     * @param  {[type]}   meta [description]
-     * @param  {Function} cb   [description]
-     * @return {[type]}        [description]
-     */
+   * return a submission model object by the meta data passed in.
+   * @param  {[type]}   meta [description]
+   * @param  {Function} cb   [description]
+   * @return {[type]}        [description]
+   */
   Submissions.prototype.getSubmissionByMeta = function (meta, cb) {
+    $fh.forms.log.d("Submissions getSubmissionByMeta: ", meta);
     var localId = meta._ludid;
     if (localId) {
       appForm.models.submission.fromLocal(localId, cb);
     } else {
-      throw 'local id not found for retrieving submission.';
+      $fh.forms.log.e("Submissions getSubmissionByMeta: local id not found for retrieving submission.", localId, meta);
+      cb("local id not found for retrieving submission");
     }
   };
   Submissions.prototype.removeSubmission = function (localId, cb) {
+    $fh.forms.log.d("Submissions removeSubmission: ", localId);
     var index = this.indexOf(localId);
     if (index > -1) {
       this.get('submissions').splice(index, 1);
@@ -1998,6 +2029,7 @@ appForm.models = function (module) {
     this.saveLocal(cb);
   };
   Submissions.prototype.indexOf = function (localId, cb) {
+    $fh.forms.log.d("Submissions indexOf: ", localId);
     var submissions = this.get('submissions');
     for (var i = 0; i < submissions.length; i++) {
       var obj = submissions[i];
@@ -2049,21 +2081,28 @@ appForm.models = function(module) {
   }
 
   function fromLocal(localId, cb) {
+    $fh.forms.log.d("Submission fromLocal: ", localId);
     if (_submissions[localId]) {
+      $fh.forms.log.d("Submission fromLocal from cache: ", localId);
       //already loaded
       cb(null, _submissions[localId]);
     } else {
       //load from storage
+      $fh.forms.log.d("Submission fromLocal not in cache. Loading from local storage.: ", localId);
       var obj = new Submission();
       obj.setLocalId(localId);
       obj.loadLocal(function(err, submission) {
         if (err) {
+          $fh.forms.log.e("Submission fromLocal. Error loading from local: ", localId, err);
           cb(err);
         } else {
+          $fh.forms.log.d("Submission fromLocal. Load from local sucessfull: ", localId);
           submission.reloadForm(function(err, res) {
             if (err) {
+              $fh.forms.log.e("Submission fromLocal. reloadForm. Error re-loading form: ", localId, err);
               cb(err);
             } else {
+              $fh.forms.log.d("Submission fromLocal. reloadForm. Re-loading form successfull: ", localId);
               _submissions[localId] = submission;
               cb(null, submission);
             }
@@ -2074,6 +2113,7 @@ appForm.models = function(module) {
   }
 
   function Submission(form) {
+    $fh.forms.log.d("Submission: ", form);
     Model.call(this, {
       '_type': 'submission'
     });
@@ -2110,6 +2150,7 @@ appForm.models = function(module) {
    * @return {[type]} [description]
    */
   Submission.prototype.saveDraft = function(cb) {
+    $fh.forms.log.d("Submission saveDraft: ");
     var targetStatus = 'draft';
     var that = this;
     this.set('timezoneOffset', appForm.utils.getTime(true));
@@ -2124,6 +2165,7 @@ appForm.models = function(module) {
     });
   };
   Submission.prototype.validateField = function(fieldId, cb) {
+    $fh.forms.log.d("Submission validateField: ", fieldId);
     var that = this;
     this.getForm(function(err, form) {
       if (err) {
@@ -2136,6 +2178,7 @@ appForm.models = function(module) {
     });
   };
   Submission.prototype.checkRules = function(cb) {
+    $fh.forms.log.d("Submission checkRules: ", fieldId);
     var self = this;
     this.getForm(function(err, form) {
       if (err) {
@@ -2153,19 +2196,24 @@ appForm.models = function(module) {
    * @return {[type]}      [description]
    */
   Submission.prototype.submit = function(cb) {
+    $fh.forms.log.d("Submission submit: ");
     var targetStatus = 'pending';
     var validateResult = true;
     var that = this;
     this.set('timezoneOffset', appForm.utils.getTime(true));
     this.getForm(function(err, form) {
+      if(err) $fh.forms.log.e("Submission submit: Error getting form ", err);
       var ruleEngine = form.getRuleEngine();
       var submission = that.getProps();
       ruleEngine.validateForm(submission, function(err, res) {
         if (err) {
+          $fh.forms.log.e("Submission submit validateForm: Error validating form ", err);
           cb(err);
         } else {
+          $fh.forms.log.d("Submission submit: validateForm. Completed result", res);
           var validation = res.validation;
           if (validation.valid) {
+            $fh.forms.log.d("Submission submit: validateForm. Completed Form Valid", res);
             that.set('submitDate', new Date());
             that.changeStatus(targetStatus, function(error) {
               if (error) {
@@ -2176,6 +2224,7 @@ appForm.models = function(module) {
               }
             });
           } else {
+            $fh.forms.log.d("Submission submit: validateForm. Completed Validation error", res);
             cb('Validation error');
             that.emit('validationerror', validation);
           }
@@ -4071,6 +4120,10 @@ appForm.api = function (module) {
    * Get and set config values. Can only set a config value if you are an config_admin_user
    */
   var configInterface = {
+    "editAllowed" : function(){
+      var defaultConfigValues = formConfig.get("defaultConfigValues", {});
+      return defaultConfigValues["config_admin_user"] === true;
+    },
     "get" : function(key){
       if(key){
         var userConfigValues = formConfig.get("userConfigValues", {});
@@ -4086,26 +4139,24 @@ appForm.api = function (module) {
       }
     },
     "set" : function(key, val){
+      var self = this;
       if(!key || !val){
         return;
       }
-      var defaultValues = formConfig.get("defaultConfigValues", {});
 
-      if(defaultValues["config_admin_user"] === true){
+      if(self.editAllowed()){
         var userConfig = formConfig.get("userConfigValues", {});
         userConfig[key] = val;
         formConfig.set("userConfigValues", userConfig);
-      } else {
-        console.error("No permissions for setting config values.");
       }
     },
     "getConfig" : function(){
+      var self = this;
       var defaultValues = formConfig.get("defaultConfigValues", {});
       var userConfigValues = formConfig.get("userConfigValues", {});
-
       var returnObj = {};
 
-      if(defaultValues["config_admin_user"] === true){
+      if(self.editAllowed()){
         for(var defKey in defaultValues){
           if(userConfigValues[defKey]){
             returnObj[defKey] = userConfigValues[defKey];
@@ -4120,9 +4171,8 @@ appForm.api = function (module) {
     },
     "saveConfig": function(cb){
       var self = this;
-      var defaultValues = formConfig.get("defaultConfigValues", {});
 
-      if(defaultValues["config_admin_user"] === true){
+      if(self.editAllowed()){
         formConfig.saveLocal(function(err, configModel){
           cb(err, self.getConfig());
         });
