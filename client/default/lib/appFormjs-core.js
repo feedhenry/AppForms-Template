@@ -20,23 +20,27 @@ var appForm = function (module) {
           def[key] = params[key];
         }
       }
+
+
       //init config module
       var config = def.config || {};
       appForm.config = appForm.models.config;
       appForm.config.init(config, function (err) {
-        if(err) console.error(err);
+        $fh.forms.log.d("Form config loaded");
+        if(err) $fh.forms.log.e("Form config loading error: ", err);
         //Loading the current state of the uploadManager for any upload tasks that are still in progress.
         appForm.models.uploadManager.loadLocal(function (err) {
-          if (err)
-            console.error(err);
+          $fh.forms.log.d("Upload Manager loaded from memory.");
+          if (err) $fh.forms.log.e("Error loading upload manager from memory ", err);
           //init forms module
+          $fh.forms.log.l("Refreshing Theme.");
           appForm.models.theme.refresh(true, function (err) {
-            if (err)
-              console.error(err);
+            if (err) $fh.forms.log.e("Error refreshing theme ", err);
             if (def.updateForms === true) {
+              $fh.forms.log.l("Refreshing Forms.");
               appForm.models.forms.refresh(true, function (err) {
                 if (err)
-                  console.error(err);
+                  $fh.forms.log.e(err);
                 appForm.models.log.loadLocal(function(){
                   cb();
                 });
@@ -48,12 +52,6 @@ var appForm = function (module) {
         });
       });
     }
-
-    // $fh.ready({}, function() {
-    //     appForms.init({},function(){
-    //         console.log("appForm is inited");
-    //     });
-    // });
     return module;
   }(appForm || {});
 appForm.utils = function(module) {
@@ -123,6 +121,7 @@ appForm.utils = function(module) {
   }
 
   function send(params,cb){
+    $fh.forms.log.d("Sending: ", params);
     $fh.send(params,function(){
       cb(null);
     },function(msg){
@@ -414,6 +413,7 @@ appForm.utils = function (module) {
     }
   }
   function takePhoto(params, cb) {
+    $fh.forms.log.d("Taking photo ", params, isPhoneGap);
     //use configuration
     var width =  params.targetWidth ? params.targetWidth : $fh.forms.config.get("targetWidth", 640);
     var height = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
@@ -444,6 +444,7 @@ appForm.utils = function (module) {
     };
   }
   function _html5Camera(params, cb) {
+    $fh.forms.log.d("Taking photo _html5Camera", params, isPhoneGap);
     var width = params.targetWidth || $fh.forms.config.get("targetWidth");
     var height = params.targetHeight || $fh.forms.config.get("targetHeight");
     video.width = width;
@@ -462,6 +463,7 @@ appForm.utils = function (module) {
     }
   }
   function checkEnv() {
+    $fh.forms.log.d("Checking env");
     if (navigator.camera && navigator.camera.getPicture) {
       // PhoneGap
       isPhoneGap = true;
@@ -493,8 +495,9 @@ appForm.utils = function (module) {
     }
     return false;
   }
-  checkEnv();
+
   function snapshot(params, cb) {
+    $fh.forms.log.d("Snapshot ", params);
     if (localMediaStream) {
       ctx.drawImage(video, 0, 0, params.width, params.height);
       // "image/webp" works in Chrome.
@@ -503,7 +506,7 @@ appForm.utils = function (module) {
       cancelHtml5Camera();
       cb(null, base64);
     } else {
-      console.error('Media resource is not available');
+      $fh.forms.log.e('Media resource is not available');
       cb('Resource not available');
     }
   }
@@ -512,10 +515,11 @@ appForm.utils = function (module) {
 appForm.web = function (module) {
 
   module.uploadFile = function(url, fileProps, cb){
+    $fh.forms.log.d("uploadFile ", url, fileProps);
     var filePath = fileProps.fullPath;
 
     var success = function (r) {
-      console.log("upload to url ", url, " sucessfull");
+      $fh.forms.log.d("upload to url ", url, " sucessful");
       r.response = r.response || {};
       if(typeof r.response == "string"){
         r.response = JSON.parse(r.response);
@@ -524,9 +528,9 @@ appForm.web = function (module) {
     };
 
     var fail = function (error) {
-      console.error("An error uploading a file has occurred: Code = " + error.code);
-      console.log("upload error source " + error.source);
-      console.log("upload error target " + error.target);
+      $fh.forms.log.e("An error uploading a file has occurred: Code = " + error.code);
+      $fh.forms.log.d("upload error source " + error.source);
+      $fh.forms.log.d("upload error target " + error.target);
       cb(error);
     };
 
@@ -542,6 +546,7 @@ appForm.web = function (module) {
       "Connection": "close"
     };
 
+    $fh.forms.log.d("Beginning file upload ",url, options);
     var ft = new FileTransfer();
     ft.upload(filePath, encodeURI(url), success, fail, options);
   };
@@ -556,19 +561,22 @@ appForm.web.ajax = function (module) {
   function _myAjax() {
   }
   function get(url, cb) {
-    console.log(url);
+    $fh.forms.log.d("Ajax get ", url);
     _ajax({
       'url': url,
       'type': 'GET',
       'success': function (data, text) {
+        $fh.forms.log.d("Ajax get", url, "Success");
         cb(null, data);
       },
       'error': function (xhr, status, err) {
+        $fh.forms.log.e("Ajax get", url, "Fail", xhr, status, err);
         cb(xhr);
       }
     });
   }
   function post(url, body, cb) {
+    $fh.forms.log.d("Ajax post ", url, body);
     var file = false;
     var formData;
     if (typeof body == 'object') {
@@ -588,9 +596,11 @@ appForm.web.ajax = function (module) {
         'data': body,
         'dataType': 'json',
         'success': function (data, text) {
+          $fh.forms.log.d("Ajax post ", url, " Success");
           cb(null, data);
         },
         'error': function (xhr, status, err) {
+          $fh.forms.log.e("Ajax post ", url, " Fail ", xhr, status, err);
           cb(xhr);
         }
       };
@@ -784,7 +794,6 @@ appForm.stores = function(module) {
 
     function remove(key) {
       filenameForKey(key, function(hash) {
-        // console.log('remove: ' + key + '. Filename: ' + hash);
         fileSystem.remove(hash, function(err) {
           if (err) {
             if (err.name == 'NotFoundError' || err.code == 1) {
@@ -881,8 +890,8 @@ appForm.stores = function(module) {
   };
 
   function _getUrl(model) {
+    $fh.forms.log.d("_getUrl ", model);
     var type = model.get('_type');
-    console.log("appForm.config: ", appForm.config);
     var host = appForm.config.get('cloudHost');
     var mBaaSBaseUrl = appForm.config.get('mbaasBaseUrl');
     var formUrls = appForm.config.get('formUrls');
@@ -890,7 +899,7 @@ appForm.stores = function(module) {
     if (formUrls[type]) {
       relativeUrl = formUrls[type];
     } else {
-      console.error('type not found to get url:' + type);
+      $fh.forms.log.e('type not found to get url:' + type);
     }
     var url = host + mBaaSBaseUrl + relativeUrl;
     var props = {};
@@ -951,6 +960,7 @@ appForm.stores = function (module) {
      * @return {[type]}         [description]
      */
   DataAgent.prototype.read = function (model, cb) {
+    $fh.forms.log.d("DataAgent read ", model);
     var that = this;
     this.localStore.read(model, function (err, locRes) {
       if (err || !locRes) {
@@ -972,6 +982,7 @@ appForm.stores = function (module) {
      * @return {[type]}         [description]
      */
   DataAgent.prototype.refreshRead = function (model, cb) {
+    $fh.forms.log.d("DataAgent refreshRead ", model);
     var that = this;
     this.remoteStore.read(model, function (err, res) {
       if (err) {
@@ -997,6 +1008,7 @@ appForm.stores = function (module) {
    * @return {[type]}         [description]
    */
   DataAgent.prototype.attemptRead=function(model,cb){
+    $fh.forms.log.d("DataAgent attemptRead ", model);
     var self=this;
     self.refreshRead(model,function(err){
       if (err){
@@ -1040,9 +1052,11 @@ appForm.models = function (module) {
     }
   };
   Model.prototype.emit = function () {
+    $fh.forms.log.d("Model emit ");
     var args = Array.prototype.slice.call(arguments, 0);
     var e = args.shift();
     var funcs = this.events[e];
+    $fh.forms.log.d("Model emit ", e);
     if (funcs && funcs.length > 0) {
       for (var i = 0; i < funcs.length; i++) {
         var func = funcs[i];
@@ -1076,6 +1090,7 @@ appForm.models = function (module) {
     this.touch();
   };
   Model.prototype.fromJSONStr = function (jsonStr) {
+    $fh.forms.log.d("Model fromJSONStr ", jsonStr);
     try {
       var json = JSON.parse(jsonStr);
       this.fromJSON(json);
@@ -1083,27 +1098,7 @@ appForm.models = function (module) {
       console.error(e);
     }
   };
-  // not working properly for nested model data.
-  // Model.prototype.equalTo = function(model) {
-  //     var props = model.getProps();
-  //     for (var key in this.props) {
-  //         if (key=="_localLastUpdate"){
-  //             continue;
-  //         }
-  //         if (this.props[key] != props[key]) {
-  //             return false;
-  //         }
-  //     }
-  //     for (var key in props) {
-  //         if (key=="_localLastUpdate"){
-  //             continue;
-  //         }
-  //         if (this.props[key] != props[key]) {
-  //             return false;
-  //         }
-  //     }
-  //     return true;
-  // }
+
   Model.prototype.touch = function () {
     this.set('_localLastUpdate', appForm.utils.getTime());
   };
@@ -1120,6 +1115,7 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.refresh = function (fromRemote, cb) {
+    $fh.forms.log.d("Model refresh ", fromRemote);
     var dataAgent = this.getDataAgent();
     var that = this;
     if (typeof cb == 'undefined') {
@@ -1141,6 +1137,7 @@ appForm.models = function (module) {
     }
   };
   Model.prototype.attemptRefresh=function(cb){
+    $fh.forms.log.d("Model attemptRefresh ");
     var dataAgent = this.getDataAgent();
     var self=this;
     dataAgent.attemptRead(this,function(err,res){
@@ -1158,6 +1155,7 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.loadLocal = function (cb) {
+    $fh.forms.log.d("Model loadLocal ");
     var localStorage = appForm.stores.localStorage;
     var that = this;
     localStorage.read(this, function (err, res) {
@@ -1177,6 +1175,7 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.saveLocal = function (cb) {
+    $fh.forms.log.d("Model saveLocal ");
     var localStorage = appForm.stores.localStorage;
     localStorage.upsert(this, cb);
   };
@@ -1186,16 +1185,19 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.clearLocal = function (cb) {
+    $fh.forms.log.d("Model clearLocal ");
     var localStorage = appForm.stores.localStorage;
     localStorage["delete"](this, cb);
   };
   Model.prototype.getDataAgent = function () {
+    $fh.forms.log.d("Model getDataAgent ");
     if (!this.dataAgent) {
       this.setDataAgent(appForm.stores.dataAgent);
     }
     return this.dataAgent;
   };
   Model.prototype.setDataAgent = function (dataAgent) {
+    $fh.forms.log.d("Model setDataAgent ");
     this.dataAgent = dataAgent;
   };
   module.Model = Model;
@@ -1224,49 +1226,100 @@ appForm.models = function(module) {
       //attempt load config from mbaas then local storage.
       this.refresh(cb);
     }
+  };
+  Config.prototype.refresh = function (fromRemote, cb) {
+    var dataAgent = this.getDataAgent();
+    var that = this;
+    if (typeof cb == 'undefined') {
+      cb = fromRemote;
+      fromRemote = false;
+    }
+    if (fromRemote) {
+      dataAgent.attemptRead(this, _handler);
+    } else {
+      dataAgent.read(this, _handler);
+    }
+    function _handler(err, res) {
+      var configObj = {};
+      var defaultConfig = {"defaultConfigValues": {}};
+      if (!err && res) {
 
+        if(typeof(res) === "string"){
+          try{
+            configObj = JSON.parse(res);
+          } catch(error){
+            $fh.forms.log.e("Invalid json config defintion", error);
+            configObj = {};
+            return cb(error, null);
+          }
+        } else {
+          configObj = res;
+        }
+
+        for(var key in configObj){
+          defaultConfig.defaultConfigValues[key] = configObj[key];
+        }
+
+        //Resetting the default json definition
+        that.fromJSON(defaultConfig);
+        cb(null, that);
+      } else {
+        cb(err, that);
+      }
+    }
   };
   Config.prototype.staticConfig = function(config) {
+    var self = this;
+    var defaultConfig = {"defaultConfigValues": {}, "userConfigValues": {}};
+    //If user already has set values, don't want to overwrite them
+    if(self.get("userConfigValues")){
+      defaultConfig.userConfigValues = self.get("userConfigValues");
+    }
     var appid = $fh && $fh.app_props ? $fh.app_props.appid : config.appid;
     var mode = $fh && $fh.app_props ? $fh.app_props.mode : 'dev';
-    this.set('appId', appid);
-    this.set('env', mode);
-    this.set('timeoutTime', 15000);
-    var self = this;
+    self.set('appId', appid);
+    self.set('env', mode);
+
+
     if ($fh && 'function' === typeof $fh.env) {
       $fh.env(function(env) {
         self.set('deviceId', env.uuid);
       });
     }
-    this._initMBaaS();
+    self._initMBaaS();
     //Setting default retry attempts if not set in the config
-    if (config === undefined) {
+    if (!config) {
       config = {};
     }
-    if (typeof config.submissionRetryAttempts === 'undefined') {
-      config.submissionRetryAttempts = 2;
+
+    //config_admin_user can not be set by the user.
+    if(config.config_admin_user){
+      delete config.config_admin_user;
     }
 
-    if (config.submissionTimeout == null) {
-      config.submissionTimeout = 20; //Default 20 seconds timeout
-    }
-    this.fromJSON(config);
-    this.fromJSON({
+    defaultConfig.defaultConfigValues = config;
+    var staticConfig = {
       "sent_save_min": 5,
       "sent_save_max": 1000,
-      "targetWidth": 100,
-      "targetHeight": 100,
-      "quality": 75,
+      "targetWidth": 640,
+      "targetHeight": 480,
+      "quality": 50,
       "debug_mode": false,
       "logger": false,
       "max_retries": 2,
       "timeout": 30,
       "log_line_limit": 300,
-      "log_email": "logs.enterpriseplc@feedhenry.com",
+      "log_email": "test@example.com",
       "log_level": 2,
       "log_levels": ["error", "warning", "log", "debug"],
-      "config_admin_user": true
-    });
+      "config_admin_user": false
+    };
+
+    for(var key in staticConfig){
+      defaultConfig.defaultConfigValues[key] = staticConfig[key];
+    }
+
+    self.fromJSON(defaultConfig);
   };
   Config.prototype._initMBaaS = function() {
     var cloud_props = $fh.cloud_props;
@@ -1280,7 +1333,9 @@ appForm.models = function(module) {
     if (cloud_props && cloud_props.hosts) {
       if (mode.indexOf('dev') > -1) {
         //dev mode
-        cloudUrl = cloud_props.hosts.debugCloudUrl;
+        if(cloud_props.hosts.debugCloudUrl){
+          cloudUrl = cloud_props.hosts.debugCloudUrl;
+        }
       } else {
         //live mode
         cloudUrl = cloud_props.hosts.releaseCloudUrl;
@@ -1302,16 +1357,7 @@ appForm.models = function(module) {
       "config": '/forms/:appid/config'
     });
   };
-  Config.prototype.saveLocal = function(cb){
-    if(this.get("config_admin_user") === true){
-      Model.prototype.saveLocal.call(this, cb);
-    } else {
-      cb("Must be an admin user to change client settings.");
-    }
-  };
-  Config.prototype.set = function(key, value){
-    Model.prototype.set.call(this, key, value);
-  };
+
   module.config = new Config();
   return module;
 }(appForm.models || {});
@@ -1325,13 +1371,7 @@ appForm.models = function (module) {
     });
   }
   appForm.utils.extend(Forms, Model);
-  /**
-     * remove all local forms stored.
-     * @param  {Function} cb [description]
-     * @return {[type]}      [description]
-     */
-  Forms.prototype.clearAllForms = function (cb) {
-  };
+
   Forms.prototype.isFormUpdated = function (formModel) {
     var id = formModel.get('_id');
     var formLastUpdate = formModel.getLastUpdate();
@@ -3152,7 +3192,7 @@ appForm.models = function (module) {
     if (this.sending) {
       var now = appForm.utils.getTime();
       var timePassed = now.getTime() - this.sendingStart.getTime();
-      if (timePassed > appForm.config.get("timeout", 30) * 1000) {
+      if (timePassed > $fh.forms.config.get("timeout") * 1000) {
         //time expired. roll current task to the end of queue
         console.error('Uploading content timeout. it will try to reupload.');
         this.sending = false;
@@ -3626,7 +3666,7 @@ appForm.models = function (module) {
         console.error('Err, retrying:', err);
         //If the upload has encountered an error -- flag the submission as needing a retry on the next tick -- User should be insulated from an error until the retries are finished.
         that.increRetryAttempts();
-        if (that.getRetryAttempts() <= appForm.config.get('max_retries')) {
+        if (that.getRetryAttempts() <= $fh.forms.config.get('max_retries')) {
           that.setRetryNeeded(true);
           that.saveLocal(function (err) {
             if (err)
@@ -3878,10 +3918,10 @@ appForm.models = (function(module) {
   appForm.utils.extend(Log, Model);
 
   Log.prototype.info = function(logLevel, msgs) {
-    if (appForm.config.get("logger") == "true") {
+    if ($fh.forms.config.get("logger") == "true") {
       var levelString = "";
-      var curLevel = appForm.config.get("log_level");
-      var log_levels = appForm.config.get("log_levels");
+      var curLevel = $fh.forms.config.get("log_level");
+      var log_levels = $fh.forms.config.get("log_levels");
       var self = this;
       if (typeof logLevel == "string") {
         levelString = logLevel;
@@ -3900,7 +3940,7 @@ appForm.models = (function(module) {
         args.shift();
         while (args.length > 0) {
           logs.push(self.wrap(args.shift(), levelString));
-          if (logs.length > appForm.config.get("log_line_limit")) {
+          if (logs.length > $fh.forms.config.get("log_line_limit")) {
             logs.shift();
           }
         }
@@ -3932,19 +3972,19 @@ appForm.models = (function(module) {
     var logs = this.getLogs();
     var patterns = [{
       reg: /^.+\sERROR\s.*/,
-      color: appForm.config.get('color_error') || "#FF0000"
+      color: $fh.forms.config.get('color_error') || "#FF0000"
     }, {
       reg: /^.+\sWARNING\s.*/,
-      color: appForm.config.get('color_warning') || "#FF9933"
+      color: $fh.forms.config.get('color_warning') || "#FF9933"
     }, {
       reg: /^.+\sLOG\s.*/,
-      color: appForm.config.get('color_log') || "#009900"
+      color: $fh.forms.config.get('color_log') || "#009900"
     }, {
       reg: /^.+\sDEBUG\s.*/,
-      color: appForm.config.get('color_debug') || "#3366FF"
+      color: $fh.forms.config.get('color_debug') || "#3366FF"
     }, {
       reg: /^.+\sUNKNOWN\s.*/,
-      color: appForm.config.get('color_unknown') || "#000000"
+      color: $fh.forms.config.get('color_unknown') || "#000000"
     }];
     for (var i = 0; i < logs.length; i++) {
       var log = logs[i];
@@ -3998,7 +4038,7 @@ appForm.models = (function(module) {
     });
   };
   Log.prototype.sendLogs = function(cb) {
-    var email = appForm.config.get("log_email");
+    var email = $fh.forms.config.get("log_email");
     var config = appForm.config.getProps();
     var logs = this.getLogs();
     var params = {
@@ -4023,9 +4063,78 @@ appForm.api = function (module) {
   module.submitForm = submitForm;
   module.getSubmissions = getSubmissions;
   module.init = appForm.init;
-  module.config = appForm.models.config;
   module.log=appForm.models.log;
   var _submissions = null;
+  var formConfig = appForm.models.config;
+
+  /**
+   * Get and set config values. Can only set a config value if you are an config_admin_user
+   */
+  var configInterface = {
+    "get" : function(key){
+      if(key){
+        var userConfigValues = formConfig.get("userConfigValues", {});
+        var defaultConfigValues = formConfig.get("defaultConfigValues", {});
+
+        if(userConfigValues[key]){
+          return userConfigValues[key];
+        } else {
+          return defaultConfigValues[key];
+        }
+      } else {
+        return null;
+      }
+    },
+    "set" : function(key, val){
+      if(!key || !val){
+        return;
+      }
+      var defaultValues = formConfig.get("defaultConfigValues", {});
+
+      if(defaultValues["config_admin_user"] === true){
+        var userConfig = formConfig.get("userConfigValues", {});
+        userConfig[key] = val;
+        formConfig.set("userConfigValues", userConfig);
+      } else {
+        console.error("No permissions for setting config values.");
+      }
+    },
+    "getConfig" : function(){
+      var defaultValues = formConfig.get("defaultConfigValues", {});
+      var userConfigValues = formConfig.get("userConfigValues", {});
+
+      var returnObj = {};
+
+      if(defaultValues["config_admin_user"] === true){
+        for(var defKey in defaultValues){
+          if(userConfigValues[defKey]){
+            returnObj[defKey] = userConfigValues[defKey];
+          } else {
+            returnObj[defKey] = defaultValues[defKey];
+          }
+        }
+        return returnObj;
+      } else {
+        return defaultValues;
+      }
+    },
+    "saveConfig": function(cb){
+      var self = this;
+      var defaultValues = formConfig.get("defaultConfigValues", {});
+
+      if(defaultValues["config_admin_user"] === true){
+        formConfig.saveLocal(function(err, configModel){
+          cb(err, self.getConfig());
+        });
+      } else {
+        cb("Error, config administration rights required to save changes to config.");
+      }
+    }
+  };
+
+  module.config = configInterface;
+
+
   /**
      * Retrieve forms model. It contains forms list. check forms model usage
      * @param  {[type]}   params {fromRemote:boolean}
