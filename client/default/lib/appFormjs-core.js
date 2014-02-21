@@ -2178,7 +2178,7 @@ appForm.models = function(module) {
     });
   };
   Submission.prototype.checkRules = function(cb) {
-    $fh.forms.log.d("Submission checkRules: ", fieldId);
+    $fh.forms.log.d("Submission checkRules: ");
     var self = this;
     this.getForm(function(err, form) {
       if (err) {
