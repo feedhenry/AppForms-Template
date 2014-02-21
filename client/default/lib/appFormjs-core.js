@@ -1421,12 +1421,12 @@ appForm.models = function (module) {
      * @param {Function} cb         [description]
      */
   function Form(params, cb) {
-    $fh.forms.log.d("Form: ", params);
     var that = this;
     var rawMode = params.rawMode || false;
     var rawData = params.rawData || null;
     var formId = params.formId;
     var fromRemote = params.fromRemote;
+    $fh.forms.log.d("Form: ", rawMode, rawData, formId, fromRemote);
 
     if (typeof fromRemote == 'function' || typeof cb == 'function') {
       if (typeof fromRemote == 'function') {
