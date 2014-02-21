@@ -1229,7 +1229,7 @@ appForm.models = function(module) {
   };
   Config.prototype.refresh = function (fromRemote, cb) {
     var dataAgent = this.getDataAgent();
-    var that = this;
+    var self = this;
     if (typeof cb == 'undefined') {
       cb = fromRemote;
       fromRemote = false;
@@ -1238,7 +1238,7 @@ appForm.models = function(module) {
     function _handler(err, res) {
       var configObj = {};
       var defaultConfig = {"defaultConfigValues": {}};
-      if(that.get("userConfigValues")){
+      if(self.get("userConfigValues")){
         defaultConfig.userConfigValues = self.get("userConfigValues");
       }
       if (!err && res) {
@@ -1259,13 +1259,13 @@ appForm.models = function(module) {
         }
 
         //Resetting the default json definition
-        that.fromJSON(defaultConfig);
-        cb(null, that);
+        self.fromJSON(defaultConfig);
+        cb(null, self);
       } else {
-        cb(err, that);
+        cb(err, self);
       }
     }
-    dataAgent.remoteStore.read(that, _handler);
+    dataAgent.remoteStore.read(self, _handler);
   };
   Config.prototype.staticConfig = function(config) {
     var self = this;
