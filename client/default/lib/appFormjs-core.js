@@ -4243,9 +4243,7 @@ appForm.api = function (module) {
         }
       });
     } else {
-      setTimeout(function () {
-        cb(null, _submissions);
-      }, 0);
+      cb(null, _submissions);
     }
   }
   function submitForm(submission, cb) {

@@ -63,6 +63,7 @@ ItemView = Backbone.View.extend({
 
     var confirmDelete = confirm("Are you sure you want to delete this submission?");
     if (confirmDelete) {
+      this.model.coreModel.clearLocal()
       this.model.destroy();
     }
 
@@ -79,7 +80,6 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-
     if(this.model.load){
       this.model.load(function(err, actual) {
         var draft = new DraftModel(actual.toJSON());
