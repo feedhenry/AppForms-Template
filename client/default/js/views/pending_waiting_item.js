@@ -9,7 +9,7 @@ PendingWaitingView = ItemView.extend({
     var self = this;
     App.views.header.hideAll();
 
-    self.model.loadSubmission(self.model.submissionMeta, function(err, submission){
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
       if(err){
         $fh.forms.log.e("Error loading submission ", err);
       }
