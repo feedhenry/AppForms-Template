@@ -1533,6 +1533,7 @@ var FormListView = BaseView.extend({
   },
 
   initialize: function() {
+    $fh.forms.log.l("Initialize Form List");
     _.bindAll(this, 'render', 'appendForm');
     this.views = [];
 
@@ -1549,6 +1550,7 @@ var FormListView = BaseView.extend({
   },
 
   reload: function() {
+    $fh.forms.log.l("Reload Form List");
     var that=this;
     this.onLoad();
     this.model.refresh(true,function(err,formList){
