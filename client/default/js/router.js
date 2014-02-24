@@ -74,8 +74,6 @@ App.Router = Backbone.Router.extend({
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
-    App.config.on('config:loaded', this.onConfigLoaded);
-    App.config.loadConfig();
 
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
@@ -85,18 +83,13 @@ App.Router = Backbone.Router.extend({
     $('#fh_wufoo_banner .list li').each(function(i, e) {
       banner = true;
     });
+    this.onConfigLoaded();
   },
 
   // run App.router.onResume() to test this in browser
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
-      // Re-fetch on resume
-      // NOTE: was originally showing loading view and progress while resyncing after resume.
-      //       Not any more. We'll let it happen in background so UI isn't blocking
-      // var loadingView = new LoadingCollectionView();
-      // loadingView.show("Loading form list");
-      // App.collections.forms.store.force(); // do a clear to force a fetch
       App.collections.forms.fetch();
     } else {
       // reset flag to true for next time
