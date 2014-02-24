@@ -109,7 +109,6 @@ SubmissionCollection = Backbone.Collection.extend({
                 } else {
                     options.success(submissions);
                 }
-
             });
         }
     }

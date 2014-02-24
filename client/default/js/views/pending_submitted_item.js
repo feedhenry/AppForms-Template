@@ -16,16 +16,22 @@ PendingSubmittedItemView = ItemView.extend({
   } ,
 
   show: function() {
+    var self = this;
     App.views.header.hideAll();
-    var submission=this.model.coreModel;
-    App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
-      "formId":submission.get("formId"),
-      "autoShow":true,
-      "submission":submission
-    });
-    App.views.form.readOnly();
 
+    self.model.loadSubmission(self.submissionMeta, function(err, submission){
+      if(err){
+        $fh.forms.log.e("Error loading submission ", err);
+      }
+      var submission=self.model.coreModel;
+      App.views.form=new FormView({
+        "parentEl":$("#fh_wufoo_content"),
+        "formId":submission.get("formId"),
+        "autoShow":true,
+        "submission":submission
+      });
+      App.views.form.readOnly();
+    });
   }
 
 });
