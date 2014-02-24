@@ -27,6 +27,7 @@ SentListView = Backbone.View.extend({
     if (_.isNumber(saveMax)) {
       if(saveMax < $fh.forms.config.get("sent_save_max") && saveMax > $fh.forms.config.get("sent_save_min")){
         $fh.forms.config.set("max_sent_saved", saveMax);
+        $fh.forms.config.saveConfig();
       }
     }
   },

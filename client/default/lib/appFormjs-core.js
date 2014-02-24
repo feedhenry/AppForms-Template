@@ -4163,10 +4163,15 @@ appForm.api = function (module) {
         return defaultValues;
       }
     },
-    "saveConfig": function(cb){
+    "saveConfig": function(){
       var self = this;
       formConfig.saveLocal(function(err, configModel){
-        cb(err, self.getConfig());
+        if(err){
+          $fh.forms.log.e("Error saving a form config: ", err);
+        }else{
+          $fh.forms.log.l("Form config saved sucessfully.");
+        }
+
       });
     }
   };
