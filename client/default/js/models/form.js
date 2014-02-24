@@ -54,7 +54,6 @@ FormModel = Backbone.Model.extend({
     var type = e.msg || "unknown";
     var err = e.err;
     var msg;
-    $fh.logger.debug("handleError" + Utils.truncate(e, 150));
     if (type === "error_ajaxfail") {
 
       msg = "Unexpected Network Error : "; // + (err ? err.error : "");

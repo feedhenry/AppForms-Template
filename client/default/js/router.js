@@ -31,8 +31,6 @@ App.Router = Backbone.Router.extend({
   },
 
   form_list: function() {
-
-    $fh.logger.debug('route: form_list');
     this.loadingView = new LoadingCollectionView();
     this.loadingView.show("App Starting");
 
@@ -57,12 +55,7 @@ App.Router = Backbone.Router.extend({
             App.views.header = new HeaderView();
             App.views.header.showHome();
 
-            // store error handling
-            _(App.collections).forEach(function(collection) {
-              collection.on('error', function(collection, msg, options) {
-                $fh.logger.error('collection error:\"' + msg + '\"');
-              });
-            });
+            
             if ($('#fh_appform_style').length > 0) {
               $('#fh_appform_style').html(themeCSS);
             } else {
@@ -89,24 +82,15 @@ App.Router = Backbone.Router.extend({
     App.resumeFetchAllowed = true;
     document.addEventListener("resume", this.onResume, false);
     var banner = false;
-    $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
-    $fh.logger.info(" ======================================================");
     $('#fh_wufoo_banner .list li').each(function(i, e) {
-      $fh.logger.info(" = " + $(e).text());
       banner = true;
     });
-    if (!banner) {
-      $fh.logger.info(" = Dev Mode ");
-    }
-
-    $fh.logger.info(" ======================================================");
   },
 
   // run App.router.onResume() to test this in browser
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
-      $fh.logger.debug('resume fetch in background');
       // Re-fetch on resume
       // NOTE: was originally showing loading view and progress while resyncing after resume.
       //       Not any more. We'll let it happen in background so UI isn't blocking
@@ -115,16 +99,10 @@ App.Router = Backbone.Router.extend({
       // App.collections.forms.store.force(); // do a clear to force a fetch
       App.collections.forms.fetch();
     } else {
-      $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
       // reset flag to true for next time
       App.resumeFetchAllowed = true;
     }
   },
-
-  pending: function() {
-    $fh.logger.debug('route: pending');
-  },
-
   onConfigLoaded: function() {
     this.loadingView.show("Config Loaded , fetching forms");
     // to enable debug mode: App.config.set('debug_mode', true);
@@ -170,7 +148,6 @@ App.Router = Backbone.Router.extend({
     var timeout = App.config.getValueOrDefault("timeout");
     if (_.isNumber(timeout)) {
       $fh.ready({}, function() {
-        $fh.logger.debug("Setting timeout to " + timeout + " seconds");
         $fh.legacy.fh_timeout = timeout * 1000;
       });
     }

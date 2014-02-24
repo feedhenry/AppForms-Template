@@ -37,6 +37,5 @@ AlertView = Backbone.View.extend({
 var alertView = new AlertView();//{o:o, type:type, timeout:timeout});
 
 AlertView.showAlert = function(o, type, timeout) {
-  $fh.logger.debug("showAlert " ,o);
   alertView.render({o:o, type:type, timeout:timeout});
 };

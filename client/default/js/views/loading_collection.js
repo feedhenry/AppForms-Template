@@ -64,7 +64,6 @@ LoadingCollectionView = LoadingView.extend({
     model.set('fh_error_loading', true);
     this.percent += 100 / App.collections.forms.length;
     if(this.percent > 100) this.percent = 100;
-    $fh.logger.debug(' !! error loading model. ID: ' + model.id + this.percent);
     this.totalCounter += 1;
     this.updateProgress(this.percent);
     this.checkTotal();
@@ -72,7 +71,6 @@ LoadingCollectionView = LoadingView.extend({
 
   checkTotal: function() {
     var self = this;
-    $fh.logger.debug('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
     // Check total loaded to see if we should hide
     if (this.totalCounter >= App.collections.forms.length) {
       this.updateMessage("Form sync complete");
