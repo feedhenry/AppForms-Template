@@ -68,9 +68,7 @@ App.Router = Backbone.Router.extend({
       });
     });
   },
-
   onReady: function() {
-
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
@@ -97,16 +95,6 @@ App.Router = Backbone.Router.extend({
     }
   },
   onConfigLoaded: function() {
-    this.loadingView.show("Config Loaded , fetching forms");
-    // to enable debug mode: App.config.set('debug_mode', true);
-
-    App.config.on('change:debug_mode', this.onDebugModeChanged);
-    App.config.on('change:white_list', this.onWhitelistChanged);
-    App.config.on('change:logger', this.onLoggerChanged);
-    App.config.on('change:max_retries', this.onRetriesChanged);
-    App.config.on('change:defaults', this.onDefaultsChanged);
-    App.config.on('change:timeout', this.onTimeoutChanged);
-
     this.fetchCollections("Config Loaded , fetching forms");
   },
 
@@ -122,61 +110,9 @@ App.Router = Backbone.Router.extend({
 
     refreshSubmissionCollections();
   },
-
-  fetchTimeout: function() {
-    clearTimeout(this.fetchTo);
-    this.fetchTo = null;
-    this.loadingView.hide();
-    App.resumeFetchAllowed = false;
-    this.fullyLoaded = true;
-    this.onResume();
-  },
-
   onPropsRead: function(props) {
     this.props = props;
     // App.views.about = new AboutView(props);
-  },
-
-  onTimeoutChanged: function() {
-    var timeout = App.config.getValueOrDefault("timeout");
-    if (_.isNumber(timeout)) {
-      $fh.ready({}, function() {
-        $fh.legacy.fh_timeout = timeout * 1000;
-      });
-    }
-  },
-
-  onLoggerChanged: function() {
-    var logger = App.config.getValueOrDefault("logger");
-    $('#logger').toggle(logger);
-  },
-
-  onRetriesChanged: function() {
-    var max_retries = App.config.getValueOrDefault("max_retries");
-    //TODO add retry control for formsdk.
-    // $fh.retry.toggle(max_retries > 1);
-  },
-
-  onDebugModeChanged: function() {
-    var debug_mode = App.config.getValueOrDefault("debug_mode");
-    $('#debug_mode').toggle(debug_mode);
-  },
-
-  onWhitelistChanged: function() {
-    var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.find(white_list, function(m) {
-      return this.props.uuid.match(Utils.toRegExp(m));
-    }, this);
-    // on start up the setting icon may not be rendered yet
-    setTimeout(function() {
-      $('a.settings').toggle( !! listed);
-    }, 500);
-  },
-
-  onDefaultsChanged: function() {
-    this.onLoggerChanged();
-    this.onTimeoutChanged();
-    this.onWhitelistChanged();
   }
 });
 
