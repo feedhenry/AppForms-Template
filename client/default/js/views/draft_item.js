@@ -8,7 +8,7 @@ DraftItemView = ItemView.extend({
     var self = this;
     App.views.header.hideAll();
 
-    this.model.loadSubmission(self.submissionMeta, function(err, submission){
+    self.model.loadSubmission(self.model.submissionMeta, function(err, submission){
       if(err){
         $fh.forms.log.e("Error loading submission ", err);
       }
