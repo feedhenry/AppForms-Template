@@ -55,7 +55,7 @@ App.Router = Backbone.Router.extend({
             App.views.header = new HeaderView();
             App.views.header.showHome();
 
-            
+
             if ($('#fh_appform_style').length > 0) {
               $('#fh_appform_style').html(themeCSS);
             } else {
@@ -74,8 +74,8 @@ App.Router = Backbone.Router.extend({
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
-    App.config.on('config:loaded', this.onConfigLoaded);
-    App.config.loadConfig();
+//    App.config.on('config:loaded', this.onConfigLoaded);
+//    App.config.loadConfig();
 
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
