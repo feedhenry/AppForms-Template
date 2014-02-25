@@ -19,8 +19,10 @@ SubmissionModel = Backbone.Model.extend({
                     self.coreModel = submission;
                     self.id = submission.getLocalId();
                 }
+              if(!submission.dirty){
                 self.initModel();
                 self.trigger("change");
+              }
                 cb(err, submission);
             });
         });

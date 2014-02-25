@@ -907,6 +907,7 @@ appForm.stores = function(module) {
     switch (type) {
       case 'config':
         props.appid = model.get("appId");
+        props.deviceId = model.get("deviceId");
         break;
       case 'form':
         props.formId = model.get('_id');
@@ -1051,6 +1052,10 @@ appForm.models = function (module) {
       }
     }
   };
+
+  Model.prototype.clearEvents = function(){
+    this.events = {};
+  };
   Model.prototype.emit = function () {
     $fh.forms.log.d("Model emit ");
     var args = Array.prototype.slice.call(arguments, 0);
@@ -1175,7 +1180,6 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.saveLocal = function (cb) {
-    $fh.forms.log.d("Model saveLocal ");
     var localStorage = appForm.stores.localStorage;
     localStorage.upsert(this, cb);
   };
@@ -1185,12 +1189,10 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.clearLocal = function (cb) {
-    $fh.forms.log.d("Model clearLocal ");
     var localStorage = appForm.stores.localStorage;
     localStorage["delete"](this, cb);
   };
   Model.prototype.getDataAgent = function () {
-    $fh.forms.log.d("Model getDataAgent ");
     if (!this.dataAgent) {
       this.setDataAgent(appForm.stores.dataAgent);
     }
@@ -1252,7 +1254,9 @@ appForm.models = function(module) {
         }
 
         self.set("defaultConfigValues", configObj);
-        self.saveLocal(cb);
+        self.saveLocal(function(err, updatedConfigJSON){
+          cb(err, self);
+        });
       } else {
         cb(err, self);
       }
@@ -1349,7 +1353,7 @@ appForm.models = function(module) {
       'base64fileSubmission': '/forms/:appId/:submissionId/:fieldId/:hashName/submitFormFileBase64',
       'submissionStatus': '/forms/:appId/:submissionId/status',
       'completeSubmission': '/forms/:appId/:submissionId/completeSubmission',
-      "config": '/forms/:appid/config'
+      "config": '/forms/:appid/config/:deviceId'
     });
   };
 
@@ -2079,6 +2083,7 @@ appForm.models = function(module) {
     if (_submissions[localId]) {
       $fh.forms.log.d("Submission fromLocal from cache: ", localId);
       //already loaded
+      _submissions[localId].clearEvents();
       cb(null, _submissions[localId]);
     } else {
       //load from storage
@@ -2123,6 +2128,7 @@ appForm.models = function(module) {
     this.set('appId', appForm.config.get('appId'));
     this.set('appEnvironment', appForm.config.get('env'));
     this.set('appCloudName', '');
+
     this.set('comments', []);
     this.set('formFields', []);
     this.set('saveDate', null);
