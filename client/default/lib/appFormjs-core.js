@@ -2575,6 +2575,7 @@ appForm.models = function(module) {
   };
   Submission.prototype.clearLocal = function(cb) {
     var self = this;
+    var localId = self.getLocalId();
     //remove from uploading list
     appForm.models.uploadManager.cancelSubmission(self, function(err, uploadTask) {
       if (err) {
@@ -2584,7 +2585,7 @@ appForm.models = function(module) {
       //remove from submission list
       appForm.models.submissions.removeSubmission(self.getLocalId(), function(err) {
         if (err) {
-          console.err(err);
+          console.error(err);
           return cb(err);
         }
         self.clearLocalSubmissionFiles(function() {
@@ -2592,6 +2593,10 @@ appForm.models = function(module) {
             if (err) {
               console.error(err);
               return cb(err);
+            }
+
+            if(_submissions[localId]){
+              delete _submissions[localId];
             }
             cb(null, null);
           });
@@ -4278,6 +4283,7 @@ if ($fh.forms === undefined) {
   $fh.forms = appForm.api;
 }
 appForm.RulesEngine=rulesEngine;
+
 /*! fh-forms - v0.2.39 -  */
 /*! async - v0.2.9 -  */
 /*! 2014-02-26 */
@@ -5317,7 +5323,7 @@ function rulesEngine (formDef) {
     var FIELD_TYPE_DATETIME = "dateTime";
     var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY = "date";
     var FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY = "time";
-    var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME = "dateTime";
+    var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME = "datetime";
 
     var formsRulesEngine = function(formDef) {
       var initialised;
@@ -6560,6 +6566,7 @@ function rulesEngine (formDef) {
 }
 
 /* End of suffix file */
+
 
 //end  module;
 
