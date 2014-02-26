@@ -2838,7 +2838,7 @@ appForm.models.Field = function (module) {
     var def = this.getFieldDefinition();
     var obj={};
     switch (def.locationUnit) {
-    case 'latLong':
+    case 'latlong':
       if (!inputValue.lat || !inputValue["long"]) {
         cb('the input values for latlong field is {lat: number, long: number}');
       } else {
@@ -2849,7 +2849,7 @@ appForm.models.Field = function (module) {
         cb(null, obj);
       }
       break;
-    case 'northEast':
+    case 'northeast':
       if (!inputValue.zone || !inputValue.eastings || !inputValue.northings) {
         cb('the input values for northeast field is {zone: text, eastings: text, northings:text}');
       } else {
@@ -4275,9 +4275,9 @@ if ($fh.forms === undefined) {
 }
 appForm.RulesEngine=rulesEngine;
 
-/*! fh-forms - v0.2.30 -  */
+/*! fh-forms - v0.2.18 -  */
 /*! async - v0.2.9 -  */
-/*! 2014-02-17 */
+/*! 2014-01-29 */
 /* This is the prefix file */
 function rulesEngine (formDef) {
   var define = {};
@@ -5314,7 +5314,7 @@ function rulesEngine (formDef) {
     var FIELD_TYPE_DATETIME = "dateTime";
     var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY = "date";
     var FIELD_TYPE_DATETIME_DATETIMEUNIT_TIMEONLY = "time";
-    var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME = "datetime";
+    var FIELD_TYPE_DATETIME_DATETIMEUNIT_DATETIME = "dateTime";
 
     var formsRulesEngine = function(formDef) {
       var initialised;
@@ -5336,7 +5336,7 @@ function rulesEngine (formDef) {
         "number":       validatorNumber,
         "emailAddress": validatorEmail,
         "dropdown":     validatorDropDown,
-        "radio":        validatorDropDown,
+        "radio":        validatorRadio,
         "checkboxes":   validatorCheckboxes,
         "location":     validatorLocation,
         "locationMap":  validatorLocationMap,
@@ -5344,7 +5344,6 @@ function rulesEngine (formDef) {
         "signature":    validatorFile,
         "file":         validatorFile,
         "dateTime":     validatorDateTime,
-        "url":          validatorString,
         "sectionBreak": validatorSection
       };
 
@@ -5354,7 +5353,7 @@ function rulesEngine (formDef) {
         "number":       validatorNumber,
         "emailAddress": validatorEmail,
         "dropdown":     validatorDropDown,
-        "radio":        validatorDropDown,
+        "radio":        validatorRadio,
         "checkboxes":   validatorCheckboxes,
         "location":     validatorLocation,
         "locationMap":  validatorLocationMap,
@@ -5362,7 +5361,6 @@ function rulesEngine (formDef) {
         "signature":    validatorAnyFile,
         "file":         validatorAnyFile,
         "dateTime":     validatorDateTime,
-        "url":          validatorString,
         "sectionBreak": validatorSection
       };
 
@@ -5622,15 +5620,12 @@ function rulesEngine (formDef) {
             required = fieldDefinition.required;
           }
 
-          if(fieldEmpty(inputValue)) {
-            if(required) {
-              return formatResponse("No value specified for required input", cb);
-            } else {
-              return formatResponse(undefined, cb);  // optional field not supplied is valid
-            }
+          if(required && (("undefined" === typeof inputValue) || (null === inputValue))) {
+            return formatResponse("No value specified for required input", cb);
+          } else if(!required && (("undefined" === typeof inputValue) || (null === inputValue))) {
+            return formatResponse(undefined, cb);  // optional field not supplied is valid
           }
 
-          // not empty need to validate
           getClientValidatorFunction(fieldDefinition.type, function (err, validator) {
             if (err) return cb(err);
 
@@ -5699,10 +5694,6 @@ function rulesEngine (formDef) {
 
       function getClientValidatorFunction(fieldType, cb) {
         return getMapFunction(fieldType, validatorsClientMap, cb);
-      }
-
-      function fieldEmpty(fieldValue) {
-        return ('undefined' === typeof fieldValue || null === fieldValue || "" === fieldValue); // empty string also regarded as not specified
       }
 
       function validateFieldInternal(submittedField, fieldDef, previousFieldValues, cb) {
@@ -5781,9 +5772,9 @@ function rulesEngine (formDef) {
 
         function checkValues(submittedField, fieldDefinition, previousFieldValues, cb) {
           getValidatorFunction(fieldDefinition.type, function (err, validator) {
-            if (err) return cb(err);
+
             async.map(submittedField.fieldValues, function(fieldValue, cb){
-              if(fieldEmpty(fieldValue)) {
+              if('undefined' === typeof fieldValue || null === fieldValue) {
                 return cb(undefined, null);
               } else {
                 validator(fieldValue, fieldDefinition, previousFieldValues, function(validationError) {
@@ -5927,23 +5918,44 @@ function rulesEngine (formDef) {
 
       function validatorDropDown (fieldValue, fieldDefinition, previousFieldValues, cb) {
         if(typeof(fieldValue) !== "string"){
-          return cb(new Error("Expected submission to be string but got " + typeof(fieldValue)));
+          return cb(new Error("Expected dropdown submission to be string but got " + typeof(fieldValue)));
         }
 
         //Check value exists in the field definition
         if(!fieldDefinition.fieldOptions.definition.options){
-          return cb(new Error("No options exist for field " + fieldDefinition.name));
+          return cb(new Error("No dropdown options exist for field " + fieldDefinition.name));
         }
 
-        async.some(fieldDefinition.fieldOptions.definition.options, function (dropdownOption, cb) {
-          return cb(dropdownOption.label === fieldValue);
-        }, function (found) {
-          if (!found) {
-            return cb(new Error("Invalid option specified: " + fieldValue));
-          } else {
-            return cb();
-          }
+        var matchingOptions = fieldDefinition.fieldOptions.definition.options.filter(function(dropdownOption){
+          return dropdownOption.label === fieldValue;
         });
+
+        if(matchingOptions.length !== 1){
+          return cb(new Error("Invalid number of dropdown options found: " + matchingOptions.length));
+        }
+
+        return cb();
+      }
+
+      function validatorRadio (fieldValue, fieldDefinition, previousFieldValues, cb) {
+        if(typeof(fieldValue) !== "string"){
+          return cb(new Error("Expected radio submission to be string but got " + typeof(fieldValue)));
+        }
+
+        //Check value exists in the field definition
+        if(!fieldDefinition.fieldOptions.definition.options){
+          return cb(new Error("No radio options exist for field " + fieldDefinition.name));
+        }
+
+        var matchingOptions = fieldDefinition.fieldOptions.definition.options.filter(function(radioOption){
+          return radioOption.label === fieldValue;
+        });
+
+        if(matchingOptions.length !== 1){
+          return cb(new Error("Invalid number of radio options found: " + matchingOptions.length));
+        }
+
+        return cb();
       }
 
       function validatorCheckboxes (fieldValue, fieldDefinition, previousFieldValues, cb) {
@@ -6154,7 +6166,7 @@ function rulesEngine (formDef) {
           return cb(new Error("Expected string but got " + typeof(fieldValue)));
         }
 
-        switch (fieldDefinition.fieldOptions.definition.datetimeUnit)
+        switch (fieldDefinition.fieldOptions.definition.dateTimeUnit)
         {
           case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
             try{
@@ -6201,7 +6213,7 @@ function rulesEngine (formDef) {
             }
             break;
           default:
-            return cb(new Error("Invalid dateTime fieldtype " + fieldDefinition.fieldOptions.definition.datetimeUnit));
+            return cb(new Error("Invalid dateTime fieldtype " + fieldOptions.definition.dateTimeUnit));
         }
       }
 
@@ -6427,7 +6439,7 @@ function rulesEngine (formDef) {
       else if( "is at" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.datetimeUnit)
+          switch (fieldOptions.definition.dateTimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
@@ -6455,7 +6467,7 @@ function rulesEngine (formDef) {
       else if( "is before" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.datetimeUnit)
+          switch (fieldOptions.definition.dateTimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
@@ -6483,7 +6495,7 @@ function rulesEngine (formDef) {
       else if( "is after" === condition) {
         valid = false;
         if( fieldType === FIELD_TYPE_DATETIME ) {
-          switch (fieldOptions.definition.datetimeUnit)
+          switch (fieldOptions.definition.dateTimeUnit)
           {
             case FIELD_TYPE_DATETIME_DATETIMEUNIT_DATEONLY:
               try{
