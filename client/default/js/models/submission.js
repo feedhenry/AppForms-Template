@@ -13,17 +13,17 @@ SubmissionModel = Backbone.Model.extend({
         var self = this;
         $fh.forms.getSubmissions({}, function(err, subList) {
             subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
-                if (err) {
-                    self.trigger("error", err);
-                } else {
-                    self.coreModel = submission;
-                    self.id = submission.getLocalId();
-                }
-              if(!submission.dirty){
-                self.initModel();
-                self.trigger("change");
+              if (err) {
+                  self.trigger("error", err);
+              } else {
+                  self.coreModel = submission;
+                  self.id = submission.getLocalId();
               }
-                cb(err, submission);
+
+              self.initModel();
+              self.trigger("change");
+
+              cb(err, submission);
             });
         });
     },
