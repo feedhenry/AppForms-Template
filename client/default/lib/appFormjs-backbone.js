@@ -2611,6 +2611,7 @@ FieldMapView = FieldView.extend({
           zoom: self.mapSettings.defaultZoom
         }, function(res) {
           if(!self.markers[index]){
+            self.maps[index] = res.map;
             var marker = new google.maps.Marker({
               position: self.maps[index].getCenter(),
               map: self.maps[index],
@@ -2619,7 +2620,6 @@ FieldMapView = FieldView.extend({
               title: 'Drag this to set position'
             });
             self.markers[index] = marker;
-            self.maps[index] = res.map;
             self.mapData[index] = {
               'lat': marker.getPosition().lat(),
               'long': marker.getPosition().lng(),
