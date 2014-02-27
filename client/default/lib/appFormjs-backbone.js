@@ -2636,15 +2636,16 @@ FieldMapView = FieldView.extend({
     var self = this;
     if (self.maps.length > 0) {
       for (var i = 0; i < self.maps.length; i++) {
-        var map = this.maps[i];
+        var map = self.maps[i];
         if (map) {
           google.maps.event.trigger(map, 'resize');
-          map.setCenter(new google.maps.LatLng(this.latLongs[i].lat, this.latLongs[i]["long"]));
+          if(self.markers[i]){
+            map.setCenter(new google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng()));
+          }
         }
       }
     }
   },
-  addValidationRules: function() {},
   valueFromElement: function(index) {
     var map = this.maps[index];
     var marker = this.markers[index];
