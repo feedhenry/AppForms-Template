@@ -418,9 +418,10 @@ appForm.utils = function (module) {
     var height = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
     var quality= params.quality ? params.quality : $fh.forms.config.get("quality", 50);
 
-    params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
+
 
     if (isPhoneGap) {
+      params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
         quality: quality,
         targetWidth: width,
@@ -4284,9 +4285,9 @@ if ($fh.forms === undefined) {
 }
 appForm.RulesEngine=rulesEngine;
 
-/*! fh-forms - v0.2.39 -  */
+/*! fh-forms - v0.2.40 -  */
 /*! async - v0.2.9 -  */
-/*! 2014-02-26 */
+/*! 2014-02-27 */
 /* This is the prefix file */
 function rulesEngine (formDef) {
   var define = {};
@@ -6566,7 +6567,6 @@ function rulesEngine (formDef) {
 }
 
 /* End of suffix file */
-
 
 //end  module;
 
