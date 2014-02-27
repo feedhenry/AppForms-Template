@@ -1944,9 +1944,9 @@ var FieldView = Backbone.View.extend({
   value: function(value) {
     var self = this;
     if (value && !_.isEmpty(value)) {
-      this.valuePopulate(value);
+      self.valuePopulate(value);
     }
-    return this.getValue();
+    return self.getValue();
   },
   getValue: function() {
     var value = [];
@@ -2610,20 +2610,22 @@ FieldMapView = FieldView.extend({
           lat: location.lat,
           zoom: self.mapSettings.defaultZoom
         }, function(res) {
-          self.maps[index] = res.map;
-          var marker = new google.maps.Marker({
-            position: self.maps[index].getCenter(),
-            map: self.maps[index],
-            draggable: true,
-            animation: google.maps.Animation.DROP,
-            title: 'Drag this to set position'
-          });
-          self.markers[index] = marker;
-          self.mapData[index] = {
-            'lat': marker.getPosition().lat(),
-            'long': marker.getPosition().lng(),
-            'zoom': self.mapSettings.defaultZoom
-          };
+          if(!self.markers[index]){
+            var marker = new google.maps.Marker({
+              position: self.maps[index].getCenter(),
+              map: self.maps[index],
+              draggable: true,
+              animation: google.maps.Animation.DROP,
+              title: 'Drag this to set position'
+            });
+            self.markers[index] = marker;
+            self.maps[index] = res.map;
+            self.mapData[index] = {
+              'lat': marker.getPosition().lat(),
+              'long': marker.getPosition().lng(),
+              'zoom': self.mapSettings.defaultZoom
+            };
+          }
           self.onMapInit(index);
         }, function(err) {
           console.error(err);
@@ -2633,8 +2635,9 @@ FieldMapView = FieldView.extend({
     }
   },
   mapResize: function() {
-    if (this.maps.length > 0) {
-      for (var i = 0; i < this.maps.length; i++) {
+    var self = this;
+    if (self.maps.length > 0) {
+      for (var i = 0; i < self.maps.length; i++) {
         var map = this.maps[i];
         if (map) {
           google.maps.event.trigger(map, 'resize');
