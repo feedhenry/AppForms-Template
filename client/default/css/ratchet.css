@@ -348,7 +348,7 @@ a {
   /*background-image: -webkit-linear-gradient(top, #1eb0e9 0, #0984c6 100%);*/
   /*background-image: linear-gradient(to bottom, #1eb0e9 0, #0984c6 100%);*/
   /*border: 1px solid #0e5895;*/
-  /*border-radius: 3px;*/
+  border-radius: 5px;
   box-shadow: 0 1px rgba(255, 255, 255, .25);
   -webkit-box-flex: 1;
           box-flex: 1;
@@ -806,7 +806,7 @@ select {
   overflow: hidden;
   text-align: center;
   white-space: nowrap;
-  border-left: 1px solid #aaa;
+  /*border-left: 1px solid #aaa;*/
   box-shadow: inset 1px 0 rgba(255, 255, 255, .5);
   -webkit-box-flex: 1;
           box-flex: 1;

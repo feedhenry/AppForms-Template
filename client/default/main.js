@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-02-19
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-02-27
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -41,37 +41,6 @@ u.formatDate=function(q,h,l){if(!h)return null;var l=a.extend({},O,l),p=function
 break;case "H":o=y("H");break;case "h":o=y("h");break;case "i":p=y("i");break;case "s":w=y("s");break;case "a":n=z("a",["am","pm"],["am","pm"])-1;break;case "A":n=z("A",["am","pm"],["am","pm"])-1;break;case "'":s("'")?r++:b=!0;break;default:r++}100>l&&(l+=(new Date).getFullYear()-(new Date).getFullYear()%100+(l<=("string"!=typeof u?u:(new Date).getFullYear()%100+parseInt(u,10))?0:-100));if(-1<d){m=1;c=d;do{i=32-(new Date(l,m-1,32)).getDate();if(c<=i)break;m++;c-=i}while(1)}o=new Date(l,m-1,c,-1==
 n?o:n&&12>o?o+12:!n&&12==o?0:o,p,w);if(o.getFullYear()!=l||o.getMonth()+1!=m||o.getDate()!=c)throw"Invalid date";return o}})(jQuery);
 
-ConfigModel = Backbone.Model.extend({
-  initialize: function () {
-    this.on('change', function () {
-      $fh.logger.info('ConfigModel :: change=' + JSON.stringify(this.attributes));
-      $fh.data({
-        act: 'save',
-        key: 'client_config',
-        val: JSON.stringify(this.attributes)
-      }, function () {
-        // saved ok
-      }, function (msg, err) {
-        $fh.logger.error('ERROR: saving client_config to local storage :: ', msg);
-      });
-    });
-  },
-  getValueOrDefault: function (key) {
-    try {
-      var value= (this.attributes.hasOwnProperty(key)  ? this.get(key) : this.get('defaults')[key]) ;
-      return value;
-    } catch(e) {
-      return null;
-    }
-  },
-  loadConfig: function () {
-    var self = this;
-    self.set($fh.forms.config.props);
-    self.trigger("config:loaded");
-  }
-});
-
-App.config = new ConfigModel();
 FormModel = Backbone.Model.extend({
   idAttribute: 'Hash',
   sync: function(method,model,options){
@@ -128,7 +97,6 @@ FormModel = Backbone.Model.extend({
     var type = e.msg || "unknown";
     var err = e.err;
     var msg;
-    $fh.logger.debug("handleError" + Utils.truncate(e, 150));
     if (type === "error_ajaxfail") {
 
       msg = "Unexpected Network Error : "; // + (err ? err.error : "");
@@ -242,8 +210,10 @@ SubmissionModel = Backbone.Model.extend({
                     self.coreModel = submission;
                     self.id = submission.getLocalId();
                 }
+              if(!submission.dirty){
                 self.initModel();
                 self.trigger("change");
+              }
                 cb(err, submission);
             });
         });
@@ -332,7 +302,6 @@ SubmissionCollection = Backbone.Collection.extend({
                 } else {
                     options.success(submissions);
                 }
-
             });
         }
     }
@@ -557,7 +526,6 @@ LoadingCollectionView = LoadingView.extend({
     model.set('fh_error_loading', true);
     this.percent += 100 / App.collections.forms.length;
     if(this.percent > 100) this.percent = 100;
-    $fh.logger.debug(' !! error loading model. ID: ' + model.id + this.percent);
     this.totalCounter += 1;
     this.updateProgress(this.percent);
     this.checkTotal();
@@ -565,7 +533,6 @@ LoadingCollectionView = LoadingView.extend({
 
   checkTotal: function() {
     var self = this;
-    $fh.logger.debug('checkTotal ', this.totalCounter, '/', App.collections.forms.length);
     // Check total loaded to see if we should hide
     if (this.totalCounter >= App.collections.forms.length) {
       this.updateMessage("Form sync complete");
@@ -708,7 +675,6 @@ var FormListView = Backbone.View.extend({
 
     App.collections.forms.bind('reset', function(collection, options) {
       if (options == null || !options.noFetch) {
-        $fh.logger.debug('reset forms collection');
         App.collections.forms.each(function(form) {
           form.fetch();
         });
@@ -799,7 +765,8 @@ SentListView = Backbone.View.extend({
     sent_list: '<ul class="fh_appform_field_area list inset sent_list"></ul>',
     sent_header: '<li class="list-divider fh_appform_field_title">Sent Submissions</li>',
     dismiss_all: '<li><button class="fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button></li>',
-    save_max: '<li><label for="sentSaveMax" class="fh_appform_field_title">Number of sent items to keep</label><select class="fh_appform_field_input" id="sentSaveMax"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></li>'
+    save_max: '<li><label for="sentSaveMax" class="fh_appform_field_title">Number of sent items to keep</label><select class="fh_appform_field_input" id="sentSaveMax"><%= options%></select></li>',
+    save_max_option: '<option value="<%= value%>"><%= value%></option>'
   },
 
   initialize: function() {
@@ -813,10 +780,10 @@ SentListView = Backbone.View.extend({
   saveMaxSelected: function() {
     var saveMax = parseInt($('#sentSaveMax', this.el).val(), 10);
     if (_.isNumber(saveMax)) {
-      App.config.set(_.extend({}, App.config.attributes, {
-        "sent_save_max": saveMax
-      }));
-      App.collections.sent.checkSize();
+      if(saveMax < $fh.forms.config.get("sent_save_max") && saveMax > $fh.forms.config.get("sent_save_min")){
+        $fh.forms.config.set("max_sent_saved", saveMax);
+        $fh.forms.config.saveConfig();
+      }
     }
   },
 
@@ -828,7 +795,7 @@ SentListView = Backbone.View.extend({
 
   populate: function() {
     // Re-render save
-    var maxSize = App.config.getValueOrDefault('sent_save_max');
+    var maxSize = $fh.forms.config.get("max_sent_saved") ? $fh.forms.config.get("max_sent_saved") : $fh.forms.config.get("sent_save_min");
     $('#sentSaveMax', this.el).val(maxSize);
   },
 
@@ -869,8 +836,35 @@ SentListView = Backbone.View.extend({
       self.appendSentForm(form);
     }, this);
 
+    var interval = $fh.forms.config.get("sent_save_max") - $fh.forms.config.get("sent_save_min");
+
+    var currentVal = $fh.forms.config.get("max_sent_saved") ? $fh.forms.config.get("max_sent_saved") : $fh.forms.config.get("sent_save_min");
+    var steps = 10;
+    var stepSize = Math.floor(interval / steps);
+    var optionsString = "";
+
+    //max and min are the same.
+    if(interval > 0){
+
+      optionsString += _.template(this.templates.save_max_option, {"value": $fh.forms.config.get("sent_save_min")});
+
+      for(var step = 2; step <= steps; step++){
+        var currentStep = step * stepSize;
+        var nextStep = (step + 1) * stepSize;
+
+        if(currentVal > currentStep && currentVal < nextStep){
+          optionsString += _.template(this.templates.save_max_option, {"value": currentStep});
+          optionsString += _.template(this.templates.save_max_option, {"value": currentVal});
+        } else {
+          optionsString += _.template(this.templates.save_max_option, {"value": currentStep});
+        }
+      }
+    } else {
+      optionsString += _.template(this.templates.save_max_option, {"value": $fh.forms.config.get("sent_save_max")});
+    }
+
     $('.sent_list', this.el).append(this.templates.dismiss_all);
-    $('.sent_list', this.el).append(this.templates.save_max);
+    $('.sent_list', this.el).append(_.template(this.templates.save_max, {"options": optionsString}));
 
     this.populate();
   },
@@ -936,7 +930,7 @@ $(function() {
       "click #cancelBtn":"cancel",
       "click #saveBtn":"save"
     },
-    buttons:"<div><button type='button' id='cancelBtn'>Cancel</button><button type='button' id='saveBtn'>Save</button></div>",
+    buttons:"<div style='margin: 20px 20px 20px 20px;'><button class='fh_appform_button_cancel' style='width:45%;margin-right:25px;' type='button' id='cancelBtn'>Cancel</button><button class='fh_appform_button_action' style='width:45%;'  type='button' id='saveBtn'>Save</button></div>",
     render:function(){
       SettingsView.__super__.render.apply(this);
       this.$el.append(this.buttons);
@@ -972,8 +966,8 @@ ItemView = Backbone.View.extend({
   },
 
   templates: {
-    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type fh_appform_error <%= error_type %>"><%= error_message %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Retry</button><span class="chevron"></span>',
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Submit</button><span class="chevron"></span>'
+    item_failed: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type fh_appform_error <%= error_type %>"><%= error_message %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Retry</button>',
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Submit</button>'
   },
 
   errorTypes: {
@@ -1043,30 +1037,38 @@ ItemView = Backbone.View.extend({
   },
 
   show: function() {
-    
-    this.model.load(function(err, actual) {
-      var draft = new DraftModel(actual.toJSON());
-      App.views.form = new DraftView({
-        model: draft
+    if(this.model.load){
+      this.model.load(function(err, actual) {
+        var draft = new DraftModel(actual.toJSON());
+        App.views.form = new DraftView({
+          model: draft
+        });
+        App.views.form.render();
       });
-      App.views.form.render();
-    });
+    }
   }
 });
 DraftItemView = ItemView.extend({
 
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="fh_appform_button_cancel button button-negative delete-item second_button">Delete</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts"><%= timestamp %></span><button class="fh_appform_button_cancel button button-negative delete-item second_button">Delete</button>'
   },
 
   show: function() {
+    var self = this;
     App.views.header.hideAll();
-    var submission=this.model.coreModel;
-    App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
-      "formId":submission.get("formId"),
-      "autoShow":true,
-      "submission":submission
+
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
+      if(err){
+        $fh.forms.log.e("Error loading submission ", err);
+      }
+      var submission=self.model.coreModel;
+      App.views.form=new FormView({
+        "parentEl":$("#fh_wufoo_content"),
+        "formId":submission.get("formId"),
+        "autoShow":true,
+        "submission":submission
+      });
     });
   },
   getItemTime:function(){
@@ -1078,7 +1080,7 @@ DraftItemView = ItemView.extend({
 });
 PendingReviewItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button>'
   },
   errorTypes: {
     "validation": "Validation Error. Please review for details.",
@@ -1094,13 +1096,20 @@ PendingReviewItemView = ItemView.extend({
     return "Submit: " + this.model.get("submitDate");
   },
   show: function() {
+    var self = this;
     App.views.header.hideAll();
-    var submission = this.model.coreModel;
-    App.views.form = new FormView({
-      "parentEl": $("#fh_wufoo_content"),
-      "formId": submission.get("formId"),
-      "autoShow": true,
-      "submission": submission
+
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
+      if(err){
+        $fh.forms.log.e("Error loading submission ", err);
+      }
+      var submission = self.model.coreModel;
+      App.views.form = new FormView({
+        "parentEl": $("#fh_wufoo_content"),
+        "formId": submission.get("formId"),
+        "autoShow": true,
+        "submission": submission
+      });
     });
   },
   render: function() {
@@ -1124,15 +1133,23 @@ PendingWaitingView = ItemView.extend({
     return "Submit: "+this.model.get("submitDate");
   },
   show: function() {
-   App.views.header.hideAll();
-    var submission=this.model.coreModel;
-    App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
-      "formId":submission.get("formId"),
-      "autoShow":true,
-      "submission":submission
+    var self = this;
+    App.views.header.hideAll();
+
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
+      if(err){
+        $fh.forms.log.e("Error loading submission ", err);
+      }
+
+      var submission=self.model.coreModel;
+      App.views.form=new FormView({
+        "parentEl":$("#fh_wufoo_content"),
+        "formId":submission.get("formId"),
+        "autoShow":true,
+        "submission":submission
+      });
+      App.views.form.readOnly();
     });
-    App.views.form.readOnly();
   }
 });
 PendingSubmittingItemView = ItemView.extend({
@@ -1155,7 +1172,7 @@ PendingSubmittingItemView = ItemView.extend({
 });
 PendingSubmittedItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main fh_appform_button_cancel delete-item second_button">Dismiss</button><span class="chevron"></span>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main fh_appform_button_cancel delete-item second_button">Dismiss</button>'
   },
 
   render: function() {
@@ -1171,16 +1188,22 @@ PendingSubmittedItemView = ItemView.extend({
   } ,
 
   show: function() {
+    var self = this;
     App.views.header.hideAll();
-    var submission=this.model.coreModel;
-    App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
-      "formId":submission.get("formId"),
-      "autoShow":true,
-      "submission":submission
-    });
-    App.views.form.readOnly();
 
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
+      if(err){
+        $fh.forms.log.e("Error loading submission ", err);
+      }
+      var submission=self.model.coreModel;
+      App.views.form=new FormView({
+        "parentEl":$("#fh_wufoo_content"),
+        "formId":submission.get("formId"),
+        "autoShow":true,
+        "submission":submission
+      });
+      App.views.form.readOnly();
+    });
   }
 
 });
@@ -1196,7 +1219,7 @@ PendingListView = Backbone.View.extend({
     pending_waiting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms Awaiting Submission</div></li>',
     pending_waiting_submitall: '<li><button class="fh_appform_button_action submit-all button button-positive button-block">Submit All Awaiting Forms</button></li>',
     pending_submitting_list: '<ul class="fh_appform_field_area list inset pending_submitting_list"></ul>',
-    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div><div class="loading hidden"></div></li>',
+    pending_submitting_header: '<li class="list-divider"><div class="fh_appform_field_title">Forms currently being submitted</div></li>',
     pending_review_list: '<ul class="fh_appform_field_area list inset pending_review_list"></ul>',
     pending_review_header: '<li class="list-divider"><div class="fh_appform_field_title">These submissions need to be reviewed</div></li>'
   },
@@ -1348,7 +1371,6 @@ HeaderView = Backbone.View.extend({
   },
 
   render: function() {
-    $fh.logger.debug('render headerView');
     $(this.el).empty();
 
     var list = $(_.template(this.templates.list, {}));
@@ -1508,7 +1530,6 @@ AlertView = Backbone.View.extend({
 var alertView = new AlertView();//{o:o, type:type, timeout:timeout});
 
 AlertView.showAlert = function(o, type, timeout) {
-  $fh.logger.debug("showAlert " ,o);
   alertView.render({o:o, type:type, timeout:timeout});
 };
 App.Router = Backbone.Router.extend({
@@ -1544,8 +1565,6 @@ App.Router = Backbone.Router.extend({
   },
 
   form_list: function() {
-
-    $fh.logger.debug('route: form_list');
     this.loadingView = new LoadingCollectionView();
     this.loadingView.show("App Starting");
 
@@ -1570,12 +1589,7 @@ App.Router = Backbone.Router.extend({
             App.views.header = new HeaderView();
             App.views.header.showHome();
 
-            // store error handling
-            _(App.collections).forEach(function(collection) {
-              collection.on('error', function(collection, msg, options) {
-                $fh.logger.error('collection error:\"' + msg + '\"');
-              });
-            });
+
             if ($('#fh_appform_style').length > 0) {
               $('#fh_appform_style').html(themeCSS);
             } else {
@@ -1588,67 +1602,33 @@ App.Router = Backbone.Router.extend({
       });
     });
   },
-
   onReady: function() {
-
     this.loadingView.show("App Ready, Loading form list");
 
     $fh.env(this.onPropsRead);
-    App.config.on('config:loaded', this.onConfigLoaded);
-    App.config.loadConfig();
 
     // by default, allow fetching on resume event.
     // Can be set to false when taking a pic so refetch doesn't happen on resume from that
     App.resumeFetchAllowed = true;
     document.addEventListener("resume", this.onResume, false);
     var banner = false;
-    $fh.logger.info("    Starting : " + new moment().format('HH:mm:ss DD/MM/YYYY'));
-    $fh.logger.info(" ======================================================");
     $('#fh_wufoo_banner .list li').each(function(i, e) {
-      $fh.logger.info(" = " + $(e).text());
       banner = true;
     });
-    if (!banner) {
-      $fh.logger.info(" = Dev Mode ");
-    }
-
-    $fh.logger.info(" ======================================================");
+    this.onConfigLoaded();
   },
 
   // run App.router.onResume() to test this in browser
   onResume: function() {
     // only trigger resync of forms if NOT resuming after taking a photo
     if (App.resumeFetchAllowed) {
-      $fh.logger.debug('resume fetch in background');
-      // Re-fetch on resume
-      // NOTE: was originally showing loading view and progress while resyncing after resume.
-      //       Not any more. We'll let it happen in background so UI isn't blocking
-      // var loadingView = new LoadingCollectionView();
-      // loadingView.show("Loading form list");
-      // App.collections.forms.store.force(); // do a clear to force a fetch
       App.collections.forms.fetch();
     } else {
-      $fh.logger.debug('resume fetch blocked. resetting resume fetch flag');
       // reset flag to true for next time
       App.resumeFetchAllowed = true;
     }
   },
-
-  pending: function() {
-    $fh.logger.debug('route: pending');
-  },
-
   onConfigLoaded: function() {
-    this.loadingView.show("Config Loaded , fetching forms");
-    // to enable debug mode: App.config.set('debug_mode', true);
-
-    App.config.on('change:debug_mode', this.onDebugModeChanged);
-    App.config.on('change:white_list', this.onWhitelistChanged);
-    App.config.on('change:logger', this.onLoggerChanged);
-    App.config.on('change:max_retries', this.onRetriesChanged);
-    App.config.on('change:defaults', this.onDefaultsChanged);
-    App.config.on('change:timeout', this.onTimeoutChanged);
-
     this.fetchCollections("Config Loaded , fetching forms");
   },
 
@@ -1664,62 +1644,9 @@ App.Router = Backbone.Router.extend({
 
     refreshSubmissionCollections();
   },
-
-  fetchTimeout: function() {
-    clearTimeout(this.fetchTo);
-    this.fetchTo = null;
-    this.loadingView.hide();
-    App.resumeFetchAllowed = false;
-    this.fullyLoaded = true;
-    this.onResume();
-  },
-
   onPropsRead: function(props) {
     this.props = props;
     // App.views.about = new AboutView(props);
-  },
-
-  onTimeoutChanged: function() {
-    var timeout = App.config.getValueOrDefault("timeout");
-    if (_.isNumber(timeout)) {
-      $fh.ready({}, function() {
-        $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-        $fh.legacy.fh_timeout = timeout * 1000;
-      });
-    }
-  },
-
-  onLoggerChanged: function() {
-    var logger = App.config.getValueOrDefault("logger");
-    $('#logger').toggle(logger);
-  },
-
-  onRetriesChanged: function() {
-    var max_retries = App.config.getValueOrDefault("max_retries");
-    //TODO add retry control for formsdk.
-    // $fh.retry.toggle(max_retries > 1);
-  },
-
-  onDebugModeChanged: function() {
-    var debug_mode = App.config.getValueOrDefault("debug_mode");
-    $('#debug_mode').toggle(debug_mode);
-  },
-
-  onWhitelistChanged: function() {
-    var white_list = App.config.getValueOrDefault("white_list") || [];
-    var listed = _.find(white_list, function(m) {
-      return this.props.uuid.match(Utils.toRegExp(m));
-    }, this);
-    // on start up the setting icon may not be rendered yet
-    setTimeout(function() {
-      $('a.settings').toggle( !! listed);
-    }, 500);
-  },
-
-  onDefaultsChanged: function() {
-    this.onLoggerChanged();
-    this.onTimeoutChanged();
-    this.onWhitelistChanged();
   }
 });
 
