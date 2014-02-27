@@ -2610,9 +2610,10 @@ FieldMapView = FieldView.extend({
           lat: location.lat,
           zoom: self.mapSettings.defaultZoom
         }, function(res) {
+          var marker;
           if(!self.markers[index]){
             self.maps[index] = res.map;
-            var marker = new google.maps.Marker({
+            marker = new google.maps.Marker({
               position: self.maps[index].getCenter(),
               map: self.maps[index],
               draggable: true,
@@ -2625,6 +2626,12 @@ FieldMapView = FieldView.extend({
               'long': marker.getPosition().lng(),
               'zoom': self.mapSettings.defaultZoom
             };
+          }  else {
+            var map = self.maps[index];
+            marker = self.markers[index];
+            var pt = new google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng());
+            map.setCenter(pt);
+            marker.setPosition(pt);
           }
           self.onMapInit(index);
         }, function(err) {
@@ -2670,7 +2677,7 @@ FieldMapView = FieldView.extend({
       that.markers[index].setPosition(pt);
     }
     if (value){
-      this.onAllMapInit(_handler);
+      that.onAllMapInit(_handler);
     }
 
   }
