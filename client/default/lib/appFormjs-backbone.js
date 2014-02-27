@@ -2559,7 +2559,7 @@ FieldMapView = FieldView.extend({
   refreshElements: function(){
     var self = this;
     for(var elem = 0; elem < self.curRepeat; elem++){
-      self.onElementShow(elem);
+      self.mapResize();
     }
   },
   renderInput: function(index) {
@@ -2610,7 +2610,6 @@ FieldMapView = FieldView.extend({
           lat: location.lat,
           zoom: self.mapSettings.defaultZoom
         }, function(res) {
-
           self.maps[index] = res.map;
           var marker = new google.maps.Marker({
             position: self.maps[index].getCenter(),
