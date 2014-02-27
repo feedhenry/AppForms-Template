@@ -2610,29 +2610,21 @@ FieldMapView = FieldView.extend({
           lat: location.lat,
           zoom: self.mapSettings.defaultZoom
         }, function(res) {
-          var marker;
-          if(!self.markers[index]){
-            self.maps[index] = res.map;
-            marker = new google.maps.Marker({
-              position: self.maps[index].getCenter(),
-              map: self.maps[index],
-              draggable: true,
-              animation: google.maps.Animation.DROP,
-              title: 'Drag this to set position'
-            });
-            self.markers[index] = marker;
-            self.mapData[index] = {
-              'lat': marker.getPosition().lat(),
-              'long': marker.getPosition().lng(),
-              'zoom': self.mapSettings.defaultZoom
-            };
-          }  else {
-            var map = self.maps[index];
-            marker = self.markers[index];
-            var pt = new google.maps.LatLng(marker.getPosition().lat(), marker.getPosition().lng());
-            map.setCenter(pt);
-            marker.setPosition(pt);
-          }
+
+          self.maps[index] = res.map;
+          var marker = new google.maps.Marker({
+            position: self.maps[index].getCenter(),
+            map: self.maps[index],
+            draggable: true,
+            animation: google.maps.Animation.DROP,
+            title: 'Drag this to set position'
+          });
+          self.markers[index] = marker;
+          self.mapData[index] = {
+            'lat': marker.getPosition().lat(),
+            'long': marker.getPosition().lng(),
+            'zoom': self.mapSettings.defaultZoom
+          };
           self.onMapInit(index);
         }, function(err) {
           console.error(err);
