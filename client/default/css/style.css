@@ -6,6 +6,10 @@
     margin: 10px 0px 10px 25px;
 }
 
+.segmented-controller.fh_appform_button_navigation{
+    padding: 0px;
+}
+
 
 /*TODO All the pending, drafts, sent screens need to be customised*/
 
@@ -435,6 +439,7 @@ textarea {
 .segmented-controller li > a {
   padding: 5px 8px;
   line-height: 21px;
+  color: inherit;
 }
 
 #fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
