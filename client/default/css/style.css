@@ -83,9 +83,9 @@
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
   width: 97%;
   margin: 0 auto;
-  /*-webkit-border-radius: 5px;*/
-  /*-moz-border-radius: 5px;*/
-  /*border-radius: 5px;*/
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
   padding: 10px 0 10px 0;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
