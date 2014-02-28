@@ -12,7 +12,7 @@ var FormListView = Backbone.View.extend({
     list: '<ul class="form_list"></ul>',
     header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
+    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
     refreshForms: '<div id="refresh_forms_list" class="fh_appform_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
   },
 
