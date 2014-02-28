@@ -81,7 +81,7 @@
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
-  /*width: 97%;*/
+  width: 97%;
   margin: 0 auto;
   /*-webkit-border-radius: 5px;*/
   /*-moz-border-radius: 5px;*/
