@@ -1,6 +1,24 @@
 /* Phase2 styles */
 
 
+.fh_appform_container .fh_appform_navigation li:first{
+
+}
+
+.fh_appform_container .fh_appform_navigation li{
+    border-top:none;
+    border-bottom:none;
+    border-right:none;
+    border-bottom:none;
+}
+
+.fh_appform_container .fh_appform_navigation li.active{
+    border-top:none;
+    border-bottom:none;
+    border-right:none;
+}
+
+
 .fh_appform_field_input.pending_submission{
     width: 85%;
     margin: 10px 0px 10px 25px;
