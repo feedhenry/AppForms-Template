@@ -59,11 +59,15 @@ ItemView = Backbone.View.extend({
   },
 
   "delete": function(e) {
+    var self = this;
     e.stopPropagation();
 
     var confirmDelete = confirm("Are you sure you want to delete this submission?");
     if (confirmDelete) {
-      this.model.destroy();
+      self.model.coreModel.clearLocal(function(err){
+        if(err) console.error("Error clearing local: ", err);
+        self.model.destroy();
+      });
     }
 
     return false;
