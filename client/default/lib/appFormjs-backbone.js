@@ -1665,7 +1665,7 @@ var FieldView = Backbone.View.extend({
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
-  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;'></div>  </div><br style='clear:both'/>    </div>",
+  inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_errorMsg fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;padding:5px;'></div>  </div><br style='clear:both'/>    </div>",
 
 
   fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
@@ -1676,6 +1676,9 @@ var FieldView = Backbone.View.extend({
     "blur input,select,textarea": "validate",
     "click .fh_appform_addInputBtn": "onAddInput",
     "click .fh_appform_removeInputBtn": "onRemoveInput"
+  },
+  refreshElements: function(){
+    console.log("Refreshing Field Elements");
   },
   onAddInput: function() {
     this.addElement();
@@ -1762,74 +1765,70 @@ var FieldView = Backbone.View.extend({
 
   },
   addElement: function() {
-    var index = this.curRepeat;
-    var inputHtml = this.renderInput(index);
-    var eleHtml = this.renderEle("", inputHtml, index);
-    this.$fieldWrapper.append(eleHtml);
-    this.curRepeat++;
-    this.onElementShow(index);
-
+    var self = this;
+    var index = self.curRepeat;
+    var inputHtml = self.renderInput(index);
+    var eleHtml = self.renderEle("", inputHtml, index);
+    self.$fieldWrapper.append(eleHtml);
+    self.curRepeat++;
+    self.onElementShow(index);
   },
   onElementShow: function(index) {
     console.log("Show done for field " + index);
   },
   render: function() {
     var self = this;
-    this.initialRepeat = 1;
-    this.maxRepeat = 1;
-    this.curRepeat = 0;
+    self.initialRepeat = 1;
+    self.maxRepeat = 1;
+    self.curRepeat = 0;
 
-    this.$fieldWrapper.append(this.renderTitle());
-    this.$fieldWrapper.append(this.renderHelpText());
+    self.$fieldWrapper.append(self.renderTitle());
+    self.$fieldWrapper.append(self.renderHelpText());
 
-    if (this.model.isRepeating()) {
-      this.initialRepeat = this.model.getMinRepeat();
-      this.maxRepeat = this.model.getMaxRepeat();
+    if (self.model.isRepeating()) {
+      self.initialRepeat = self.model.getMinRepeat();
+      self.maxRepeat = self.model.getMaxRepeat();
     }
     for (var i = 0; i < this.initialRepeat; i++) {
-      this.addElement();
+      self.addElement();
     }
 
-    this.$el.append(this.$fieldWrapper);
-    this.$el.append(this.$fh_appform_fieldActionBar);
-    this.$el.attr("data-field", this.model.getFieldId());
+    self.$el.append(self.$fieldWrapper);
+    self.$el.append(self.$fh_appform_fieldActionBar);
+    self.$el.attr("data-field", self.model.getFieldId());
 
 
-    if(this.options.sectionName){
+    if(self.options.sectionName){
       //This field belongs to a section
-      this.options.parentEl.find('#fh_appform_' + this.options.sectionName).append(this.$el);
+      self.options.parentEl.find('#fh_appform_' + self.options.sectionName).append(self.$el);
     } else {
-      this.options.parentEl.append(this.$el);
+      self.options.parentEl.append(self.$el);
     }
 
-    this.show();
+    self.show();
 
     // force the element to be initially hidden
-    if (this.$el.hasClass("hide")) {
-      this.hide(true);
+    if (self.$el.hasClass("hide")) {
+      self.hide(true);
     }
     // populate field if Submission obj exists
-    var submission = this.options.formView.getSubmission();
+    var submission = self.options.formView.getSubmission();
     if (submission) {
-      this.submission = submission;
-      this.submission.getInputValueByFieldId(this.model.get('_id'), function(err, res) {
+      self.submission = submission;
+      self.submission.getInputValueByFieldId(self.model.get('_id'), function(err, res) {
         //console.log(err, res);
         self.value(res);
       });
     }
-    this.checkActionBar();
-    this.onRender();
+    self.checkActionBar();
+    self.onRender();
   },
   onRender: function() {
 
   },
-  // TODO: cache the input element lookup?
   initialize: function() {
     _.bindAll(this, 'dumpContent', 'clearError', 'onAddInput', 'onRemoveInput');
 
-    // if (this.model.isRequired()) {
-    //   this.$el.addClass('required');
-    // }
     this.$fieldWrapper = $(this.fieldWrapper);
     this.$fh_appform_fieldActionBar = $(this.fh_appform_fieldActionBar);
     // only call render once. model will never update
@@ -1855,10 +1854,10 @@ var FieldView = Backbone.View.extend({
   validate: function(e) {
     if (!$fh.forms.config.get("studioMode")) {
       var self = this;
-      var target = $(e.currentTarget);
+      var target = $(e.target);
       var index = target.data().index;
-      var val = this.valueFromElement(index);
-      var fieldId = this.model.getFieldId();
+      var val = self.valueFromElement(index);
+      var fieldId = self.model.getFieldId();
       this.model.validate(val, function(err, res) { //validation
         if (err) {
           console.error(err);
@@ -1872,7 +1871,7 @@ var FieldView = Backbone.View.extend({
           }
         }
       });
-      this.trigger("checkrules");
+      self.trigger("checkrules");
     }
   },
   setErrorText: function(index, text) {
@@ -1885,60 +1884,9 @@ var FieldView = Backbone.View.extend({
   contentChanged: function(e) {
     this.validate(e);
   },
-
-
-  addRules: function() {
-    // this.addValidationRules();
-    // this.addSpecialRules();
-  },
-
   isRequired: function() {
     return this.model.isRequired();
   },
-
-  addValidationRules: function() {
-    if (this.model.get('IsRequired') === '1') {
-      this.$el.find('#' + this.model.get('ID')).rules('add', {
-        "required": true
-      });
-    }
-  },
-
-  addSpecialRules: function() {
-    var self = this;
-
-    var rules = {
-      'Show': function(rulePasses, params) {
-        var fieldId = 'Field' + params.Setting.FieldName;
-        if (rulePasses) {
-          App.views.form.showField(fieldId);
-        } else {
-          App.views.form.hideField(fieldId);
-        }
-      },
-      'Hide': function(rulePasses, params) {
-        var fieldId = 'Field' + params.Setting.FieldName;
-        if (rulePasses) {
-          App.views.form.hideField(fieldId);
-        } else {
-          App.views.form.showField(fieldId);
-        }
-      }
-    };
-
-    // also apply any special rules
-    _(this.model.get('Rules') || []).each(function(rule) {
-      var ruleConfig = _.clone(rule);
-      ruleConfig.pageView = self.options.parentView;
-      ruleConfig.fn = rules[rule.Type];
-      self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
-    });
-  },
-
-  removeRules: function() {
-    this.$el.find('#' + this.model.get('ID')).rules('remove');
-  },
-
   // force a hide , defaults to false
   hide: function(force) {
     if (force || this.$el.is(':visible')) {
@@ -1996,9 +1944,9 @@ var FieldView = Backbone.View.extend({
   value: function(value) {
     var self = this;
     if (value && !_.isEmpty(value)) {
-      this.valuePopulate(value);
+      self.valuePopulate(value);
     }
-    return this.getValue();
+    return self.getValue();
   },
   getValue: function() {
     var value = [];
@@ -2608,6 +2556,12 @@ FieldMapView = FieldView.extend({
     };
     FieldView.prototype.initialize.apply(this, arguments);
   },
+  refreshElements: function(){
+    var self = this;
+    for(var elem = 0; elem < self.curRepeat; elem++){
+      self.mapResize();
+    }
+  },
   renderInput: function(index) {
     return _.template(this.input, {
       width: this.mapSettings.mapWidth,
@@ -2640,9 +2594,6 @@ FieldMapView = FieldView.extend({
     var wrapperObj = this.getWrapper(index);
     var self = this;
     var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
-    // var options = this.parseCssOptions();
-    // // Merge
-    // this.mapSettings = _.defaults(options, this.mapSettings);
 
     if($fh.geo){
       $fh.geo({
@@ -2682,17 +2633,19 @@ FieldMapView = FieldView.extend({
     }
   },
   mapResize: function() {
-    if (this.maps.length > 0) {
-      for (var i = 0; i < this.maps.length; i++) {
-        var map = this.maps[i];
+    var self = this;
+    if (self.maps.length > 0) {
+      for (var i = 0; i < self.maps.length; i++) {
+        var map = self.maps[i];
         if (map) {
           google.maps.event.trigger(map, 'resize');
-          map.setCenter(new google.maps.LatLng(this.latLongs[i].lat, this.latLongs[i]["long"]));
+          if(self.markers[i]){
+            map.setCenter(new google.maps.LatLng(self.markers[i].getPosition().lat(), self.markers[i].getPosition().lng()));
+          }
         }
       }
     }
   },
-  addValidationRules: function() {},
   valueFromElement: function(index) {
     var map = this.maps[index];
     var marker = this.markers[index];
@@ -2716,7 +2669,7 @@ FieldMapView = FieldView.extend({
       that.markers[index].setPosition(pt);
     }
     if (value){
-      this.onAllMapInit(_handler);
+      that.onAllMapInit(_handler);
     }
 
   }
@@ -3195,34 +3148,34 @@ var PageView=BaseView.extend({
 
   initialize: function() {
     var self = this;
-    _.bindAll(this, 'render',"show","hide");
+    _.bindAll(self, 'render',"show","hide");
     // Page Model will emit events if user input meets page rule to hide / show the page.
-    this.model.on("visible",self.show);
-    this.model.on("hidden",self.hide);
-    this.render();
+    self.model.on("visible",self.show);
+    self.model.on("hidden",self.hide);
+    self.render();
   },
 
   render: function() {
     var self = this;
-    this.fieldViews = {};
-    this.sectionViews = {};
+    self.fieldViews = {};
+    self.sectionViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('fh_appform_page fh_appform_hidden');
+    self.$el.empty().addClass('fh_appform_page fh_appform_hidden');
 
     //Need to add the page title and description
-    this.$el.append(_.template(this.templates.pageDescription, {pageDescription: this.model.getDescription()}));
+    self.$el.append(_.template(self.templates.pageDescription, {pageDescription: self.model.getDescription()}));
 
     // add to parent before init fields so validation can work
-    this.options.parentEl.append(this.$el);
+    self.options.parentEl.append(self.$el);
 
-    var fieldModelList=this.model.getFieldModelList();
+    var fieldModelList=self.model.getFieldModelList();
 
-    var sections = this.model.getSections();
+    var sections = self.model.getSections();
 
     if(sections != null){
       var sectionKey;
       for(sectionKey in sections){
-        this.$el.append(_.template(this.templates.section, {"sectionId": sectionKey}));
+        this.$el.append(_.template(self.templates.section, {"sectionId": sectionKey}));
       }
 
       //Add the section fields
@@ -3268,11 +3221,15 @@ var PageView=BaseView.extend({
 
   show: function () {
     var self = this;
-    this.$el.removeClass('fh_appform_hidden');
+    self.$el.removeClass('fh_appform_hidden');
+    for(var fieldId in self.fieldViews){
+      self.fieldViews[fieldId].refreshElements();
+    }
   },
 
   hide: function () {
-    this.$el.addClass('fh_appform_hidden');
+    var self = this;
+    self.$el.addClass('fh_appform_hidden');
   },
 
   showField: function (id) {
@@ -3294,36 +3251,6 @@ var PageView=BaseView.extend({
     var validateEls = this.$el.find('.fh_appform_field_input').not('.validate_ignore]:hidden');
     return validateEls.length ? validateEls.valid() : true;
   }
-
-//  checkRules: function () {
-//    var self = this;
-//    var result = {};
-//
-//    var rules = {
-//      SkipToPage: function (rulePasses, params) {
-//        var pageToSkipTo = params.Setting.Page;
-//        if (rulePasses) {
-//          result.skipToPage = pageToSkipTo;
-//        }
-//      }
-//    };
-//
-//    // iterate over page rules, if any, calling relevant rule function
-//    _(this.model.get('Rules') || []).forEach(function (rule, index) {
-//      // get element that rule condition is based on
-//      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
-//      rule.fn = rules[rule.Type];
-//      if(jqEl.data("type") === 'radio') {
-//        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
-//        rEl.wufoo_rules('exec', rule);
-//      } else {
-//        jqEl.wufoo_rules('exec', rule);
-//      }
-//    });
-//
-//    return result;
-//  }
-
 });
 var FormView = BaseView.extend({
   "pageNum": 0,
@@ -3599,12 +3526,14 @@ var FormView = BaseView.extend({
 
   },
   render: function() {
-    this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
-    this.rebindButtons();
-    this.pageViews[0].show();
-    this.pageNum = 0;
-    this.steps.activePageChange(this);
-    this.checkRules();
+    if(this.pageViews && this.pageViews.length > 0){
+      this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
+      this.rebindButtons();
+      this.pageViews[0].show();
+      this.pageNum = 0;
+      this.steps.activePageChange(this);
+      this.checkRules();
+    }
   },
   getNextPageIndex: function(currentPageIndex){
     var self = this;
