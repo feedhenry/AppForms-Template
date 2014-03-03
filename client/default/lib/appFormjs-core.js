@@ -418,10 +418,9 @@ appForm.utils = function (module) {
     var height = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
     var quality= params.quality ? params.quality : $fh.forms.config.get("quality", 50);
 
-
+    params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
 
     if (isPhoneGap) {
-      params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
         quality: quality,
         targetWidth: width,
@@ -1058,11 +1057,9 @@ appForm.models = function (module) {
     this.events = {};
   };
   Model.prototype.emit = function () {
-    $fh.forms.log.d("Model emit ");
     var args = Array.prototype.slice.call(arguments, 0);
     var e = args.shift();
     var funcs = this.events[e];
-    $fh.forms.log.d("Model emit ", e);
     if (funcs && funcs.length > 0) {
       for (var i = 0; i < funcs.length; i++) {
         var func = funcs[i];
@@ -1096,7 +1093,6 @@ appForm.models = function (module) {
     this.touch();
   };
   Model.prototype.fromJSONStr = function (jsonStr) {
-    $fh.forms.log.d("Model fromJSONStr ", jsonStr);
     try {
       var json = JSON.parse(jsonStr);
       this.fromJSON(json);
@@ -1121,7 +1117,6 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.refresh = function (fromRemote, cb) {
-    $fh.forms.log.d("Model refresh ", fromRemote);
     var dataAgent = this.getDataAgent();
     var that = this;
     if (typeof cb == 'undefined') {
@@ -1143,7 +1138,6 @@ appForm.models = function (module) {
     }
   };
   Model.prototype.attemptRefresh=function(cb){
-    $fh.forms.log.d("Model attemptRefresh ");
     var dataAgent = this.getDataAgent();
     var self=this;
     dataAgent.attemptRead(this,function(err,res){
@@ -1161,7 +1155,6 @@ appForm.models = function (module) {
      * @return {[type]}      [description]
      */
   Model.prototype.loadLocal = function (cb) {
-    $fh.forms.log.d("Model loadLocal ");
     var localStorage = appForm.stores.localStorage;
     var that = this;
     localStorage.read(this, function (err, res) {
@@ -1200,7 +1193,6 @@ appForm.models = function (module) {
     return this.dataAgent;
   };
   Model.prototype.setDataAgent = function (dataAgent) {
-    $fh.forms.log.d("Model setDataAgent ");
     this.dataAgent = dataAgent;
   };
   module.Model = Model;
@@ -1307,7 +1299,7 @@ appForm.models = function(module) {
       "debug_mode": false,
       "logger": false,
       "max_retries": 3,
-      "timeout": 30,
+      "timeout": 7,
       "log_line_limit": 5000,
       "log_email": "test@example.com",
       "log_level": 3,
@@ -1737,6 +1729,11 @@ appForm.models = function (module) {
     return this.get('data');
   };
   FormSubmission.prototype.getFormId = function () {
+    if(!this.get('data')){
+      console.log(this);
+      console.trace();
+    }
+
     return this.get('data').formId;
   };
   return module;
@@ -2084,7 +2081,6 @@ appForm.models = function(module) {
     if (_submissions[localId]) {
       $fh.forms.log.d("Submission fromLocal from cache: ", localId);
       //already loaded
-      _submissions[localId].clearEvents();
       cb(null, _submissions[localId]);
     } else {
       //load from storage
@@ -2576,7 +2572,6 @@ appForm.models = function(module) {
   };
   Submission.prototype.clearLocal = function(cb) {
     var self = this;
-    var localId = self.getLocalId();
     //remove from uploading list
     appForm.models.uploadManager.cancelSubmission(self, function(err, uploadTask) {
       if (err) {
@@ -2586,7 +2581,7 @@ appForm.models = function(module) {
       //remove from submission list
       appForm.models.submissions.removeSubmission(self.getLocalId(), function(err) {
         if (err) {
-          console.error(err);
+          console.err(err);
           return cb(err);
         }
         self.clearLocalSubmissionFiles(function() {
@@ -2594,10 +2589,6 @@ appForm.models = function(module) {
             if (err) {
               console.error(err);
               return cb(err);
-            }
-
-            if(_submissions[localId]){
-              delete _submissions[localId];
             }
             cb(null, null);
           });
@@ -2723,11 +2714,7 @@ appForm.models = function (module) {
      * @return true / error message
      */
   Field.prototype.validate = function (inputValue, cb) {
-    var self = this;
-    self.processInput({"value": inputValue, "isStore": false}, function(err, convertedInputValue){
-      if(err) console.error(err);
-      self.form.getRuleEngine().validateFieldValue(self.getFieldId(), convertedInputValue, cb);
-    });
+    this.form.getRuleEngine().validateFieldValue(this.getFieldId(), inputValue, cb);
   };
   /**
      * return rule array attached to this field.
@@ -2848,7 +2835,7 @@ appForm.models.Field = function (module) {
     var def = this.getFieldDefinition();
     var obj={};
     switch (def.locationUnit) {
-    case 'latlong':
+    case 'latLong':
       if (!inputValue.lat || !inputValue["long"]) {
         cb('the input values for latlong field is {lat: number, long: number}');
       } else {
@@ -2859,7 +2846,7 @@ appForm.models.Field = function (module) {
         cb(null, obj);
       }
       break;
-    case 'northeast':
+    case 'northEast':
       if (!inputValue.zone || !inputValue.eastings || !inputValue.northings) {
         cb('the input values for northeast field is {zone: text, eastings: text, northings:text}');
       } else {
@@ -3814,14 +3801,14 @@ appForm.models = function (module) {
    */
   UploadTask.prototype.success = function (cb) {
     var that = this;
-    this.set('completed', true);
-    this.saveLocal(function (err) {
+    that.set('completed', true);
+    that.saveLocal(function (err) {
       if (err) {
         console.error(err);
         console.error('Upload task save failed');
       }
     });
-    this.submissionModel(function (_err, model) {
+    that.submissionModel(function (_err, model) {
       if (_err) {
         cb(_err);
       } else {
@@ -4285,9 +4272,9 @@ if ($fh.forms === undefined) {
 }
 appForm.RulesEngine=rulesEngine;
 
-/*! fh-forms - v0.2.40 -  */
+/*! fh-forms - v0.2.30 -  */
 /*! async - v0.2.9 -  */
-/*! 2014-02-27 */
+/*! 2014-02-17 */
 /* This is the prefix file */
 function rulesEngine (formDef) {
   var define = {};
@@ -5389,11 +5376,6 @@ function rulesEngine (formDef) {
         async.each(definition.pages, function(page, cbPages) {
           async.each(page.fields, function(field, cbFields) {
             field.pageId = page._id;
-
-            field.fieldOptions = field.fieldOptions ? field.fieldOptions : {};
-            field.fieldOptions.definition = field.fieldOptions.definition ? field.fieldOptions.definition : {};
-            field.fieldOptions.validation = field.fieldOptions.validation ? field.fieldOptions.validation : {};
-
             fieldMap[field._id] = field;
             if (field.required) {
               requiredFieldMap[field._id] = {field: field, submitted: false, validated: false};
@@ -5993,7 +5975,7 @@ function rulesEngine (formDef) {
 
         async.eachSeries(fieldDefinition.fieldOptions.definition.options, function(choice, cb){
           for(var choiceName in choice){
-            optionsInCheckbox.push(choice[choiceName]);
+            optionsInCheckbox.push(choiceName);
           }
           return cb();
         }, function(err){
@@ -6425,7 +6407,7 @@ function rulesEngine (formDef) {
     function isConditionActive(field, fieldValue, testValue, condition) {
 
       var fieldType = field.type;
-      var fieldOptions = field.fieldOptions ? field.fieldOptions : {};
+      var fieldOptions = field.fieldOptions;
 
       var valid = true;
       if( "is equal to" === condition) {

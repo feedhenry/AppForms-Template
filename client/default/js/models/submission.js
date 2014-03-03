@@ -20,6 +20,7 @@ SubmissionModel = Backbone.Model.extend({
                   self.id = submission.getLocalId();
               }
 
+              self.coreModel.clearEvents();
               self.initModel();
               self.trigger("change");
 
