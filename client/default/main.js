@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-02-27
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-03-04
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -204,17 +204,18 @@ SubmissionModel = Backbone.Model.extend({
         var self = this;
         $fh.forms.getSubmissions({}, function(err, subList) {
             subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
-                if (err) {
-                    self.trigger("error", err);
-                } else {
-                    self.coreModel = submission;
-                    self.id = submission.getLocalId();
-                }
-              if(!submission.dirty){
-                self.initModel();
-                self.trigger("change");
+              if (err) {
+                  self.trigger("error", err);
+              } else {
+                  self.coreModel = submission;
+                  self.id = submission.getLocalId();
               }
-                cb(err, submission);
+
+              self.coreModel.clearEvents();
+              self.initModel();
+              self.trigger("change");
+
+              cb(err, submission);
             });
         });
     },
@@ -560,7 +561,7 @@ ShowFormButtonView = Backbone.View.extend({
   },
 
   templates: {
-    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_navigation"><%= name %><div class="loading"></div></button></li>'
+    form_button: '<li><button class="show button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %><div class="loading"></div></button></li>'
   },
 
   initialize: function() {
@@ -665,7 +666,7 @@ var FormListView = Backbone.View.extend({
     list: '<ul class="form_list"></ul>',
     header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
+    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
     refreshForms: '<div id="refresh_forms_list" class="fh_appform_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
   },
 
@@ -1017,11 +1018,15 @@ ItemView = Backbone.View.extend({
   },
 
   "delete": function(e) {
+    var self = this;
     e.stopPropagation();
 
     var confirmDelete = confirm("Are you sure you want to delete this submission?");
     if (confirmDelete) {
-      this.model.destroy();
+      self.model.coreModel.clearLocal(function(err){
+        if(err) console.error("Error clearing local: ", err);
+        self.model.destroy();
+      });
     }
 
     return false;

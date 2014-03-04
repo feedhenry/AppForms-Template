@@ -1,9 +1,31 @@
 /* Phase2 styles */
 
 
+.fh_appform_container .fh_appform_navigation li:first{
+
+}
+
+.fh_appform_container .fh_appform_navigation li{
+    border-top:none;
+    border-bottom:none;
+    border-right:none;
+    border-bottom:none;
+}
+
+.fh_appform_container .fh_appform_navigation li.active{
+    border-top:none;
+    border-bottom:none;
+    border-right:none;
+}
+
+
 .fh_appform_field_input.pending_submission{
     width: 85%;
     margin: 10px 0px 10px 25px;
+}
+
+.segmented-controller.fh_appform_button_navigation{
+    padding: 0px;
 }
 
 
@@ -59,11 +81,11 @@
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
   /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
-  /*width: 97%;*/
+  width: 97%;
   margin: 0 auto;
-  /*-webkit-border-radius: 5px;*/
-  /*-moz-border-radius: 5px;*/
-  /*border-radius: 5px;*/
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
   padding: 10px 0 10px 0;
   -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
   -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
@@ -435,6 +457,7 @@ textarea {
 .segmented-controller li > a {
   padding: 5px 8px;
   line-height: 21px;
+  color: inherit;
 }
 
 #fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
@@ -545,7 +568,7 @@ textarea {
   right: inherit;
   width: 100%;
   margin: 0;
-  padding: 4px 12px;
+  padding: 10px 12px
   /*font-size: 12px;*/
 }
 

@@ -357,7 +357,7 @@ a {
 /* Set color for tab border and highlight */
 .bar-title .segmented-controller li {
   /*border-left: 1px solid #0e5895;*/
-  box-shadow: inset 1px 0 rgba(255, 255, 255, .25);
+  /*box-shadow: inset 1px 0 rgba(255, 255, 255, .25);*/
 }
 
 /* Remove inset shadow from first tab or one to the right of the active tab  */
@@ -807,7 +807,7 @@ select {
   text-align: center;
   white-space: nowrap;
   /*border-left: 1px solid #aaa;*/
-  box-shadow: inset 1px 0 rgba(255, 255, 255, .5);
+  /*box-shadow: inset 1px 0 rgba(255, 255, 255, .5);*/
   -webkit-box-flex: 1;
           box-flex: 1;
 }
