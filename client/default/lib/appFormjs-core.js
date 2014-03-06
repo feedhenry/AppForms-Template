@@ -2396,6 +2396,12 @@ appForm.models = function(module) {
     var that = this;
     var fieldId = params.fieldId;
     var inputValue = params.value;
+
+
+    if(params.value == null){
+      return cb();
+    }
+
     var index = params.index === undefined ? -1 : params.index;
     this.getForm(function(err, form) {
       var fieldModel = form.getFieldModelById(fieldId);
