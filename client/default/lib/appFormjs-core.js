@@ -414,18 +414,13 @@ appForm.utils = function (module) {
   function takePhoto(params, cb) {
     $fh.forms.log.d("Taking photo ", params, isPhoneGap);
     //use configuration
-    params.targetWidth = params.targetWidth ? params.targetWidth : $fh.forms.config.get("targetWidth", 640);
-    params.targetHeight = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
-    params.quality = params.quality ? params.quality : $fh.forms.config.get("quality", 50);
+    var width =  params.targetWidth ? params.targetWidth : $fh.forms.config.get("targetWidth", 640);
+    var height = params.targetHeight ? params.targetHeight : $fh.forms.config.get("targetHeight", 480);
+    var quality= params.quality ? params.quality : $fh.forms.config.get("quality", 50);
 
-    var width =  params.targetWidth;
-    var height = params.targetHeight;
-    var quality= params.quality;
-
-
+    params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
 
     if (isPhoneGap) {
-      params.sourceType = params.sourceType ? params.sourceType : Camera.PictureSourceType.CAMERA;
       navigator.camera.getPicture(_phoneGapSuccess(cb), cb, {
         quality: quality,
         targetWidth: width,
@@ -503,7 +498,7 @@ appForm.utils = function (module) {
   function snapshot(params, cb) {
     $fh.forms.log.d("Snapshot ", params);
     if (localMediaStream) {
-      ctx.drawImage(video, 0, 0, params.targetWidth, params.targetHeight);
+      ctx.drawImage(video, 0, 0, params.width, params.height);
       // "image/webp" works in Chrome.
       // Other browsers will fall back to image/png.
       var base64 = canvas.toDataURL('image/png');
@@ -2396,12 +2391,6 @@ appForm.models = function(module) {
     var that = this;
     var fieldId = params.fieldId;
     var inputValue = params.value;
-
-
-    if(params.value == null){
-      return cb();
-    }
-
     var index = params.index === undefined ? -1 : params.index;
     this.getForm(function(err, form) {
       var fieldModel = form.getFieldModelById(fieldId);
@@ -2583,7 +2572,6 @@ appForm.models = function(module) {
   };
   Submission.prototype.clearLocal = function(cb) {
     var self = this;
-    var localId = self.getLocalId();
     //remove from uploading list
     appForm.models.uploadManager.cancelSubmission(self, function(err, uploadTask) {
       if (err) {
@@ -2593,7 +2581,7 @@ appForm.models = function(module) {
       //remove from submission list
       appForm.models.submissions.removeSubmission(self.getLocalId(), function(err) {
         if (err) {
-          console.error(err);
+          console.err(err);
           return cb(err);
         }
         self.clearLocalSubmissionFiles(function() {
@@ -2601,10 +2589,6 @@ appForm.models = function(module) {
             if (err) {
               console.error(err);
               return cb(err);
-            }
-
-            if(_submissions[localId]){
-              delete _submissions[localId];
             }
             cb(null, null);
           });
@@ -2730,11 +2714,7 @@ appForm.models = function (module) {
      * @return true / error message
      */
   Field.prototype.validate = function (inputValue, cb) {
-    var self = this;
-    self.processInput({"value": inputValue, "isStore": false}, function(err, convertedInputValue){
-      if(err) console.error(err);
-      self.form.getRuleEngine().validateFieldValue(self.getFieldId(), convertedInputValue, cb);
-    });
+    this.form.getRuleEngine().validateFieldValue(this.getFieldId(), inputValue, cb);
   };
   /**
      * return rule array attached to this field.
@@ -2855,7 +2835,7 @@ appForm.models.Field = function (module) {
     var def = this.getFieldDefinition();
     var obj={};
     switch (def.locationUnit) {
-    case 'latlong':
+    case 'latLong':
       if (!inputValue.lat || !inputValue["long"]) {
         cb('the input values for latlong field is {lat: number, long: number}');
       } else {
@@ -2866,7 +2846,7 @@ appForm.models.Field = function (module) {
         cb(null, obj);
       }
       break;
-    case 'northeast':
+    case 'northEast':
       if (!inputValue.zone || !inputValue.eastings || !inputValue.northings) {
         cb('the input values for northeast field is {zone: text, eastings: text, northings:text}');
       } else {
@@ -4129,8 +4109,8 @@ appForm.api = function (module) {
   module.getSubmissions = getSubmissions;
   module.init = appForm.init;
   module.log=appForm.models.log;
+  var _submissions = null;
   var formConfig = appForm.models.config;
-  var submissionsLoaded = false;
 
   /**
    * Get and set config values. Can only set a config value if you are an config_admin_user
@@ -4255,19 +4235,18 @@ appForm.api = function (module) {
   function getSubmissions(params, cb) {
     //Getting submissions that have been completed.
     var submissions = appForm.models.submissions;
-
-    if(submissionsLoaded){
-      submissions.loadLocal(function (err) {
+    if (_submissions == null) {
+      appForm.models.submissions.loadLocal(function (err) {
         if (err) {
           console.error(err);
           cb(err);
         } else {
-          submissionsLoaded = true;
-          cb(null, appForm.models.submissions);
+          _submissions = appForm.models.submissions;
+          cb(null, _submissions);
         }
       });
     } else {
-      return cb(null, appForm.models.submissions);
+      cb(null, _submissions);
     }
   }
   function submitForm(submission, cb) {
@@ -4282,7 +4261,6 @@ appForm.api = function (module) {
       return cb('Invalid submission object.');
     }
   }
-
   return module;
 }(appForm.api || {});
 //mockup $fh apis for Addons.
@@ -4294,9 +4272,9 @@ if ($fh.forms === undefined) {
 }
 appForm.RulesEngine=rulesEngine;
 
-/*! fh-forms - v0.2.40 -  */
+/*! fh-forms - v0.2.30 -  */
 /*! async - v0.2.9 -  */
-/*! 2014-02-27 */
+/*! 2014-02-17 */
 /* This is the prefix file */
 function rulesEngine (formDef) {
   var define = {};
@@ -5398,11 +5376,6 @@ function rulesEngine (formDef) {
         async.each(definition.pages, function(page, cbPages) {
           async.each(page.fields, function(field, cbFields) {
             field.pageId = page._id;
-
-            field.fieldOptions = field.fieldOptions ? field.fieldOptions : {};
-            field.fieldOptions.definition = field.fieldOptions.definition ? field.fieldOptions.definition : {};
-            field.fieldOptions.validation = field.fieldOptions.validation ? field.fieldOptions.validation : {};
-
             fieldMap[field._id] = field;
             if (field.required) {
               requiredFieldMap[field._id] = {field: field, submitted: false, validated: false};
@@ -6002,7 +5975,7 @@ function rulesEngine (formDef) {
 
         async.eachSeries(fieldDefinition.fieldOptions.definition.options, function(choice, cb){
           for(var choiceName in choice){
-            optionsInCheckbox.push(choice[choiceName]);
+            optionsInCheckbox.push(choiceName);
           }
           return cb();
         }, function(err){
@@ -6434,7 +6407,7 @@ function rulesEngine (formDef) {
     function isConditionActive(field, fieldValue, testValue, condition) {
 
       var fieldType = field.type;
-      var fieldOptions = field.fieldOptions ? field.fieldOptions : {};
+      var fieldOptions = field.fieldOptions;
 
       var valid = true;
       if( "is equal to" === condition) {
