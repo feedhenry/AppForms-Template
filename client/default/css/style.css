@@ -1,5 +1,9 @@
 /* Phase2 styles */
 
+#fh_wufoo_header.fh_appform_button_bar {
+    padding: 4px 12px;
+}
+
 
 .fh_appform_container .fh_appform_navigation li:first{
 
