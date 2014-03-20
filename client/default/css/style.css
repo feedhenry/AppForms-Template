@@ -13,7 +13,7 @@
     border-radius: 5px;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .fh_wufoo_home {
+#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item {
     display: inline-block;
 
     padding: 0px;
@@ -23,30 +23,7 @@
     margin-top: 0px;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .fh_wufoo_drafts {
-    display: inline-block;
-
-    padding: 0px;
-    width: 25%;
-    text-align: center;
-
-}
-
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .fh_wufoo_pending {
-    display: inline-block;
-
-    padding: 0px;
-    width: 25%;
-    text-align: center;
-
-}
-
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .fh_wufoo_sent {
-    display: inline-block;
-
-    padding: 0px;
-    width: 25%;
-    text-align: center;
+#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
 
 }
 
