@@ -24,7 +24,14 @@
 }
 
 #fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
+    padding: 1px 1px 1px 1px;
 
+    display: block;
+    margin-top: 5px;
+    margin-bottom: 6px;
+    text-decoration: none;
+    color: inherit;
+    border-radius: 0px;
 }
 
 
