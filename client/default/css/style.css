@@ -24,14 +24,18 @@
 }
 
 #fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
-    padding: 1px 1px 1px 1px;
+    padding: 7px 1px 7px 1px;
 
     display: block;
-    margin-top: 5px;
-    margin-bottom: 6px;
+    /* margin-top: 5px; */
+    /* margin-bottom: 5px; */
     text-decoration: none;
     color: inherit;
     border-radius: 0px;
+    border: 1px solid black;
+    border-top: none;
+    border-bottom: none;
+    border-right: none;
 }
 
 

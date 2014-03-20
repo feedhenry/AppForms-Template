@@ -124,9 +124,9 @@ HeaderView = Backbone.View.extend({
 
   markActive: function(tab_class) {
     var self = this;
-    self.$el.find('.navigation_list').children().removeClass('fh_appform_button_default_active');
-    self.$el.find('.navigation_list').children().addClass('fh_appform_button_default');
-    self.$el.find(tab_class).addClass('fh_appform_button_default_active');
+    self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
+    self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
+    self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
   },
 
   updateCounts: function() {
