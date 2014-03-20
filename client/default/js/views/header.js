@@ -123,8 +123,8 @@ HeaderView = Backbone.View.extend({
   },
 
   markActive: function(tab_class) {
-    $('li', this.el).removeClass('active');
-    $(tab_class, this.el).addClass('active');
+    $('li', this.el).removeClass('fh_appform_button_default_active');
+    $(tab_class, this.el).addClass('fh_appform_button_default_active');
   },
 
   updateCounts: function() {
