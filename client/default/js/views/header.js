@@ -2,10 +2,10 @@ HeaderView = Backbone.View.extend({
   el: '#fh_wufoo_header',
 
   events: {
-    'click li.fh_wufoo_home': 'showHome',
-    'click li.fh_wufoo_drafts': 'showDrafts',
-    'click li.fh_wufoo_pending': 'showPending',
-    'click li.fh_wufoo_sent': 'showSent'
+    'click div.fh_wufoo_home': 'showHome',
+    'click div.fh_wufoo_drafts': 'showDrafts',
+    'click div.fh_wufoo_pending': 'showPending',
+    'click div.fh_wufoo_sent': 'showSent'
   },
   
   templates: {
