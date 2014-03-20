@@ -9,8 +9,9 @@
 
     /* top: 0px; */
     display: block;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-radius: 5px;
+    overflow: hidden;
 }
 
 #fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item {
@@ -27,12 +28,12 @@
     padding: 7px 1px 7px 1px;
 
     display: block;
-    /* margin-top: 5px; */
-    /* margin-bottom: 5px; */
+    margin-top: 0px;
+    margin-bottom: 0px;
     text-decoration: none;
-    color: inherit;
+    /* color: inherit; */
     border-radius: 0px;
-    border: 1px solid black;
+    /* border: 1px solid black; */
     border-top: none;
     border-bottom: none;
     border-right: none;
@@ -487,6 +488,8 @@ textarea {
 #fh_wufoo_header .count {
     float: right;
     display: inline-block; padding-top: 4px; padding-bottom: 4px; padding-left: 9px; padding-right: 9px;
+    background-color: rgba(0,0,0,0.1);
+    border-radius: 10px;
 }
 
 .segmented-controller li > a {
