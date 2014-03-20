@@ -2053,9 +2053,9 @@ FieldCameraView = FieldView.extend({
     '<div class="cam"></div>' +
     '</div>',
   onElementShow: function(index) {
-    var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>&nbspCapture Photo From Camera", "fhcam"));
-    var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>&nbspChoose Photo from Library", "fhcam_lib"));
-    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i>&nbspRemove Photo", "remove"));
+    var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>&nbsp;Capture Photo From Camera", "fhcam"));
+    var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>&nbsp;Choose Photo from Library", "fhcam_lib"));
+    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i>&nbsp;Remove Photo", "remove"));
 
     this.getWrapper(index).append(captureBtn);
     this.getWrapper(index).append(libBtn);
@@ -2225,6 +2225,7 @@ FieldCameraView = FieldView.extend({
   }
 });
 window.sampleImageNum = -1;
+
 FieldCameraGroupView = FieldCameraView.extend({
   initialize: function() {
     FieldCameraView.prototype.initialize.call(this);
@@ -2420,8 +2421,9 @@ FieldEmailView = FieldView.extend({
    type:"email"
 });
 FieldFileView = FieldView.extend({
-  input: "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
-    "<input style='display:none;' class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
+  input: "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action select' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
+"<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action remove' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'><i class='fa fa-times-circle'></i>&nbsp;Remove File Entry</button>" +
+"<input style='display:none;' class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
   type: "file",
   initialize: function () {
     var self = this;
@@ -2457,16 +2459,20 @@ FieldFileView = FieldView.extend({
     }
   },
   showButton: function (index, fileObj) {
+    var self = this;
     var wrapperObj = this.getWrapper(index);
-    var button = wrapperObj.find("button");
+    var button = wrapperObj.find("button.select");
+    var button_remove = wrapperObj.find("button.remove");
     var fileEle = wrapperObj.find(".fh_appform_field_input");
     fileEle.hide();
     button.show();
 
     if(fileObj == null){
       button.text("Select A File");
+      button_remove.hide();
     } else {
       button.text(fileObj.fileName + "(" + fileObj.fileSize + ")");
+      button_remove.show();
     }
 
     button.off("click");
@@ -2475,6 +2481,20 @@ FieldFileView = FieldView.extend({
       var index = $(this).data().index;
       fileEle.click();
     });
+
+    button_remove.off("click");
+    button_remove.on("click", function () {
+      var index = $(this).data().index;
+      if(self.fileObjs && self.fileObjs[index]) {
+        self.fileObjs[index] = null;
+      }
+      self.resetFormElement(fileEle);
+      self.showButton(index, null);  // remove file entry
+    });
+  },
+  resetFormElement: function (e) {
+    e.wrap("<form>").closest("form").get(0).reset();
+    e.unwrap();
   },
   valuePopulateToElement: function (index, value) {
     if (value) {
@@ -2486,6 +2506,7 @@ FieldFileView = FieldView.extend({
     this.showButton(index, null);
   }
 });
+
 FieldGeoView = FieldView.extend({
   input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
   buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
@@ -2722,12 +2743,9 @@ FieldMapView = FieldView.extend({
   }
 });
 FieldNumberView = FieldView.extend({
-    type:"number",
-    valueFromElement:function(index){
-        var wrapperObj = this.getWrapper(index);
-        return parseFloat(wrapperObj.find("input,select,textarea").val()) || 0;
-    }
+    type:"number"
 });
+
 // We only capture this as text
 // NOTE: validate plugin has a 'phoneUS' type. Could use this if needed
 FieldPhoneView = FieldView.extend({
@@ -2814,7 +2832,7 @@ FieldSignatureView = FieldView.extend({
     this.on('visible', this.clearError);
   },
   onElementShow: function(index) {
-    var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>&nbspCapture Signature", this.extension_type));
+    var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>&nbsp;Capture Signature", this.extension_type));
     this.getWrapper(index).append(html);
     var self = this;
     html.on("click", function() {
@@ -3078,6 +3096,7 @@ FieldSignatureView = FieldView.extend({
   }
 
 });
+
 FieldTextView = FieldView.extend({
 
 });
@@ -3335,7 +3354,7 @@ var FormView = BaseView.extend({
     formLogo: '<div class="fh_appform_logo_container"><div class="fh_appform_logo"></div></div>',
     formTitle: '<div class="fh_appform_form_title"><%= title %></div>',
     formDescription: '<div class="fh_appform_form_description"><%= description %></div>',
-    formContainer: '<div id="fh_appform_container" class="fh_appform_form fh_appform_container"></div>',
+    formContainer: '<div id="fh_appform_container" class="fh_appform_form_area fh_appform_container"></div>',
     buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_action_bar"><button class="fh_appform_button_saveDraft fh_appform_hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_hidden fh_appform_button_default">Previous</button><button class="fh_appform_button_next fh_appform_hidden fh_appform_button_default">Next</button><button class="fh_appform_button_submit fh_appform_hidden fh_appform_button_action">Submit</button></div>'
   },
   events: {
@@ -3599,7 +3618,7 @@ var FormView = BaseView.extend({
 
   },
   render: function() {
-    this.el.find("#fh_appform_container.fh_appform_form").append(this.templates.buttons);
+    this.el.find("#fh_appform_container.fh_appform_form_area").append(this.templates.buttons);
     this.rebindButtons();
     this.pageViews[0].show();
     this.pageNum = 0;
