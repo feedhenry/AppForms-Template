@@ -2042,6 +2042,7 @@ var FieldView = Backbone.View.extend({
   clearError: function(index) {
     var wrapperObj = this.getWrapper(index);
     wrapperObj.find(this.errMessageContainer).hide();
+    wrapperObj.find('.fh_appform_field_input').show();
     wrapperObj.find("." + this.errorClassName).removeClass(this.errorClassName);
   }
 
