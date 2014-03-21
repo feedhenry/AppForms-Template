@@ -13,7 +13,7 @@ HeaderView = Backbone.View.extend({
     forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
     drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
     pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
-    sent_button: '<div class="fh_wufoo_sent nav_item"><a class="" href="#">Sent<span class="count"></span></a></div>'
+    sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
   },
 
   initialize: function() {

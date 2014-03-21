@@ -26,6 +26,18 @@ ul {
     height: 100%;
     text-align: center;
     margin-top: 0px;
+    overflow: hidden;
+}
+
+#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last {
+    display: inline-block;
+
+    padding: 0px;
+    width: 25%;
+    height: 100%;
+    text-align: center;
+    margin-top: 0px;
+    overflow: hidden;
 }
 
 #fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
@@ -38,9 +50,25 @@ ul {
     /* color: inherit; */
     border-radius: 0px;
     /* border: 1px solid black; */
-    border-top: none;
-    border-bottom: none;
+    /* border-top: none; */
+    /* border-bottom: none; */
     border-right: none;
+    font-size: 0.8em;
+}
+
+#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last a{
+    padding: 7px 1px 7px 1px;
+
+    display: block;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    text-decoration: none;
+    /* color: inherit; */
+    border-radius: 0px;
+    /* border: 1px solid black; */
+    /* border-top: none; */
+    /* border-bottom: none; */
+    /*     border-right: none; */
     font-size: 0.8em;
 }
 
