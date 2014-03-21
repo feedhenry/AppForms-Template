@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-03-04
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-03-21
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -664,10 +664,10 @@ var FormListView = Backbone.View.extend({
 
   templates: {
     list: '<ul class="form_list"></ul>',
-    header: '<div class="fh_appform_title">Your Forms</div><div class="fh_appform_description">Choose a form from the list below</div>',
+    header: '<div class="fh_appform_form_title">Your Forms</div><div class="fh_appform_form_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about fh_appform_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
-    refreshForms: '<div id="refresh_forms_list" class="fh_appform_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
+    footer: '<a class="about fh_appform_form_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
+    refreshForms: '<div id="refresh_forms_list" class="fh_appform_form_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
   },
 
   initialize: function() {
@@ -1346,18 +1346,18 @@ HeaderView = Backbone.View.extend({
   el: '#fh_wufoo_header',
 
   events: {
-    'click li.fh_wufoo_home': 'showHome',
-    'click li.fh_wufoo_drafts': 'showDrafts',
-    'click li.fh_wufoo_pending': 'showPending',
-    'click li.fh_wufoo_sent': 'showSent'
+    'click div.fh_wufoo_home': 'showHome',
+    'click div.fh_wufoo_drafts': 'showDrafts',
+    'click div.fh_wufoo_pending': 'showPending',
+    'click div.fh_wufoo_sent': 'showSent'
   },
   
   templates: {
-    list: '<ul class="segmented-controller fh_appform_navigation"></ul>',
-    forms_button: '<li class="fh_wufoo_home"><a class="" href="#">Forms</a></li>',
-    drafts_button: '<li class="fh_wufoo_drafts"><a class="" href="#">Drafts<span class="count"></span></a></li>',
-    pending_button: '<li class="fh_wufoo_pending"><a class="" href="#">Pending<span class="count"></span></a></li>',
-    sent_button: '<li class="fh_wufoo_sent"><a class="" href="#">Sent<span class="count"></span></a></li>'
+    list: '<div class="navigation_list"></div>',
+    forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
+    drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
+    pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
+    sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
   },
 
   initialize: function() {
@@ -1467,8 +1467,10 @@ HeaderView = Backbone.View.extend({
   },
 
   markActive: function(tab_class) {
-    $('li', this.el).removeClass('active');
-    $(tab_class, this.el).addClass('active');
+    var self = this;
+    self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
+    self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
+    self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
   },
 
   updateCounts: function() {
