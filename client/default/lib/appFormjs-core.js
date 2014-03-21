@@ -59,6 +59,19 @@ appForm.utils = function(module) {
   module.md5 = md5;
   module.getTime = getTime;
   module.send=send;
+  module.isPhoneGap = isPhoneGap;
+
+  function isPhoneGap() {
+    //http://stackoverflow.com/questions/10347539/detect-between-a-mobile-browser-or-a-phonegap-application
+    //may break.
+    var app = document.URL.indexOf('http://') === -1 && document.URL.indexOf('https://') === -1;
+    if (app) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   function extend(child, parent) {
 
     if (parent.constructor && parent.constructor == Function) {
@@ -129,6 +142,7 @@ appForm.utils = function(module) {
   }
   return module;
 }(appForm.utils || {});
+
 appForm.utils = function (module) {
   module.fileSystem = {
     isFileSystemAvailable: isFileSystemAvailable,
@@ -162,6 +176,35 @@ appForm.utils = function (module) {
     };
     fileReader.readAsDataURL(file);
   }
+
+  function _createBlobOrString(contentstr) {
+    var retVal;
+    if (appForm.utils.isPhoneGap()) {  // phonegap filewriter works with strings, later versions also ork with binary arrays, and if passed a blob will just convert to binary array anyway
+      retVal = contentstr;
+    } else {
+      var targetContentType = 'text/plain';
+      try {
+        retVal = new Blob( [contentstr], { type: targetContentType });  // Blob doesn't exist on all androids
+      }
+      catch (e){
+        // TypeError old chrome and FF
+        var blobBuilder = window.BlobBuilder ||
+                          window.WebKitBlobBuilder ||
+                          window.MozBlobBuilder ||
+                          window.MSBlobBuilder;
+        if (e.name == 'TypeError' && blobBuilder) {
+          var bb = new blobBuilder();
+          bb.append([contentstr.buffer]);
+          retVal = bb.getBlob(targetContentType);
+        } else {
+          // We can't make a Blob, so just return the stringified content
+          retVal = contentstr;
+        }
+      }
+    }
+    return retVal;
+  }
+
   /**
      * Save a content to file system into a file
      * @param  {[type]} fileName file name to be stored.
@@ -182,19 +225,15 @@ appForm.utils = function (module) {
         size = saveObj.size;
       } else {
         //JSON object
-        saveObj = JSON.stringify(content);
+        var contentstr = JSON.stringify(content);
+        saveObj = _createBlobOrString(contentstr);
+        size = saveObj.size || saveObj.length;
       }
-    }
-    else if (typeof content == 'string') {
-      saveObj = content;
+    } else if (typeof content == 'string') {
+      saveObj = _createBlobOrString(content);
+      size = saveObj.size || saveObj.length;
     }
 
-    //TODO: REMOVE THIS HACK - NIALL
-    if(typeof(saveObj === "string")){
-      if(!(typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
-        saveObj = new Blob([saveObj], { type: 'text/plain' });
-      }
-    }
     _getFileEntry(fileName, size, { create: true }, function (err, fileEntry) {
       if (err) {
         console.error(err);
@@ -386,6 +425,7 @@ appForm.utils = function (module) {
   _checkEnv();
   return module;
 }(appForm.utils || {});
+
 appForm.utils = function (module) {
   module.takePhoto = takePhoto;
   module.isPhoneGapCamAvailable = isPhoneGapAvailable;
@@ -2758,11 +2798,10 @@ appForm.models.Field = function (module) {
   };
   module.prototype.process_checkboxes = function (params, cb) {
     var inputValue = params.value;
-    if (!(inputValue instanceof Array)) {
-      cb('the input value for processing checkbox field should be like [val1,val2]');
+    if (!inputValue || !inputValue.selections || !(inputValue.selections instanceof Array)){
+      cb('the input value for processing checkbox field should be like {selections: [val1,val2]}');
     } else {
-      var obj = { 'selections': inputValue };
-      cb(null, obj);
+      cb(null, inputValue);
     }
   };
   module.prototype.convert_checkboxes = function (value, cb) {
@@ -2774,6 +2813,7 @@ appForm.models.Field = function (module) {
   };
   return module;
 }(appForm.models.Field || {});
+
 /**
  * extension of Field class to support file field
  */
