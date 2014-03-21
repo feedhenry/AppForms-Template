@@ -2043,7 +2043,7 @@ var FieldView = Backbone.View.extend({
     var wrapperObj = this.getWrapper(index);
     wrapperObj.find(this.errMessageContainer).hide();
     wrapperObj.find('.fh_appform_field_input').show();
-    wrapperObj.find("." + this.errorClassName).removeClass(this.errorClassName);
+    //wrapperObj.find("." + this.errorClassName).removeClass(this.errorClassName);
   }
 
 });
