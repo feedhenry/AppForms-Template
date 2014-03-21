@@ -2703,12 +2703,13 @@ FieldMapView = FieldView.extend({
     }
   },
   mapResize: function() {
-    if (this.maps.length > 0) {
-      for (var i = 0; i < this.maps.length; i++) {
+    var self = this;
+    if (self.maps.length > 0) {
+      for (var i = 0; i < self.maps.length; i++) {
         var map = this.maps[i];
         if (map) {
           google.maps.event.trigger(map, 'resize');
-          map.setCenter(new google.maps.LatLng(this.latLongs[i].lat, this.latLongs[i]["long"]));
+          map.setCenter(new google.maps.LatLng(self.mapData[i].lat, self.mapData[i]["long"]));
         }
       }
     }
@@ -3287,7 +3288,13 @@ var PageView=BaseView.extend({
 
   show: function () {
     var self = this;
-    this.$el.removeClass('fh_appform_hidden');
+    self.$el.removeClass('fh_appform_hidden');
+
+    for(var fieldViewId in self.fieldViews){
+      if(self.fieldViews[fieldViewId].mapResize){
+        self.fieldViews[fieldViewId].mapResize();
+      }
+    }
   },
 
   hide: function () {

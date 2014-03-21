@@ -188,13 +188,6 @@ appForm.utils = function (module) {
     else if (typeof content == 'string') {
       saveObj = content;
     }
-
-    if(typeof(saveObj === "string")){
-      if(!(typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined")){
-        saveObj = new Blob([saveObj], { type: 'text/plain' });
-      }
-    }
-
     _getFileEntry(fileName, size, { create: true }, function (err, fileEntry) {
       if (err) {
         console.error(err);
