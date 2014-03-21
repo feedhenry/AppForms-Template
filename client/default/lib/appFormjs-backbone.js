@@ -1660,7 +1660,7 @@ var FieldView = Backbone.View.extend({
   className: 'fh_appform_field_area',
   errMessageContainer: ".fh_appform_field_error",
   requiredClassName: "fh_appform_field_required",
-  errorClassName: "fh_appform_error",
+  errorClassName: "fh_appform_field_error",
   addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
   removeInputButtonClass: ".fh_appform_removeInputBtn",
   fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
