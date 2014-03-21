@@ -547,8 +547,9 @@ textarea {
     /* right: 10px; */
     float: right;
     display: inline-block;
-    top: -57px;
+    top: -42px;
     right: 15px;
+    padding: 10px;
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
@@ -573,11 +574,12 @@ textarea {
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
     /*font-size: 12px;*/
-    width: 97%;
-    align-self: center;
-    position: relative;
-    right: 0px;
-    margin-top:0px;
+    /* width: 97%; */
+    /* align-self: center; */
+    /* position: relative; */
+    /* right: 0px; */
+    /* margin-top:0px; */
+    /* padding: 10px; */
 }
 
 .pending_submission {
