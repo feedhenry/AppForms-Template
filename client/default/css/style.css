@@ -541,7 +541,14 @@ textarea {
 }
 
 .list.inset .second_button {
-    /*right: 33px;*/
+    /* right: 33px; */
+    position: relative;
+    /* top: 10px; */
+    /* right: 10px; */
+    float: right;
+    display: inline-block;
+    top: -57px;
+    right: 15px;
 }
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
