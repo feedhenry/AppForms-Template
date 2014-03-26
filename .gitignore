@@ -1,2 +1,15 @@
+.fhclocal
 cloud/wufoo_config.js
 client/default/js/wufoo_config.js
+cloud/node_modules
+node_modules
+.DS_Store
+fhc-debug.log
+admin_endpoints.txt
+test_admin.js
+dist-dev
+dist
+dist.zip
+max.zip
+.idea/
+import_phase3.sh
