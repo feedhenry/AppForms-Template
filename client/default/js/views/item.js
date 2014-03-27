@@ -78,9 +78,10 @@ ItemView = Backbone.View.extend({
       });
     }
   },
-  submit: function() {
+  submit: function(e) {
     var self = this;
     var model = self.model;
+    e.stopPropagation();
 
     self.model.loadSubmission(self.model.submissionMeta, function(err){
       if(err){
