@@ -79,7 +79,8 @@ ItemView = Backbone.View.extend({
     }
   },
   submit: function() {
-    var model = this.model;
+    var self = this;
+    var model = self.model;
 
     self.model.loadSubmission(self.model.submissionMeta, function(err){
       if(err){
