@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-03-26
+/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-03-27
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -850,7 +850,7 @@ SentListView = Backbone.View.extend({
       optionsString += _.template(this.templates.save_max_option, {"value": $fh.forms.config.get("sent_save_min")});
 
       for(var step = 2; step <= steps; step++){
-        var currentStep = step * stepSize;
+        var currentStep = (step * stepSize) + $fh.forms.config.get("sent_save_min");
         var nextStep = (step + 1) * stepSize;
 
         if(currentVal > currentStep && currentVal < nextStep){
@@ -1085,7 +1085,7 @@ DraftItemView = ItemView.extend({
 });
 PendingReviewItemView = ItemView.extend({
   templates: {
-    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item second_button">Retry</button>'
+    item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item fh_appform_button_action second_button">Retry</button>'
   },
   errorTypes: {
     "validation": "Validation Error. Please review for details.",
