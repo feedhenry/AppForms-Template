@@ -87,7 +87,7 @@ ul {
 }
 
 
-.fh_appform_field_input.pending_submission{
+.fh_appform_container .fh_appform_field_input.pending_submission{
     width: 85%;
     margin: 10px 0px 10px 25px;
 }
@@ -547,7 +547,19 @@ textarea {
     /* right: 10px; */
     float: right;
     display: inline-block;
-    top: -42px;
+    top: -86px;
+    right: 15px;
+    padding: 10px;
+}
+
+.list.inset .first_button {
+    /* right: 33px; */
+    position: relative;
+    /* top: 10px; */
+    /* right: 10px; */
+    float: right;
+    display: inline-block;
+    top: -86px;
     right: 15px;
     padding: 10px;
 }
@@ -573,7 +585,7 @@ textarea {
 }
 
 #fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
-    /*font-size: 12px;*/
+    /* font-size: 12px; */
     /* width: 97%; */
     /* align-self: center; */
     /* position: relative; */
@@ -620,7 +632,7 @@ textarea {
 
 .pending_review_type {
     position: absolute;
-    top: 0;
+    top: 53px;
     left: 0;
     right: 0;
     padding: 2px 0 2px 10px;
