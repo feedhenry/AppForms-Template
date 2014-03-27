@@ -94,7 +94,7 @@ SentListView = Backbone.View.extend({
       optionsString += _.template(this.templates.save_max_option, {"value": $fh.forms.config.get("sent_save_min")});
 
       for(var step = 2; step <= steps; step++){
-        var currentStep = step * stepSize;
+        var currentStep = (step * stepSize) + $fh.forms.config.get("sent_save_min");
         var nextStep = (step + 1) * stepSize;
 
         if(currentVal > currentStep && currentVal < nextStep){
