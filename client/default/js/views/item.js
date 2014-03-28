@@ -62,20 +62,39 @@ ItemView = Backbone.View.extend({
     var self = this;
     e.stopPropagation();
 
+
     var confirmDelete = confirm("Are you sure you want to delete this submission?");
     if (confirmDelete) {
-      self.model.coreModel.clearLocal(function(err){
-        if(err) console.error("Error clearing local: ", err);
-        self.model.destroy();
+      self.model.loadSubmission(self.model.submissionMeta, function(err){
+        if(err){
+          $fh.forms.log.e("Error Loading Submission: ", err);
+        } else {
+          self.model.coreModel.clearLocal(function(err){
+            if(err) console.error("Error clearing local: ", err);
+            self.model.destroy();
+            return false;
+          });
+        }
       });
     }
-
-    return false;
   },
-  submit: function() {
-    var model = this.model;
-    model.coreModel.upload(function() {});
-    return false;
+  submit: function(e) {
+    var self = this;
+    var model = self.model;
+    e.stopPropagation();
+
+    self.model.loadSubmission(self.model.submissionMeta, function(err){
+      if(err){
+        $fh.forms.log.e("Error Loading Submission: ", err);
+      } else {
+        model.coreModel.upload(function(err) {
+          if(err){
+            $fh.forms.log.e("Error Calling Upload Submission: ", err);
+          }
+          return false;
+        });
+      }
+    });
   },
 
   unrender: function() {
