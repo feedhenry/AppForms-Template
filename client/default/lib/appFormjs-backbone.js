@@ -1716,12 +1716,15 @@ var FieldView = Backbone.View.extend({
   },
   renderInput: function(index) {
     var fieldId = this.model.getFieldId();
-    var type = this.type || "text";
+    var type = this.getHTMLInputType();
     return _.template(this.input, {
       "fieldId": fieldId,
       "index": index,
       "inputType": type
     });
+  },
+  getHTMLInputType: function() {
+    return this.type || "text";
   },
   "getFieldRequired" : function(index){
     var required = "";
@@ -2046,6 +2049,7 @@ var FieldView = Backbone.View.extend({
   }
 
 });
+
 FieldCameraView = FieldView.extend({
   input: "<img class='imageThumb' width='100%' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>'>",
   html5Cam: '<div class="html5Cam">' +
@@ -2075,7 +2079,7 @@ FieldCameraView = FieldView.extend({
   setImage: function (index, base64Img) {
     var wrapper = this.getWrapper(index);
     var img = wrapper.find('img.imageThumb');
-    img.attr('src', base64Img);
+    img.attr('src', base64Img).show();
     wrapper.find('button').hide();
     wrapper.find('.remove').show();
   },
@@ -2099,7 +2103,7 @@ FieldCameraView = FieldView.extend({
   removeThumb: function (e, index) {
     e.preventDefault();
     var img = this.getImageThumb(index);
-    img.removeAttr('src');
+    img.removeAttr('src').hide();
     this.getLibBtn(index).show();
     this.getCameraBtn(index).show();
     this.getRemoveBtn(index).hide();  // this.trigger('imageRemoved'); // trigger events used by grouped camera fields NOTE: don't move to setImageData fn, could result in infinite event callback triggering as group camera field may call into setImageData()
@@ -2614,7 +2618,7 @@ FieldGeoView = FieldView.extend({
 });
 FieldMapView = FieldView.extend({
   extension_type: 'fhmap',
-  input: "<div data-index='<%= index %>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
+  input: "<div data-index='<%= index %>' id='<%= id%>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
   initialize: function() {
     this.mapInited = 0;
     this.maps = [];
@@ -2636,7 +2640,8 @@ FieldMapView = FieldView.extend({
     return _.template(this.input, {
       width: this.mapSettings.mapWidth,
       height: this.mapSettings.mapHeight,
-      'index': index
+      'index': index,
+      'id':Math.random()
     });
   },
   onMapInit: function(index) {
@@ -2747,7 +2752,10 @@ FieldMapView = FieldView.extend({
   }
 });
 FieldNumberView = FieldView.extend({
-    type:"number"
+    type:"number",
+    getHTMLInputType: function() {
+      return "text";
+    }
 });
 
 // We only capture this as text
