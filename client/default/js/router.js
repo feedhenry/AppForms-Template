@@ -39,8 +39,8 @@ App.Router = Backbone.Router.extend({
     $fh.ready({}, function() {
       $fh.init({}, function() {
         /**** LOCAL DEV USAGE *****/
-//       $fh.cloud_props.hosts.debugCloudUrl = "http://127.0.0.1:3001";
-//       $fh.app_props.host = "http://127.0.0.1:3001";
+//       $fh.cloud_props.hosts.debugCloudUrl = "https://testing-v495um58kpcv3cc0f1cz0xxd-dev.feedhenry.me";
+//       $fh.app_props.host = "https://testing.feedhenry.me";
         $fh.forms.init({}, function() {
 
           $fh.forms.getTheme({

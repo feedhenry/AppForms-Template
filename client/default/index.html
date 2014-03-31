@@ -1,7 +1,4 @@
-<!--<link rel="stylesheet" type="text/css" href="css/ratchet.css">-->
 <link rel="stylesheet" type="text/css" href="css/style.css">
-<!--<link rel="stylesheet" type="text/css" href="css/jquery.signaturepad.css" />-->
-<!--<link rel="stylesheet" type="text/css" href="css/mobiscroll.custom.min.css" />-->
 <link rel="stylesheet" type="text/css" href="css/font-awesome/css/font-awesome.min.css" >
 
 <title>Forms App</title>
@@ -23,18 +20,6 @@
     <div id="fh_wufoo_sent" class="fh_appform_form hidden"></div>
 
     <div id="fh_wufoo_settings" class="fh_appform_form hidden"></div>
-
-    <!--<div id="fh_wufoo_banner"  class="popover">-->
-        <!--<header class="popover-header">-->
-            <!--<h3 class="title">App Forms</h3>-->
-        <!--</header>-->
-        <!--<ul class="list">-->
-	<!--<li class="device"><span>Device</span>:<span class="value"></span></li>-->
-	<!--<li class="name"><span>Name</span>:<span class="value">FeedHenry-App-Forms-App-Generator</span></li>-->
-	<!--<li class="release"><span>Release</span>:<span class="value">0.3.10</span></li>-->
-	<!--<li class="date"><span>Date</span>:<span class="value">2014-02-11</span></li>-->
-	<!--<li class="commit"><span>Commit</span>:<span class="value">9f29b69</span></li></ul>-->
-    <!--</div>-->
 
 
     <div id="fh_wufoo_content" class="hidden"></div>
@@ -64,13 +49,6 @@
                 try {//TODO Needs to be changed to fh_appform_xxx when renaming classes.
                     var headerHeight = jQuery('#fh_wufoo_header').outerHeight();
                     jQuery('body').addClass('fh_appform_body');
-//                    jQuery('#fh_logs').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_content').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_form_list').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_settings').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_pending').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_sent').css('margin-top', headerHeight + 'px');
-//                    jQuery('#fh_wufoo_drafts').css('margin-top', headerHeight + 'px');
                     jQuery('#fh_wufoo_alerts_area').css('margin-top', headerHeight + 'px');
                     jQuery('#fh_wufoo_alerts_area').css('clear', 'both');
 
@@ -81,7 +59,6 @@
                     console.error(e);
                 }
             });
-            //Utils.loadTouch();
         });
     </script>
 
@@ -92,41 +69,21 @@
         App.collections = App.collections || {};
     </script>
 
-
-
-    <!-- <script src="lib/jpeg_encoder/jpeg_encoder_basic.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/jquery.validate.patch.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script src="lib/jquery.wufoo_rules.js" type="text/javascript" charset="utf-8"></script> -->
      <script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
-    <!--<script src="lib/fh.logger.js" type="text/javascript" charset="utf-8"></script>-->
     <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script src="lib/backbone.fhdata.fhact.js" type="text/javascript" charset="utf-8"></script> -->
-    <!-- <script src="lib/fh.retry.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="lib/async.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/moment.js" type="text/javascript" charset="utf-8"></script>
- <!--    <script src="lib/converter.js" type="text/javascript" charset="utf-8"></script> -->
-    <!-- <script src="lib/signaturepad/bitmapurl.js" type="text/javascript" charset="utf-8"></script> -->
-    <!-- <script src="lib/signaturepad/jquery.signaturepad.js" type="text/javascript" charset="utf-8"></script> -->
-    <!--<script src="lib/ratchet.js" type="text/javascript" charset="utf-8"></script>-->
-    <!--<script src="lib/jquery-aop.js" type="text/javascript" charset="utf-8"></script>-->
-    <!-- <script src="lib/advice.js" type="text/javascript" charset="utf-8"></script> -->
 
     <!-- mobiscroll -->
     <script src="lib/mobiscroll.custom.min.js" type="text/javascript" charset="utf-8"></script>
 
     <!-- Models -->
-    <!--<script src="js/models/config.js" type="text/javascript" charset="utf-8"></script>-->
- <!--    // <script src="js/models/field.js" type="text/javascript" charset="utf-8"></script> -->
- <!-- <script src="js/models/page.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="js/models/form.js" type="text/javascript" charset="utf-8"></script>
-    <!-- <script src="js/models/formList.js" type="text/javascript" charset="utf-8"></script> -->
     <script src="js/models/submission.js" type="text/javascript" charset="utf-8"></script>
-    <!-- // <script src="js/models/sent.js" type="text/javascript" charset="utf-8"></script> -->
-    <!-- // <script src="js/models/draft.js" type="text/javascript" charset="utf-8"></script> -->
-    <!-- // <script src="js/models/pending.js" type="text/javascript" charset="utf-8"></script> -->
 
     <!-- Views -->
     <script src="js/views/loading.js" type="text/javascript" charset="utf-8"></script>
@@ -152,6 +109,8 @@
 
     <!-- Router -->
     <script src="js/router.js" type="text/javascript" charset="utf-8"></script>
+
+    <script src="lib/feedhenry-forms.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/appFormjs-backbone.js" type="text/javascript" charset="utf-8"></script>
     <script>
 
