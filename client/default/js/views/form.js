@@ -19,6 +19,23 @@ $fh.ready({}, function() {
                     App.views.form = null;
                     refreshSubmissionCollections();
                 });
+
+                self.submission.on('validationerror', function (err){
+                  self.fieldViews.forEach(function (v){
+                    var fieldId = v.model.getFieldId();
+
+                    var result = err[fieldId];
+                    if (!result.valid) {
+                      for(var i=0; i < result.errorMessages.length; i++){
+                        if(result.errorMessages[i]) {
+                          v.setErrorText(i, result.errorMessages[i]);
+                        }
+                      }
+                    } else {
+                      self.clearError(index);
+                    }
+                  });
+                });
                 self.submission.on("progress", function(progress){
                   console.log("PROGRESS", progress, this);
                 });
