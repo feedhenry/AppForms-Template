@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.10 - 2014-04-01
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-02
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -630,6 +630,23 @@ $fh.ready({}, function() {
                     App.views.header.showPending(true);
                     App.views.form = null;
                     refreshSubmissionCollections();
+                });
+
+                self.submission.on('validationerror', function (err){
+                  self.fieldViews.forEach(function (v){
+                    var fieldId = v.model.getFieldId();
+
+                    var result = err[fieldId];
+                    if (!result.valid) {
+                      for(var i=0; i < result.errorMessages.length; i++){
+                        if(result.errorMessages[i]) {
+                          v.setErrorText(i, result.errorMessages[i]);
+                        }
+                      }
+                    } else {
+                      self.clearError(index);
+                    }
+                  });
                 });
                 self.submission.on("progress", function(progress){
                   console.log("PROGRESS", progress, this);
@@ -1597,35 +1614,36 @@ App.Router = Backbone.Router.extend({
 
     var self = this;
     $fh.ready({}, function() {
-      $fh.on('cloudready', function() {
+      $fh.forms.init({}, function() {
+        $fh.forms.getTheme({
+          "fromRemote": false,
+          "css": true
+        }, function(err, themeCSS) {
+          App.views.form_list = new FormListView();
+          App.views.drafts_list = new DraftListView();
+          App.views.pending_list = new PendingListView();
+          App.views.sent_list = new SentListView();
+          App.views.settings = new SettingsView();
+          App.views.header = new HeaderView();
+          App.views.header.showHome();
+
+
+          if ($('#fh_appform_style').length > 0) {
+            $('#fh_appform_style').html(themeCSS);
+          } else {
+            $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+          }
+          if (err) console.error(err);
+          self.onReady();
+        });
+      });
+      //This really should be removed as well, it's now possible to specify localhost as a query parameter in the page url.
+      //e.g. http://localhost/index.html?url=https://testing.feedhenry.me
+ //     $fh.on('fhinit', function() {
         /**** LOCAL DEV USAGE *****/
 //       $fh.cloud_props.hosts.debugCloudUrl = "https://testing-v495um58kpcv3cc0f1cz0xxd-dev.feedhenry.me";
 //       $fh.app_props.host = "https://testing.feedhenry.me";
-        $fh.forms.init({}, function() {
-
-          $fh.forms.getTheme({
-            "fromRemote": false,
-            "css": true
-          }, function(err, themeCSS) {
-            App.views.form_list = new FormListView();
-            App.views.drafts_list = new DraftListView();
-            App.views.pending_list = new PendingListView();
-            App.views.sent_list = new SentListView();
-            App.views.settings = new SettingsView();
-            App.views.header = new HeaderView();
-            App.views.header.showHome();
-
-
-            if ($('#fh_appform_style').length > 0) {
-              $('#fh_appform_style').html(themeCSS);
-            } else {
-              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-            }
-            if (err) console.error(err);
-            self.onReady();
-          });
-        });
-      });
+//      });
     });
   },
   onReady: function() {
