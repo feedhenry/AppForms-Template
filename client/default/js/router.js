@@ -37,29 +37,33 @@ App.Router = Backbone.Router.extend({
 
     var self = this;
     $fh.ready({}, function() {
-      $fh.forms.init({}, function() {
-        $fh.forms.getTheme({
-          "fromRemote": false,
-          "css": true
-        }, function(err, themeCSS) {
-          App.views.form_list = new FormListView();
-          App.views.drafts_list = new DraftListView();
-          App.views.pending_list = new PendingListView();
-          App.views.sent_list = new SentListView();
-          App.views.settings = new SettingsView();
-          App.views.header = new HeaderView();
-          App.views.header.showHome();
+      $fh.on('fhinit', function(err, cloudProps){
+        if(err) console.error("Error on fhinit", err);
+        $fh.forms.init({}, function() {
+          $fh.forms.getTheme({
+            "fromRemote": false,
+            "css": true
+          }, function(err, themeCSS) {
+            App.views.form_list = new FormListView();
+            App.views.drafts_list = new DraftListView();
+            App.views.pending_list = new PendingListView();
+            App.views.sent_list = new SentListView();
+            App.views.settings = new SettingsView();
+            App.views.header = new HeaderView();
+            App.views.header.showHome();
 
 
-          if ($('#fh_appform_style').length > 0) {
-            $('#fh_appform_style').html(themeCSS);
-          } else {
-            $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-          }
-          if (err) console.error(err);
-          self.onReady();
+            if ($('#fh_appform_style').length > 0) {
+              $('#fh_appform_style').html(themeCSS);
+            } else {
+              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+            }
+            if (err) console.error(err);
+            self.onReady();
+          });
         });
       });
+
       //This really should be removed as well, it's now possible to specify localhost as a query parameter in the page url.
       //e.g. http://localhost/index.html?url=https://testing.feedhenry.me
  //     $fh.on('fhinit', function() {
