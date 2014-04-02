@@ -2618,7 +2618,7 @@
   });
   FieldMapView = FieldView.extend({
     extension_type: 'fhmap',
-    input: "<div data-index='<%= index %>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
+    input: "<div data-index='<%= index %>' id='<%= id%>' class=' ' style='width:<%= width%>; height:<%= height%>;'></div>",
     initialize: function() {
       this.mapInited = 0;
       this.maps = [];
@@ -2640,7 +2640,8 @@
       return _.template(this.input, {
         width: this.mapSettings.mapWidth,
         height: this.mapSettings.mapHeight,
-        'index': index
+        'index': index,
+        'id':Math.random()
       });
     },
     onMapInit: function(index) {
@@ -2667,6 +2668,7 @@
     onElementShow: function(index) {
       var wrapperObj = this.getWrapper(index);
       var self = this;
+
       var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
       // var options = this.parseCssOptions();
       // // Merge
