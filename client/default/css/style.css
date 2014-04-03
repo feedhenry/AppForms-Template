@@ -131,7 +131,7 @@ ul {
 /*}*/
 
 /*html, body {*/
-/*font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+/*font: 14px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;*/
 /*color: #333;*/
 /*padding-top: 50px; Top padding removed -- added to body only*/
 /*}*/
@@ -145,7 +145,7 @@ ul {
 /*label { display: block; margin-bottom: 10px; font-size: 18px; }  Moved to themeCSS. Needs to be independent*/
 /*label.error { display: inline; }*/
 /*label.choice { display: inline; }*/
-/*input[type="radio"], input[type="checkbox"] { width: inherit; }*/
+/*input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;] { width: inherit; }*/
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
     /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
@@ -176,7 +176,7 @@ ul {
     padding: 0;
 }
 
-/* Padding should really be in the rendered form css --> all fields need padding. */
+/* Padding should really be in the rendered form css --&gt; all fields need padding. */
 #fh_wufoo_content .field_container {
     padding: 18px 20px 18px 20px;
     /*font-size: 24px;*/
@@ -506,14 +506,14 @@ textarea {
 /*overflow: hidden;*/
 /*}*/
 
-.form_list li button { /*Form list specific --> Needs to be customised by theme*/
+.form_list li button { /*Form list specific --&gt; Needs to be customised by theme*/
     width: 100%;
     /*font-size: 125%;*/
     margin-bottom: 10px;
     margin-top: 10px;
 }
 
-/* Disable Android "Orange" selection */
+/* Disable Android &quot;Orange&quot; selection */
 * {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
@@ -525,11 +525,11 @@ textarea {
     border-radius: 10px;
 }
 
-.segmented-controller li > a {
-    padding: 5px 8px;
-    line-height: 21px;
-    color: inherit;
-}
+.segmented-controller li &gt; a {
+                                  padding: 5px 8px;
+                                  line-height: 21px;
+                                  color: inherit;
+                              }
 
 #fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
     /*margin-left: 5px;*/
@@ -973,7 +973,7 @@ a.settings{
     float: right;
 }
 #fh_wufoo_banner ul.list {
-    font: 7px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font: 7px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
 }
 #fh_wufoo_banner ul.list span {
     width: 60%;
@@ -997,17 +997,33 @@ ul {
 }
 
 .fh_appform_container .fh_appform_button_action.fh_appform_three_button{
-    width: 33.3%!important;
+    width: 30%!important;
     margin-right: 5px;
+}
+
+.fh_appform_container .fh_appform_field_required:after{
+    vertical-align: top;
+}
+
+.fh_appform_container .fh_appform_button_action.special_button.fh_appform_removeInputBtn{
+    width:45%!important;
+}
+
+.fh_appform_container .fh_appform_button_action.special_button.fh_appform_addInputBtn{
+    width:45%!important;
 }
 
 .fh_appform_container .fh_appform_button_default.fh_appform_three_button{
-    width: 32.3%!important;
+    width: 30%!important;
     margin-right: 5px;
 }
 
+.fh_appform_container .fh_appform_action_bar {
+    text-align: center;
+}
+
 .fh_appform_container .fh_appform_button_action.fh_appform_two_button{
-    width: 49%!important;
+    width: 45%!important;
     margin-right: 5px;
     margin-left: 9px;
 }
@@ -1148,7 +1164,7 @@ ul {
 /*}*/
 
 /*html, body {*/
-/*font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;*/
+/*font: 14px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;*/
 /*color: #333;*/
 /*padding-top: 50px; Top padding removed -- added to body only*/
 /*}*/
@@ -1162,7 +1178,7 @@ ul {
 /*label { display: block; margin-bottom: 10px; font-size: 18px; }  Moved to themeCSS. Needs to be independent*/
 /*label.error { display: inline; }*/
 /*label.choice { display: inline; }*/
-/*input[type="radio"], input[type="checkbox"] { width: inherit; }*/
+/*input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;] { width: inherit; }*/
 
 #fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
     /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
@@ -1193,7 +1209,7 @@ ul {
     padding: 0;
 }
 
-/* Padding should really be in the rendered form css --> all fields need padding. */
+/* Padding should really be in the rendered form css --&gt; all fields need padding. */
 #fh_wufoo_content .field_container {
     padding: 18px 20px 18px 20px;
     /*font-size: 24px;*/
@@ -1523,14 +1539,14 @@ textarea {
 /*overflow: hidden;*/
 /*}*/
 
-.form_list li button { /*Form list specific --> Needs to be customised by theme*/
+.form_list li button { /*Form list specific --&gt; Needs to be customised by theme*/
     width: 100%;
     /*font-size: 125%;*/
     margin-bottom: 10px;
     margin-top: 10px;
 }
 
-/* Disable Android "Orange" selection */
+/* Disable Android &quot;Orange&quot; selection */
 * {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
@@ -1542,11 +1558,11 @@ textarea {
     border-radius: 10px;
 }
 
-.segmented-controller li > a {
-    padding: 5px 8px;
-    line-height: 21px;
-    color: inherit;
-}
+.segmented-controller li &gt; a {
+                                  padding: 5px 8px;
+                                  line-height: 21px;
+                                  color: inherit;
+                              }
 
 #fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
     /*margin-left: 5px;*/
@@ -1990,7 +2006,7 @@ a.settings{
     float: right;
 }
 #fh_wufoo_banner ul.list {
-    font: 7px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font: 7px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
 }
 #fh_wufoo_banner ul.list span {
     width: 60%;
