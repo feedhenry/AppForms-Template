@@ -1037,6 +1037,13 @@ ul {
     margin-right: 5px;
 }
 
+.fh_appform_container .fh_appform_page_title {
+    text-align: center;
+    width: 100%;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
 #fh_wufoo_header.fh_appform_button_bar {
     padding: 8px 5px;
 }
