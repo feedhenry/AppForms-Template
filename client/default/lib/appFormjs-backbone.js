@@ -1665,11 +1665,13 @@
     removeInputButtonClass: ".fh_appform_removeInputBtn",
     fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
     input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
-    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;'></div>  </div><br style='clear:both'/>    </div>",
+    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='fh_appform_field_title fh_appform_field_numbering'>  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;'></div>  </div><br style='clear:both'/>    </div>",
+    inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;'></div>  </div><br style='clear:both'/>    </div>",
 
 
     fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
-    title: '<label class="fh_appform_field_title"><%= title %> </label>',
+    title: '<label class="fh_appform_field_title <%= required%>"><%= title %> </label>',
+    titleRepeating: '<label class="fh_appform_field_title"><%= title %> </label>',
     instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
     events: {
       "change": "contentChanged",
@@ -1710,8 +1712,15 @@
     renderTitle: function() {
       var name = this.model.getName();
       var title = name;
-      return _.template(this.title, {
-        "title": title
+      var template = this.title;
+
+      if(this.model.isRepeating()){
+        template = this.titleRepeating;
+      }
+
+      return _.template(template, {
+        "title": title,
+        "required": this.getFieldRequired(1)
       });
     },
     renderInput: function(index) {
@@ -1744,8 +1753,14 @@
     },
     renderEle: function(titleHtml, inputHtml, index) {
       var fieldId = this.model.getFieldId();
+      var template =  this.inputTemplate;
 
-      return _.template(this.inputTemplate, {
+
+      if(this.model.isRepeating()){
+        template = this.inputTemplateRepeating;
+      }
+
+      return _.template(template, {
         "fieldId": fieldId,
         "index": index,
         "inputHtml": inputHtml,
@@ -2618,7 +2633,7 @@
   });
   FieldMapView = FieldView.extend({
     extension_type: 'fhmap',
-    input: "<div data-index='<%= index %>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
+    input: "<div data-index='<%= index %>' id='<%= id%>' class=' ' style='width:<%= width%>; height:<%= height%>;'></div>",
     initialize: function() {
       this.mapInited = 0;
       this.maps = [];
@@ -2640,7 +2655,8 @@
       return _.template(this.input, {
         width: this.mapSettings.mapWidth,
         height: this.mapSettings.mapHeight,
-        'index': index
+        'index': index,
+        'id':Math.random()
       });
     },
     onMapInit: function(index) {
@@ -2667,6 +2683,7 @@
     onElementShow: function(index) {
       var wrapperObj = this.getWrapper(index);
       var self = this;
+
       var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
       // var options = this.parseCssOptions();
       // // Merge
