@@ -45,16 +45,10 @@ SubmissionModel = Backbone.Model.extend({
                 }, "success", 5000);
             });
         });
-        coreModel.on("submitted", function(err) {
-            if (!err) {
-                AlertView.showAlert({
-                    "text": "Form submission submitted."
-                }, "success", 5000);
-            } else {
-                AlertView.showAlert({
-                    "text": "Failed:" + err
-                }, "success", 5000);
-            }
+        coreModel.on("submitted", function(submissionId) {
+          AlertView.showAlert({
+            "text": "Form submission submitted."
+          }, "success", 5000);
             self.refreshAllCollections();
         });
         coreModel.on("submit", function() {
