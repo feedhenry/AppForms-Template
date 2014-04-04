@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-03
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-04
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -236,16 +236,10 @@ SubmissionModel = Backbone.Model.extend({
                 }, "success", 5000);
             });
         });
-        coreModel.on("submitted", function(err) {
-            if (!err) {
-                AlertView.showAlert({
-                    "text": "Form submission submitted."
-                }, "success", 5000);
-            } else {
-                AlertView.showAlert({
-                    "text": "Failed:" + err
-                }, "success", 5000);
-            }
+        coreModel.on("submitted", function(submissionId) {
+          AlertView.showAlert({
+            "text": "Form submission submitted."
+          }, "success", 5000);
             self.refreshAllCollections();
         });
         coreModel.on("submit", function() {
