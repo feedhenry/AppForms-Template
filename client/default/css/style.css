@@ -52,7 +52,7 @@ ul {
     /* border: 1px solid black; */
     /* border-top: none; */
     /* border-bottom: none; */
-    border-right: none;
+    /* border-right: none; */
     font-size: 0.8em;
 }
 
@@ -1046,6 +1046,7 @@ ul {
 
 #fh_wufoo_header.fh_appform_button_bar {
     padding: 8px 5px;
+    margin: 0px;
 }
 
 #fh_wufoo_header.fh_appform_button_bar .navigation_list {
@@ -1084,15 +1085,17 @@ ul {
     padding: 7px 1px 7px 1px;
 
     display: block;
-    margin-top: 0px;
-    margin-bottom: 0px;
+    margin: 0px;
+    margin-left: 5px;
+    /* margin-top: 0px; */
+    /* margin-bottom: 0px; */
     text-decoration: none;
     /* color: inherit; */
-    border-radius: 0px;
+    border-radius: 5px;
     /* border: 1px solid black; */
     /* border-top: none; */
     /* border-bottom: none; */
-    border-right: none;
+    /* border-right: none; */
     font-size: 0.8em;
 }
 
@@ -1100,11 +1103,12 @@ ul {
     padding: 7px 1px 7px 1px;
 
     display: block;
-    margin-top: 0px;
-    margin-bottom: 0px;
-    text-decoration: none;
+    margin: 0px;
+    margin-left: 5px;
+    /* margin-bottom: 0px; */
+    /* text-decoration: none; */
     /* color: inherit; */
-    border-radius: 0px;
+    border-radius: 5px;
     /* border: 1px solid black; */
     /* border-top: none; */
     /* border-bottom: none; */
