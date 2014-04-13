@@ -5,11 +5,11 @@ HeaderView = Backbone.View.extend({
 
     templates: {
         nav_bar: '<nav class="navbar navbar-default navbar-static-top col-xs-12" role="navigation"></nav>',
-        list: '<ul id="fh_appform_tabbs" class="nav navbar navbar-default navbar-fixed-top col-xs-12"></ul>',
-        forms_button: '<li class="col-xs-3 text-center active"><button id="tab_fh_content_form_list" class="btn btn-default col-xs-12 active">Forms</button></li>',
-        drafts_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_drafts"  class="btn btn-default col-xs-12">Drafts<span class="badge pull-right count"></span></button></li>',
-        pending_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_pending"  class="btn btn-default col-xs-12">Pending<span class="badge pull-right count"></span></button></li>',
-        sent_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_sent"  class="btn btn-default col-xs-12">Sent<span class="badge pull-right count"></span></button></li>'
+        list: '<ul id="fh_appform_tabbs" class="nav navbar navbar-default navbar-fixed-top col-xs-12 fh_appform_button_bar"></ul>',
+        forms_button: '<li class="col-xs-3 text-center active"><button id="tab_fh_content_form_list" class="btn btn-primary col-xs-12 active">Forms</button></li>',
+        drafts_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_drafts"  class="btn btn-primary col-xs-12">Drafts<span class="badge pull-right count"></span></button></li>',
+        pending_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_pending"  class="btn btn-primary col-xs-12">Pending<span class="badge pull-right count"></span></button></li>',
+        sent_button: '<li class="col-xs-3 text-center"><button id="tab_fh_content_sent"  class="btn btn-primary col-xs-12">Sent<span class="badge pull-right count"></span></button></li>'
     },
 
     initialize: function() {

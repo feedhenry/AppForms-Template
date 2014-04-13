@@ -1,7 +1,7 @@
 PendingSubmittedItemView = ItemView.extend({
     templates: {
         //item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted: <br/><%= timestamp %></span><button class="button button-main fh_appform_button_cancel delete-item second_button">Dismiss</button>'
-        item: '<td><%= name %></td><td><%= id %></td><td><%= timestamp %></td><td><%= submissionId %></td><td><button class="button button-main fh_appform_button_cancel delete-item btn btn-default">Dismiss</button></td>'
+        item: '<td><%= name %></td><td><%= id %></td><td><%= timestamp %></td><td><%= submissionId %></td><td><button class="button button-main fh_appform_button_cancel delete-item btn btn-danger">Dismiss</button></td>'
     },
 
     render: function() {

@@ -5,7 +5,7 @@ ShowFormButtonView = Backbone.View.extend({
     },
 
     templates: {
-        form_button: '<button class="show btn btn-default col-xs-12 text-center <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
+        form_button: '<button class="show btn btn-primary col-xs-12 text-center <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
     },
 
     initialize: function() {

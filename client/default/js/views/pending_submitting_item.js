@@ -1,7 +1,7 @@
 PendingSubmittingItemView = ItemView.extend({
     templates: {
         //item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Saved: <%= timestamp %></span>'
-        item: '<td><%= name %></td> <td><%= id %></td><%= timestamp %></td><td><div class="progress"><div class="progress-bar" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: 60%;">60%</div></div></td>'
+        item: '<td><%= name %></td><td><%= id %></td><td><%= timestamp %></td><td><div class="progress"><div class="progress-bar col-xs-12" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="<%= localSubId%>">0%</div></div></td>'
     },
 
     render: function() {
@@ -9,7 +9,8 @@ PendingSubmittingItemView = ItemView.extend({
         var item = _.template(this.templates.item, {
             name: this.model.get('formName'),
             id: this.model.get("formId"),
-            timestamp: time
+            timestamp: time,
+            localSubId: this.model.get("_ludid")
         });
 
         $(this.$el).html(item);

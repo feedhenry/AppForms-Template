@@ -31,6 +31,13 @@ SubmissionModel = Backbone.Model.extend({
     initModel: function() {
         var coreModel = this.coreModel;
         var self = this;
+        coreModel.on("progress", function(progress) {
+            console.log(progress, this.getLocalId());
+            App.views.pending_list.updateSubmissionProgress(progress, this.getLocalId());
+        });
+        coreModel.on("error", function(err) {
+            console.log(error, this.getLocalId());
+        });
         coreModel.on("inprogress", function(ut) {
             self.refreshAllCollections();
         });

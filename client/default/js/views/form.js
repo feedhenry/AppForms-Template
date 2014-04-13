@@ -31,6 +31,10 @@ $fh.ready({}, function() {
                         }
 
                         var result = err[fieldId];
+
+                        if (!result) {
+                            return;
+                        }
                         if (!result.valid) {
                             result.fieldErrorMessage = result.fieldErrorMessage || [];
                             for (var i = 0; i < result.fieldErrorMessage.length; i++) {

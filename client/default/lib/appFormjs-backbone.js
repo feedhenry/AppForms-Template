@@ -1746,14 +1746,14 @@
         removeInputButtonClass: ".fh_appform_removeInputBtn",
         fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
         input: "<input class='fh_appform_field_input <%= repeatingClassName%> col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
-        inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container col-xs-12 text-center' ></div></div></div>",
-        inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering col-xs-2'><%=index + 1%>.</div> <div class='fh_appform_field_input_container repeating col-xs-10' >  <%= inputHtml %> <div class='fh_appform_field_error_container col-xs-12 text-center'></div></div></div>",
+        inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container hidden col-xs-12 text-center' ></div></div></div>",
+        inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering col-xs-2'><%=index + 1%>.</div> <div class='fh_appform_field_input_container repeating col-xs-10' >  <%= inputHtml %> <div class='fh_appform_field_error_container hidden col-xs-12 text-center'></div></div></div>",
 
 
-        fh_appform_fieldActionBar: "<div class='fh_appform_field_button_bar col-xs-12' ><button class='fh_appform_removeInputBtn special_button fh_appform_button_action  btn btn-default col-xs-offset-1 col-xs-5'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action  btn btn-default col-xs-offset-1 col-xs-5 pull-right'>+</button></div>",
-        title: '<div class="fh_appform_field_title <%= required%>"><h3 class="text-center"><%= title %></h3></div>',
-        titleRepeating: '<div class="fh_appform_field_title"><h3 class="text-center"><%= title %></h3></div>',
-        instructions: '<p class="fh_appform_field_instructions"><h4 class="text-center"><%= helpText %></h4></p>',
+        fh_appform_fieldActionBar: "<div class='fh_appform_field_button_bar col-xs-12' ><button class='fh_appform_removeInputBtn special_button fh_appform_button_action  btn btn-primary col-xs-offset-1 col-xs-5'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action  btn btn-primary col-xs-offset-1 col-xs-5 pull-right'>+</button></div>",
+        title: '<div class="fh_appform_field_title <%= required%>"><h3 class="text-left"><%= title %></h3></div>',
+        titleRepeating: '<div class="fh_appform_field_title"><h3 class="text-left"><%= title %></h3></div>',
+        instructions: '<p class="fh_appform_field_instructions"><h4 class="text-left"><%= helpText %></h4></p>',
         events: {
             "change": "contentChanged",
             "blur input,select,textarea": "validate",
@@ -1982,6 +1982,7 @@
         setErrorText: function(index, text) {
             var wrapperObj = this.getWrapper(index);
             wrapperObj.find(this.errMessageContainer).text(text);
+            wrapperObj.find(this.errMessageContainer).removeClass('hidden');
             wrapperObj.find(this.errMessageContainer).show();
             wrapperObj.find(this.errMessageContainer).addClass(this.errorClassName);
             wrapperObj.find("input,textarea,select").addClass(this.errorClassName);
@@ -2051,7 +2052,7 @@
         },
         renderButton: function(index, label, extension_type) {
             var button = $('<button>');
-            button.addClass('special_button fh_appform_button_action btn btn-default col-xs-12');
+            button.addClass('special_button fh_appform_button_action btn btn-primary col-xs-12');
             button.addClass(extension_type);
             button.attr("data-index", index);
             button.html(' ' + label);
@@ -2956,7 +2957,7 @@
         extension_type: 'fhsig',
         input: "<img class='sigImage img-responsive' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
         templates: {
-            signaturePad: ['<div class="sigPad">', '<ul class="sigNav">', '<button class="clearButton fh_appform_button_cancel">Clear</button><button class="cap_sig_done_btn fh_appform_button_action">Done</button>', '<br style="clear:both;" />', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
+            signaturePad: ['<div class="sigPad">', '<ul class="sigNav col-xs-12">', '<button class="clearButton fh_appform_button_cancel btn btn-danger col-xs-5 col-xs-offset-1">Clear</button><button class="cap_sig_done_btn fh_appform_button_action btn btn-primary col-xs-5 col-xs-offset-1">Done</button>', '<br style="clear:both;" />', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
         },
 
         initialize: function(options) {
@@ -3503,7 +3504,7 @@
             formTitle: '<div class="fh_appform_form_title col-xs-12 text-center"><h1><%= title %></h1></div>',
             formDescription: '<div class="fh_appform_form_description  col-xs-12 text-center"><h2><%= description %></h2></div>',
             formContainer: '<div id="fh_appform_container" class="fh_appform_form_area col-xs-offset-1 col-xs-10 fh_appform_container"></div>',
-            buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_button_bar col-xs-12"><button class="fh_appform_button_saveDraft fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_button_default">Previous</button><button class="fh_appform_button_next fh_appform_button_default">Next</button><button class="fh_appform_button_submit fh_appform_button_action">Submit</button></div>'
+            buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_button_bar col-xs-12"><button class="fh_appform_button_saveDraft fh_appform_button_main fh_appform_button_action btn btn-primary">Save Draft</button><button class="fh_appform_button_previous fh_appform_button_default btn btn-default">Previous</button><button class="fh_appform_button_next fh_appform_button_default btn btn-default">Next</button><button class="fh_appform_button_submit fh_appform_button_action btn btn-primary">Submit</button></div>'
         },
         elementNames: {
             formContainer: "#fh_appform_container"

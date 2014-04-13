@@ -28,6 +28,27 @@ PendingListView = Backbone.View.extend({
     scrollToTop: function() {
         window.scrollTo(0, 0);
     },
+    updateSubmissionProgress: function(progress, subLocalId) {
+        console.log(progress, subLocalId);
+        var progPercentage = 0;
+
+        if (progress && subLocalId) {
+            if (progress.totalSize && progress.totalSize > 0) {
+                if (progress.uploaded > 0) {
+                    progPercentage = (progress.uploaded / progress.totalSize) * 100;
+                }
+            }
+        }
+
+        if (subLocalId && typeof subLocalId === 'string') {
+            var eleToUpdate = $('#' + subLocalId);
+            if (eleToUpdate && eleToUpdate.length > 0) {
+                eleToUpdate = $(eleToUpdate[0]);
+                eleToUpdate.css("width", progPercentage + "%");
+                eleToUpdate.html(progPercentage + "%");
+            }
+        }
+    },
 
     submitAll: function() {
         var self = this;
@@ -37,24 +58,11 @@ PendingListView = Backbone.View.extend({
         var c = 1;
         var tasks = _.collect(App.collections.pending_waiting.models, function(model) {
             return function(callback) {
-
-                loadingView.updateProgress(c * 100 / tasks.length);
-                loadingView.updateMessage("Starting " + c + " of " + tasks.length);
                 model.coreModel.upload(function() {});
-                model.coreModel.on("submitted", function(err) {
-                    if (!err) {
-                        loadingView.updateMessage("Completed " + c + " of " + tasks.length);
-                    } else {
-                        loadingView.updateMessage("Submitting " + c + " failed");
-                    }
-                    callback(null);
-                });
             };
         }); // Kick things off by fetching when all stores are initialised
 
-        async.series(tasks, function() {
-            loadingView.hide();
-        });
+        async.series(tasks, function() {});
         return false;
     },
 

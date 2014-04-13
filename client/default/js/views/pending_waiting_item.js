@@ -1,7 +1,7 @@
 PendingWaitingView = ItemView.extend({
 
     templates: {
-        item: '<td><%= name %></td> <td><%= id %></td><td><%= timestamp %></td><td><button class="button fh_appform_button_cancel button-negative delete-item first_button btn btn-default">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button btn btn-default">Submit</button></td>'
+        item: '<td><%= name %></td> <td><%= id %></td><td><%= timestamp %></td><td><button class="button fh_appform_button_cancel button-negative delete-item first_button btn btn-danger">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button btn btn-primary">Submit</button></td>'
     },
     render: function() {
         var time = new moment(this.model.get('uploadStartDate')).format('HH:mm:ss DD/MM/YYYY');
