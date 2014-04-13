@@ -1,53 +1,39 @@
-<link rel="stylesheet" type="text/css" href="css/style.css">
-<link rel="stylesheet" type="text/css" href="css/font-awesome/css/font-awesome.min.css" >
-
+<link rel="stylesheet" type="text/css" href="css/font-awesome/css/font-awesome.min.css">
+<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <title>Forms App</title>
+
+<script>
+    // Namespace
+    var App = App || {};
+    App.views = App.views || {};
+    App.collections = App.collections || {};
+</script>
 
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
 
-<div class="fh_appform_container">
-    <div id="fh_wufoo_header" class="hidden bar-title fh_appform_button_bar"></div>
-    <div id="fh_wufoo_alerts_area"></div>
+<div class="fh_appform_container row">
+    <div id="fh_wufoo_header" class="col-xs-12"></div>
 
-    <div id="fh_wufoo_form_list" class="fh_appform_form hidden"></div>
+    <div id="fh_content_form_list" class="col-xs-12" style="margin-top:50px"></div>
 
-    <div id="fh_wufoo_drafts" class="fh_appform_form hidden"></div>
+    <div id="fh_content_drafts" class="col-xs-12" style="margin-top:50px"></div>
 
-    <div id="fh_wufoo_pending" class="fh_appform_form hidden"></div>
+    <div id="fh_content_pending" class="col-xs-12" style="margin-top:50px"></div>
 
-    <div id="fh_wufoo_sent" class="fh_appform_form hidden"></div>
-
-    <div id="fh_wufoo_settings" class="fh_appform_form hidden"></div>
+    <div id="fh_content_sent" class="col-xs-12" style="margin-top:50px"></div>
 
 
-    <div id="fh_wufoo_content" class="hidden"></div>
+    <div id="fh_content_settings" class="col-xs-12" style="margin-top:50px"></div>
 
 
-    <br/>
-    <div id="debug_mode" class="hidden">
-        <button onclick="App.collections.forms.create(App.MockForm);">Create Mock Form</button><br/>
-        <button onclick="App.collections.forms.create(App.MockSimplerMultiPageForm);">Create Simpler Mock Multi Page Form</button><br/>
-        <button onclick="App.collections.forms.create(App.MockSimpleSinglePageForm);">Create Mock Single Page Form</button><br/>
-        <button onclick="App.collections.drafts.create(App.MockForm);">Create Mock Draft</button><br/>
-        <button onclick="App.collections.pending_submitting.create(App.MockForm);">Create Mock Pending Submitting</button><br/>
-        <button onclick="App.collections.sent.create(App.MockForm);">Create Mock Sent</button><br/>
-        <button onclick="App.collections.pending_review.create(App.MockForm);">Create Mock Pending Review</button><br/>
-
-        <button onclick="App.collections.pending_waiting.create(App.MockForm);">Create Mock Pending Waiting</button><br/>
-        <button onclick="localStorage.clear();location.reload();">Clear Local Storage</button><br/>
-    </div>
-
-    <div class="fh_appform_field_instructions" id="app_version"></div>
+    <div id="fh_wufoo_content" class="col-xs-12" style="margin-top:50px"></div>
     <script>
         $fh.ready({},function (){
             jQuery(document).ready(function(){
                 try {//TODO Needs to be changed to fh_appform_xxx when renaming classes.
-                    var headerHeight = jQuery('#fh_wufoo_header').outerHeight();
-                    jQuery('body').addClass('fh_appform_body');
-                    jQuery('#fh_wufoo_alerts_area').css('margin-top', headerHeight + 'px');
-                    jQuery('#fh_wufoo_alerts_area').css('clear', 'both');
+                    
                 } catch(e) {
                     console.error("load failed");
                     console.error(e);
@@ -56,21 +42,15 @@
         });
     </script>
 
-    <script>
-        // Namespace
-        var App = App || {};
-        App.views = App.views || {};
-        App.collections = App.collections || {};
-    </script>
+    
 
     <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/jquery.validate.patch.js" type="text/javascript" charset="utf-8"></script>
      <script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/async.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/moment.js" type="text/javascript" charset="utf-8"></script>
+    
 
     <!-- mobiscroll -->
     <script src="lib/mobiscroll.custom.min.js" type="text/javascript" charset="utf-8"></script>
@@ -110,6 +90,3 @@
 
     </script>
 </div>
-
-<script src="lib.min.js"></script>
-<script src="main.js"></script>

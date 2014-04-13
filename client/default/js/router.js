@@ -1,124 +1,101 @@
 App.Router = Backbone.Router.extend({
 
-  /*
+    routes: {
+        "*path": "form_list" // Default route
+    },
 
-  Known unsupported rules/validation
-  - text ranges i.e. 'Range' option e.g. input text/words must be between 1 & 4 long (rules n/a via api or rules json)
-  - number ranges i.e. 'Range' option e.g. number value/digits must be between 2 & 8 (rules n/a via api or rules json)
-  - matchtype all for rule builder config i.e. Operatior AND to specify multiple conditions before a rule is triggered (TODO)
-  - form rules i.e. show message/send email/redirect to website depending on field condition/s (no plans to implement this)
-  - file field/ submission size limits i.e. http://help.wufoo.com/app/answers/detail/a_id/5751#file
-  - other field size limits e.g. text field 255 character limit
+    initialize: function() {
+        _.bindAll(this, "form_list", "onReady", "onResume", "onConfigLoaded", "fetchCollections", "reload");
+    },
 
-  NOTES:
-  - despite all validation rules not being supported, a fallback is in place to highlight validation errors passed back
-    from a bad submit to wufoo. Although these errors show which fields are in an error state, they cannot be
-    programatically validated on the client, and would required another submit of the form.
-  - money field type is n/a via api e.g. $ or €
-  - various form settings have not been considered for addition e.g. Captcha 'Limit Activity' option
-  - to do a lot of the items above it would probably be necessary to 'read' the FORM_JSON global from
-    the form builder page i.e. https://<company>.wufoo.com/build/<form_name>/ (this info n/a from api)
+    form_list: function() {
+        var self = this;
 
-  */
-
-  routes: {
-    "form_list": "form_list",
-    "*path": "form_list" // Default route
-  },
-
-  initialize: function() {
-    _.bindAll(this);
-  },
-
-  form_list: function() {
-    this.loadingView = new LoadingCollectionView();
-    this.loadingView.show("App Starting");
+        this.loadingView = new LoadingCollectionView();
+        this.loadingView.show("App Starting");
 
 
-    var self = this;
-    $fh.ready({}, function() {
-      $fh.on('fhinit', function(err, cloudProps){
-        if(err) console.error("Error on fhinit", err);
-        $fh.forms.init({}, function() {
-          $fh.forms.getTheme({
-            "fromRemote": false,
-            "css": true
-          }, function(err, themeCSS) {
-            App.views.form_list = new FormListView();
-            App.views.drafts_list = new DraftListView();
-            App.views.pending_list = new PendingListView();
-            App.views.sent_list = new SentListView();
-            App.views.settings = new SettingsView();
-            App.views.header = new HeaderView();
-            App.views.header.showHome();
+        console.log("Form List");
+        $fh.ready({}, function() {
+            $fh.on('fhinit', function(err, cloudProps) {
+                console.log(cloudProps);
+                if (err) console.error("Error on fhinit", err);
+                $fh.cloud_props.hosts.url = "https://testing-6fqkkjs2qh001su8z90lw5mt-dev.ac.gen.beta.feedhenry.com";
+                $fh.forms.init({}, function() {
+                    $fh.forms.getTheme({
+                        "fromRemote": false,
+                        "css": true
+                    }, function(err, themeCSS) {
+                        App.views.form_list = new FormListView();
+                        App.views.header = new HeaderView();
+                        App.views.drafts_list = new DraftListView();
+                        App.views.pending_list = new PendingListView();
+                        App.views.sent_list = new SentListView();
+                        App.views.settings = new SettingsView();
 
+                        App.views.drafts_list.hide();
+                        App.views.pending_list.hide();
+                        App.views.sent_list.hide();
+                        App.views.settings.hide();
 
-            if ($('#fh_appform_style').length > 0) {
-              $('#fh_appform_style').html(themeCSS);
-            } else {
-              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-            }
-            if (err) console.error(err);
-            self.onReady();
-          });
+                        $.when($.get("css/testGeneratedPhas3.css")).done(function(response) {
+                            var css = _.template(response, {
+                                color: "blue"
+                            });
+                            if ($('#fh_appform_style').length > 0) {
+                                $('#fh_appform_style').html(css);
+                            } else {
+                                $('head').append('<style id="fh_appform_style">' + css + '</style>');
+                            } if (err) console.error(err);
+                            self.onReady();
+                        });
+                    });
+                });
+            });
         });
-      });
+    },
+    onReady: function() {
+        this.loadingView.show("App Ready, Loading form list");
 
-      //This really should be removed as well, it's now possible to specify localhost as a query parameter in the page url.
-      //e.g. http://localhost/index.html?url=https://testing.feedhenry.me
- //     $fh.on('fhinit', function() {
-        /**** LOCAL DEV USAGE *****/
-//       $fh.cloud_props.hosts.debugCloudUrl = "https://testing-v495um58kpcv3cc0f1cz0xxd-dev.feedhenry.me";
-//       $fh.app_props.host = "https://testing.feedhenry.me";
-//      });
-    });
-  },
-  onReady: function() {
-    this.loadingView.show("App Ready, Loading form list");
+        $fh.env(this.onPropsRead);
 
-    $fh.env(this.onPropsRead);
+        // by default, allow fetching on resume event.
+        // Can be set to false when taking a pic so refetch doesn't happen on resume from that
+        App.resumeFetchAllowed = true;
+        document.addEventListener("resume", this.onResume, false);
+        var banner = false;
+        this.onConfigLoaded();
+    },
 
-    // by default, allow fetching on resume event.
-    // Can be set to false when taking a pic so refetch doesn't happen on resume from that
-    App.resumeFetchAllowed = true;
-    document.addEventListener("resume", this.onResume, false);
-    var banner = false;
-    $('#fh_wufoo_banner .list li').each(function(i, e) {
-      banner = true;
-    });
-    this.onConfigLoaded();
-  },
+    // run App.router.onResume() to test this in browser
+    onResume: function() {
+        // only trigger resync of forms if NOT resuming after taking a photo
+        if (App.resumeFetchAllowed) {
+            App.collections.forms.fetch();
+        } else {
+            // reset flag to true for next time
+            App.resumeFetchAllowed = true;
+        }
+    },
+    onConfigLoaded: function() {
+        this.fetchCollections("Config Loaded , fetching forms");
+    },
 
-  // run App.router.onResume() to test this in browser
-  onResume: function() {
-    // only trigger resync of forms if NOT resuming after taking a photo
-    if (App.resumeFetchAllowed) {
-      App.collections.forms.fetch();
-    } else {
-      // reset flag to true for next time
-      App.resumeFetchAllowed = true;
+    reload: function() {
+        App.collections.forms.reset();
+        this.loadingView.show("reloading forms");
+        this.fetchCollections("reloading forms");
+    },
+
+    fetchCollections: function(msg, to) {
+        this.loadingView.show(msg);
+        App.collections.forms.fetch();
+
+        refreshSubmissionCollections();
+    },
+    onPropsRead: function(props) {
+        this.props = props;
     }
-  },
-  onConfigLoaded: function() {
-    this.fetchCollections("Config Loaded , fetching forms");
-  },
-
-  reload: function() {
-    App.collections.forms.reset();
-    this.fetchCollections("reloading forms");
-  },
-
-  fetchCollections: function(msg, to) {
-    this.loadingView.show(msg);
-    // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
-    App.collections.forms.fetch();
-
-    refreshSubmissionCollections();
-  },
-  onPropsRead: function(props) {
-    this.props = props;
-    // App.views.about = new AboutView(props);
-  }
 });
 
 App.router = new App.Router();

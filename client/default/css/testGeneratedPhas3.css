@@ -1,271 +1,348 @@
-/* Phase3 Placeholder styles */
+/*!
+ * Bootstrap v3.1.1 (http://getbootstrap.com)
+ * Copyright 2011-2014 Twitter, Inc.
+ * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+ */
 
-.fh_appform_logo {
-    text-align: center;
-    background-image: none; /*TODO Needs to be taken out of generated css as a background image. Should be an image tag within a div*/
+.btn-default,
+.btn-primary,
+.btn-success,
+.btn-info,
+.btn-warning,
+.btn-danger {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .2);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 1px rgba(0, 0, 0, .075);
 }
-
-.fh_appform_title {
-    text-align: center;
+.btn-default:active,
+.btn-primary:active,
+.btn-success:active,
+.btn-info:active,
+.btn-warning:active,
+.btn-danger:active,
+.btn-default.active,
+.btn-primary.active,
+.btn-success.active,
+.btn-info.active,
+.btn-warning.active,
+.btn-danger.active {
+  -webkit-box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+          box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
 }
-
-.fh_appform_description {
-    text-align: center;
+.btn:active,
+.btn.active {
+  background-image: none;
 }
-
-.fh_appform_field_title {
-    display: block; margin-bottom: 10px;
+.btn-default {
+  text-shadow: 0 1px 0 <%= color%>;
+  background-image: -webkit-linear-gradient(top, <%= color%> 0%, <%= color%> 100%);
+  background-image:         linear-gradient(to bottom, <%= color%> 0%, <%= color%> 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='<%= color%>', endColorstr='<%= color%>', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #dbdbdb;
+  border-color: #ccc;
 }
-
-.fh_appform_field_instructions {
-    margin-bottom: 10px;
+.btn-default:hover,
+.btn-default:focus {
+  background-color: <%= color%>;
+  background-position: 0 -15px;
 }
-
-/* FIELD INPUT STATIC CSS */
-
-
-.fh_appform_field_input > input[type="number"],
-.fh_appform_field_input > input[type="text"],
-.fh_appform_field_input > input[type="email"],
-.fh_appform_field_input > input[type="date"],
-.fh_appform_field_input > input[type="time"],
-.fh_appform_field_input > select,
-.fh_appform_field_input > textarea,
-.fh_appform_field_input > .radio,
-.fh_appform_field_input > .checkboxes
-{
-    width: 100%;
-    background: #ddea04;
-    font-size: 14pt;
-    font-family: georgia;
-    color: #0000FF;
-    font-weight: bold;
-    font-style: normal;
-    border-width: thick;
-    border-style: dotted;
-    border-color: #b5bf16;
-    padding: 6px 0 6px 0;
+.btn-default:active,
+.btn-default.active {
+  background-color: <%= color%>;
+  border-color: #dbdbdb;
 }
-
-
-/*FIELD AREA CSS*/
-
-
-.fh_appform_field_area:last-child { /*TODO Needs to be generated in theme generation. Inherits border data from fh_appform_field_area*/
-    border-width: thick;
-    border-style: dotted;
-    border-color: #b0ce31;
+.btn-primary {
+  background-image: -webkit-linear-gradient(top, #428bca 0%, #2d6ca2 100%);
+  background-image:         linear-gradient(to bottom, #428bca 0%, #2d6ca2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff428bca', endColorstr='#ff2d6ca2', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #2b669a;
 }
-
-.fh_appform_field_area {
-    padding: 20px;
-    border-bottom: none;
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #2d6ca2;
+  background-position: 0 -15px;
 }
-
-.fh_appform_field_area.fh_appform_field_section_break { /*TODO Needs to be generated*/
-    border:none;
+.btn-primary:active,
+.btn-primary.active {
+  background-color: #2d6ca2;
+  border-color: #2b669a;
 }
-
-.fh_appform_form {
-    padding: 5px;
+.btn-success {
+  background-image: -webkit-linear-gradient(top, #5cb85c 0%, #419641 100%);
+  background-image:         linear-gradient(to bottom, #5cb85c 0%, #419641 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5cb85c', endColorstr='#ff419641', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #3e8f3e;
 }
-
-
-.fh_appform_field_section_break_title {/*TODO Needs to be generated*/
-    font-size: 18pt;
-    font-family: arial;
-    color: #00FF00;
-    font-weight: bold;
-    font-style: normal;
+.btn-success:hover,
+.btn-success:focus {
+  background-color: #419641;
+  background-position: 0 -15px;
 }
-
-.fh_appform_field_section_break_description {/*TODO Needs to be generated*/
-    font-size: 12pt;
-    font-family: arial;
-    color: #A9302A;
-    font-weight: normal;
-    font-style: normal;
+.btn-success:active,
+.btn-success.active {
+  background-color: #419641;
+  border-color: #3e8f3e;
 }
-
-.fh_appform_button_navigation {
-    border-radius: 10px;
+.btn-info {
+  background-image: -webkit-linear-gradient(top, #5bc0de 0%, #2aabd2 100%);
+  background-image:         linear-gradient(to bottom, #5bc0de 0%, #2aabd2 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff2aabd2', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #28a4c9;
 }
-
-.fh_appform_button_navigation:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+.btn-info:hover,
+.btn-info:focus {
+  background-color: #2aabd2;
+  background-position: 0 -15px;
 }
-
-.fh_appform_button_action {
-    border-radius: 10px;
+.btn-info:active,
+.btn-info.active {
+  background-color: #2aabd2;
+  border-color: #28a4c9;
 }
-
-.fh_appform_button_action:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+.btn-warning {
+  background-image: -webkit-linear-gradient(top, #f0ad4e 0%, #eb9316 100%);
+  background-image:         linear-gradient(to bottom, #f0ad4e 0%, #eb9316 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff0ad4e', endColorstr='#ffeb9316', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #e38d13;
 }
-
-.fh_appform_button_action.fh_appform_special_button { /*TODO Needs to be added to theme generation - static*/
-    width: 100%;
-    border-radius: 20px;
-    padding: 4px;
-    /*font-size: 16px;*/
-    margin-top: 10px;
-    line-height: 28px;
+.btn-warning:hover,
+.btn-warning:focus {
+  background-color: #eb9316;
+  background-position: 0 -15px;
 }
-
-.fh_appform_special_button img {
-    min-height: 20px;
+.btn-warning:active,
+.btn-warning.active {
+  background-color: #eb9316;
+  border-color: #e38d13;
 }
-
-.fh_appform_button_cancel {
-
+.btn-danger {
+  background-image: -webkit-linear-gradient(top, #d9534f 0%, #c12e2a 100%);
+  background-image:         linear-gradient(to bottom, #d9534f 0%, #c12e2a 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9534f', endColorstr='#ffc12e2a', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-color: #b92c28;
 }
-
-.fh_appform_button_cancel:active { /*TODO Each button needs a change of background color and possibly a shadow.*/
-    background: green;
-    box-shadow: inset 0 1px 5px rgba(0, 0, 0, .3);
+.btn-danger:hover,
+.btn-danger:focus {
+  background-color: #c12e2a;
+  background-position: 0 -15px;
 }
-
-.fh_appform_navigation {
-
+.btn-danger:active,
+.btn-danger.active {
+  background-color: #c12e2a;
+  border-color: #b92c28;
 }
-
-.segmented-controller.fh_appform_navigation li > a { /*TODO This style has to be generated for the template app header styling. Inherits its properties from fh_appform_button_navigation*/
-    background-color: #14d822;
-    font-size: 11pt;
-    font-family: georgia;
-    color: #FF0000;
-    font-weight: bold;
-    font-style: normal;
+.thumbnail,
+.img-thumbnail {
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
 }
-
-.segmented-controller.fh_appform_navigation li > a:active { /*TODO Active state buttons needs to be added to css generation. This is for the header in the Appform-Template-App*/
-    background-color: blue;
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  background-color: #e8e8e8;
+  background-image: -webkit-linear-gradient(top, #f5f5f5 0%, #e8e8e8 100%);
+  background-image:         linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_field_required:first-child:after{ /*TODO Needs to be generated as part of css. Also, the color needs to be selectable.*/
-    color: #e32;
-    content: '*';
-    display: inline;
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+  background-color: #357ebd;
+  background-image: -webkit-linear-gradient(top, #428bca 0%, #357ebd 100%);
+  background-image:         linear-gradient(to bottom, #428bca 0%, #357ebd 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff428bca', endColorstr='#ff357ebd', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_error {  /*Needs to be added to the theme generation process.*/
-    background-color: #ea172b;
-    font-size: 18pt;
-    font-family: georgia;
-    color: #1519ff;
-    font-weight: bold;
-    font-style: normal;
-    border-width: thick;
-    border-style: dotted;
-    border-color: #fc0312;
+.navbar-default {
+  background-image: -webkit-linear-gradient(top, #fff 0%, #f8f8f8 100%);
+  background-image:         linear-gradient(to bottom, #fff 0%, #f8f8f8 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff8f8f8', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
+  border-radius: 4px;
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .15), 0 1px 5px rgba(0, 0, 0, .075);
+  padding: 7px 0px 0px 0px;
 }
-
-.fh_appform_errorMsg {
-    margin-top: 10px;
+.navbar-default .navbar-nav > .active > a {
+  background-image: -webkit-linear-gradient(top, #ebebeb 0%, #f3f3f3 100%);
+  background-image:         linear-gradient(to bottom, #ebebeb 0%, #f3f3f3 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffebebeb', endColorstr='#fff3f3f3', GradientType=0);
+  background-repeat: repeat-x;
+  -webkit-box-shadow: inset 0 3px 9px rgba(0, 0, 0, .075);
+          box-shadow: inset 0 3px 9px rgba(0, 0, 0, .075);
 }
-
-
-
-
-
-
-
-
-
-
-.hidden {
-    display: none;
+.navbar-brand,
+.navbar-nav > li > a {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .25);
 }
-
-.fh_appform_action_bar {
-    padding: 18px 20px 18px 20px;
+.navbar-inverse {
+  background-image: -webkit-linear-gradient(top, #3c3c3c 0%, #222 100%);
+  background-image:         linear-gradient(to bottom, #3c3c3c 0%, #222 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff3c3c3c', endColorstr='#ff222222', GradientType=0);
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_action_bar button.fh_appform_two_button {
-    width: 50%;
+.navbar-inverse .navbar-nav > .active > a {
+  background-image: -webkit-linear-gradient(top, #222 0%, #282828 100%);
+  background-image:         linear-gradient(to bottom, #222 0%, #282828 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff222222', endColorstr='#ff282828', GradientType=0);
+  background-repeat: repeat-x;
+  -webkit-box-shadow: inset 0 3px 9px rgba(0, 0, 0, .25);
+          box-shadow: inset 0 3px 9px rgba(0, 0, 0, .25);
 }
-
-.fh_appform_action_bar button.fh_appform_three_button {
-    width: 33.3%;
+.navbar-inverse .navbar-brand,
+.navbar-inverse .navbar-nav > li > a {
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, .25);
 }
-
-.fh_appform_page_title { /*TODO page title could be separate or use fh_appform_title*/
-    font-size: 18pt;
-    font-family: arial;
-    color: #123F00;
-    font-weight: bold;
-    font-style: normal;
-    text-align:center;
+.navbar-static-top,
+.navbar-fixed-top,
+.navbar-fixed-bottom {
+  border-radius: 0;
 }
-
-.fh_appform_page_description { /*TODO page description could be separate or use fh_appform_description*/
-    font-size: 12pt;
-    font-family: arial;
-    color: #123F00;
-    font-weight: bold;
-    font-style: normal;
-    text-align:center;
+.alert {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .2);
+  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 1px 2px rgba(0, 0, 0, .05);
+          box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25), 0 1px 2px rgba(0, 0, 0, .05);
 }
-
-/* Steps TODO Theme definition for the app Probably a rename also to the fh_appform namespace*/
-.fh_appform_progress_steps {
-    width: 100%;
-    font-size: 12pt;
-    font-family: times;
-    color: #a6d62b;
-    font-weight: normal;
-    font-style: normal;
-    border-width: thick;
-    border-style: dotted;
-    border-color: #fc0312;
+.alert-success {
+  background-image: -webkit-linear-gradient(top, #dff0d8 0%, #c8e5bc 100%);
+  background-image:         linear-gradient(to bottom, #dff0d8 0%, #c8e5bc 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffc8e5bc', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #b2dba1;
 }
-
-.fh_appform_progress_wrapper {
-    padding-top: 20px;
-    padding-bottom: 10px;
+.alert-info {
+  background-image: -webkit-linear-gradient(top, #d9edf7 0%, #b9def0 100%);
+  background-image:         linear-gradient(to bottom, #d9edf7 0%, #b9def0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9edf7', endColorstr='#ffb9def0', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #9acfea;
 }
-
-.fh_appform_progress_steps td {
-    text-align: center;
+.alert-warning {
+  background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #f8efc0 100%);
+  background-image:         linear-gradient(to bottom, #fcf8e3 0%, #f8efc0 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcf8e3', endColorstr='#fff8efc0', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #f5e79e;
 }
-
-.fh_appform_progress_steps .number_container {
-    border: 1px solid #c3c3c3;
-    display: inline-block;
-    height: 24px;
-    width: 24px;
-    text-align: center;
-    border-radius: 13px;
-    background: blue;
-    color: white;
-    border: 1px solid #000;
-    border-width: 1px;
-    border-style: solid;
-    border-color: purple;
+.alert-danger {
+  background-image: -webkit-linear-gradient(top, #f2dede 0%, #e7c3c3 100%);
+  background-image:         linear-gradient(to bottom, #f2dede 0%, #e7c3c3 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2dede', endColorstr='#ffe7c3c3', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #dca7a7;
 }
-
-.fh_appform_progress_steps .active .number_container {
-    background: #a6d62b;
-    color: blue;
-    border: 1px solid #000;
+.progress {
+  background-image: -webkit-linear-gradient(top, #ebebeb 0%, #f5f5f5 100%);
+  background-image:         linear-gradient(to bottom, #ebebeb 0%, #f5f5f5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffebebeb', endColorstr='#fff5f5f5', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_progress_steps .page_title {
-    padding-left: 10px;
-    /*font-weight: bold; Should inherit from fh_appform_progres_steps*/
+.progress-bar {
+  background-image: -webkit-linear-gradient(top, #428bca 0%, #3071a9 100%);
+  background-image:         linear-gradient(to bottom, #428bca 0%, #3071a9 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff428bca', endColorstr='#ff3071a9', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_progress_steps .number {
-    padding-top: 4px;
+.progress-bar-success {
+  background-image: -webkit-linear-gradient(top, #5cb85c 0%, #449d44 100%);
+  background-image:         linear-gradient(to bottom, #5cb85c 0%, #449d44 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5cb85c', endColorstr='#ff449d44', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_progress_steps td .page_title {
-    display: none;
+.progress-bar-info {
+  background-image: -webkit-linear-gradient(top, #5bc0de 0%, #31b0d5 100%);
+  background-image:         linear-gradient(to bottom, #5bc0de 0%, #31b0d5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff5bc0de', endColorstr='#ff31b0d5', GradientType=0);
+  background-repeat: repeat-x;
 }
-
-.fh_appform_progress_steps td.active .page_title {
-    display: inline;
+.progress-bar-warning {
+  background-image: -webkit-linear-gradient(top, #f0ad4e 0%, #ec971f 100%);
+  background-image:         linear-gradient(to bottom, #f0ad4e 0%, #ec971f 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff0ad4e', endColorstr='#ffec971f', GradientType=0);
+  background-repeat: repeat-x;
 }
-
+.progress-bar-danger {
+  background-image: -webkit-linear-gradient(top, #d9534f 0%, #c9302c 100%);
+  background-image:         linear-gradient(to bottom, #d9534f 0%, #c9302c 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9534f', endColorstr='#ffc9302c', GradientType=0);
+  background-repeat: repeat-x;
+}
+.list-group {
+  border-radius: 4px;
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, .075);
+}
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+  text-shadow: 0 -1px 0 #3071a9;
+  background-image: -webkit-linear-gradient(top, #428bca 0%, #3278b3 100%);
+  background-image:         linear-gradient(to bottom, #428bca 0%, #3278b3 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff428bca', endColorstr='#ff3278b3', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #3278b3;
+}
+.panel {
+  -webkit-box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, .05);
+}
+.panel-default > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #f5f5f5 0%, #e8e8e8 100%);
+  background-image:         linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff5f5f5', endColorstr='#ffe8e8e8', GradientType=0);
+  background-repeat: repeat-x;
+}
+.panel-primary > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #428bca 0%, #357ebd 100%);
+  background-image:         linear-gradient(to bottom, #428bca 0%, #357ebd 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff428bca', endColorstr='#ff357ebd', GradientType=0);
+  background-repeat: repeat-x;
+}
+.panel-success > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #dff0d8 0%, #d0e9c6 100%);
+  background-image:         linear-gradient(to bottom, #dff0d8 0%, #d0e9c6 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffdff0d8', endColorstr='#ffd0e9c6', GradientType=0);
+  background-repeat: repeat-x;
+}
+.panel-info > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #d9edf7 0%, #c4e3f3 100%);
+  background-image:         linear-gradient(to bottom, #d9edf7 0%, #c4e3f3 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffd9edf7', endColorstr='#ffc4e3f3', GradientType=0);
+  background-repeat: repeat-x;
+}
+.panel-warning > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #fcf8e3 0%, #faf2cc 100%);
+  background-image:         linear-gradient(to bottom, #fcf8e3 0%, #faf2cc 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fffcf8e3', endColorstr='#fffaf2cc', GradientType=0);
+  background-repeat: repeat-x;
+}
+.panel-danger > .panel-heading {
+  background-image: -webkit-linear-gradient(top, #f2dede 0%, #ebcccc 100%);
+  background-image:         linear-gradient(to bottom, #f2dede 0%, #ebcccc 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff2dede', endColorstr='#ffebcccc', GradientType=0);
+  background-repeat: repeat-x;
+}
+.well {
+  background-image: -webkit-linear-gradient(top, #e8e8e8 0%, #f5f5f5 100%);
+  background-image:         linear-gradient(to bottom, #e8e8e8 0%, #f5f5f5 100%);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe8e8e8', endColorstr='#fff5f5f5', GradientType=0);
+  background-repeat: repeat-x;
+  border-color: #dcdcdc;
+  -webkit-box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
+}
+/*# sourceMappingURL=bootstrap-theme.css.map */

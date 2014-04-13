@@ -1,47 +1,46 @@
 DraftListView = Backbone.View.extend({
-  el: $('#fh_wufoo_drafts'),
+    el: $('#fh_content_drafts'),
 
-  templates: {
-    draft_list: '<ul class="fh_appform_field_area list inset draft_list"></ul>',
-    draft_header: '<li class="list-divider"><div class="fh_appform_field_title">Draft Submissions</div></li>'
-  },
+    templates: {
+        draft_list: '<div class="table-responsive col-xs-12 text-center"><table class="fh_appform_field_area list inset draft_list table table-bordered"><tr><th colspan="4"><h2 class="text-center">Draft Submissions<h2></th></tr><tr><th class="text-center">Form Name</th class="text-center"><th class="text-center">Form Id</th><th class="text-center">Saved At</th><th class="text-center">Actions</th></tr></table></div>',
+        draft_header: ''
+    },
 
-  initialize: function() {
-    _.bindAll(this, 'render', 'appendDraftForm', 'changed');
+    initialize: function() {
+        _.bindAll(this, 'render', 'appendDraftForm', 'changed');
 
-    App.collections.drafts.bind('add remove reset', this.changed, this);
+        App.collections.drafts.bind('add remove reset sync', this.changed, this);
 
-    this.render();
-  },
+        this.render();
+    },
 
-  show: function() {
-    App.views.header.markActive('.fh_wufoo_drafts');
-    $(this.el).show();
-  },
+    show: function() {
+        App.views.header.markActive('fh_content_drafts');
+        $(this.$el).show();
+    },
 
-  hide: function() {
-    $(this.el).hide();
-  },
+    hide: function() {
+        $(this.$el).hide();
+    },
 
-  changed: function() {
-    var self = this;
+    changed: function() {
+        var self = this;
 
-    // Empty our existing view
-    $(this.el).empty();
+        // Empty our existing view
+        $(this.$el).empty();
+        $(this.$el).append(this.templates.draft_header);
 
-    // Add lists
-    $(this.el).append(this.templates.draft_list);
-    $('.draft_list', this.el).append(this.templates.draft_header);
+        // Add lists
+        $(this.$el).append(this.templates.draft_list);
+        _(App.collections.drafts.models).each(function(form) {
+            self.appendDraftForm(form);
+        }, this);
+    },
 
-    _(App.collections.drafts.models).each(function(form) {
-      self.appendDraftForm(form);
-    }, this);
-  },
-
-  appendDraftForm: function(form) {
-    var view = new DraftItemView({
-      model: form
-    });
-    $('.draft_list', this.el).append(view.render().el);
-  }
+    appendDraftForm: function(form) {
+        var view = new DraftItemView({
+            model: form
+        });
+        $('.draft_list', this.$el).append(view.render().$el);
+    }
 });

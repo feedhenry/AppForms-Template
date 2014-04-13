@@ -1,11 +1,13 @@
 $fh.ready({}, function() {
     FormView = $fh.forms.backbone.FormView.extend({
         initialize: function(params) {
-            $fh.forms.backbone.FormView.prototype.initialize.apply(this, arguments);
             var self = this;
+            self.options = params || {};
+            $fh.forms.backbone.FormView.prototype.initialize.apply(this, params);
 
-            if(params.form){
-              params.formId = params.form.getFormId();
+
+            if (params.form) {
+                params.formId = params.form.getFormId();
             }
 
             this.loadForm(params, function() {
@@ -20,37 +22,42 @@ $fh.ready({}, function() {
                     refreshSubmissionCollections();
                 });
 
-                self.submission.on('validationerror', function (err){
-                  self.fieldViews.forEach(function (v){
-                    var fieldId = v.model.getFieldId();
+                self.submission.on('validationerror', function(err) {
+                    self.fieldViews.forEach(function(v) {
+                        var fieldId = v.model.getFieldId();
 
-                    var result = err[fieldId];
-                    if (!result.valid) {
-                      for(var i=0; i < result.errorMessages.length; i++){
-                        if(result.errorMessages[i]) {
-                          v.setErrorText(i, result.errorMessages[i]);
+                        if (v.model.getType() === "sectionBreak") {
+                            return;
                         }
-                      }
-                    } else {
-                      self.clearError(index);
-                    }
-                  });
+
+                        var result = err[fieldId];
+                        if (!result.valid) {
+                            result.fieldErrorMessage = result.fieldErrorMessage || [];
+                            for (var i = 0; i < result.fieldErrorMessage.length; i++) {
+                                if (result.fieldErrorMessage[i]) {
+                                    v.setErrorText(i, result.fieldErrorMessage[i]);
+                                }
+                            }
+                        } else {
+                            self.clearError(index);
+                        }
+                    });
                 });
-                self.submission.on("progress", function(progress){
-                  console.log("PROGRESS", progress, this);
+                self.submission.on("progress", function(progress) {
+                    console.log("PROGRESS", progress, this);
                 });
-                self.submission.on("submitted", function(){
-                  console.log("SUBMITTED", this);
+                self.submission.on("submitted", function(submissionId) {
+                    console.log("SUBMITTED", this);
                 });
-                self.submission.on("error", function(errorMessage){
-                  console.log("ERROR", errorMessage);
+                self.submission.on("error", function(errorMessage) {
+                    console.log("ERROR", errorMessage);
                 });
-                self.submission.on("inprogress", function(uploadTask){
-                  console.log("READY FOR UPLOAD ", this, uploadTask);
+                self.submission.on("inprogress", function(uploadTask) {
+                    console.log("READY FOR UPLOAD ", this, uploadTask);
                 });
                 self.trigger("loaded");
                 if (params.autoShow) {
-                    self.el.show();
+                    self.$el.show();
                 }
                 self.render();
             });

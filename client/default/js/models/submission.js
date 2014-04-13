@@ -6,25 +6,25 @@ SubmissionModel = Backbone.Model.extend({
         } else if (method == "delete") {
             this.coreModel.clearLocal(function() {});
         } else {
-
+            console.log("Should not be here");
         }
     },
     loadSubmission: function(submissionMeta, cb) {
         var self = this;
         $fh.forms.getSubmissions({}, function(err, subList) {
             subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
-              if (err) {
-                  self.trigger("error", err);
-              } else {
-                  self.coreModel = submission;
-                  self.id = submission.getLocalId();
-              }
+                if (err) {
+                    self.trigger("error", err);
+                } else {
+                    self.coreModel = submission;
+                    self.id = submission.getLocalId();
+                }
 
-              self.coreModel.clearEvents();
-              self.initModel();
-              self.trigger("change");
+                self.coreModel.clearEvents();
+                self.initModel();
+                self.trigger("change");
 
-              cb(err, submission);
+                cb(err, submission);
             });
         });
     },
@@ -33,22 +33,8 @@ SubmissionModel = Backbone.Model.extend({
         var self = this;
         coreModel.on("inprogress", function(ut) {
             self.refreshAllCollections();
-            AlertView.showAlert({
-                "text": "Form submission started."
-            }, "success", 5000);
-            ut.on("progress", function(progress) {
-
-                AlertView.showAlert({
-                    "text": "Progress",
-                    "current": progress.uploaded,
-                    "total": progress.totalSize
-                }, "success", 5000);
-            });
         });
         coreModel.on("submitted", function(submissionId) {
-          AlertView.showAlert({
-            "text": "Form submission submitted."
-          }, "success", 5000);
             self.refreshAllCollections();
         });
         coreModel.on("submit", function() {
@@ -111,34 +97,32 @@ SubmissionCollection = Backbone.Collection.extend({
     }
 });
 
-SentModel = SubmissionModel.extend({
-});
+SentModel = SubmissionModel.extend({});
 
 SentCollection = SubmissionCollection.extend({
-  status:"submitted",
-  model: SentModel
+    status: "submitted",
+    model: SentModel
 });
 PendingModel = SubmissionModel.extend({
 
 });
 
 PendingWaitingCollection = SubmissionCollection.extend({
-  status: "pending"
+    status: "pending"
 });
 PendingSubmittingCollection = SubmissionCollection.extend({
-  status: "inprogress"
+    status: "inprogress"
 });
 
 PendingReviewCollection = SubmissionCollection.extend({
-  status: "error"
+    status: "error"
 });
 
-DraftModel = SubmissionModel.extend({
-});
+DraftModel = SubmissionModel.extend({});
 
 DraftsCollection = SubmissionCollection.extend({
-  model: DraftModel,
-  status:"draft"
+    model: DraftModel,
+    status: "draft"
 });
 
 
