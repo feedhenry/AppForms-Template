@@ -38,6 +38,8 @@ App.Router = Backbone.Router.extend({
                         App.views.sent_list.hide();
                         App.views.settings.hide();
 
+                        //console.log(themeCSS);
+
                         $.when($.get("css/testGeneratedPhas3.css")).done(function(response) {
                             var css = _.template(response, {
                                 color: "blue"
