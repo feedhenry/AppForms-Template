@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-01-31
+/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-04-16
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -1304,7 +1304,7 @@ FormModel = Backbone.Model.extend({
   },
 
   getTimeout:function (millis) {
-    var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
+    var timeout = App.config.getValueOrDefault('timeout') || ($fh.fh_timeout / 1000);
     if(millis) {
       timeout = timeout *1000;
     }
@@ -5556,7 +5556,7 @@ App.Router = Backbone.Router.extend({
     if (_.isNumber(timeout)) {
       $fh.ready({}, function(){
         $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-        $fh.legacy.fh_timeout=timeout * 1000;
+        $fh.fh_timeout=timeout * 1000;
       });
     }
   },
