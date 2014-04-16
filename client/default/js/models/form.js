@@ -68,7 +68,7 @@ FormModel = Backbone.Model.extend({
   },
 
   getTimeout:function (millis) {
-    var timeout = App.config.getValueOrDefault('timeout') || ($fh.legacy.fh_timeout / 1000);
+    var timeout = App.config.getValueOrDefault('timeout') || ($fh.fh_timeout / 1000);
     if(millis) {
       timeout = timeout *1000;
     }

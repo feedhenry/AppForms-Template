@@ -155,7 +155,7 @@ App.Router = Backbone.Router.extend({
     if (_.isNumber(timeout)) {
       $fh.ready({}, function(){
         $fh.logger.debug("Setting timeout to " + timeout + " seconds");
-        $fh.legacy.fh_timeout=timeout * 1000;
+        $fh.fh_timeout=timeout * 1000;
       });
     }
   },
