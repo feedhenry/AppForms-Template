@@ -1461,10 +1461,10 @@
     }
     function numberToInvertedBytes(number) {
       return [
-        number & FF,
-        number >> 8 & FF,
-        number >> 16 & FF,
-        number >> 24 & FF
+          number & FF,
+          number >> 8 & FF,
+          number >> 16 & FF,
+          number >> 24 & FF
       ];
     }
     function swapAndInvertY(data, width, height) {
@@ -1661,19 +1661,15 @@
     errMessageContainer: ".fh_appform_field_error_container",
     requiredClassName: "fh_appform_field_required",
     errorClassName: "fh_appform_field_error",
-    repeatingClassName: "repeating",
-    nonRepeatingClassName: "non_repeating",
-    addInputButtonClass: ".fh_appform_addInputBtn",
+    addInputButtonClass: ".fh_appform_addInputBtn", //TODO Need to remove hard-coded strings for these names
     removeInputButtonClass: ".fh_appform_removeInputBtn",
     fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
-    input: "<input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
-    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' ></div></div><br style='clear:both'/>    </div>",
-    inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' > <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden'></div></div><br style='clear:both'/></div>",
+    input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' />",
+    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' style='width:100%;margin-top: 10px;'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container' style='display: inline-block;float: right;width: 80%;margin-right:15px'>  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' style='border-radius: 5px;margin-top: 5px;'></div>  </div><br style='clear:both'/>    </div>",
 
 
-    fh_appform_fieldActionBar: "<div class='fh_appform_field_button_bar' ><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
-    title: '<label class="fh_appform_field_title <%= required%>"><%= title %> </label>',
-    titleRepeating: '<label class="fh_appform_field_title"><%= title %> </label>',
+    fh_appform_fieldActionBar: "<div class='fh_appform_fieldActionBar' style='text-align: right;'><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
+    title: '<label class="fh_appform_field_title"><%= title %> </label>',
     instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
     events: {
       "change": "contentChanged",
@@ -1714,27 +1710,17 @@
     renderTitle: function() {
       var name = this.model.getName();
       var title = name;
-      var template = this.title;
-
-      if(this.model.isRepeating()){
-        template = this.titleRepeating;
-      }
-
-      return _.template(template, {
-        "title": title,
-        "required": this.getFieldRequired(1)
+      return _.template(this.title, {
+        "title": title
       });
     },
     renderInput: function(index) {
       var fieldId = this.model.getFieldId();
       var type = this.getHTMLInputType();
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
-
       return _.template(this.input, {
         "fieldId": fieldId,
         "index": index,
-        "inputType": type,
-        "repeatingClassName": repeatingClassName
+        "inputType": type
       });
     },
     getHTMLInputType: function() {
@@ -1758,14 +1744,8 @@
     },
     renderEle: function(titleHtml, inputHtml, index) {
       var fieldId = this.model.getFieldId();
-      var template =  this.inputTemplate;
 
-
-      if(this.model.isRepeating()){
-        template = this.inputTemplateRepeating;
-      }
-
-      return _.template(template, {
+      return _.template(this.inputTemplate, {
         "fieldId": fieldId,
         "index": index,
         "inputHtml": inputHtml,
@@ -2393,7 +2373,7 @@
     }
   });
   FieldCheckboxView = FieldView.extend({
-    checkboxes: '<div class="fh_appform_field_input <%= repeatingClassName%>"><div class="checkboxes"><%= choices %></div></div>',
+    checkboxes: '<div class="fh_appform_field_input"><div class="checkboxes"><%= choices %></div></div>',
     choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
 
 
@@ -2405,8 +2385,6 @@
       var html = "";
       var required = this.getFieldRequired(index);
       var self=this;
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
-
 
 
       $.each(subfields, function(i, subfield) {
@@ -2419,7 +2397,7 @@
         });
       });
 
-      checkboxesHtml = _.template(this.checkboxes, {"choices": choicesHtml, "repeatingClassName": repeatingClassName});
+      checkboxesHtml = _.template(this.checkboxes, {"choices": choicesHtml});
 
       return checkboxesHtml;
     },
@@ -2537,7 +2515,7 @@
   });
 
   FieldGeoView = FieldView.extend({
-    input: "<input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
+    input: "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
     buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
     type: "text",
     initialize: function() {
@@ -2546,12 +2524,10 @@
       FieldView.prototype.initialize.apply(this, arguments);
     },
     renderInput: function(index) {
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
       var html = _.template(this.input, {
         "fieldId": this.model.getFieldId(),
         "index": index,
-        "inputType": "text",
-        "repeatingClassName": repeatingClassName
+        "inputType": "text"
       });
 
 
@@ -2642,7 +2618,7 @@
   });
   FieldMapView = FieldView.extend({
     extension_type: 'fhmap',
-    input: "<div data-index='<%= index %>' id='<%= id%>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
+    input: "<div data-index='<%= index %>' class='fh_map_canvas' style='width:<%= width%>; height:<%= height%>;'></div>",
     initialize: function() {
       this.mapInited = 0;
       this.maps = [];
@@ -2664,8 +2640,7 @@
       return _.template(this.input, {
         width: this.mapSettings.mapWidth,
         height: this.mapSettings.mapHeight,
-        'index': index,
-        'id':Math.random()
+        'index': index
       });
     },
     onMapInit: function(index) {
@@ -2692,7 +2667,6 @@
     onElementShow: function(index) {
       var wrapperObj = this.getWrapper(index);
       var self = this;
-
       var mapCanvas = wrapperObj.find('.fh_map_canvas')[0];
       // var options = this.parseCssOptions();
       // // Merge
@@ -2791,7 +2765,7 @@
   FieldRadioView = FieldView.extend({
     hidden_field: '<input  id="radio<%= id %>" type="fh_appform_hidden" value="" data-type="radio">',
     choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" class="field radio" value="<%= value %>" type="radio"><label class="choice" ><%= choice %></label><br/>',
-    radio: '<div class="fh_appform_field_input <%= repeatingClassName%>"><%= radioChoices %></div>',
+    radio: '<div class="fh_appform_field_input"><%= radioChoices %></div>',
 
     renderInput: function(index) {
       var choices = this.model.getRadioOption();
@@ -2799,7 +2773,6 @@
       var radioChoicesHtml = "";
       var fullRadioHtml = "";
       var html = "";
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
 
       var fieldId = this.model.getFieldId();
       $.each(choices, function(i, choice) {
@@ -2816,7 +2789,7 @@
         radioChoicesHtml += self.htmlFromjQuery(jQObj);
       });
 
-      return _.template(this.radio, {"radioChoices": radioChoicesHtml, "repeatingClassName": repeatingClassName});
+      return _.template(this.radio, {"radioChoices": radioChoicesHtml});
     },
     valuePopulateToElement: function (index, value) {
       var wrapperObj = this.getWrapper(index);
@@ -2832,7 +2805,7 @@
     }
   });
   FieldSelectView = FieldView.extend({
-    select: "<select class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+    select: "<select class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
     option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
     renderInput: function(index) {
@@ -2842,7 +2815,6 @@
       var options="";
       var selectHtml = "";
       var html = "";
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
 
       var self=this;
       $.each(choices, function(i, choice) {
@@ -2855,8 +2827,7 @@
       return _.template(this.select, {
         "fieldId":fieldId,
         "index":index,
-        "options":options,
-        "repeatingClassName": repeatingClassName
+        "options":options
       });
     }
   });
@@ -3160,12 +3131,11 @@
   });
   FieldDateTimeView = FieldView.extend({
     extension_type: 'fhdate',
-    inputTime:"<div><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='time'></div>",
-    inputDate:"<div ><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='date'></div>",
-    inputDateTime:"<div ><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='text'></div>",
+    inputTime:"<div><input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='time'></div>",
+    inputDate:"<div ><input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='date'></div>",
+    inputDateTime:"<div ><input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='text'></div>",
     renderInput:function(index){
       var fieldId = this.model.getFieldId();
-      var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
 
       var unit=this.getUnit();
       var template="";
@@ -3182,8 +3152,7 @@
       }
       var html=_.template(template,{
         "fieldId":fieldId,
-        "index":index,
-        "repeatingClassName": repeatingClassName
+        "index":index
       });
       html+=this.renderButton(index,buttonLabel,"fhdate");
 
@@ -3403,7 +3372,7 @@
       formTitle: '<div class="fh_appform_form_title"><%= title %></div>',
       formDescription: '<div class="fh_appform_form_description"><%= description %></div>',
       formContainer: '<div id="fh_appform_container" class="fh_appform_form_area fh_appform_container"></div>',
-      buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_button_bar"><button class="fh_appform_button_saveDraft fh_appform_hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_hidden fh_appform_button_default">Previous</button><button class="fh_appform_button_next fh_appform_hidden fh_appform_button_default">Next</button><button class="fh_appform_button_submit fh_appform_hidden fh_appform_button_action">Submit</button></div>'
+      buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_action_bar"><button class="fh_appform_button_saveDraft fh_appform_hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_hidden fh_appform_button_default">Previous</button><button class="fh_appform_button_next fh_appform_hidden fh_appform_button_default">Next</button><button class="fh_appform_button_submit fh_appform_hidden fh_appform_button_action">Submit</button></div>'
     },
     events: {
       "click button.fh_appform_button_next": "nextPage",
@@ -3635,29 +3604,29 @@
         this.el.find("button.fh_appform_button_next").hide();
         this.el.find("button.fh_appform_button_saveDraft").show();
         this.el.find(" button.fh_appform_button_submit").show();
-        this.el.find(".fh_appform_button_bar button").removeClass('fh_appform_three_button');
-        this.el.find(".fh_appform_button_bar button").addClass('fh_appform_two_button');
+        this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_three_button');
+        this.el.find(".fh_appform_action_bar button").addClass('fh_appform_two_button');
       } else if (displayedIndex === 0) {
         this.el.find(" button.fh_appform_button_previous").hide();
         this.el.find("button.fh_appform_button_next").show();
         this.el.find("button.fh_appform_button_saveDraft").show();
         this.el.find(" button.fh_appform_button_submit").hide();
-        this.el.find(".fh_appform_button_bar button").removeClass('fh_appform_three_button');
-        this.el.find(".fh_appform_button_bar button").addClass('fh_appform_two_button');
+        this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_three_button');
+        this.el.find(".fh_appform_action_bar button").addClass('fh_appform_two_button');
       } else if (displayedIndex === displayedPages - 1) {
         this.el.find(" button.fh_appform_button_previous").show();
         this.el.find(" button.fh_appform_button_next").hide();
         this.el.find(" button.fh_appform_button_saveDraft").show();
         this.el.find(" button.fh_appform_button_submit").show();
-        this.el.find(".fh_appform_button_bar button").removeClass('fh_appform_two_button');
-        this.el.find(".fh_appform_button_bar button").addClass('fh_appform_three_button');
+        this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_two_button');
+        this.el.find(".fh_appform_action_bar button").addClass('fh_appform_three_button');
       } else {
         this.el.find(" button.fh_appform_button_previous").show();
         this.el.find(" button.fh_appform_button_next").show();
         this.el.find(" button.fh_appform_button_saveDraft").show();
         this.el.find(" button.fh_appform_button_submit").hide();
-        this.el.find(".fh_appform_button_bar button").removeClass('fh_appform_two_button');
-        this.el.find(".fh_appform_button_bar button").addClass('fh_appform_three_button');
+        this.el.find(".fh_appform_action_bar button").removeClass('fh_appform_two_button');
+        this.el.find(".fh_appform_action_bar button").addClass('fh_appform_three_button');
       }
       if (this.readonly) {
         this.el.find("button.fh_appform_button_saveDraft").hide();
@@ -3892,8 +3861,8 @@
     className: 'fh_appform_steps',
 
     templates: {
-      table: '<div class="fh_appform_progress_wrapper"><table class="fh_appform_progress_steps" cellspacing="0"><tr></tr></table><span class="fh_appform_page_title"></span></div>',
-      step: '<td><span class="number_container" style=""><div class="number"><%= step_num %></div></span><br style="clear:both"/></td>'
+      table: '<div class="fh_appform_progress_wrapper"><table class="fh_appform_progress_steps" cellspacing="0"><tr></tr></table></div>',
+      step: '<td><span class="number_container" style="padding: 0px 10px 2px 9px;"><div class="number"><%= step_num %></div></span><br style="clear:both"/><span class="fh_appform_page_title"><%= step_name %></span></td>'
     },
 
     initialize: function() {
@@ -3934,18 +3903,15 @@
       var self = this;
       self.render();
       self.$el.find('td').removeClass('active');
-
-      var displayIndex = self.parentView.getDisplayIndex();
-      var pageModel = self.parentView.pageViews[self.parentView.pageNum].model;
-
-      self.$el.find('td:eq(' + displayIndex + ')').addClass('active');
-      self.$el.find('.fh_appform_page_title').html(pageModel.getName());
+      self.$el.find('.fh_appform_page_title').hide();
+      self.$el.find('td:eq(' + self.parentView.getDisplayIndex() + ')').addClass('active');
+      self.$el.find('td:eq(' + self.parentView.getDisplayIndex() + ') .fh_appform_page_title').show();
     }
 
   });
   var ConfigView = Backbone.View.extend({
     "templates": [
-      '<div class="fh_appform_field_area config_camera">' +
+        '<div class="fh_appform_field_area config_camera">' +
         '<fieldset>' +
         '<div class="fh_appform_field_title">Camera</div>' +
         '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
@@ -3963,7 +3929,7 @@
         '<br/>' +
         '</fieldset>' +
         '</div>',
-      '<div class="fh_appform_field_area config_submission">' +
+        '<div class="fh_appform_field_area config_submission">' +
         '<fieldset>' +
         '<div class="fh_appform_field_title">Submission</div>' +
         '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
@@ -3984,7 +3950,7 @@
         '<br/>' +
         '</fieldset>' +
         '</div>',
-      '<style type="text/css">'+
+        '<style type="text/css">'+
         '#_logsViewPanel{'+
         'position:fixed;'+
         'left:10px;'+
