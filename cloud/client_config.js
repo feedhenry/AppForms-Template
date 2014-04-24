@@ -12,7 +12,7 @@ exports.config = {
   "logger" : false,
   "max_retries" : 0,
   "use_chunking" : true,
-  "timeout" : 30,
+  "timeout" : 60,
   "log_line_limit": 300,
   "log_email": "logs.enterpriseplc@feedhenry.com",
   "white_list": ["C3CFDCFE0AC5492884D9658A65AF8FB7", "26B5D3CA5182453587DF60BEA924CCB3","60fa12c62cd172f8" , "/^eeb45/", "/^acd5/i"]
