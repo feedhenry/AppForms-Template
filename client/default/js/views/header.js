@@ -1,156 +1,155 @@
 HeaderView = Backbone.View.extend({
-  el: '#fh_wufoo_header',
+    el: '#fh_wufoo_header',
 
-  events: {
-    'click div.fh_wufoo_home': 'showHome',
-    'click div.fh_wufoo_drafts': 'showDrafts',
-    'click div.fh_wufoo_pending': 'showPending',
-    'click div.fh_wufoo_sent': 'showSent'
-  },
-  
-  templates: {
-    list: '<div class="navigation_list"></div>',
-    forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
-    drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
-    pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
-    sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
-  },
+    events: {
+        'click div.fh_wufoo_home': 'showHome',
+        'click div.fh_wufoo_drafts': 'showDrafts',
+        'click div.fh_wufoo_pending': 'showPending',
+        'click div.fh_wufoo_sent': 'showSent'
+    },
 
-  initialize: function() {
-    this.undelegateEvents();
-    _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
+    templates: {
+        list: '<div class="navigation_list"></div>',
+        forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
+        drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
+        pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
+        sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
+    },
 
-    App.collections.drafts.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
-    App.collections.sent.bind('add remove reset', this.updateCounts, this);
+    initialize: function() {
+        this.undelegateEvents();
+        _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
-    var self = this;
-    this.adviseAll();
-    this.render();
-  },
+        App.collections.drafts.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
+        App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
-  render: function() {
-    $(this.el).empty();
+        var self = this;
+        this.adviseAll();
+        this.render();
+    },
 
-    var list = $(_.template(this.templates.list, {}));
-    list.append(this.templates.forms_button);
-    list.append(this.templates.drafts_button);
-    list.append(this.templates.pending_button);
-    list.append(this.templates.sent_button);
+    render: function() {
+        $(this.el).empty();
 
-    $(this.el).append(list);
-    $(this.el).show();
-  },
-  adviseAll: function() {
-    this.showHome = this.advise(this.showHome);
-    this.showDrafts= this.advise(this.showDrafts);
-    this.showPending= this.advise(this.showPending);
-    this.showSent= this.advise(this.showSent);
-  },
-  advise: function(func) {
-    var self = this;
-    return function() {
-      var skip = false;
-      var args = arguments;
-      if(args.length && args[0] === true) {
-        skip = true;
-      }
-      var proceed = function(clear){
-        try {
-          return func.call(self,args);
-        } finally {
-          if(clear && App.views.form){
-            App.views.form=null;
-          }
+        var list = $(_.template(this.templates.list, {}));
+        list.append(this.templates.forms_button);
+        list.append(this.templates.drafts_button);
+        list.append(this.templates.pending_button);
+        list.append(this.templates.sent_button);
+
+        $(this.el).append(list);
+        $(this.el).show();
+    },
+    adviseAll: function() {
+        this.showHome = this.advise(this.showHome);
+        this.showDrafts = this.advise(this.showDrafts);
+        this.showPending = this.advise(this.showPending);
+        this.showSent = this.advise(this.showSent);
+    },
+    advise: function(func) {
+        var self = this;
+        return function() {
+            var skip = false;
+            var args = arguments;
+            if (args.length && args[0] === true) {
+                skip = true;
+            }
+            var proceed = function(clear) {
+                try {
+                    return func.call(self, args);
+                } finally {
+                    if (clear && App.views.form) {
+                        App.views.form = null;
+                    }
+                }
+            };
+            if (skip || App.views.form == null || App.views.form.readonly) {
+                return proceed();
+            } else {
+                var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+                if (confirmDelete) {
+                    return proceed(true);
+                } else {
+                    return false;
+                }
+            }
+        };
+    },
+
+    showHome: function() {
+        this.hideAll();
+        App.views.form_list.show();
+        return false;
+    },
+
+    showDrafts: function() {
+        this.hideAll();
+
+
+        App.views.drafts_list.show();
+        return false;
+    },
+
+    showPending: function() {
+        this.hideAll();
+        App.views.pending_list.show();
+        return false;
+    },
+
+    showSent: function() {
+        this.hideAll();
+        App.views.sent_list.show();
+        return false;
+    },
+
+    showSettings: function() {
+        this.hideAll();
+        App.views.settings.show();
+    },
+    hideAll: function() {
+        window.scrollTo(0, 0);
+        App.views.form_list.hide();
+        App.views.drafts_list.hide();
+        App.views.pending_list.hide();
+        App.views.sent_list.hide();
+        App.views.settings.hide();
+        if (_.isObject(App.views.form)) {
+            App.views.form.$el.hide();
         }
-      };
-      if(skip || App.views.form == null || App.views.form.readonly) {
-        return proceed();
-      } else {
-        var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
-        if (confirmDelete) {
-          return proceed(true);
+    },
+
+    markActive: function(tab_class) {
+        var self = this;
+        self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
+        self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
+        self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
+    },
+
+    updateCounts: function() {
+        // TODO: DRY
+        var drafts_count = App.collections.drafts.length;
+        if (drafts_count > 0) {
+            $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
         } else {
-          return false;
+            $('.fh_wufoo_drafts .count', this.el).hide();
         }
-      }
-    };
-  },
 
-  showHome: function() {
-    this.hideAll();
-    App.views.form_list.show();
-    return false;
-  },
+        var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
 
-  showDrafts: function() {
-    this.hideAll();
+        if (pending_count > 0) {
+            $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
+        } else {
+            $('.fh_wufoo_pending .count', this.el).hide();
+        }
 
-
-    App.views.drafts_list.show();
-    return false;
-  },
-
-  showPending: function() {
-    this.hideAll();
-    App.views.pending_list.show();
-    return false;
-  },
-
-  showSent: function() {
-    this.hideAll();
-    App.views.sent_list.show();
-    return false;
-  },
-
-  showSettings: function () {
-    this.hideAll();
-    App.views.settings.show();
-  },
-  hideAll: function() {
-    window.scrollTo(0, 0);
-    App.views.form_list.hide();
-    App.views.drafts_list.hide();
-    App.views.pending_list.hide();
-    App.views.sent_list.hide();
-    App.views.settings.hide();
-    if (_.isObject(App.views.form)) {
-      App.views.form.el.hide();
-      //App.views.form = null;
+        var sent_count = App.collections.sent.length;
+        if (sent_count > 0) {
+            $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+        } else {
+            $('.fh_wufoo_sent .count', this.el).hide();
+        }
     }
-  },
-
-  markActive: function(tab_class) {
-    var self = this;
-    self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
-    self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
-    self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
-  },
-
-  updateCounts: function() {
-    // TODO: DRY
-    var drafts_count = App.collections.drafts.length;
-    if (drafts_count > 0) {
-      $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_drafts .count', this.el).hide();
-    }
-
-    var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
-
-    if (pending_count > 0) {
-      $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_pending .count', this.el).hide();
-    }
-
-    var sent_count = App.collections.sent.length;
-    if (sent_count > 0) {
-      $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_sent .count', this.el).hide();
-    }
-  }
 });
