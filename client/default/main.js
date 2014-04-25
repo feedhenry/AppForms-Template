@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-22
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-25
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -610,8 +610,8 @@ $fh.ready({}, function() {
             $fh.forms.backbone.FormView.prototype.initialize.apply(this, arguments);
             var self = this;
 
-            if(params.form){
-              params.formId = params.form.getFormId();
+            if (params.form) {
+                params.formId = params.form.getFormId();
             }
 
             this.loadForm(params, function() {
@@ -626,37 +626,37 @@ $fh.ready({}, function() {
                     refreshSubmissionCollections();
                 });
 
-                self.submission.on('validationerror', function (err){
-                  self.fieldViews.forEach(function (v){
-                    var fieldId = v.model.getFieldId();
+                self.submission.on('validationerror', function(err) {
+                    self.fieldViews.forEach(function(v) {
+                        var fieldId = v.model.getFieldId();
 
-                    var result = err[fieldId];
-                    if (!result.valid) {
-                      for(var i=0; i < result.errorMessages.length; i++){
-                        if(result.errorMessages[i]) {
-                          v.setErrorText(i, result.errorMessages[i]);
+                        var result = err[fieldId];
+                        if (!result.valid) {
+                            for (var i = 0; i < result.errorMessages.length; i++) {
+                                if (result.errorMessages[i]) {
+                                    v.setErrorText(i, result.errorMessages[i]);
+                                }
+                            }
+                        } else {
+                            self.clearError(index);
                         }
-                      }
-                    } else {
-                      self.clearError(index);
-                    }
-                  });
+                    });
                 });
-                self.submission.on("progress", function(progress){
-                  console.log("PROGRESS", progress, this);
+                self.submission.on("progress", function(progress) {
+                    console.log("PROGRESS", progress, this);
                 });
-                self.submission.on("submitted", function(){
-                  console.log("SUBMITTED", this);
+                self.submission.on("submitted", function() {
+                    console.log("SUBMITTED", this);
                 });
-                self.submission.on("error", function(errorMessage){
-                  console.log("ERROR", errorMessage);
+                self.submission.on("error", function(errorMessage) {
+                    console.log("ERROR", errorMessage);
                 });
-                self.submission.on("inprogress", function(uploadTask){
-                  console.log("READY FOR UPLOAD ", this, uploadTask);
+                self.submission.on("inprogress", function(uploadTask) {
+                    console.log("READY FOR UPLOAD ", this, uploadTask);
                 });
                 self.trigger("loaded");
                 if (params.autoShow) {
-                    self.el.show();
+                    self.$el.show();
                 }
                 self.render();
             });
@@ -1373,160 +1373,159 @@ PendingListView = Backbone.View.extend({
   }
 });
 HeaderView = Backbone.View.extend({
-  el: '#fh_wufoo_header',
+    el: '#fh_wufoo_header',
 
-  events: {
-    'click div.fh_wufoo_home': 'showHome',
-    'click div.fh_wufoo_drafts': 'showDrafts',
-    'click div.fh_wufoo_pending': 'showPending',
-    'click div.fh_wufoo_sent': 'showSent'
-  },
-  
-  templates: {
-    list: '<div class="navigation_list"></div>',
-    forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
-    drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
-    pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
-    sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
-  },
+    events: {
+        'click div.fh_wufoo_home': 'showHome',
+        'click div.fh_wufoo_drafts': 'showDrafts',
+        'click div.fh_wufoo_pending': 'showPending',
+        'click div.fh_wufoo_sent': 'showSent'
+    },
 
-  initialize: function() {
-    this.undelegateEvents();
-    _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
+    templates: {
+        list: '<div class="navigation_list"></div>',
+        forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
+        drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
+        pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
+        sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
+    },
 
-    App.collections.drafts.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
-    App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
-    App.collections.sent.bind('add remove reset', this.updateCounts, this);
+    initialize: function() {
+        this.undelegateEvents();
+        _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
 
-    var self = this;
-    this.adviseAll();
-    this.render();
-  },
+        App.collections.drafts.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
+        App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
+        App.collections.sent.bind('add remove reset', this.updateCounts, this);
 
-  render: function() {
-    $(this.el).empty();
+        var self = this;
+        this.adviseAll();
+        this.render();
+    },
 
-    var list = $(_.template(this.templates.list, {}));
-    list.append(this.templates.forms_button);
-    list.append(this.templates.drafts_button);
-    list.append(this.templates.pending_button);
-    list.append(this.templates.sent_button);
+    render: function() {
+        $(this.el).empty();
 
-    $(this.el).append(list);
-    $(this.el).show();
-  },
-  adviseAll: function() {
-    this.showHome = this.advise(this.showHome);
-    this.showDrafts= this.advise(this.showDrafts);
-    this.showPending= this.advise(this.showPending);
-    this.showSent= this.advise(this.showSent);
-  },
-  advise: function(func) {
-    var self = this;
-    return function() {
-      var skip = false;
-      var args = arguments;
-      if(args.length && args[0] === true) {
-        skip = true;
-      }
-      var proceed = function(clear){
-        try {
-          return func.call(self,args);
-        } finally {
-          if(clear && App.views.form){
-            App.views.form=null;
-          }
+        var list = $(_.template(this.templates.list, {}));
+        list.append(this.templates.forms_button);
+        list.append(this.templates.drafts_button);
+        list.append(this.templates.pending_button);
+        list.append(this.templates.sent_button);
+
+        $(this.el).append(list);
+        $(this.el).show();
+    },
+    adviseAll: function() {
+        this.showHome = this.advise(this.showHome);
+        this.showDrafts = this.advise(this.showDrafts);
+        this.showPending = this.advise(this.showPending);
+        this.showSent = this.advise(this.showSent);
+    },
+    advise: function(func) {
+        var self = this;
+        return function() {
+            var skip = false;
+            var args = arguments;
+            if (args.length && args[0] === true) {
+                skip = true;
+            }
+            var proceed = function(clear) {
+                try {
+                    return func.call(self, args);
+                } finally {
+                    if (clear && App.views.form) {
+                        App.views.form = null;
+                    }
+                }
+            };
+            if (skip || App.views.form == null || App.views.form.readonly) {
+                return proceed();
+            } else {
+                var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+                if (confirmDelete) {
+                    return proceed(true);
+                } else {
+                    return false;
+                }
+            }
+        };
+    },
+
+    showHome: function() {
+        this.hideAll();
+        App.views.form_list.show();
+        return false;
+    },
+
+    showDrafts: function() {
+        this.hideAll();
+
+
+        App.views.drafts_list.show();
+        return false;
+    },
+
+    showPending: function() {
+        this.hideAll();
+        App.views.pending_list.show();
+        return false;
+    },
+
+    showSent: function() {
+        this.hideAll();
+        App.views.sent_list.show();
+        return false;
+    },
+
+    showSettings: function() {
+        this.hideAll();
+        App.views.settings.show();
+    },
+    hideAll: function() {
+        window.scrollTo(0, 0);
+        App.views.form_list.hide();
+        App.views.drafts_list.hide();
+        App.views.pending_list.hide();
+        App.views.sent_list.hide();
+        App.views.settings.hide();
+        if (_.isObject(App.views.form)) {
+            App.views.form.$el.hide();
         }
-      };
-      if(skip || App.views.form == null || App.views.form.readonly) {
-        return proceed();
-      } else {
-        var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
-        if (confirmDelete) {
-          return proceed(true);
+    },
+
+    markActive: function(tab_class) {
+        var self = this;
+        self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
+        self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
+        self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
+    },
+
+    updateCounts: function() {
+        // TODO: DRY
+        var drafts_count = App.collections.drafts.length;
+        if (drafts_count > 0) {
+            $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
         } else {
-          return false;
+            $('.fh_wufoo_drafts .count', this.el).hide();
         }
-      }
-    };
-  },
 
-  showHome: function() {
-    this.hideAll();
-    App.views.form_list.show();
-    return false;
-  },
+        var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
 
-  showDrafts: function() {
-    this.hideAll();
+        if (pending_count > 0) {
+            $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
+        } else {
+            $('.fh_wufoo_pending .count', this.el).hide();
+        }
 
-
-    App.views.drafts_list.show();
-    return false;
-  },
-
-  showPending: function() {
-    this.hideAll();
-    App.views.pending_list.show();
-    return false;
-  },
-
-  showSent: function() {
-    this.hideAll();
-    App.views.sent_list.show();
-    return false;
-  },
-
-  showSettings: function () {
-    this.hideAll();
-    App.views.settings.show();
-  },
-  hideAll: function() {
-    window.scrollTo(0, 0);
-    App.views.form_list.hide();
-    App.views.drafts_list.hide();
-    App.views.pending_list.hide();
-    App.views.sent_list.hide();
-    App.views.settings.hide();
-    if (_.isObject(App.views.form)) {
-      App.views.form.el.hide();
-      //App.views.form = null;
+        var sent_count = App.collections.sent.length;
+        if (sent_count > 0) {
+            $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+        } else {
+            $('.fh_wufoo_sent .count', this.el).hide();
+        }
     }
-  },
-
-  markActive: function(tab_class) {
-    var self = this;
-    self.$el.find('.navigation_list a').removeClass('fh_appform_button_default_active');
-    self.$el.find('.navigation_list a').addClass('fh_appform_button_default');
-    self.$el.find(tab_class + " a").addClass('fh_appform_button_default_active');
-  },
-
-  updateCounts: function() {
-    // TODO: DRY
-    var drafts_count = App.collections.drafts.length;
-    if (drafts_count > 0) {
-      $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_drafts .count', this.el).hide();
-    }
-
-    var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
-
-    if (pending_count > 0) {
-      $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_pending .count', this.el).hide();
-    }
-
-    var sent_count = App.collections.sent.length;
-    if (sent_count > 0) {
-      $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
-    } else {
-      $('.fh_wufoo_sent .count', this.el).hide();
-    }
-  }
 });
 AlertView = Backbone.View.extend({
   options:{el: $("#fh_wufoo_alerts_area")},
@@ -1571,7 +1570,7 @@ AlertView.showAlert = function(o, type, timeout) {
 };
 App.Router = Backbone.Router.extend({
 
-  /*
+    /*
 
   Known unsupported rules/validation
   - text ranges i.e. 'Range' option e.g. input text/words must be between 1 & 4 long (rules n/a via api or rules json)
@@ -1592,104 +1591,121 @@ App.Router = Backbone.Router.extend({
 
   */
 
-  routes: {
-    "form_list": "form_list",
-    "*path": "form_list" // Default route
-  },
+    routes: {
+        "form_list": "form_list",
+        "*path": "form_list" // Default route
+    },
 
-  initialize: function() {
-    _.bindAll(this);
-  },
+    initialize: function() {
+        _.bindAll(this);
+    },
 
-  form_list: function() {
-    this.loadingView = new LoadingCollectionView();
-    this.loadingView.show("App Starting");
+    form_list: function() {
+        var self = this;
+        self.loadingView = new LoadingCollectionView();
+        self.loadingView.show("App Starting");
+        self.deviceReady = false;
+        self.initReady = false;
+
+        function startForms() {
+            $fh.forms.init({}, function() {
+                $fh.forms.getTheme({
+                    "fromRemote": false,
+                    "css": true
+                }, function(err, themeCSS) {
+                    App.views.form_list = new FormListView();
+                    App.views.drafts_list = new DraftListView();
+                    App.views.pending_list = new PendingListView();
+                    App.views.sent_list = new SentListView();
+                    App.views.settings = new SettingsView();
+                    App.views.header = new HeaderView();
+                    App.views.header.showHome();
 
 
-    var self = this;
-    $fh.ready({}, function() {
-      $fh.on('fhinit', function(err, cloudProps){
-        if(err) console.error("Error on fhinit", err);
-        $fh.forms.init({}, function() {
-          $fh.forms.getTheme({
-            "fromRemote": false,
-            "css": true
-          }, function(err, themeCSS) {
-            App.views.form_list = new FormListView();
-            App.views.drafts_list = new DraftListView();
-            App.views.pending_list = new PendingListView();
-            App.views.sent_list = new SentListView();
-            App.views.settings = new SettingsView();
-            App.views.header = new HeaderView();
-            App.views.header.showHome();
+                    if ($('#fh_appform_style').length > 0) {
+                        $('#fh_appform_style').html(themeCSS);
+                    } else {
+                        $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                    }
+                    if (err) console.error(err);
+                    self.onReady();
+                });
+            });
+        }
 
-
-            if ($('#fh_appform_style').length > 0) {
-              $('#fh_appform_style').html(themeCSS);
+        $fh.ready({}, function() {
+            if (window.PhoneGap || window.cordova) {
+                document.addEventListener("deviceReady", function() {
+                    console.log("Device is now ready.");
+                    self.deviceReady = true;
+                }, false);
             } else {
-              $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                self.deviceReady = true;
             }
-            if (err) console.error(err);
-            self.onReady();
-          });
+            $fh.on('fhinit', function(err, cloudProps) {
+                console.log("fhinit called");
+                if (err) {
+                    console.error("Error on fhinit", err);
+                }
+
+                self.initReady = true;
+            });
+            var deviceReadyInterval = setInterval(function() {
+                if (self.deviceReady === true && self.initReady === true) {
+                    startForms();
+                    clearInterval(deviceReadyInterval);
+                } else {
+                    console.error("Device Not Ready Yet", self.deviceReady, self.initReady);
+                }
+            }, 500);
         });
-      });
+    },
+    onReady: function() {
+        this.loadingView.show("App Ready, Loading form list");
 
-      //This really should be removed as well, it's now possible to specify localhost as a query parameter in the page url.
-      //e.g. http://localhost/index.html?url=https://testing.feedhenry.me
- //     $fh.on('fhinit', function() {
-        /**** LOCAL DEV USAGE *****/
-//       $fh.cloud_props.hosts.debugCloudUrl = "https://testing-v495um58kpcv3cc0f1cz0xxd-dev.feedhenry.me";
-//       $fh.app_props.host = "https://testing.feedhenry.me";
-//      });
-    });
-  },
-  onReady: function() {
-    this.loadingView.show("App Ready, Loading form list");
+        $fh.env(this.onPropsRead);
 
-    $fh.env(this.onPropsRead);
+        // by default, allow fetching on resume event.
+        // Can be set to false when taking a pic so refetch doesn't happen on resume from that
+        App.resumeFetchAllowed = true;
+        document.addEventListener("resume", this.onResume, false);
+        var banner = false;
+        $('#fh_wufoo_banner .list li').each(function(i, e) {
+            banner = true;
+        });
+        this.onConfigLoaded();
+    },
 
-    // by default, allow fetching on resume event.
-    // Can be set to false when taking a pic so refetch doesn't happen on resume from that
-    App.resumeFetchAllowed = true;
-    document.addEventListener("resume", this.onResume, false);
-    var banner = false;
-    $('#fh_wufoo_banner .list li').each(function(i, e) {
-      banner = true;
-    });
-    this.onConfigLoaded();
-  },
+    // run App.router.onResume() to test this in browser
+    onResume: function() {
+        // only trigger resync of forms if NOT resuming after taking a photo
+        if (App.resumeFetchAllowed) {
+            App.collections.forms.fetch();
+        } else {
+            // reset flag to true for next time
+            App.resumeFetchAllowed = true;
+        }
+    },
+    onConfigLoaded: function() {
+        this.fetchCollections("Config Loaded , fetching forms");
+    },
 
-  // run App.router.onResume() to test this in browser
-  onResume: function() {
-    // only trigger resync of forms if NOT resuming after taking a photo
-    if (App.resumeFetchAllowed) {
-      App.collections.forms.fetch();
-    } else {
-      // reset flag to true for next time
-      App.resumeFetchAllowed = true;
+    reload: function() {
+        App.collections.forms.reset();
+        this.fetchCollections("reloading forms");
+    },
+
+    fetchCollections: function(msg, to) {
+        this.loadingView.show(msg);
+        // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
+        App.collections.forms.fetch();
+
+        refreshSubmissionCollections();
+    },
+    onPropsRead: function(props) {
+        this.props = props;
+        // App.views.about = new AboutView(props);
     }
-  },
-  onConfigLoaded: function() {
-    this.fetchCollections("Config Loaded , fetching forms");
-  },
-
-  reload: function() {
-    App.collections.forms.reset();
-    this.fetchCollections("reloading forms");
-  },
-
-  fetchCollections: function(msg, to) {
-    this.loadingView.show(msg);
-    // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
-    App.collections.forms.fetch();
-
-    refreshSubmissionCollections();
-  },
-  onPropsRead: function(props) {
-    this.props = props;
-    // App.views.about = new AboutView(props);
-  }
 });
 
 App.router = new App.Router();
