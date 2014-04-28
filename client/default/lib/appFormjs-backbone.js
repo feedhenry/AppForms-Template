@@ -15,8 +15,8 @@
     /*   - www.movable-type.co.uk/scripts/latlong.html                                                */
     /*                                                                                                */
     /*  Sample usage:                                                                                 */
-    /*    var lat = Geo.parseDMS('51Ã‚Â° 28Ã¢â‚¬Â² 40.12Ã¢â‚¬Â³ N');                                                 */
-    /*    var lon = Geo.parseDMS('000Ã‚Â° 00Ã¢â‚¬Â² 05.31Ã¢â‚¬Â³ W');                                                */
+    /*    var lat = Geo.parseDMS('51Â° 28â€² 40.12â€³ N');                                                 */
+    /*    var lon = Geo.parseDMS('000Â° 00â€² 05.31â€³ W');                                                */
     /*    var p1 = new LatLon(lat, lon);                                                              */
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
     var Geo = {};
@@ -25,7 +25,7 @@
      * Parses string representing degrees/minutes/seconds into numeric degrees
      *
      * This is very flexible on formats, allowing signed decimal degrees, or deg-min-sec optionally
-     * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Ã‚Âº 37' 09"W)
+     * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Âº 37' 09"W)
      * or fixed-width format without separators (eg 0033709W). Seconds and minutes may be omitted.
      * (Note minimal validation is done).
      *
@@ -124,7 +124,7 @@
                 if (d < 10)
                     d = '0' + d;
                 var dms = d + '\xb0';
-                // add Ã‚Âº symbol
+                // add Âº symbol
                 break;
             case 'dm':
                 var min = (deg * 60).toFixed(dp);
@@ -141,7 +141,7 @@
                 if (m < 10)
                     m = '0' + m;
                 dms = d + '\xb0' + m + '\u2032';
-                // add Ã‚Âº, ' symbols
+                // add Âº, ' symbols
                 break;
             case 'dms':
                 var sec = (deg * 3600).toFixed(dp);
@@ -161,7 +161,7 @@
                 if (s < 10)
                     s = '0' + s;
                 dms = d + '\xb0' + m + '\u2032' + s + '\u2033';
-                // add Ã‚Âº, ', " symbols
+                // add Âº, ', " symbols
                 break;
         }
         return dms;
@@ -191,7 +191,7 @@
         return lon == null ? '\xe2\u20ac\u201c' : lon + (deg < 0 ? 'W' : 'E');
     };
     /**
-     * Convert numeric degrees to deg/min/sec as a bearing (0Ã‚Âº..360Ã‚Âº)
+     * Convert numeric degrees to deg/min/sec as a bearing (0Âº..360Âº)
      *
      * @param   {Number} deg: Degrees
      * @param   {String} [format=dms]: Return value as 'd', 'dm', 'dms'
@@ -200,9 +200,9 @@
      */
     Geo.toBrng = function(deg, format, dp) {
         deg = (Number(deg) + 360) % 360;
-        // normalise -ve values to 180Ã‚Âº..360Ã‚Âº
+        // normalise -ve values to 180Âº..360Âº
         var brng = Geo.toDMS(deg, format, dp);
-        return brng == null ? '\xe2\u20ac\u201c' : brng.replace('360', '0'); // just in case rounding took us up to 360Ã‚Âº!
+        return brng == null ? '\xe2\u20ac\u201c' : brng.replace('360', '0'); // just in case rounding took us up to 360Âº!
     };
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
     if (!window.console)
@@ -301,7 +301,7 @@
         var y = Math.sin(dLon) * Math.cos(lat2);
         var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
         var brng = Math.atan2(y, x);
-        // ... & reverse it by adding 180Ã‚Â°
+        // ... & reverse it by adding 180Â°
         return (brng.toDeg() + 180) % 360;
     };
     /**
@@ -321,7 +321,7 @@
         var lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
         var lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
         lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-        // normalise to -180..+180Ã‚Âº
+        // normalise to -180..+180Âº
         return new LatLon(lat3.toDeg(), lon3.toDeg());
     };
     /**
@@ -345,7 +345,7 @@
         var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
         var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
         lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-        // normalise to -180..+180Ã‚Âº
+        // normalise to -180..+180Âº
         return new LatLon(lat2.toDeg(), lon2.toDeg());
     };
     /**
@@ -409,7 +409,7 @@
         var dLon13 = Math.atan2(Math.sin(brng13) * Math.sin(dist13) * Math.cos(lat1), Math.cos(dist13) - Math.sin(lat1) * Math.sin(lat3));
         var lon3 = lon1 + dLon13;
         lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-        // normalise to -180..+180Ã‚Âº
+        // normalise to -180..+180Âº
         return new LatLon(lat3.toDeg(), lon3.toDeg());
     };
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -430,7 +430,7 @@
         var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
         var q = isFinite(dLat / dPhi) ? dLat / dPhi : Math.cos(lat1);
         // E-W line gives dPhi=0
-        // if dLon over 180Ã‚Â° take shorter rhumb across anti-meridian:
+        // if dLon over 180Â° take shorter rhumb across anti-meridian:
         if (Math.abs(dLon) > Math.PI) {
             dLon = dLon > 0 ? -(2 * Math.PI - dLon) : 2 * Math.PI + dLon;
         }
@@ -464,7 +464,7 @@
     LatLon.prototype.rhumbDestinationPoint = function(brng, dist) {
         var R = this._radius;
         var d = parseFloat(dist) / R;
-        // d = angular distance covered on earthÃ¢â‚¬â„¢s surface
+        // d = angular distance covered on earthâ€™s surface
         var lat1 = this._lat.toRad(),
             lon1 = this._lon.toRad();
         brng = brng.toRad();
@@ -508,7 +508,7 @@
             lon3 = (lon1 + lon2) / 2;
         // parallel of latitude
         lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-        // normalise to -180..+180Ã‚Âº
+        // normalise to -180..+180Âº
         return new LatLon(lat3.toDeg(), lon3.toDeg());
     };
     /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -642,7 +642,7 @@
         // NatGrid scale factor on central meridian
         var lat0 = (49).toRad(),
             lon0 = (-2).toRad();
-        // NatGrid true origin is 49ÂºN,2ÂºW
+        // NatGrid true origin is 49ºN,2ºW
         var N0 = -100000,
             E0 = 400000;
         // northing & easting of true origin, metres
@@ -4025,7 +4025,7 @@
             try {
                 jsonData = JSON.parse(json);
             } catch (e) {
-                $fh.forms.log.d(e);
+                $fh.forms.log.d("Error parsing json: ", e);
                 throw 'Invalid JSON object';
             }
             var params = {
@@ -4169,12 +4169,12 @@
             '<div class="fh_appform_field_area config_debugging">' +
             '<fieldset>' +
             '<div class="fh_appform_field_title">Debugging</div>' +
-            '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
+            '<div id="config_debugging_log_enabled" class="form-group" style="margin:5px 5px 5px 5px;">' +
             '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Enabled</label>' +
             '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>' +
             '</div>' +
             '<br/>' +
-            '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
+            '<div id="config_debugging_log_level" class="form-group" style="margin:5px 5px 5px 5px;">' +
             '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Level</label>' +
             '<select class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="log_level">' +
             '<%' +
@@ -4187,14 +4187,14 @@
             '}' +
             '%>' +
             '</select>' +
-            '</div><br/><div class="form-group" style="margin:5px 5px 5px 5px;">' +
+            '</div><br/><div id="config_debugging_log_line_limit" class="form-group" style="margin:5px 5px 5px 5px;">' +
             '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Line Number</label>' +
             '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="log_line_limit" value="<%= log_line_limit%>"/>' +
-            '</div><br/><div class="form-group" style="margin:5px 5px 5px 5px;">' +
+            '</div><br/><div id="config_debugging_log_email" class="form-group" style="margin:5px 5px 5px 5px;">' +
             '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Email Address</label>' +
             '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 98%;float: right;" data-key="log_email" value="<%= log_email%>"/>' +
             '</div>' +
-            '<div class="log_buttons" style="width:100%;margin: 20px 0px 20px 0px;padding:0px 0px 0px 0px;">' +
+            '<div class="log_buttons" style="width:100%;margin: 20px 0px 20px 0px;padding:0px 0px 0px 0px;text-align:center;">' +
             '<button class="fh_appform_button_default" style="width:30%;margin-right:10px" type="button" id="_viewLogsBtn">View Logs</button>' +
             '<button class="fh_appform_button_cancel" style="width:30%;margin-right:10px" type="button" id="_clearLogsBtn">Clear Logs</button>' +
             '<button class="fh_appform_button_action" style="width:30%;" type="button" id="_sendLogsBtn">Send Logs</button>' +
@@ -4243,11 +4243,23 @@
             this.events = _.extend({}, this._myEvents, this.events);
         },
         "render": function() {
-            this.$el.html("");
+            var self = this;
+            self.$el.html("");
             var props = $fh.forms.config.getConfig();
-            var html = _.template(this.templates.join(""), props);
-            this.$el.append(html);
-            return this;
+            var html = _.template(self.templates.join(""), props);
+            self.$el.append(html);
+
+            if ($fh.forms.config.editAllowed() === false) {
+                self.$el.find(".config_camera").hide();
+                self.$el.find(".config_submission").hide();
+
+                self.$el.find("#config_debugging_log_enabled").hide();
+                self.$el.find("#config_debugging_log_level").hide();
+                self.$el.find("#config_debugging_log_line_limit").hide();
+                self.$el.find("#config_debugging_log_email").hide();
+            }
+
+            return self;
         },
         "save": function(cb) {
             $fh.forms.log.l("Saving config");
