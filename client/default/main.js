@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-25
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-28
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -64,7 +64,7 @@ FormModel = Backbone.Model.extend({
       "formId":formId
     },function(err,form){
         if (err){
-          self.trigger("error",err);
+          self.trigger("error", self, err);
         }else{
           self.coreModel=form;
           self.trigger("change:fh_full_data_loaded");
@@ -205,7 +205,7 @@ SubmissionModel = Backbone.Model.extend({
         $fh.forms.getSubmissions({}, function(err, subList) {
             subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
               if (err) {
-                  self.trigger("error", err);
+                  self.trigger("error", self, err);
               } else {
                   self.coreModel = submission;
                   self.id = submission.getLocalId();
@@ -945,7 +945,10 @@ $(function() {
     buttons:"<div style='margin: 20px 20px 20px 20px;'><button class='fh_appform_button_cancel' style='width:45%;margin-right:25px;' type='button' id='cancelBtn'>Cancel</button><button class='fh_appform_button_action' style='width:45%;'  type='button' id='saveBtn'>Save</button></div>",
     render:function(){
       SettingsView.__super__.render.apply(this);
-      this.$el.append(this.buttons);
+      if($fh.forms.config.editAllowed()){
+        this.$el.append(this.buttons);  
+      }
+      
       return this;
     },
     show: function() {
@@ -1602,12 +1605,15 @@ App.Router = Backbone.Router.extend({
 
     form_list: function() {
         var self = this;
+        var initRetryLimit = 20;
+        var initRetryAttempts = 0;
         self.loadingView = new LoadingCollectionView();
         self.loadingView.show("App Starting");
         self.deviceReady = false;
         self.initReady = false;
 
         function startForms() {
+
             $fh.forms.init({}, function() {
                 $fh.forms.getTheme({
                     "fromRemote": false,
@@ -1634,6 +1640,17 @@ App.Router = Backbone.Router.extend({
         }
 
         $fh.ready({}, function() {
+
+            document.addEventListener("online", function(){
+                $fh.forms.log.d("Device online");
+                $fh.forms.config.online();
+            }, false);
+
+            document.addEventListener("offline", function(){
+                $fh.forms.log.d("Device offline");
+                $fh.forms.config.offline();
+            }, false);
+
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceReady", function() {
                     console.log("Device is now ready.");
@@ -1655,7 +1672,20 @@ App.Router = Backbone.Router.extend({
                     startForms();
                     clearInterval(deviceReadyInterval);
                 } else {
-                    console.error("Device Not Ready Yet", self.deviceReady, self.initReady);
+                    if(initRetryAttempts > initRetryLimit){
+                        console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
+
+                        if(self.deviceReady === true){
+                            console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
+                            startForms();
+                            clearInterval(deviceReadyInterval);
+                        } else {
+                            console.error("Forms Device Not Ready. Trying again.");
+                            initRetryAttempts = 0;
+                        }
+                    } else {
+                        initRetryAttempts += 1;   
+                    }
                 }
             }, 500);
         });

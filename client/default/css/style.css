@@ -550,9 +550,10 @@ textarea {
     /* right: 10px; */
     float: right;
     display: inline-block;
-    top: -86px;
-    right: 15px;
+    top: -35px;
+    /* right: 15px; */
     padding: 10px;
+    vertical-align: middle;
 }
 
 .list.inset .first_button {
@@ -1026,22 +1027,6 @@ ul {
     width: 45%!important;
     margin-right: 5px;
     margin-left: 9px;
-}
-.fh_appform_container .fh_appform_button_action {
-    padding: 12px 10px 12px 10px!important;
-    margin-right: 5px;
-}
-
-.fh_appform_container .fh_appform_button_cancel{
-    padding: 12px 10px 12px 10px!important;
-    margin-right: 5px;
-}
-
-.fh_appform_container .fh_appform_page_title {
-    text-align: center;
-    width: 100%;
-    display: inline-block;
-    margin-bottom: 5px;
 }
 
 #fh_wufoo_header.fh_appform_button_bar {
@@ -1580,36 +1565,13 @@ textarea {
     /*margin-right: 5px;*/
 }
 #fh_wufoo_drafts .second_button {
-    top: -42px;
+    top: -35px;
 }
 
 .list.inset .first_button {
     right: 107px;
 }
 
-.list.inset .second_button {
-    /* right: 33px; */
-    position: relative;
-    /* top: 10px; */
-    /* right: 10px; */
-    float: right;
-    display: inline-block;
-    top: -86px;
-    right: 15px;
-    padding: 10px;
-}
-
-.list.inset .first_button {
-    /* right: 33px; */
-    position: relative;
-    /* top: 10px; */
-    /* right: 10px; */
-    float: right;
-    display: inline-block;
-    top: -86px;
-    right: 15px;
-    padding: 10px;
-}
 
 #fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
     /*font-size: 18px;*/
