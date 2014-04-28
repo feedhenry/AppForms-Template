@@ -21,7 +21,7 @@ FormModel = Backbone.Model.extend({
       "formId":formId
     },function(err,form){
         if (err){
-          self.trigger("error",err);
+          self.trigger("error", self, err);
         }else{
           self.coreModel=form;
           self.trigger("change:fh_full_data_loaded");

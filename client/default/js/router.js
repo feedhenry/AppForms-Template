@@ -32,12 +32,15 @@ App.Router = Backbone.Router.extend({
 
     form_list: function() {
         var self = this;
+        var initRetryLimit = 20;
+        var initRetryAttempts = 0;
         self.loadingView = new LoadingCollectionView();
         self.loadingView.show("App Starting");
         self.deviceReady = false;
         self.initReady = false;
 
         function startForms() {
+
             $fh.forms.init({}, function() {
                 $fh.forms.getTheme({
                     "fromRemote": false,
@@ -64,6 +67,17 @@ App.Router = Backbone.Router.extend({
         }
 
         $fh.ready({}, function() {
+
+            document.addEventListener("online", function(){
+                $fh.forms.log.d("Device online");
+                $fh.forms.config.online();
+            }, false);
+
+            document.addEventListener("offline", function(){
+                $fh.forms.log.d("Device offline");
+                $fh.forms.config.offline();
+            }, false);
+
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceReady", function() {
                     console.log("Device is now ready.");
@@ -85,7 +99,20 @@ App.Router = Backbone.Router.extend({
                     startForms();
                     clearInterval(deviceReadyInterval);
                 } else {
-                    console.error("Device Not Ready Yet", self.deviceReady, self.initReady);
+                    if(initRetryAttempts > initRetryLimit){
+                        console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
+
+                        if(self.deviceReady === true){
+                            console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
+                            startForms();
+                            clearInterval(deviceReadyInterval);
+                        } else {
+                            console.error("Forms Device Not Ready. Trying again.");
+                            initRetryAttempts = 0;
+                        }
+                    } else {
+                        initRetryAttempts += 1;   
+                    }
                 }
             }, 500);
         });

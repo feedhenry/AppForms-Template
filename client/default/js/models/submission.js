@@ -14,7 +14,7 @@ SubmissionModel = Backbone.Model.extend({
         $fh.forms.getSubmissions({}, function(err, subList) {
             subList.getSubmissionByMeta(submissionMeta, function(err, submission) {
               if (err) {
-                  self.trigger("error", err);
+                  self.trigger("error", self, err);
               } else {
                   self.coreModel = submission;
                   self.id = submission.getLocalId();
