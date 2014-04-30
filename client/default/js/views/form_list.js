@@ -55,7 +55,7 @@ var FormListView = Backbone.View.extend({
     }
     var html = _.template(this.templates.error, {
       name: msg + "<br/>Please Retry Later",
-      enabledClass: 'button-negative',
+      enabledClass: 'fh_appform_button_cancel',
       dataClass: 'fetched'
     });
     $('ul', this.el).append(html);
