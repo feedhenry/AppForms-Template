@@ -330,6 +330,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint mkdirs concat copy min index');
+  grunt.registerTask('default', 'clean lint mkdirs archive concat copy min index');
 
 };
