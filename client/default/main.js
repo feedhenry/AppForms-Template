@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-04-30
+/*! FeedHenry-App-Forms-App-Generator - v0.3.11 - 2014-05-01
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -626,22 +626,6 @@ $fh.ready({}, function() {
                     refreshSubmissionCollections();
                 });
 
-                self.submission.on('validationerror', function(err) {
-                    self.fieldViews.forEach(function(v) {
-                        var fieldId = v.model.getFieldId();
-
-                        var result = err[fieldId];
-                        if (!result.valid) {
-                            for (var i = 0; i < result.errorMessages.length; i++) {
-                                if (result.errorMessages[i]) {
-                                    v.setErrorText(i, result.errorMessages[i]);
-                                }
-                            }
-                        } else {
-                            self.clearError(index);
-                        }
-                    });
-                });
                 self.submission.on("progress", function(progress) {
                     console.log("PROGRESS", progress, this);
                 });
@@ -720,7 +704,7 @@ var FormListView = Backbone.View.extend({
     }
     var html = _.template(this.templates.error, {
       name: msg + "<br/>Please Retry Later",
-      enabledClass: 'button-negative',
+      enabledClass: 'fh_appform_button_cancel',
       dataClass: 'fetched'
     });
     $('ul', this.el).append(html);
@@ -1551,17 +1535,17 @@ AlertView = Backbone.View.extend({
     var message = o.text || '';
     if(null != o.current ) {
       value  = Math.floor((o.current * 100)/ o.total);
-      template = Utils.isIOS() ? this.templates.ios_bar : this.templates.bar;
+      template = this.templates.bar;
     }
-
-    this.$el.html(_.template(template, {message:message,value:value,type:type}));
+    $(self.$el).find('.fh_wufoo_alert').remove();
+    this.$el.append(_.template(template, {message:message,value:value,type:type}));
     this.$el.show();
     clearTimeout(this.to);
     this.to = setTimeout(function() {
 //      self.$el.slideUp(function() {
 //
 //      });
-      $(self.$el).empty();
+      $(self.$el).find('.fh_wufoo_alert').remove();
     }, opts.timeout || 10000);
     return this;
   }
@@ -1643,17 +1627,18 @@ App.Router = Backbone.Router.extend({
 
             document.addEventListener("online", function(){
                 $fh.forms.log.d("Device online");
+                $('.fh_wufoo_alert_offline').hide();
                 $fh.forms.config.online();
             }, false);
 
             document.addEventListener("offline", function(){
                 $fh.forms.log.d("Device offline");
+                $('.fh_wufoo_alert_offline').show();
                 $fh.forms.config.offline();
             }, false);
 
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceReady", function() {
-                    console.log("Device is now ready.");
                     self.deviceReady = true;
                 }, false);
             } else {
