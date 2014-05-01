@@ -16,7 +16,7 @@ PendingWaitingView = ItemView.extend({
 
       var submission=self.model.coreModel;
       App.views.form=new FormView({
-        "parentEl":$("#fh_wufoo_content"),
+        "parentEl":$("#fh_appform_content"),
         "formId":submission.get("formId"),
         "autoShow":true,
         "submission":submission

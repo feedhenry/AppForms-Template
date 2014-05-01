@@ -1,5 +1,5 @@
 PendingListView = Backbone.View.extend({
-  el: $('#fh_wufoo_pending'),
+  el: $('#fh_appform_pending'),
 
   events: {
     'click button.submit-all': 'submitAll'
@@ -59,7 +59,7 @@ PendingListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_pending');
+    App.views.header.markActive('.fh_appform_pending');
     $(this.el).show();
   },
 

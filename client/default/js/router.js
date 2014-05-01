@@ -1,26 +1,4 @@
 App.Router = Backbone.Router.extend({
-
-    /*
-
-  Known unsupported rules/validation
-  - text ranges i.e. 'Range' option e.g. input text/words must be between 1 & 4 long (rules n/a via api or rules json)
-  - number ranges i.e. 'Range' option e.g. number value/digits must be between 2 & 8 (rules n/a via api or rules json)
-  - matchtype all for rule builder config i.e. Operatior AND to specify multiple conditions before a rule is triggered (TODO)
-  - form rules i.e. show message/send email/redirect to website depending on field condition/s (no plans to implement this)
-  - file field/ submission size limits i.e. http://help.wufoo.com/app/answers/detail/a_id/5751#file
-  - other field size limits e.g. text field 255 character limit
-
-  NOTES:
-  - despite all validation rules not being supported, a fallback is in place to highlight validation errors passed back
-    from a bad submit to wufoo. Although these errors show which fields are in an error state, they cannot be
-    programatically validated on the client, and would required another submit of the form.
-  - money field type is n/a via api e.g. $ or €
-  - various form settings have not been considered for addition e.g. Captcha 'Limit Activity' option
-  - to do a lot of the items above it would probably be necessary to 'read' the FORM_JSON global from
-    the form builder page i.e. https://<company>.wufoo.com/build/<form_name>/ (this info n/a from api)
-
-  */
-
     routes: {
         "form_list": "form_list",
         "*path": "form_list" // Default route
@@ -70,13 +48,13 @@ App.Router = Backbone.Router.extend({
 
             document.addEventListener("online", function(){
                 $fh.forms.log.d("Device online");
-                $('.fh_wufoo_alert_offline').hide();
+                $('.fh_appform_alert_offline').hide();
                 $fh.forms.config.online();
             }, false);
 
             document.addEventListener("offline", function(){
                 $fh.forms.log.d("Device offline");
-                $('.fh_wufoo_alert_offline').show();
+                $('.fh_appform_alert_offline').show();
                 $fh.forms.config.offline();
             }, false);
 
@@ -128,7 +106,7 @@ App.Router = Backbone.Router.extend({
         App.resumeFetchAllowed = true;
         document.addEventListener("resume", this.onResume, false);
         var banner = false;
-        $('#fh_wufoo_banner .list li').each(function(i, e) {
+        $('#fh_appform_banner .list li').each(function(i, e) {
             banner = true;
         });
         this.onConfigLoaded();

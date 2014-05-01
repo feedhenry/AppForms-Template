@@ -1,6 +1,6 @@
 $(function() {
   SettingsView = $fh.forms.backbone.ConfigView.extend({
-    el: $('#fh_wufoo_settings'),
+    el: $('#fh_appform_settings'),
     events:{
       "click #cancelBtn":"cancel",
       "click #saveBtn":"save"

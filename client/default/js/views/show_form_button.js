@@ -40,7 +40,7 @@ ShowFormButtonView = Backbone.View.extend({
   show: function() {
     App.views.header.hideAll();
     App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
+      "parentEl":$("#fh_appform_content"),
       "form":this.model.coreModel,
       "autoShow":true
     });

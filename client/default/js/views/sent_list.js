@@ -1,5 +1,5 @@
 SentListView = Backbone.View.extend({
-  el: $('#fh_wufoo_sent'),
+  el: $('#fh_appform_sent'),
 
   events: {
     'click button.dismiss-all': 'dismissAll',
@@ -33,7 +33,7 @@ SentListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_sent');
+    App.views.header.markActive('.fh_appform_sent');
     this.populate();
     $(this.el).show();
   },

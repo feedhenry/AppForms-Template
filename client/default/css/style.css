@@ -4,11 +4,11 @@ ul {
     list-style: none;
 }
 
-#fh_wufoo_header.fh_appform_button_bar {
+#fh_appform_header.fh_appform_button_bar {
     padding: 8px 5px;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list {
+#fh_appform_header.fh_appform_button_bar .navigation_list {
     /* position: absolute; */
 
     /* top: 0px; */
@@ -18,7 +18,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item {
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item {
     display: inline-block;
 
     padding: 0px;
@@ -29,7 +29,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last {
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item_last {
     display: inline-block;
 
     padding: 0px;
@@ -40,7 +40,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item a{
     padding: 7px 1px 7px 1px;
 
     display: block;
@@ -56,7 +56,7 @@ ul {
     font-size: 0.8em;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last a{
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item_last a{
     padding: 7px 1px 7px 1px;
 
     display: block;
@@ -147,7 +147,7 @@ ul {
 /*label.choice { display: inline; }*/
 /*input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;] { width: inherit; }*/
 
-#fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
+#fh_logs, #fh_appform_content, #fh_appform_form_list, #fh_appform_settings {
     /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
     width: 97%;
     margin: 0 auto;
@@ -166,24 +166,24 @@ ul {
     overflow: auto;
 }
 
-#fh_wufoo_drafts .list, #fh_wufoo_pending .list {
+#fh_appform_drafts .list, #fh_appform_pending .list {
     -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.75);
     -moz-box-shadow:    0px 1px 0px rgba(255, 255, 255, 0.75);
     box-shadow:         0px 1px 0px rgba(255, 255, 255, 0.75);
 }
 
-#fh_wufoo_content {
+#fh_appform_content {
     padding: 0;
 }
 
 /* Padding should really be in the rendered form css --&gt; all fields need padding. */
-#fh_wufoo_content .field_container {
+#fh_appform_content .field_container {
     padding: 18px 20px 18px 20px;
     /*font-size: 24px;*/
     /*border-bottom: 1px solid #e4e4e4;*/
 }
 
-/*#fh_wufoo_content .field_container:hover {*/
+/*#fh_appform_content .field_container:hover {*/
 /*background: #e8f8fc;*/
 /*-webkit-transition: background 0.3s linear;*/
 /*-moz-transition: background 0.3s linear;*/
@@ -191,17 +191,17 @@ ul {
 /*transition: background 0.3s linear;*/
 /*}*/
 
-/*#fh_wufoo_content input, #fh_wufoo_content select, #fh_wufoo_content textarea {*/
+/*#fh_appform_content input, #fh_appform_content select, #fh_appform_content textarea {*/
 /*font-size: 24px;*/
 /*}*/
 
-#fh_wufoo_sent select {
+#fh_appform_sent select {
     padding: 5px;
 }
 
-/*#fh_wufoo_content .field_container:last-child { border: none; }*/
+/*#fh_appform_content .field_container:last-child { border: none; }*/
 
-/*#fh_wufoo_content .form_title {*/
+/*#fh_appform_content .form_title {*/
 /*padding: 20px 0 0 20px;*/
 /*}*/
 
@@ -518,7 +518,7 @@ textarea {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
-#fh_wufoo_header .count {
+#fh_appform_header .count {
     float: right;
     display: inline-block; padding-top: 4px; padding-bottom: 4px; padding-left: 9px; padding-right: 9px;
     background-color: rgba(0,0,0,0.1);
@@ -531,11 +531,11 @@ textarea {
                                   color: inherit;
                               }
 
-#fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
+#fh_appform_pending .list.inset, #fh_appform_drafts .list.inset {
     /*margin-left: 5px;*/
     /*margin-right: 5px;*/
 }
-#fh_wufoo_drafts .second_button {
+#fh_appform_drafts .second_button {
     top: -42px;
 }
 
@@ -568,27 +568,27 @@ textarea {
     padding: 10px;
 }
 
-#fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
+#fh_appform_pending .list.inset .name, #fh_appform_drafts .list.inset .name {
     /*font-size: 18px;*/
 }
 
-#fh_wufoo_pending .list.inset .ts,
-#fh_wufoo_drafts .list.inset .ts,
-#fh_wufoo_sent .list.inset .ts {
+#fh_appform_pending .list.inset .ts,
+#fh_appform_drafts .list.inset .ts,
+#fh_appform_sent .list.inset .ts {
     font-size: 10px;
     font-style: italic;
     font-weight: bold;
 }
 
-#fh_wufoo_pending .list.inset .title,
-#fh_wufoo_drafts .list.inset .title,
-#fh_wufoo_sent .list.inset .title {
+#fh_appform_pending .list.inset .title,
+#fh_appform_drafts .list.inset .title,
+#fh_appform_sent .list.inset .title {
     font-size: 12px;
     font-style: italic;
     /*font-weight: bold;*/
 }
 
-#fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
+#fh_appform_pending .list.inset button, #fh_appform_drafts .list.inset button {
     /* font-size: 12px; */
     /* width: 97%; */
     /* align-self: center; */
@@ -783,7 +783,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
 }
 
 /*TODO AlertView is an appform-template base view. Should be theme customized? */
-.fh_wufoo_alert, .fh_wufoo_alert_offline {
+.fh_appform_alert, .fh_appform_alert_offline {
     font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
     font-size: 13px;
     color: #fff;
@@ -791,7 +791,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
     border: 1px solid #000;
 }
 
-.fh_wufoo_alert.error , .fh_wufoo_alert.warn ,.fh_wufoo_alert_offline.error{
+.fh_appform_alert.error , .fh_appform_alert.warn ,.fh_appform_alert_offline.error{
     background-color: #c43c35;
     background-repeat: repeat-x;
     background-image: -khtml-gradient(linear, left top, left bottom, from(#ee5f5b), to(#c43c35));
@@ -806,11 +806,11 @@ div.loading_container div.loading_spinner div { background: #fff; }
     border-color: #c43c35 #c43c35 #882a25;
     border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
 }
-.fh_wufoo_alert.warn {
+.fh_appform_alert.warn {
     background-color: #F89406;
 }
 
-.fh_wufoo_alert.success {
+.fh_appform_alert.success {
     background-color: #57a957;
     background-repeat: repeat-x;
     background-image: -khtml-gradient(linear, left top, left bottom, from(#62c462), to(#57a957));
@@ -835,7 +835,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
 
 
 
-#fh_wufoo_alerts_area span.small {
+#fh_appform_alerts_area span.small {
     max-width: 30%;
     white-space: nowrap;
     overflow: hidden;
@@ -843,8 +843,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
     display: inline-block;
 }
 
-#fh_wufoo_alerts_area progress,          /* All HTML5 progress enabled browsers */
-#fh_wufoo_alerts_area progress[role]     /* polyfill */
+#fh_appform_alerts_area progress,          /* All HTML5 progress enabled browsers */
+#fh_appform_alerts_area progress[role]     /* polyfill */
 {
 
     /* Turns off styling - not usually needed, but good to know. */
@@ -865,12 +865,12 @@ div.loading_container div.loading_spinner div { background: #fff; }
 }
 
 /* Polyfill */
-#fh_wufoo_alerts_area progress[role]:after {
+#fh_appform_alerts_area progress[role]:after {
     background-image: none; /* removes default background from polyfill */
 }
 
 /* Ensure fallback text doesn't appear in polyfill */
-#fh_wufoo_alerts_area progress[role] strong {
+#fh_appform_alerts_area progress[role] strong {
     display: none;
 }
 
@@ -911,20 +911,20 @@ div.loading_container div.loading_spinner div { background: #fff; }
 }
 
 /*Button positive and button negative are replaced by fh_appform_button_cancel and fh_appform_button_action*/
-/*#fh_wufoo_settings .button-negative {*/
+/*#fh_appform_settings .button-negative {*/
 /*width: 40%;*/
 /*}*/
 
-/*#fh_wufoo_settings .button-positive {*/
+/*#fh_appform_settings .button-positive {*/
 /*width: 40%;*/
 /*float: right;*/
 /*}*/
 
-.hidden, #fh_wufoo_header .count.hidden {
+.hidden, #fh_appform_header .count.hidden {
     display: none;
 }
 
-#fh_wufoo_banner {
+#fh_appform_banner {
     /* left: 25%; */
     /* width: 50%; */
 
@@ -934,8 +934,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
     border-bottom: 1px solid #0e5895;
 }
 
-#fh_wufoo_banner:before,
-#fh_wufoo_banner:after {
+#fh_appform_banner:before,
+#fh_appform_banner:after {
     border: 0;
 }
 
@@ -973,13 +973,13 @@ a.settings{
     margin-right:1em;
     float: right;
 }
-#fh_wufoo_banner ul.list {
+#fh_appform_banner ul.list {
     font: 7px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
 }
-#fh_wufoo_banner ul.list span {
+#fh_appform_banner ul.list span {
     width: 60%;
 }
-#fh_wufoo_banner ul.list span:first-child {
+#fh_appform_banner ul.list span:first-child {
     font-style: italic;
     width: 30%;
 }
@@ -1029,12 +1029,12 @@ ul {
     margin-left: 9px;
 }
 
-#fh_wufoo_header.fh_appform_button_bar {
+#fh_appform_header.fh_appform_button_bar {
     padding: 8px 5px;
     margin: 0px;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list {
+#fh_appform_header.fh_appform_button_bar .navigation_list {
     /* position: absolute; */
 
     /* top: 0px; */
@@ -1044,7 +1044,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item {
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item {
     display: inline-block;
 
     padding: 0px;
@@ -1055,7 +1055,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last {
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item_last {
     display: inline-block;
 
     padding: 0px;
@@ -1066,7 +1066,7 @@ ul {
     overflow: hidden;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item a{
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item a{
     padding: 7px 1px 7px 1px;
 
     display: block;
@@ -1084,7 +1084,7 @@ ul {
     font-size: 0.8em;
 }
 
-#fh_wufoo_header.fh_appform_button_bar .navigation_list .nav_item_last a{
+#fh_appform_header.fh_appform_button_bar .navigation_list .nav_item_last a{
     padding: 7px 1px 7px 1px;
 
     display: block;
@@ -1176,7 +1176,7 @@ ul {
 /*label.choice { display: inline; }*/
 /*input[type=&quot;radio&quot;], input[type=&quot;checkbox&quot;] { width: inherit; }*/
 
-#fh_logs, #fh_wufoo_content, #fh_wufoo_form_list, #fh_wufoo_settings {
+#fh_logs, #fh_appform_content, #fh_appform_form_list, #fh_appform_settings {
     /*background: #fff; fh_appform_body replaces this. Displaying the background for the list of forms.*/
     width: 97%;
     margin: 0 auto;
@@ -1195,24 +1195,24 @@ ul {
     overflow: auto;
 }
 
-#fh_wufoo_drafts .list, #fh_wufoo_pending .list {
+#fh_appform_drafts .list, #fh_appform_pending .list {
     -webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.75);
     -moz-box-shadow:    0px 1px 0px rgba(255, 255, 255, 0.75);
     box-shadow:         0px 1px 0px rgba(255, 255, 255, 0.75);
 }
 
-#fh_wufoo_content {
+#fh_appform_content {
     padding: 0;
 }
 
 /* Padding should really be in the rendered form css --&gt; all fields need padding. */
-#fh_wufoo_content .field_container {
+#fh_appform_content .field_container {
     padding: 18px 20px 18px 20px;
     /*font-size: 24px;*/
     /*border-bottom: 1px solid #e4e4e4;*/
 }
 
-/*#fh_wufoo_content .field_container:hover {*/
+/*#fh_appform_content .field_container:hover {*/
 /*background: #e8f8fc;*/
 /*-webkit-transition: background 0.3s linear;*/
 /*-moz-transition: background 0.3s linear;*/
@@ -1220,17 +1220,17 @@ ul {
 /*transition: background 0.3s linear;*/
 /*}*/
 
-/*#fh_wufoo_content input, #fh_wufoo_content select, #fh_wufoo_content textarea {*/
+/*#fh_appform_content input, #fh_appform_content select, #fh_appform_content textarea {*/
 /*font-size: 24px;*/
 /*}*/
 
-#fh_wufoo_sent select {
+#fh_appform_sent select {
     padding: 5px;
 }
 
-/*#fh_wufoo_content .field_container:last-child { border: none; }*/
+/*#fh_appform_content .field_container:last-child { border: none; }*/
 
-/*#fh_wufoo_content .form_title {*/
+/*#fh_appform_content .form_title {*/
 /*padding: 20px 0 0 20px;*/
 /*}*/
 
@@ -1547,7 +1547,7 @@ textarea {
     -webkit-tap-highlight-color: rgba(255, 255, 255, 0);
 }
 
-#fh_wufoo_header .count {
+#fh_appform_header .count {
     float: right;
     display: inline-block; padding-top: 4px; padding-bottom: 4px; padding-left: 9px; padding-right: 9px;
     background-color: rgba(0,0,0,0.1);
@@ -1560,11 +1560,11 @@ textarea {
                                   color: inherit;
                               }
 
-#fh_wufoo_pending .list.inset, #fh_wufoo_drafts .list.inset {
+#fh_appform_pending .list.inset, #fh_appform_drafts .list.inset {
     /*margin-left: 5px;*/
     /*margin-right: 5px;*/
 }
-#fh_wufoo_drafts .second_button {
+#fh_appform_drafts .second_button {
     top: -35px;
 }
 
@@ -1573,27 +1573,27 @@ textarea {
 }
 
 
-#fh_wufoo_pending .list.inset .name, #fh_wufoo_drafts .list.inset .name {
+#fh_appform_pending .list.inset .name, #fh_appform_drafts .list.inset .name {
     /*font-size: 18px;*/
 }
 
-#fh_wufoo_pending .list.inset .ts,
-#fh_wufoo_drafts .list.inset .ts,
-#fh_wufoo_sent .list.inset .ts {
+#fh_appform_pending .list.inset .ts,
+#fh_appform_drafts .list.inset .ts,
+#fh_appform_sent .list.inset .ts {
     font-size: 10px;
     font-style: italic;
     font-weight: bold;
 }
 
-#fh_wufoo_pending .list.inset .title,
-#fh_wufoo_drafts .list.inset .title,
-#fh_wufoo_sent .list.inset .title {
+#fh_appform_pending .list.inset .title,
+#fh_appform_drafts .list.inset .title,
+#fh_appform_sent .list.inset .title {
     font-size: 12px;
     font-style: italic;
     /*font-weight: bold;*/
 }
 
-#fh_wufoo_pending .list.inset button, #fh_wufoo_drafts .list.inset button {
+#fh_appform_pending .list.inset button, #fh_appform_drafts .list.inset button {
     /* font-size: 12px; */
     /* width: 97%; */
     /* align-self: center; */
@@ -1797,7 +1797,7 @@ div.loading_container div.loading_spinner div { background: #fff; }
 
 
 
-#fh_wufoo_alerts_area span.small {
+#fh_appform_alerts_area span.small {
     max-width: 30%;
     white-space: nowrap;
     overflow: hidden;
@@ -1805,8 +1805,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
     display: inline-block;
 }
 
-#fh_wufoo_alerts_area progress,          /* All HTML5 progress enabled browsers */
-#fh_wufoo_alerts_area progress[role]     /* polyfill */
+#fh_appform_alerts_area progress,          /* All HTML5 progress enabled browsers */
+#fh_appform_alerts_area progress[role]     /* polyfill */
 {
 
     /* Turns off styling - not usually needed, but good to know. */
@@ -1827,12 +1827,12 @@ div.loading_container div.loading_spinner div { background: #fff; }
 }
 
 /* Polyfill */
-#fh_wufoo_alerts_area progress[role]:after {
+#fh_appform_alerts_area progress[role]:after {
     background-image: none; /* removes default background from polyfill */
 }
 
 /* Ensure fallback text doesn't appear in polyfill */
-#fh_wufoo_alerts_area progress[role] strong {
+#fh_appform_alerts_area progress[role] strong {
     display: none;
 }
 
@@ -1873,20 +1873,20 @@ div.loading_container div.loading_spinner div { background: #fff; }
 }
 
 /*Button positive and button negative are replaced by fh_appform_button_cancel and fh_appform_button_action*/
-/*#fh_wufoo_settings .button-negative {*/
+/*#fh_appform_settings .button-negative {*/
 /*width: 40%;*/
 /*}*/
 
-/*#fh_wufoo_settings .button-positive {*/
+/*#fh_appform_settings .button-positive {*/
 /*width: 40%;*/
 /*float: right;*/
 /*}*/
 
-.hidden, #fh_wufoo_header .count.hidden {
+.hidden, #fh_appform_header .count.hidden {
     display: none;
 }
 
-#fh_wufoo_banner {
+#fh_appform_banner {
     /* left: 25%; */
     /* width: 50%; */
 
@@ -1896,8 +1896,8 @@ div.loading_container div.loading_spinner div { background: #fff; }
     border-bottom: 1px solid #0e5895;
 }
 
-#fh_wufoo_banner:before,
-#fh_wufoo_banner:after {
+#fh_appform_banner:before,
+#fh_appform_banner:after {
     border: 0;
 }
 
@@ -1935,13 +1935,13 @@ a.settings{
     margin-right:1em;
     float: right;
 }
-#fh_wufoo_banner ul.list {
+#fh_appform_banner ul.list {
     font: 7px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
 }
-#fh_wufoo_banner ul.list span {
+#fh_appform_banner ul.list span {
     width: 60%;
 }
-#fh_wufoo_banner ul.list span:first-child {
+#fh_appform_banner ul.list span:first-child {
     font-style: italic;
     width: 30%;
 }
