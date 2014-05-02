@@ -8,6 +8,11 @@ ul {
     padding: 8px 5px;
 }
 
+#fh_appform_show_deviceId {
+    width:50%;
+    float:right;
+}
+
 #fh_appform_header.fh_appform_button_bar .navigation_list {
     /* position: absolute; */
 
