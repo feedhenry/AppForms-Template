@@ -1726,7 +1726,7 @@ var FieldView = Backbone.View.extend({
 
         return _.template(template, {
             "title": title,
-            "required": this.getFieldRequired(1)
+            "required": this.getFieldRequired(0)
         });
     },
     renderInput: function(index) {
@@ -1745,19 +1745,19 @@ var FieldView = Backbone.View.extend({
     getHTMLInputType: function() {
         return this.type || "text";
     },
+    /**
+    * Repeating fields can have required and non-required repeating inputs depending on the minRepeat and maxRepeat values defined for the field
+    **/
     "getFieldRequired": function(index) {
         var required = "";
-        if (this.initialRepeat > 1) {
-            if (index < this.initialRepeat) {
+        if(this.model.isRequired()){
+            if(index < this.initialRepeat){
                 required = this.requiredClassName;
+            } else {
+
             }
         } else {
-            if (this.model.isRequired()) {
-                required = this.requiredClassName;
-            }
-        }
-        if (this.model.isRequired() && index < this.initialRepeat) {
-            required = this.requiredClassName;
+
         }
         return required;
     },
@@ -1881,7 +1881,7 @@ var FieldView = Backbone.View.extend({
     validateElement: function(index, element, cb) {
         var self = this;
         var fieldId = self.model.getFieldId();
-        self.model.validate(element, function(err, res) {
+        self.model.validate(element, index, function(err, res) {
             if (err) {
                 self.setErrorText(index, "Error validating field: " + err);
                 if (cb) {
@@ -1925,8 +1925,57 @@ var FieldView = Backbone.View.extend({
         this.validate(e);
     },
 
+
+    addRules: function() {
+        // this.addValidationRules();
+        // this.addSpecialRules();
+    },
+
     isRequired: function() {
         return this.model.isRequired();
+    },
+
+    addValidationRules: function() {
+        if (this.model.get('IsRequired') === '1') {
+            this.$el.find('#' + this.model.get('ID')).rules('add', {
+                "required": true
+            });
+        }
+    },
+
+    addSpecialRules: function() {
+        var self = this;
+
+        var rules = {
+            'Show': function(rulePasses, params) {
+                var fieldId = 'Field' + params.Setting.FieldName;
+                if (rulePasses) {
+                    App.views.form.showField(fieldId);
+                } else {
+                    App.views.form.hideField(fieldId);
+                }
+            },
+            'Hide': function(rulePasses, params) {
+                var fieldId = 'Field' + params.Setting.FieldName;
+                if (rulePasses) {
+                    App.views.form.hideField(fieldId);
+                } else {
+                    App.views.form.showField(fieldId);
+                }
+            }
+        };
+
+        // also apply any special rules
+        _(this.model.get('Rules') || []).each(function(rule) {
+            var ruleConfig = _.clone(rule);
+            ruleConfig.pageView = self.options.parentView;
+            ruleConfig.fn = rules[rule.Type];
+            self.$el.find('#' + self.model.get('ID')).wufoo_rules('add', ruleConfig);
+        });
+    },
+
+    removeRules: function() {
+        this.$el.find('#' + this.model.get('ID')).rules('remove');
     },
 
     // force a hide , defaults to false
@@ -1966,6 +2015,10 @@ var FieldView = Backbone.View.extend({
     show: function() {
         if (!this.$el.is(':visible')) {
             this.$el.show();
+            // add rules too
+            //this.addRules();
+            //set the form value from model
+            //this.value(this.model.serialize());
         }
     },
 
@@ -2443,7 +2496,7 @@ FieldFileView = FieldView.extend({
                     };
                     self.showButton(index, fileObj);
                 } else {
-                    filejQ.value("");
+                    filejQ.val("");
                     self.showButton(index, null);
                 }
             });
@@ -3338,6 +3391,35 @@ var PageView=BaseView.extend({
     return validateEls.length ? validateEls.valid() : true;
   }
 
+//  checkRules: function () {
+//    var self = this;
+//    var result = {};
+//
+//    var rules = {
+//      SkipToPage: function (rulePasses, params) {
+//        var pageToSkipTo = params.Setting.Page;
+//        if (rulePasses) {
+//          result.skipToPage = pageToSkipTo;
+//        }
+//      }
+//    };
+//
+//    // iterate over page rules, if any, calling relevant rule function
+//    _(this.model.get('Rules') || []).forEach(function (rule, index) {
+//      // get element that rule condition is based on
+//      var jqEl = self.$el.find('#Field' + rule.condition.FieldName + ',' + '#radioField' + rule.condition.FieldName);
+//      rule.fn = rules[rule.Type];
+//      if(jqEl.data("type") === 'radio') {
+//        var rEl = self.$el.find('#Field' + rule.condition.FieldName + '_' + index);
+//        rEl.wufoo_rules('exec', rule);
+//      } else {
+//        jqEl.wufoo_rules('exec', rule);
+//      }
+//    });
+//
+//    return result;
+//  }
+
 });
 var FormView = BaseView.extend({
   "pageNum": 0,
@@ -3396,33 +3478,38 @@ var FormView = BaseView.extend({
     this.$el.find(" button.fh_appform_button_submit").hide();
   },
   onValidateError: function(res) {
+    var self = this;
     var firstView = null;
     var invalidFieldId = null;
     var invalidPageNum = null;
 
     //Clear validate errors
 
-    for (var fieldId in res) {
-      if (res[fieldId]) {
-        if(invalidFieldId === null){
-          invalidFieldId = fieldId;
-          invalidPageNum = this.form.getPageNumberByFieldId(invalidFieldId);
-        }
+    self.fieldViews.forEach(function(v) {
+        var fieldId = v.model.getFieldId();
+        if(res.hasOwnProperty(fieldId)){
+          var result = res[fieldId];
+          result.errorMessages = result.errorMessages || [];
+          result.fieldErrorMessage = result.fieldErrorMessage || [];
+          if (!result.valid) {
+            if(invalidFieldId === null){
+              invalidFieldId = fieldId;
+              invalidPageNum = self.form.getPageNumberByFieldId(invalidFieldId);
+            }
+            for (var i = 0; i < result.errorMessages.length; i++) {
+              if (result.errorMessages[i]) {
+                v.setErrorText(i, result.errorMessages[i]);
+              }
+            }
 
-        var fieldView = this.getFieldViewById(fieldId);
-        if (firstView === null) {
-          firstView = fieldView;
-        }
-        var errorMsgs = res[fieldId].fieldErrorMessage;
-        for (var i = 0; i < errorMsgs.length; i++) {
-          if (errorMsgs[i]) {
-            fieldView.setErrorText(i, errorMsgs[i]);
+            for (i = 0; i < result.fieldErrorMessage.length; i++) {
+              if (result.fieldErrorMessage[i]) {
+                v.setErrorText(i, result.fieldErrorMessage[i]);
+              }
+            }
           }
         }
-      } else {
-        $fh.forms.log.e("onValidateError: Expected an error object for fieldId " + fieldId + " res: " + JSON.stringify(res));
-      }
-    }
+    });
 
     if(invalidFieldId !== null && invalidPageNum !== null){
       var displayedIndex = this.getDisplayIndex(invalidPageNum) + 1;
