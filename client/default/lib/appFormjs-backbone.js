@@ -15,8 +15,8 @@
 /*   - www.movable-type.co.uk/scripts/latlong.html                                                */
 /*                                                                                                */
 /*  Sample usage:                                                                                 */
-/*    var lat = Geo.parseDMS('51Ã‚Â° 28Ã¢â‚¬Â² 40.12Ã¢â‚¬Â³ N');                                                 */
-/*    var lon = Geo.parseDMS('000Ã‚Â° 00Ã¢â‚¬Â² 05.31Ã¢â‚¬Â³ W');                                                */
+/*    var lat = Geo.parseDMS('51Â° 28â€² 40.12â€³ N');                                                 */
+/*    var lon = Geo.parseDMS('000Â° 00â€² 05.31â€³ W');                                                */
 /*    var p1 = new LatLon(lat, lon);                                                              */
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 var Geo = {};
@@ -25,7 +25,7 @@ var Geo = {};
  * Parses string representing degrees/minutes/seconds into numeric degrees
  *
  * This is very flexible on formats, allowing signed decimal degrees, or deg-min-sec optionally
- * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Ã‚Âº 37' 09"W) 
+ * suffixed by compass direction (NSEW). A variety of separators are accepted (eg 3Âº 37' 09"W) 
  * or fixed-width format without separators (eg 0033709W). Seconds and minutes may be omitted. 
  * (Note minimal validation is done).
  *
@@ -124,7 +124,7 @@ Geo.toDMS = function (deg, format, dp) {
     if (d < 10)
       d = '0' + d;
     var dms = d + '\xb0';
-    // add Ã‚Âº symbol
+    // add Âº symbol
     break;
   case 'dm':
     var min = (deg * 60).toFixed(dp);
@@ -141,7 +141,7 @@ Geo.toDMS = function (deg, format, dp) {
     if (m < 10)
       m = '0' + m;
     dms = d + '\xb0' + m + '\u2032';
-    // add Ã‚Âº, ' symbols
+    // add Âº, ' symbols
     break;
   case 'dms':
     var sec = (deg * 3600).toFixed(dp);
@@ -161,7 +161,7 @@ Geo.toDMS = function (deg, format, dp) {
     if (s < 10)
       s = '0' + s;
     dms = d + '\xb0' + m + '\u2032' + s + '\u2033';
-    // add Ã‚Âº, ', " symbols
+    // add Âº, ', " symbols
     break;
   }
   return dms;
@@ -191,7 +191,7 @@ Geo.toLon = function (deg, format, dp) {
   return lon == null ? '\xe2\u20ac\u201c' : lon + (deg < 0 ? 'W' : 'E');
 };
 /**
- * Convert numeric degrees to deg/min/sec as a bearing (0Ã‚Âº..360Ã‚Âº)
+ * Convert numeric degrees to deg/min/sec as a bearing (0Âº..360Âº)
  *
  * @param   {Number} deg: Degrees
  * @param   {String} [format=dms]: Return value as 'd', 'dm', 'dms'
@@ -200,9 +200,9 @@ Geo.toLon = function (deg, format, dp) {
  */
 Geo.toBrng = function (deg, format, dp) {
   deg = (Number(deg) + 360) % 360;
-  // normalise -ve values to 180Ã‚Âº..360Ã‚Âº
+  // normalise -ve values to 180Âº..360Âº
   var brng = Geo.toDMS(deg, format, dp);
-  return brng == null ? '\xe2\u20ac\u201c' : brng.replace('360', '0');  // just in case rounding took us up to 360Ã‚Âº!
+  return brng == null ? '\xe2\u20ac\u201c' : brng.replace('360', '0');  // just in case rounding took us up to 360Âº!
 };
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
 if (!window.console)
@@ -298,7 +298,7 @@ LatLon.prototype.finalBearingTo = function (point) {
   var y = Math.sin(dLon) * Math.cos(lat2);
   var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
   var brng = Math.atan2(y, x);
-  // ... & reverse it by adding 180Ã‚Â°
+  // ... & reverse it by adding 180Â°
   return (brng.toDeg() + 180) % 360;
 };
 /**
@@ -318,7 +318,7 @@ LatLon.prototype.midpointTo = function (point) {
   var lat3 = Math.atan2(Math.sin(lat1) + Math.sin(lat2), Math.sqrt((Math.cos(lat1) + Bx) * (Math.cos(lat1) + Bx) + By * By));
   var lon3 = lon1 + Math.atan2(By, Math.cos(lat1) + Bx);
   lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-  // normalise to -180..+180Ã‚Âº
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
 };
 /**
@@ -341,7 +341,7 @@ LatLon.prototype.destinationPoint = function (brng, dist) {
   var lat2 = Math.asin(Math.sin(lat1) * Math.cos(dist) + Math.cos(lat1) * Math.sin(dist) * Math.cos(brng));
   var lon2 = lon1 + Math.atan2(Math.sin(brng) * Math.sin(dist) * Math.cos(lat1), Math.cos(dist) - Math.sin(lat1) * Math.sin(lat2));
   lon2 = (lon2 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-  // normalise to -180..+180Ã‚Âº
+  // normalise to -180..+180Âº
   return new LatLon(lat2.toDeg(), lon2.toDeg());
 };
 /**
@@ -401,7 +401,7 @@ LatLon.intersection = function (p1, brng1, p2, brng2) {
   var dLon13 = Math.atan2(Math.sin(brng13) * Math.sin(dist13) * Math.cos(lat1), Math.cos(dist13) - Math.sin(lat1) * Math.sin(lat3));
   var lon3 = lon1 + dLon13;
   lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-  // normalise to -180..+180Ã‚Âº
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
 };
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -421,7 +421,7 @@ LatLon.prototype.rhumbDistanceTo = function (point) {
   var dPhi = Math.log(Math.tan(lat2 / 2 + Math.PI / 4) / Math.tan(lat1 / 2 + Math.PI / 4));
   var q = isFinite(dLat / dPhi) ? dLat / dPhi : Math.cos(lat1);
   // E-W line gives dPhi=0
-  // if dLon over 180Ã‚Â° take shorter rhumb across anti-meridian:
+  // if dLon over 180Â° take shorter rhumb across anti-meridian:
   if (Math.abs(dLon) > Math.PI) {
     dLon = dLon > 0 ? -(2 * Math.PI - dLon) : 2 * Math.PI + dLon;
   }
@@ -454,7 +454,7 @@ LatLon.prototype.rhumbBearingTo = function (point) {
 LatLon.prototype.rhumbDestinationPoint = function (brng, dist) {
   var R = this._radius;
   var d = parseFloat(dist) / R;
-  // d = angular distance covered on earthÃ¢â‚¬â„¢s surface
+  // d = angular distance covered on earthâ€™s surface
   var lat1 = this._lat.toRad(), lon1 = this._lon.toRad();
   brng = brng.toRad();
   var dLat = d * Math.cos(brng);
@@ -497,7 +497,7 @@ LatLon.prototype.rhumbMidpointTo = function (point) {
     lon3 = (lon1 + lon2) / 2;
   // parallel of latitude
   lon3 = (lon3 + 3 * Math.PI) % (2 * Math.PI) - Math.PI;
-  // normalise to -180..+180Ã‚Âº
+  // normalise to -180..+180Âº
   return new LatLon(lat3.toDeg(), lon3.toDeg());
 };
 /* - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  */
@@ -631,7 +631,7 @@ OsGridRef.latLongToOsGrid = function (point) {
   // NatGrid scale factor on central meridian
   var lat0 = (49).toRad(),
     lon0 = (-2).toRad();
-  // NatGrid true origin is 49ÂºN,2ÂºW
+  // NatGrid true origin is 49ºN,2ºW
   var N0 = -100000, E0 = 400000;
   // northing & easting of true origin, metres
   var e2 = 1 - b * b / (a * a);
@@ -3654,6 +3654,11 @@ var FormView = BaseView.extend({
   },
   getNextPageIndex: function(currentPageIndex) {
     var self = this;
+
+    if(pageIndex >= this.pageViews.length){
+      return this.pageViews.length -1;
+    }
+
     for (var pageIndex = currentPageIndex + 1; pageIndex < this.pageViews.length; pageIndex += 1) {
       var pageId = this.pageViews[pageIndex].model.getPageId();
       var pageAction = self.pageViewStatus[pageId].action;
@@ -3665,6 +3670,10 @@ var FormView = BaseView.extend({
   },
   getPrevPageIndex: function(currentPageIndex) {
     var self = this;
+    if(currentPageIndex <= 0){//Can't display pages before 0.
+      return 0;
+    }
+
     for (var pageIndex = currentPageIndex - 1; pageIndex >= 0; pageIndex--) {
       var pageId = self.pageViews[pageIndex].model.getPageId();
       var pageAction = self.pageViewStatus[pageId].action;
@@ -3719,6 +3728,14 @@ var FormView = BaseView.extend({
     this.pageViews[this.pageNum].show();
     this.steps.activePageChange(this);
     this.checkPages();
+  },
+  backEvent: function(){
+    var self = this;
+    if(this.pageNum <= 0){ // Already at the first page, exiting the form. Up to the client what to do with this result.
+      return false;
+    } 
+    self.prevPage();
+    return true;
   },
   hideAllPages: function() {
     this.pageViews.forEach(function(view) {

@@ -81,8 +81,18 @@ App.Router = Backbone.Router.extend({
             }, false);
 
             if (window.PhoneGap || window.cordova) {
-                document.addEventListener("deviceReady", function() {
+                document.addEventListener("deviceready", function() {
                     self.deviceReady = true;
+                }, false);
+                document.addEventListener("backbutton", function(){
+                    $fh.forms.log.d("Back Button Clicked");
+                    if(App.views.form && typeof(App.views.form.backEvent) === 'function'){
+                        if(App.views.form.backEvent() === false){//Clicked back while on the first page. Should go home
+                            App.views.header.showHome();
+                        }
+                    } else {
+                        App.views.header.showHome();
+                    }
                 }, false);
             } else {
                 self.deviceReady = true;
@@ -162,7 +172,6 @@ App.Router = Backbone.Router.extend({
     },
     onPropsRead: function(props) {
         this.props = props;
-        // App.views.about = new AboutView(props);
     }
 });
 
