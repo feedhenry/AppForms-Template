@@ -8,29 +8,29 @@
 <meta name="format-detection" content="telephone=no" />
 
 <div class="fh_appform_container">
-    <div id="fh_wufoo_header" class="hidden bar-title fh_appform_button_bar"></div>
-    <div id="fh_wufoo_alerts_area"><div class="fh_wufoo_alert_offline hidden error">Working Offline.</div></div>
+    <div id="fh_appform_header" class="hidden bar-title fh_appform_button_bar"></div>
+    <div id="fh_appform_alerts_area"><div class="fh_appform_alert_offline hidden error">Working Offline.</div></div>
 
-    <div id="fh_wufoo_form_list" class="fh_appform_form hidden"></div>
+    <div id="fh_appform_form_list" class="fh_appform_form hidden"></div>
 
-    <div id="fh_wufoo_drafts" class="fh_appform_form hidden"></div>
+    <div id="fh_appform_drafts" class="fh_appform_form hidden"></div>
 
-    <div id="fh_wufoo_pending" class="fh_appform_form hidden"></div>
+    <div id="fh_appform_pending" class="fh_appform_form hidden"></div>
 
-    <div id="fh_wufoo_sent" class="fh_appform_form hidden"></div>
+    <div id="fh_appform_sent" class="fh_appform_form hidden"></div>
 
-    <div id="fh_wufoo_settings" class="fh_appform_form hidden"></div>
+    <div id="fh_appform_settings" class="fh_appform_form hidden"></div>
 
 
-    <div id="fh_wufoo_content" class="hidden"></div>
+    <div id="fh_appform_content" class="hidden"></div>
 
     <script>
         $fh.ready({},function (){
             jQuery(document).ready(function(){
                 try {
-                    var headerHeight = jQuery('#fh_wufoo_header').outerHeight();
+                    var headerHeight = jQuery('#fh_appform_header').outerHeight();
                     jQuery('body').addClass('fh_appform_body');
-                    jQuery('#fh_wufoo_alerts_area').css('clear', 'both');
+                    jQuery('#fh_appform_alerts_area').css('clear', 'both');
                 } catch(e) {
                     console.error("load failed");
                     console.error(e);
@@ -47,8 +47,6 @@
     </script>
 
     <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/jquery.validate.js" type="text/javascript" charset="utf-8"></script>
-    <script src="lib/jquery.validate.patch.js" type="text/javascript" charset="utf-8"></script>
      <script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>

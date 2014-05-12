@@ -1,19 +1,19 @@
 HeaderView = Backbone.View.extend({
-    el: '#fh_wufoo_header',
+    el: '#fh_appform_header',
 
     events: {
-        'click div.fh_wufoo_home': 'showHome',
-        'click div.fh_wufoo_drafts': 'showDrafts',
-        'click div.fh_wufoo_pending': 'showPending',
-        'click div.fh_wufoo_sent': 'showSent'
+        'click div.fh_appform_home': 'showHome',
+        'click div.fh_appform_drafts': 'showDrafts',
+        'click div.fh_appform_pending': 'showPending',
+        'click div.fh_appform_sent': 'showSent'
     },
 
     templates: {
         list: '<div class="navigation_list"></div>',
-        forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
-        drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
-        pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
-        sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
+        forms_button: '<div class="fh_appform_home nav_item"><a class="" href="#">Forms</a></li>',
+        drafts_button: '<div class="fh_appform_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
+        pending_button: '<div class="fh_appform_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
+        sent_button: '<div class="fh_appform_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
     },
 
     initialize: function() {
@@ -132,24 +132,24 @@ HeaderView = Backbone.View.extend({
         // TODO: DRY
         var drafts_count = App.collections.drafts.length;
         if (drafts_count > 0) {
-            $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
+            $('.fh_appform_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_drafts .count', this.el).hide();
+            $('.fh_appform_drafts .count', this.el).hide();
         }
 
         var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
 
         if (pending_count > 0) {
-            $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
+            $('.fh_appform_pending .count', this.el).text(pending_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_pending .count', this.el).hide();
+            $('.fh_appform_pending .count', this.el).hide();
         }
 
         var sent_count = App.collections.sent.length;
         if (sent_count > 0) {
-            $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+            $('.fh_appform_sent .count', this.el).text(sent_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_sent .count', this.el).hide();
+            $('.fh_appform_sent .count', this.el).hide();
         }
     }
 });

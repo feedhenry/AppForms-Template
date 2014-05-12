@@ -72,20 +72,6 @@ module.exports = function(grunt) {
       var sha = stdout.trim();
 
       generateBanner($,grunt ,sha, false);
-//      var ul =$('#fh_wufoo_banner .list');
-//      $(ul).empty();
-//
-//      // not actually camel case!
-//      String.prototype.toCamelCase = function(){return this.charAt(0).toUpperCase() + this.substring(1).toLowerCase();};
-//
-//      var template = "\n\t<li class='<%= name.toLowerCase()%>'><span><%= name.toCamelCase() %></span>:<span class='value'><%= value %></span></li>";
-//
-//      $(ul).append(_.template(template, {name:"device", value:""}));
-//      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
-//      $(ul).append(_.template(template, {name:"release", value:grunt.config("pkg.version")}));
-//      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
-//      $(ul).append(_.template(template, {name:"commit", value:sha}));
-
       var htmlDev = $.root().html();
 
       // write index files
@@ -170,12 +156,12 @@ module.exports = function(grunt) {
     try {
       fs.unlinkSync('./dist.zip');
     } catch (e) {
-      // fail silently
+      console.error("did not delete dist.zip");
     }
     try {
       fs.unlinkSync('./max.zip');
     } catch (e) {
-      // fail silently
+      console.error("did not delete max.zip");
     }
   });
 
@@ -206,17 +192,6 @@ module.exports = function(grunt) {
       var sha = stdout.trim();
 
       generateBanner($,grunt , sha, true);
-//      var ul =$('#fh_wufoo_banner .list');
-//      $(ul).empty();
-//
-//      var template = "<li class='<%= name.toLowerCase()%>'><span><%= name.toUpperCase() %></span>:<span><%= value %></span></li>";
-//
-//      $(ul).append(_.template(template, {name:"device", value:""}));
-//      $(ul).append(_.template(template, {name:"name", value:grunt.config("pkg.name")}));
-//      $(ul).append(_.template(template, {name:"version", value:grunt.config("pkg.version")}));
-//      $(ul).append(_.template(template, {name:"date", value:grunt.template.today("yyyy-mm-dd")}));
-//      $(ul).append(_.template(template, {name:"commit", value:sha}));
-
       var htmlDev = $.root().html();
 
       // insert the minified files for prod
@@ -274,14 +249,14 @@ module.exports = function(grunt) {
     );
 
     var tasks = [];
-    tasks.push(function(done){
-      child.exec('git archive --worktree-attributes -o max.zip -v HEAD && unzip -o max.zip -d max', function (error, stdout, stderr) {
-        if(grunt.option("verbose") && error) {
-          grunt.log.writeln('exec error: ' + error);
-        }
-        done(error);
-      });
-    });
+    // tasks.push(function(done){
+    //   child.exec('git archive --worktree-attributes -o max.zip -v HEAD && unzip -o max.zip -d max', function (error, stdout, stderr) {
+    //     if(grunt.option("verbose") && error) {
+    //       grunt.log.writeln('exec error: ' + error);
+    //     }
+    //     done(error);
+    //   });
+    // });
 
     tasks.push(function(done){
       grunt.helper('updateBanner', {name:'max'},done);
@@ -355,6 +330,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', 'clean lint mkdirs archive concat copy min index rearchive');
+  grunt.registerTask('default', 'clean lint mkdirs archive concat copy min index');
 
 };

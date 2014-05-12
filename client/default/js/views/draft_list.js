@@ -1,5 +1,5 @@
 DraftListView = Backbone.View.extend({
-  el: $('#fh_wufoo_drafts'),
+  el: $('#fh_appform_drafts'),
 
   templates: {
     draft_list: '<ul class="fh_appform_field_area list inset draft_list"></ul>',
@@ -15,7 +15,7 @@ DraftListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_drafts');
+    App.views.header.markActive('.fh_appform_drafts');
     $(this.el).show();
   },
 
