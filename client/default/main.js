@@ -1,4 +1,4 @@
-/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-05-09
+/*! FeedHenry-App-Forms-App-Generator - v0.3.12 - 2014-05-13
 * https://github.com/feedhenry/Wufoo-Template/
 * Copyright (c) 2014 FeedHenry */
 
@@ -590,7 +590,7 @@ ShowFormButtonView = Backbone.View.extend({
   show: function() {
     App.views.header.hideAll();
     App.views.form=new FormView({
-      "parentEl":$("#fh_wufoo_content"),
+      "parentEl":$("#fh_appform_content"),
       "form":this.model.coreModel,
       "autoShow":true
     });
@@ -649,7 +649,7 @@ $fh.ready({}, function() {
 });
 
 var FormListView = Backbone.View.extend({
-  el: $('#fh_wufoo_form_list'),
+  el: $('#fh_appform_form_list'),
 
   events: {
     'click .settings': 'showSettings',
@@ -661,7 +661,7 @@ var FormListView = Backbone.View.extend({
     list: '<ul class="form_list"></ul>',
     header: '<div class="fh_appform_form_title">Your Forms</div><div class="fh_appform_form_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
-    footer: '<a class="about fh_appform_form_title" href="#fh_wufoo_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
+    footer: '<a class="about fh_appform_form_title" href="#fh_appform_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
     refreshForms: '<div id="refresh_forms_list" class="fh_appform_form_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
   },
 
@@ -686,7 +686,7 @@ var FormListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_home');
+    App.views.header.markActive('.fh_appform_home');
     $(this.el).show();
   },
 
@@ -750,7 +750,7 @@ var FormListView = Backbone.View.extend({
   }
 });
 SentListView = Backbone.View.extend({
-  el: $('#fh_wufoo_sent'),
+  el: $('#fh_appform_sent'),
 
   events: {
     'click button.dismiss-all': 'dismissAll',
@@ -784,7 +784,7 @@ SentListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_sent');
+    App.views.header.markActive('.fh_appform_sent');
     this.populate();
     $(this.el).show();
   },
@@ -873,7 +873,7 @@ SentListView = Backbone.View.extend({
   }
 });
 DraftListView = Backbone.View.extend({
-  el: $('#fh_wufoo_drafts'),
+  el: $('#fh_appform_drafts'),
 
   templates: {
     draft_list: '<ul class="fh_appform_field_area list inset draft_list"></ul>',
@@ -889,7 +889,7 @@ DraftListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_drafts');
+    App.views.header.markActive('.fh_appform_drafts');
     $(this.el).show();
   },
 
@@ -921,7 +921,7 @@ DraftListView = Backbone.View.extend({
 });
 $(function() {
   SettingsView = $fh.forms.backbone.ConfigView.extend({
-    el: $('#fh_wufoo_settings'),
+    el: $('#fh_appform_settings'),
     events:{
       "click #cancelBtn":"cancel",
       "click #saveBtn":"save"
@@ -1086,7 +1086,7 @@ DraftItemView = ItemView.extend({
       }
       var submission=self.model.coreModel;
       App.views.form=new FormView({
-        "parentEl":$("#fh_wufoo_content"),
+        "parentEl":$("#fh_appform_content"),
         "formId":submission.get("formId"),
         "autoShow":true,
         "submission":submission
@@ -1127,7 +1127,7 @@ PendingReviewItemView = ItemView.extend({
       }
       var submission = self.model.coreModel;
       App.views.form = new FormView({
-        "parentEl": $("#fh_wufoo_content"),
+        "parentEl": $("#fh_appform_content"),
         "formId": submission.get("formId"),
         "autoShow": true,
         "submission": submission
@@ -1165,7 +1165,7 @@ PendingWaitingView = ItemView.extend({
 
       var submission=self.model.coreModel;
       App.views.form=new FormView({
-        "parentEl":$("#fh_wufoo_content"),
+        "parentEl":$("#fh_appform_content"),
         "formId":submission.get("formId"),
         "autoShow":true,
         "submission":submission
@@ -1219,7 +1219,7 @@ PendingSubmittedItemView = ItemView.extend({
       }
       var submission=self.model.coreModel;
       App.views.form=new FormView({
-        "parentEl":$("#fh_wufoo_content"),
+        "parentEl":$("#fh_appform_content"),
         "formId":submission.get("formId"),
         "autoShow":true,
         "submission":submission
@@ -1230,7 +1230,7 @@ PendingSubmittedItemView = ItemView.extend({
 
 });
 PendingListView = Backbone.View.extend({
-  el: $('#fh_wufoo_pending'),
+  el: $('#fh_appform_pending'),
 
   events: {
     'click button.submit-all': 'submitAll'
@@ -1290,7 +1290,7 @@ PendingListView = Backbone.View.extend({
   },
 
   show: function() {
-    App.views.header.markActive('.fh_wufoo_pending');
+    App.views.header.markActive('.fh_appform_pending');
     $(this.el).show();
   },
 
@@ -1360,21 +1360,21 @@ PendingListView = Backbone.View.extend({
   }
 });
 HeaderView = Backbone.View.extend({
-    el: '#fh_wufoo_header',
+    el: '#fh_appform_header',
 
     events: {
-        'click div.fh_wufoo_home': 'showHome',
-        'click div.fh_wufoo_drafts': 'showDrafts',
-        'click div.fh_wufoo_pending': 'showPending',
-        'click div.fh_wufoo_sent': 'showSent'
+        'click div.fh_appform_home': 'showHome',
+        'click div.fh_appform_drafts': 'showDrafts',
+        'click div.fh_appform_pending': 'showPending',
+        'click div.fh_appform_sent': 'showSent'
     },
 
     templates: {
         list: '<div class="navigation_list"></div>',
-        forms_button: '<div class="fh_wufoo_home nav_item"><a class="" href="#">Forms</a></li>',
-        drafts_button: '<div class="fh_wufoo_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
-        pending_button: '<div class="fh_wufoo_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
-        sent_button: '<div class="fh_wufoo_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
+        forms_button: '<div class="fh_appform_home nav_item"><a class="" href="#">Forms</a></li>',
+        drafts_button: '<div class="fh_appform_drafts nav_item"><a class="" href="#">Drafts<span class="count"></span></a></div>',
+        pending_button: '<div class="fh_appform_pending nav_item"><a class="" href="#">Pending<span class="count"></span></a></div>',
+        sent_button: '<div class="fh_appform_sent nav_item_last"><a class="" href="#">Sent<span class="count"></span></a></div>'
     },
 
     initialize: function() {
@@ -1493,34 +1493,34 @@ HeaderView = Backbone.View.extend({
         // TODO: DRY
         var drafts_count = App.collections.drafts.length;
         if (drafts_count > 0) {
-            $('.fh_wufoo_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
+            $('.fh_appform_drafts .count', this.el).text(drafts_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_drafts .count', this.el).hide();
+            $('.fh_appform_drafts .count', this.el).hide();
         }
 
         var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
 
         if (pending_count > 0) {
-            $('.fh_wufoo_pending .count', this.el).text(pending_count).css('display', 'inline-block');
+            $('.fh_appform_pending .count', this.el).text(pending_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_pending .count', this.el).hide();
+            $('.fh_appform_pending .count', this.el).hide();
         }
 
         var sent_count = App.collections.sent.length;
         if (sent_count > 0) {
-            $('.fh_wufoo_sent .count', this.el).text(sent_count).css('display', 'inline-block');
+            $('.fh_appform_sent .count', this.el).text(sent_count).css('display', 'inline-block');
         } else {
-            $('.fh_wufoo_sent .count', this.el).hide();
+            $('.fh_appform_sent .count', this.el).hide();
         }
     }
 });
 AlertView = Backbone.View.extend({
-  options:{el: $("#fh_wufoo_alerts_area")},
+  options:{el: $("#fh_appform_alerts_area")},
 
   templates: {
-    alert: '<div class="fh_wufoo_alert <%= type %>"><%= message %></div>',
-    bar: '<div class="fh_wufoo_alert <%= type %>"><span class="small"><%= message %></span><progress max="100" value="<%= value %>"><strong><%= message %></strong></progress></div>',
-    ios_bar: '<div class="fh_wufoo_alert <%= type %>"><span class="small"><%= message %></span><div class="progress_bar_container" ><div class="progress_bar complete" style="width:<%=value%>%%"></div></div></div>'
+    alert: '<div class="fh_appform_alert <%= type %>"><%= message %></div>',
+    bar: '<div class="fh_appform_alert <%= type %>"><span class="small"><%= message %></span><progress max="100" value="<%= value %>"><strong><%= message %></strong></progress></div>',
+    ios_bar: '<div class="fh_appform_alert <%= type %>"><span class="small"><%= message %></span><div class="progress_bar_container" ><div class="progress_bar complete" style="width:<%=value%>%%"></div></div></div>'
   },
 
   initialize: function() {
@@ -1537,7 +1537,7 @@ AlertView = Backbone.View.extend({
       value  = Math.floor((o.current * 100)/ o.total);
       template = this.templates.bar;
     }
-    $(self.$el).find('.fh_wufoo_alert').remove();
+    $(self.$el).find('.fh_appform_alert').remove();
     this.$el.append(_.template(template, {message:message,value:value,type:type}));
     this.$el.show();
     clearTimeout(this.to);
@@ -1545,7 +1545,7 @@ AlertView = Backbone.View.extend({
 //      self.$el.slideUp(function() {
 //
 //      });
-      $(self.$el).find('.fh_wufoo_alert').remove();
+      $(self.$el).find('.fh_appform_alert').remove();
     }, opts.timeout || 10000);
     return this;
   }
@@ -1556,28 +1556,6 @@ AlertView.showAlert = function(o, type, timeout) {
   alertView.render({o:o, type:type, timeout:timeout});
 };
 App.Router = Backbone.Router.extend({
-
-    /*
-
-  Known unsupported rules/validation
-  - text ranges i.e. 'Range' option e.g. input text/words must be between 1 & 4 long (rules n/a via api or rules json)
-  - number ranges i.e. 'Range' option e.g. number value/digits must be between 2 & 8 (rules n/a via api or rules json)
-  - matchtype all for rule builder config i.e. Operatior AND to specify multiple conditions before a rule is triggered (TODO)
-  - form rules i.e. show message/send email/redirect to website depending on field condition/s (no plans to implement this)
-  - file field/ submission size limits i.e. http://help.wufoo.com/app/answers/detail/a_id/5751#file
-  - other field size limits e.g. text field 255 character limit
-
-  NOTES:
-  - despite all validation rules not being supported, a fallback is in place to highlight validation errors passed back
-    from a bad submit to wufoo. Although these errors show which fields are in an error state, they cannot be
-    programatically validated on the client, and would required another submit of the form.
-  - money field type is n/a via api e.g. $ or €
-  - various form settings have not been considered for addition e.g. Captcha 'Limit Activity' option
-  - to do a lot of the items above it would probably be necessary to 'read' the FORM_JSON global from
-    the form builder page i.e. https://<company>.wufoo.com/build/<form_name>/ (this info n/a from api)
-
-  */
-
     routes: {
         "form_list": "form_list",
         "*path": "form_list" // Default route
@@ -1627,13 +1605,13 @@ App.Router = Backbone.Router.extend({
 
             document.addEventListener("online", function(){
                 $fh.forms.log.d("Device online");
-                $('.fh_wufoo_alert_offline').hide();
+                $('.fh_appform_alert_offline').hide();
                 $fh.forms.config.online();
             }, false);
 
             document.addEventListener("offline", function(){
                 $fh.forms.log.d("Device offline");
-                $('.fh_wufoo_alert_offline').show();
+                $('.fh_appform_alert_offline').show();
                 $fh.forms.config.offline();
             }, false);
 
@@ -1695,7 +1673,7 @@ App.Router = Backbone.Router.extend({
         App.resumeFetchAllowed = true;
         document.addEventListener("resume", this.onResume, false);
         var banner = false;
-        $('#fh_wufoo_banner .list li').each(function(i, e) {
+        $('#fh_appform_banner .list li').each(function(i, e) {
             banner = true;
         });
         this.onConfigLoaded();
