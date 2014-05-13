@@ -14,4 +14,6 @@ max.zip
 .idea/
 client/default/css/phase3CSS.css
 client/default/css/testGeneratedPhas3.css
+client/default/lib/
 import_phase3.sh
+Gruntfile.js
