@@ -13,3 +13,4 @@ dist.zip
 max.zip
 .idea/
 import_phase3.sh
+client/default/lib/appFormjs-backbone.js
