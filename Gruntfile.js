@@ -153,9 +153,7 @@ module.exports = function(grunt) {
         jquery: true,
         loopfunc: true
       },
-      globals: {
-        jQuery: true
-      }
+      files: ['./client/default/js/**/*.js']
     },
     wget: {
       backboneJSSDK: {
