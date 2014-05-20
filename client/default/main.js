@@ -1585,6 +1585,16 @@ App.Router = Backbone.Router.extend({
                     App.views.header = new HeaderView();
                     App.views.header.showHome();
 
+                    $fh.forms.config.mbaasOnline(function(){
+                      $fh.forms.log.d("Device online");
+                      $('.fh_appform_alert_offline').hide();
+                    });
+
+                    $fh.forms.config.mbaasOffline(function(){
+                      $fh.forms.log.d("Device offline");
+                      $('.fh_appform_alert_offline').show();
+                    });
+
 
                     if ($('#fh_appform_style').length > 0) {
                         $('#fh_appform_style').html(themeCSS);
@@ -1599,17 +1609,7 @@ App.Router = Backbone.Router.extend({
 
         $fh.ready({}, function() {
 
-            document.addEventListener("online", function(){
-                $fh.forms.log.d("Device online");
-                $('.fh_appform_alert_offline').hide();
-                $fh.forms.config.online();
-            }, false);
 
-            document.addEventListener("offline", function(){
-                $fh.forms.log.d("Device offline");
-                $('.fh_appform_alert_offline').show();
-                $fh.forms.config.offline();
-            }, false);
 
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceready", function() {
