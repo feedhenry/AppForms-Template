@@ -46,17 +46,15 @@ App.Router = Backbone.Router.extend({
 
         $fh.ready({}, function() {
 
-            document.addEventListener("online", function(){
+            $fh.forms.config.mbaasOnline(function(){
                 $fh.forms.log.d("Device online");
                 $('.fh_appform_alert_offline').hide();
-                $fh.forms.config.online();
-            }, false);
+            });
 
-            document.addEventListener("offline", function(){
+            $fh.forms.config.mbaasOffline(function(){
                 $fh.forms.log.d("Device offline");
                 $('.fh_appform_alert_offline').show();
-                $fh.forms.config.offline();
-            }, false);
+            });
 
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceready", function() {
