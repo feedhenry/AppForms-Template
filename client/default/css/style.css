@@ -27,7 +27,7 @@ ul {
     display: inline-block;
 
     padding: 0px;
-    width: 25%;
+    width: 24%;
     height: 100%;
     text-align: center;
     margin-top: 0px;
@@ -38,15 +38,19 @@ ul {
     display: inline-block;
 
     padding: 0px;
-    width: 25%;
+    width: 24%;
     height: 100%;
     text-align: center;
     margin-top: 0px;
     overflow: hidden;
 }
 
+#fh_appform_header.fh_appform_button_bar .fh_appform_pending.nav_item {
+    width: 28%;
+}
+
 #fh_appform_header.fh_appform_button_bar .navigation_list .nav_item a{
-    padding: 7px 1px 7px 1px;
+    padding: 7px 0px 7px 0px;
 
     display: block;
     margin-top: 0px;
@@ -54,10 +58,11 @@ ul {
     text-decoration: none;
     border-radius: 0px;
     font-size: 0.8em;
+    margin: 0px !important;
 }
 
 #fh_appform_header.fh_appform_button_bar .navigation_list .nav_item_last a{
-    padding: 7px 1px 7px 1px;
+    padding: 7px 0px 7px 0px;
 
     display: block;
     margin-top: 0px;
@@ -199,9 +204,11 @@ textarea {
     display: inline-block; padding-top: 4px; padding-bottom: 4px; padding-left: 9px; padding-right: 9px;
     background-color: rgba(0,0,0,0.1);
     border-radius: 10px;
+    margin-right: 5px;
+    margin-top: -2px;
 }
 
-.segmented-controller li &gt; a {
+.segmented-controller li a {
                                   padding: 5px 8px;
                                   line-height: 21px;
                                   color: inherit;
@@ -254,7 +261,7 @@ textarea {
 
 .loading {
     float: right;
-    background: url(/static/a/2Uon91RShpwUP9_MYj10q087/studio/31/img/loading.gif);
+    background: url("/static/a/2Uon91RShpwUP9_MYj10q087/studio/31/img/loading.gif");
     background-size: 16px 16px;
     height: 16px;
     width: 16px;
@@ -320,44 +327,112 @@ textarea {
 
 /* Loading Spinner styling */
 div.loading_spinner {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    display: inline-block;
-    font-size: 14px;
-    font-weight: bold;
-    color: #fff;
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: inline-block;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
 }
 
 div.loading_spinner div {
-    width: 12%;
-    height: 26%;
-    background: #000;
-    position: absolute;
-    left: 44.5%;
-    top: 37%;
-    opacity: 0;
-    -webkit-animation: fade 1s linear infinite;
-    -webkit-border-radius: 50px;
-    -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  width: 12%;
+  height: 26%;
+  background: #000;
+  position: absolute;
+  left: 44.5%;
+  top: 37%;
+  opacity: 0;
+  -webkit-animation: fade 1s linear infinite;
+  -webkit-border-radius: 50px;
+  -webkit-box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  animation: fade 1s linear infinite;
+  border-radius: 50px;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
 }
 
-div.loading_spinner div.bar1 {-webkit-transform:rotate(0deg) translate(0, -142%); -webkit-animation-delay: 0s;}
-div.loading_spinner div.bar2 {-webkit-transform:rotate(30deg) translate(0, -142%); -webkit-animation-delay: -0.9167s;}
-div.loading_spinner div.bar3 {-webkit-transform:rotate(60deg) translate(0, -142%); -webkit-animation-delay: -0.833s;}
-div.loading_spinner div.bar4 {-webkit-transform:rotate(90deg) translate(0, -142%); -webkit-animation-delay: -0.75s;}
-div.loading_spinner div.bar5 {-webkit-transform:rotate(120deg) translate(0, -142%); -webkit-animation-delay: -0.667s;}
-div.loading_spinner div.bar6 {-webkit-transform:rotate(150deg) translate(0, -142%); -webkit-animation-delay: -0.5833s;}
-div.loading_spinner div.bar7 {-webkit-transform:rotate(180deg) translate(0, -142%); -webkit-animation-delay: -0.5s;}
-div.loading_spinner div.bar8 {-webkit-transform:rotate(210deg) translate(0, -142%); -webkit-animation-delay: -0.41667s;}
-div.loading_spinner div.bar9 {-webkit-transform:rotate(240deg) translate(0, -142%); -webkit-animation-delay: -0.333s;}
-div.loading_spinner div.bar10 {-webkit-transform:rotate(270deg) translate(0, -142%); -webkit-animation-delay: -0.25s;}
-div.loading_spinner div.bar11 {-webkit-transform:rotate(300deg) translate(0, -142%); -webkit-animation-delay: -0.1667s;}
-div.loading_spinner div.bar12 {-webkit-transform:rotate(330deg) translate(0, -142%); -webkit-animation-delay: -0.0833s;}
+div.loading_spinner div.bar1 {
+  -webkit-transform:rotate(0deg) translate(0, -142%); 
+  -webkit-animation-delay: 0s;
+  transform:rotate(0deg) translate(0, -142%); 
+  animation-delay: 0s;
+}
+div.loading_spinner div.bar2 {
+  -webkit-transform:rotate(30deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.9167s;
+  transform:rotate(30deg) translate(0, -142%); 
+  animation-delay: -0.9167s;
+}
+div.loading_spinner div.bar3 {
+  -webkit-transform:rotate(60deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.833s;
+  transform:rotate(60deg) translate(0, -142%); 
+  animation-delay: -0.833s;
+}
+div.loading_spinner div.bar4 {
+  -webkit-transform:rotate(90deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.75s;
+  transform:rotate(90deg) translate(0, -142%); 
+  animation-delay: -0.75s;
+}
+div.loading_spinner div.bar5 {
+  -webkit-transform:rotate(120deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.667s;
+  transform:rotate(120deg) translate(0, -142%); 
+  animation-delay: -0.667s;
+}
+div.loading_spinner div.bar6 {
+  -webkit-transform:rotate(150deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.5833s;
+  transform:rotate(150deg) translate(0, -142%); 
+  animation-delay: -0.5833s;
+}
+div.loading_spinner div.bar7 {
+  -webkit-transform:rotate(180deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.5s;
+  transform:rotate(180deg) translate(0, -142%); 
+  animation-delay: -0.5s;
+}
+div.loading_spinner div.bar8 {
+  -webkit-transform:rotate(210deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.41667s;
+  transform:rotate(210deg) translate(0, -142%); 
+  animation-delay: -0.41667s;
+}
+div.loading_spinner div.bar9 {
+  -webkit-transform:rotate(240deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.333s;
+  transform:rotate(240deg) translate(0, -142%); 
+  animation-delay: -0.333s;
+}
+div.loading_spinner div.bar10 {
+  -webkit-transform:rotate(270deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.25s;
+  transform:rotate(270deg) translate(0, -142%); 
+  animation-delay: -0.25s;
+}
+div.loading_spinner div.bar11 {
+  -webkit-transform:rotate(300deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.1667s;
+  transform:rotate(300deg) translate(0, -142%); 
+  animation-delay: -0.1667s;
+}
+div.loading_spinner div.bar12 {
+  -webkit-transform:rotate(330deg) translate(0, -142%); 
+  -webkit-animation-delay: -0.0833s;
+  transform:rotate(330deg) translate(0, -142%); 
+  animation-delay: -0.0833s;
+}
 
 @-webkit-keyframes fade {
-    from {opacity: 1;}
-    to {opacity: 0.25;}
+  from {opacity: 1;}
+  to {opacity: 0.25;}
+}
+
+@keyframes fade {
+  from {opacity: 1;}
+  to {opacity: 0.25;}
 }
 
 
@@ -384,13 +459,12 @@ div.loading_container div.loading_spinner div { background: #fff; }
 
 #loading_overlay {
     background: #000;
-    opacity: 0.7;
-    position: fixed;
+    opacity: 0.3;
+    position: absolute;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
-    z-index: 100;
 }
 
 .loading_spinner {
@@ -610,9 +684,7 @@ a.settings{
     margin-right:1em;
     float: right;
 }
-#fh_appform_banner ul.list {
-    font: 7px &quot;Helvetica Neue&quot;, Helvetica, Arial, sans-serif;
-}
+
 #fh_appform_banner ul.list span {
     width: 60%;
 }
