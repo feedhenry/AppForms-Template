@@ -13,6 +13,10 @@
 
     <div id="fh_appform_form_list" class="fh_appform_form hidden"></div>
 
+<div class="fh_appform_logo_container">
+    <div class="fh_appform_logo"></div>
+</div>
+
     <div id="fh_appform_drafts" class="fh_appform_form hidden"></div>
 
     <div id="fh_appform_pending" class="fh_appform_form hidden"></div>
@@ -29,7 +33,7 @@
             jQuery(document).ready(function(){
                 try {
                     var headerHeight = jQuery('#fh_appform_header').outerHeight();
-                    jQuery('body').addClass('fh_appform_body');
+                    jQuery('body').addClass('fh_appform_body_area');
                     jQuery('#fh_appform_alerts_area').css('clear', 'both');
                 } catch(e) {
                     console.error("load failed");
