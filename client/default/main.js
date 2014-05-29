@@ -658,7 +658,8 @@ var FormListView = Backbone.View.extend({
     header: '<div class="fh_appform_form_title">Your Forms</div><div class="fh_appform_form_description">Choose a form from the list below</div>',
     error: '<li><button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button></li>',
     footer: '<a class="about fh_appform_form_title" href="#fh_appform_banner"><i class="fa fa-info-circle"></i></a><a class="settings fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
-    refreshForms: '<div id="refresh_forms_list" class="fh_appform_form_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
+    refreshForms: '<div id="refresh_forms_list" class="fh_appform_form_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>',
+    appformLogo: '<div class="fh_appform_logo_container"><div class="fh_appform_logo"></div></div>'
   },
 
   initialize: function() {
@@ -710,6 +711,7 @@ var FormListView = Backbone.View.extend({
   render: function() {
     // Empty our existing view
     $(this.el).empty();
+    $(this.el).append(this.templates.appformLogo);
     $(this.el).append(this.templates.refreshForms);
 
     // Add list
