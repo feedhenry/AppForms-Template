@@ -23,6 +23,10 @@ ul {
     overflow: hidden;
 }
 
+.fh_appform_container .fh_appform_logo_container{
+  text-align:center;
+}
+
 #fh_appform_header.fh_appform_button_bar .navigation_list .nav_item {
     display: inline-block;
 
