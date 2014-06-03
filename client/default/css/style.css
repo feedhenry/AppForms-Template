@@ -4,10 +4,6 @@ ul {
     list-style: none;
 }
 
-.fh_appform_container .fh_appform_logo_container{
-  text-align:center;
-}
-
 #fh_appform_header.fh_appform_button_bar {
     padding: 8px 5px;
 }
@@ -25,6 +21,10 @@ ul {
     /* border: 1px solid black; */
     border-radius: 5px;
     overflow: hidden;
+}
+
+.fh_appform_container .fh_appform_logo_container{
+  text-align:center;
 }
 
 #fh_appform_header.fh_appform_button_bar .navigation_list .nav_item {
