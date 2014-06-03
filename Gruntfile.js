@@ -342,6 +342,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'wget', 'jshint','mkdirs','archive', 'concat', 'copy', 'uglify:lib', 'index']);
+  grunt.registerTask('default', ['clean', 'jshint','mkdirs','archive', 'concat', 'copy', 'uglify:lib', 'index']);
 
 };
