@@ -24,6 +24,7 @@ App.Router = Backbone.Router.extend({
                     "fromRemote": false,
                     "css": true
                 }, function(err, themeCSS) {
+                    if (err) console.error(err);
                     App.views.form_list = new FormListView();
                     App.views.drafts_list = new DraftListView();
                     App.views.pending_list = new PendingListView();
@@ -43,13 +44,19 @@ App.Router = Backbone.Router.extend({
                     });
 
 
-                    if ($('#fh_appform_style').length > 0) {
-                        $('#fh_appform_style').html(themeCSS);
-                    } else {
-                        $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-                    }
-                    if (err) console.error(err);
-                    self.onReady();
+                    $.when($.get("css/testGeneratedPhas3.css")).done(function(response) {
+                        var css = _.template(response, {
+                            color: "blue"
+                        });
+                        if ($('#fh_appform_style').length > 0) {
+                            $('#fh_appform_style').html(css);
+                        } else {
+                            $('head').append('<style id="fh_appform_style">' + css + '</style>');
+                        }
+                        self.onReady();
+                    });
+                    
+                    
                 });
             });
         }
