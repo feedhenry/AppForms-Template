@@ -1,3 +1,29 @@
 .navbar-fixed-top.fh_appform_button_bar{
-	margin-top: 0px;
+  margin-top: 0px;
+}
+
+#fh_appform_container {
+  margin:0px;
+  padding:0px;
+  width:100%;
+}
+
+.pagination {
+  padding-right:0px;
+}
+
+
+#fh_appform_tabbs li{
+  padding-right:4px;  
+  padding-left: 4px;
+}
+
+#fh_appform_tabbs {
+  height:50px;
+}
+
+#fh_appform_tabbs div{
+  border-radius: 0px;
+  height: inherit;
+  padding-top: 15px;
 }

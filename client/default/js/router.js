@@ -1,59 +1,109 @@
 App.Router = Backbone.Router.extend({
-
     routes: {
+        "form_list": "form_list",
         "*path": "form_list" // Default route
     },
 
     initialize: function() {
-        _.bindAll(this, "form_list", "onReady", "onResume", "onConfigLoaded", "fetchCollections", "reload");
+        _.bindAll(this);
     },
 
     form_list: function() {
         var self = this;
+        var initRetryLimit = 20;
+        var initRetryAttempts = 0;
+        self.loadingView = new LoadingCollectionView();
+        self.loadingView.show("App Starting");
+        self.deviceReady = false;
+        self.initReady = false;
 
-        this.loadingView = new LoadingCollectionView();
-        this.loadingView.show("App Starting");
+        function startForms() {
 
+            $fh.forms.init({}, function() {
+                $fh.forms.getTheme({
+                    "fromRemote": false,
+                    "css": true
+                }, function(err, themeCSS) {
+                    App.views.form_list = new FormListView();
+                    App.views.drafts_list = new DraftListView();
+                    App.views.pending_list = new PendingListView();
+                    App.views.sent_list = new SentListView();
+                    App.views.settings = new SettingsView();
+                    App.views.header = new HeaderView();
+                    App.views.header.showHome();
 
-        console.log("Form List");
-        $fh.ready({}, function() {
-            $fh.on('fhinit', function(err, cloudProps) {
-                console.log(cloudProps);
-                if (err) console.error("Error on fhinit", err);
-                $fh.cloud_props.hosts.url = "https://testing-6fqkkjs2qh001su8z90lw5mt-dev.ac.gen.beta.feedhenry.com";
-                $fh.forms.init({}, function() {
-                    $fh.forms.getTheme({
-                        "fromRemote": false,
-                        "css": true
-                    }, function(err, themeCSS) {
-                        App.views.form_list = new FormListView();
-                        App.views.header = new HeaderView();
-                        App.views.drafts_list = new DraftListView();
-                        App.views.pending_list = new PendingListView();
-                        App.views.sent_list = new SentListView();
-                        App.views.settings = new SettingsView();
-
-                        App.views.drafts_list.hide();
-                        App.views.pending_list.hide();
-                        App.views.sent_list.hide();
-                        App.views.settings.hide();
-
-                        //console.log(themeCSS);
-
-                        $.when($.get("css/testGeneratedPhas3.css")).done(function(response) {
-                            var css = _.template(response, {
-                                color: "blue"
-                            });
-                            if ($('#fh_appform_style').length > 0) {
-                                $('#fh_appform_style').html(css);
-                            } else {
-                                $('head').append('<style id="fh_appform_style">' + css + '</style>');
-                            } if (err) console.error(err);
-                            self.onReady();
-                        });
+                    $fh.forms.config.mbaasOnline(function(){
+                      $fh.forms.log.d("Device online");
+                      $('.fh_appform_alert_offline').hide();
                     });
+
+                    $fh.forms.config.mbaasOffline(function(){
+                      $fh.forms.log.d("Device offline");
+                      $('.fh_appform_alert_offline').show();
+                    });
+
+
+                    if ($('#fh_appform_style').length > 0) {
+                        $('#fh_appform_style').html(themeCSS);
+                    } else {
+                        $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                    }
+                    if (err) console.error(err);
+                    self.onReady();
                 });
             });
+        }
+
+        $fh.ready({}, function() {
+
+
+
+            if (window.PhoneGap || window.cordova) {
+                document.addEventListener("deviceready", function() {
+                    self.deviceReady = true;
+                }, false);
+                document.addEventListener("backbutton", function(){
+                    $fh.forms.log.d("Back Button Clicked");
+                    if(App.views.form && typeof(App.views.form.backEvent) === 'function'){
+                        if(App.views.form.backEvent() === false){//Clicked back while on the first page. Should go home
+                            App.views.header.showHome();
+                        }
+                    } else {
+                        App.views.header.showHome();
+                    }
+                }, false);
+            } else {
+                self.deviceReady = true;
+            }
+            $fh.on('fhinit', function(err, cloudProps) {
+                console.log("fhinit called");
+                if (err) {
+                    console.error("Error on fhinit", err);
+                }
+
+                self.initReady = true;
+            });
+            var deviceReadyInterval = setInterval(function() {
+                if (self.deviceReady === true && self.initReady === true) {
+                    startForms();
+                    clearInterval(deviceReadyInterval);
+                } else {
+                    if(initRetryAttempts > initRetryLimit){
+                        console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
+
+                        if(self.deviceReady === true){
+                            console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
+                            startForms();
+                            clearInterval(deviceReadyInterval);
+                        } else {
+                            console.error("Forms Device Not Ready. Trying again.");
+                            initRetryAttempts = 0;
+                        }
+                    } else {
+                        initRetryAttempts += 1;   
+                    }
+                }
+            }, 500);
         });
     },
     onReady: function() {
@@ -66,6 +116,9 @@ App.Router = Backbone.Router.extend({
         App.resumeFetchAllowed = true;
         document.addEventListener("resume", this.onResume, false);
         var banner = false;
+        $('#fh_appform_banner .list li').each(function(i, e) {
+            banner = true;
+        });
         this.onConfigLoaded();
     },
 
@@ -85,12 +138,12 @@ App.Router = Backbone.Router.extend({
 
     reload: function() {
         App.collections.forms.reset();
-        this.loadingView.show("reloading forms");
         this.fetchCollections("reloading forms");
     },
 
     fetchCollections: function(msg, to) {
         this.loadingView.show(msg);
+        // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
         App.collections.forms.fetch();
 
         refreshSubmissionCollections();
