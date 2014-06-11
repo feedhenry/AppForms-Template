@@ -21,7 +21,7 @@ App.Router = Backbone.Router.extend({
 
             $fh.forms.init({}, function() {
                 $fh.forms.getTheme({
-                    "fromRemote": false,
+                    "fromRemote": true,
                     "css": true
                 }, function(err, themeCSS) {
                     if (err) console.error(err);
