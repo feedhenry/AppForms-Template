@@ -67,7 +67,7 @@ PendingListView = Backbone.View.extend({
     },
 
     show: function() {
-        App.views.header.markActive('fh_content_pending');
+        App.views.header.markActive('header_pending');
         $(this.$el).show();
     },
 

@@ -1,15 +1,12 @@
 HeaderView = Backbone.View.extend({
     el: '#fh_wufoo_header',
 
-    events: {},
-
-    templates: {
-        nav_bar: '<div class="col-xs-12 navbar fh_appform_button_bar navbar-fixed-top" role="navigation"></div>',
-        list: '<div class="row" id="fh_appform_tabbs"></div>',
-        forms_button: '<div class="col-xs-3 text-center fh_appform_button_action">Forms</div>',
-        drafts_button: '<div class="col-xs-3 text-center fh_appform_button_action">Drafts</div>',
-        pending_button: '<div class="col-xs-3 text-center fh_appform_button_action">Pending</div>',
-        sent_button: '<div class="col-xs-3 text-center fh_appform_button_action">Sent<span class="badge pull-right count"></div>'
+    events: {
+        'click #header_forms' : "showHome",
+        'click #header_drafts': "showDrafts",
+        'click #header_pending': "showPending",
+        'click #header_sent': "showSent",
+        'click #header_settings': "showSettings"
     },
 
     initialize: function() {
@@ -31,46 +28,10 @@ HeaderView = Backbone.View.extend({
         var self = this;
         $(this.$el).empty();
 
-        var list = $(_.template(this.templates.list, {}));
-        var forms_button = $(this.templates.forms_button);
-        var drafts_button = $(this.templates.drafts_button);
-        var pending_button = $(this.templates.pending_button);
-        var sent_button = $(this.templates.sent_button);
-        var nav_bar = $(this.templates.nav_bar);
+        var header = $(_.template($('#header-list').html(), {}));
 
-        list.append(forms_button);
-        list.append(drafts_button);
-        list.append(pending_button);
-        list.append(sent_button);
-
-        forms_button.click(function(e) {
-            e.preventDefault();
-            self.showHome();
-            console.log("Forms Button Clicked ");
-        });
-
-        drafts_button.click(function(e) {
-            e.preventDefault();
-            self.showDrafts();
-            console.log("drafts_button Button Clicked ");
-        });
-
-        pending_button.click(function(e) {
-            e.preventDefault();
-            self.showPending();
-            console.log("pending_button Button Clicked ");
-        });
-
-        sent_button.click(function(e) {
-            e.preventDefault();
-            self.showSent();
-            console.log("sent_button Button Clicked ");
-        });
-
-        nav_bar.append(list);
-
-        $(this.$el).append(nav_bar);
-        $(this.$el).show();
+        $(this.$el).append(header);
+        $(this.$el).show();  
     },
     adviseAll: function() {
         this.showHome = this.advise(this.showHome);
@@ -108,34 +69,44 @@ HeaderView = Backbone.View.extend({
         };
     },
 
-    showHome: function() {
+    hideMenu: function(){
+        $('#forms-navbar-collapse').collapse('hide');
+    },
+
+    showHome: function(e) {
         console.log("showHome");
+        this.hideMenu();
         this.hideAll();
         App.views.form_list.show();
         return false;
     },
 
-    showDrafts: function() {
+    showDrafts: function(e) {
+        this.hideMenu();
         this.hideAll();
         App.views.drafts_list.show();
         return false;
     },
 
-    showPending: function() {
+    showPending: function(e) {
+        this.hideMenu();
         this.hideAll();
         App.views.pending_list.show();
         return false;
     },
 
-    showSent: function() {
+    showSent: function(e) {
+        this.hideMenu();
         this.hideAll();
         App.views.sent_list.show();
         return false;
     },
 
-    showSettings: function() {
+    showSettings: function(e) {
+        this.hideMenu();
         this.hideAll();
         App.views.settings.show();
+        return false;
     },
     hideAll: function() {
         window.scrollTo(0, 0);
@@ -154,8 +125,8 @@ HeaderView = Backbone.View.extend({
     markActive: function(tab_class) {
         var self = this;
         tab_class = tab_class ? tab_class : "";
-        tab_class = "#tab_" + tab_class;
-        $('#fh_appform_tabbs li button').removeClass('active');
+        tab_class = "#" + tab_class;
+        $('#forms-navbar-collapse li').removeClass('active');
         $(tab_class).addClass('active');
     },
 

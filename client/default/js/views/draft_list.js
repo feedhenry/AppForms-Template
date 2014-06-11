@@ -15,7 +15,7 @@ DraftListView = Backbone.View.extend({
     },
 
     show: function() {
-        App.views.header.markActive('fh_content_drafts');
+        App.views.header.markActive('header_drafts');
         $(this.$el).show();
     },
 

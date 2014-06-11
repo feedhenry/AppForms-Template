@@ -35,7 +35,7 @@ SentListView = Backbone.View.extend({
     },
 
     show: function() {
-        App.views.header.markActive('fh_content_sent');
+        App.views.header.markActive('heading_sent');
         this.changed();
         this.populate();
         $(this.$el).show();
