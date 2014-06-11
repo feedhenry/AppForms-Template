@@ -15,6 +15,7 @@
 <meta name="format-detection" content="telephone=no" />
 
 <div class="fh_appform_container fh_appform_body row">
+    <div id="includedContent" style="display:none"></div>
     <div id="fh_wufoo_header" class="col-xs-12"></div>
 
     <div id="fh_content_form_list" class="col-xs-12" style="margin-top:50px"></div>
@@ -90,6 +91,11 @@
 
 
     <script src="lib/appFormjs-backbone.js" type="text/javascript" charset="utf-8"></script>
+    <script> 
+        $(function(){
+          $("#includedContent").load("templates/templates.html"); 
+        });
+        </script> 
     <script>
 
     </script>
