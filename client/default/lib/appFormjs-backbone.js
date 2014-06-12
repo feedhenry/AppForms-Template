@@ -1521,7 +1521,7 @@ var BaseView=Backbone.View.extend({
     "onLoad":function(){},
     "onLoadEnd":function(){}
 }); 
-var FormTemplates = "Test Template asd ";
+var FormTemplates = '<script type="text/template" id="temp_form_structure"><div id="fh_appform_container" class="fh_appform_form_area col-xs-offset-1 col-xs-10 fh_appform_container">  <div class="fh_appform_logo_container  col-xs-12">    <div class="fh_appform_logo  col-xs-12">    </div>  </div>  <div class="fh_appform_form_title col-xs-12 text-center">    <h1></h1>  </div></div></script>';
 var FormListView = BaseView.extend({
     events: {
         'click button#formlist_reload': 'reload'
@@ -1824,12 +1824,7 @@ var FieldView = Backbone.View.extend({
         this.$el.attr("data-field", this.model.getFieldId());
 
 
-        if (this.options.sectionName) {
-            //This field belongs to a section
-            this.options.parentEl.find('#fh_appform_' + this.options.sectionName).append(this.$el);
-        } else {
-            this.options.parentEl.append(this.$el);
-        }
+        this.options.parentEl.append(this.$el);
 
 
 
@@ -3111,7 +3106,7 @@ var PageView=BaseView.extend({
   templates : {
     pageTitle: '<div class="fh_appform_page_title text-center"><%= pageTitle %></div>',
     pageDescription: '<div class="fh_appform_page_description text-center"><h4><%= pageDescription%></h4></div>',
-    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area"></div>'
+    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area panel panel-default"><div class="panel-heading"><%= title %></div><div class="panel-body"></div></div>'
   },
 
   initialize: function(options) {
@@ -3143,25 +3138,28 @@ var PageView=BaseView.extend({
 
     if(sections != null){
       var sectionKey;
-      for(sectionKey in sections){
-        this.$el.append(_.template(this.templates.section, {"sectionId": sectionKey}));
-      }
+      
 
       //Add the section fields
       for(sectionKey in sections){
-        sections[sectionKey].forEach(function(field, index){
+        var sectionEl = $(_.template(this.templates.section, {"sectionId": sectionKey, title: sections[sectionKey].title}));
+        self.$el.append(sectionEl);
+        sections[sectionKey].fields.forEach(function(field, index){
           var fieldType = field.getType();
           if (self.viewMap[fieldType]) {
 
             $fh.forms.log.l("*- "+fieldType);
 
-            self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
-              parentEl: self.$el,
-              parentView: self,
-              model: field,
-              formView: self.options.formView,
-              sectionName: sectionKey
-            });
+            if(fieldType !== "sectionBreak"){
+                self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+                parentEl: sectionEl.find('.panel-body'),
+                parentView: self,
+                model: field,
+                formView: self.options.formView,
+                sectionName: sectionKey
+              });  
+            }
+            
           } else {
             $fh.forms.log.w('FIELD NOT SUPPORTED:' + fieldType);
           }
@@ -3192,7 +3190,7 @@ var PageView=BaseView.extend({
 
   show: function () {
     var self = this;
-    self.$el.removeClass('fh_appform_hidden');
+    self.$el.show();
 
     for(var fieldViewId in self.fieldViews){
       if(self.fieldViews[fieldViewId].mapResize){
@@ -3203,7 +3201,7 @@ var PageView=BaseView.extend({
 
   hide: function () {
 
-    this.$el.addClass('fh_appform_hidden');
+    this.$el.hide();
   },
 
   showField: function (id) {
@@ -3334,11 +3332,10 @@ var FormView = BaseView.extend({
     self.model = form;
 
     //Page views are always added before anything else happens, need to render the form title first
-    self.$el.append(this.templates.formContainer);
-    self.$el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {}));
-    self.$el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {
-      title: this.model.getName()
-    }));
+
+    var formHtml = _.template($('#temp_form_structure').html(), {title: self.model.getName()});
+
+    self.$el.append(formHtml);
 
     if (!params.submission) {
       params.submission = self.model.newSubmission();
@@ -3539,6 +3536,7 @@ var FormView = BaseView.extend({
   render: function() {
     this.$el.find("#fh_appform_container.fh_appform_form_area").append(this.templates.buttons);
     this.rebindButtons();
+    this.hideAllPages();
     this.pageViews[0].show();
     this.pageNum = 0;
     this.steps.activePageChange(this);
@@ -3810,7 +3808,7 @@ SectionView=BaseView.extend({
 
 });
 StepsView = Backbone.View.extend({
-  className: 'fh_appform_steps',
+  className: 'fh_appform_steps col-xs-12',
 
   templates: {
       table: '<ul class="pagination pagination-lg col-xs-12"></ul>',
@@ -3850,6 +3848,7 @@ StepsView = Backbone.View.extend({
     });
 
     this.$el.append(table);
+    return this;
   },
 
   activePageChange: function() {
