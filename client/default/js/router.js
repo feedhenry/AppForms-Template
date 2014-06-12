@@ -5,7 +5,7 @@ App.Router = Backbone.Router.extend({
     },
 
     initialize: function() {
-        _.bindAll(this);
+        _.bindAll(this, "form_list", "onReady", "onResume", "onConfigLoaded", "reload", "fetchCollections", "onPropsRead");
     },
 
     form_list: function() {
@@ -48,11 +48,11 @@ App.Router = Backbone.Router.extend({
                         var css = _.template(response, {
                             color: "blue"
                         });
-                        if ($('#fh_appform_style').length > 0) {
-                            $('#fh_appform_style').html(css);
-                        } else {
-                            $('head').append('<style id="fh_appform_style">' + css + '</style>');
-                        }
+                        // if ($('#fh_appform_style').length > 0) {
+                        //     $('#fh_appform_style').html(css);
+                        // } else {
+                        //     $('head').append('<style id="fh_appform_style">' + css + '</style>');
+                        // }
                         self.onReady();
                     });
                     

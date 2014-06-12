@@ -26,23 +26,11 @@ PendingReviewItemView = ItemView.extend({
             }
             var submission = self.model.coreModel;
             App.views.form = new FormView({
-                "parentEl": $("#fh_wufoo_content"),
+                "parentEl": $("#fh_appform_content"),
                 "formId": submission.get("formId"),
                 "autoShow": true,
                 "submission": submission
             });
         });
-    },
-    render: function() {
-        var time = new moment(this.model.get('submitDate')).format('HH:mm:ss DD/MM/YYYY');
-        var error = this.model.get('error');
-        var item = _.template(this.templates.item, {
-            name: this.model.get('formName'),
-            id: this.renderId(),
-            timestamp: time,
-            error_type: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
-        });
-        $(this.$el).html(item);
-        return this;
     }
 });

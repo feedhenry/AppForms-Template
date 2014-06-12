@@ -1521,6 +1521,7 @@ var BaseView=Backbone.View.extend({
     "onLoad":function(){},
     "onLoadEnd":function(){}
 }); 
+var FormTemplates = "Test Template asd ";
 var FormListView = BaseView.extend({
     events: {
         'click button#formlist_reload': 'reload'
@@ -3003,9 +3004,9 @@ FieldTextareaView = FieldView.extend({
     input: "<textarea class='fh_appform_field_input col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
-  className: "fh_appform_section_break col-xs-12",
+  className: "fh_appform_section_break panel panel-default",
   templates: {
-      sectionBreak: '<div class="fh_appform_section_title"><h3 class="text-center"><%= sectionTitle %></h3></div><div class="fh_appform_section_description"><h4 class="text-center"><%= sectionDescription%></h4></div>'
+      sectionBreak: '<div class="panel-heading"><%= sectionTitle %></div>'
   },
   renderEle:function(){
     return _.template(this.templates.sectionBreak, {sectionTitle: this.model.getName(), sectionDescription: this.model.getHelpText()});
@@ -3110,7 +3111,7 @@ var PageView=BaseView.extend({
   templates : {
     pageTitle: '<div class="fh_appform_page_title text-center"><%= pageTitle %></div>',
     pageDescription: '<div class="fh_appform_page_description text-center"><h4><%= pageDescription%></h4></div>',
-    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area col-xs-12"></div>'
+    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area"></div>'
   },
 
   initialize: function(options) {
@@ -3329,6 +3330,7 @@ var FormView = BaseView.extend({
     self.formId = form.getFormId();
 
     self.$el.empty();
+    self.$el.append("<div id='fh_appform_templates' style='display:none;'>" + FormTemplates + "</div>");
     self.model = form;
 
     //Page views are always added before anything else happens, need to render the form title first
@@ -3801,7 +3803,6 @@ SectionView=BaseView.extend({
   initialize: function(options) {
     this.options = options;
     _.bindAll(this, 'render');
-    this.$el.addClass("fh_appform_section");
   },
   render: function(){
     this.options.parentEl.append(this.$el);

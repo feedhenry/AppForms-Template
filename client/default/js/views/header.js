@@ -1,5 +1,5 @@
 HeaderView = Backbone.View.extend({
-    el: '#fh_wufoo_header',
+    el: '#fh_appform_header',
 
     events: {
         'click #header_forms' : "showHome",
@@ -115,7 +115,7 @@ HeaderView = Backbone.View.extend({
         App.views.pending_list.hide();
         App.views.sent_list.hide();
         App.views.settings.hide();
-        $('#fh_wufoo_content').hide();
+        $('#fh_appform_content').hide();
         if (_.isObject(App.views.form)) {
             App.views.form.$el.hide();
             //App.views.form = null;
@@ -133,24 +133,24 @@ HeaderView = Backbone.View.extend({
     updateCounts: function() {
         var drafts_count = App.collections.drafts.length;
         if (drafts_count > 0) {
-            $('#tab_fh_content_drafts .count', this.$el).text(drafts_count).show();
+            $('#header_drafts .badge', this.$el).text(drafts_count).show();
         } else {
-            $('#tab_fh_content_drafts .count', this.$el).hide();
+            $('#header_drafts .badge', this.$el).hide();
         }
 
         var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
 
         if (pending_count > 0) {
-            $('#tab_fh_content_pending .count', this.$el).text(pending_count).show();
+            $('#header_pending .badge', this.$el).text(pending_count).show();
         } else {
-            $('#tab_fh_content_pending .count', this.$el).hide();
+            $('#header_pending .badge', this.$el).hide();
         }
 
         var sent_count = App.collections.sent.length;
         if (sent_count > 0) {
-            $('#tab_fh_content_sent .count', this.$el).text(sent_count).show();
+            $('#header_sent .badge', this.$el).text(sent_count).show();
         } else {
-            $('#tab_fh_content_sent .count', this.$el).hide();
+            $('#header_sent .badge', this.$el).hide();
         }
     }
 });

@@ -4,19 +4,6 @@ PendingSubmittedItemView = ItemView.extend({
         item: '<td><%= name %></td><td><%= id %></td><td><%= timestamp %></td><td><%= submissionId %></td><td><button class="button button-main fh_appform_button_cancel delete-item btn btn-danger">Dismiss</button></td>'
     },
 
-    render: function() {
-        var time = new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY');
-        var item = _.template(this.templates.item, {
-            name: this.model.get('formName'),
-            id: this.model.get("formId"),
-            timestamp: time,
-            submissionId: this.model.get('submissionId')
-        });
-
-        $(this.$el).html(item);
-        return this;
-    },
-
     show: function() {
         var self = this;
         App.views.header.hideAll();
@@ -27,13 +14,19 @@ PendingSubmittedItemView = ItemView.extend({
             }
             var submission = self.model.coreModel;
             App.views.form = new FormView({
-                "parentEl": $("#fh_wufoo_content"),
+                "parentEl": $("#fh_appform_content"),
                 "formId": submission.get("formId"),
                 "autoShow": true,
                 "submission": submission
             });
             App.views.form.readOnly();
         });
+    },
+    getIdText: function(){
+        return this.model.get("formId");    
+    },
+    getItemTime: function(){
+        return new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY');    
     }
 
 });

@@ -31,7 +31,9 @@ DraftListView = Backbone.View.extend({
         $(this.$el).append(this.templates.draft_header);
 
         // Add lists
-        $(this.$el).append(this.templates.draft_list);
+        var template = _.template($('#draft-list').html(), {title: "Drafts"});
+
+        $(this.$el).append(template);
         _(App.collections.drafts.models).each(function(form) {
             self.appendDraftForm(form);
         }, this);
@@ -41,6 +43,6 @@ DraftListView = Backbone.View.extend({
         var view = new DraftItemView({
             model: form
         });
-        $('.draft_list', this.$el).append(view.render().$el);
+        $('#drafts-list-Drafts', this.$el).append(view.render().$el);
     }
 });

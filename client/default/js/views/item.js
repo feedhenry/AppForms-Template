@@ -1,10 +1,9 @@
 ItemView = Backbone.View.extend({
-    tagName: 'tr',
     className: 'fh_appform_field_input',
     events: {
         'click button.delete-item': 'delete',
         'click button.submit-item': 'submit',
-        'click': 'show'
+        'click .group-detail': 'show'
     },
 
     templates: {
@@ -42,11 +41,11 @@ ItemView = Backbone.View.extend({
     render: function() {
         var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
         var error = this.model.get('error');
-        var template = this.templates.item;
+        var template = "#" + "draft-list-item";//this.templates.item;
         if (error && this.templates.item_failed) {
             template = this.templates.item_failed;
         }
-        var item = _.template(template, {
+        var item = _.template($(template).html(), {
             name: this.model.get('formName'),
             id: this.getIdText(),
             timestamp: this.getItemTime(),

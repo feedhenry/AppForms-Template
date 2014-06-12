@@ -82,18 +82,13 @@ PendingListView = Backbone.View.extend({
         // Empty our existing view
         $(this.$el).empty();
 
-        // Add lists
-        $(this.$el).append(this.templates.pending_waiting_header);
-        $(this.$el).append(this.templates.pending_waiting_list);
-        //$('.pending_waiting_list', this.$el).append(this.templates.pending_waiting_header);
+        var pendingWaitingList = _.template($('#draft-list').html(), {title: "Waiting"});
+        var pendingSubmittingList = _.template($('#draft-list').html(), {title: "Submitting"});
+        var pendingReviewList = _.template($('#draft-list').html(), {title: "Review"});
 
-        $(this.$el).append(this.templates.pending_submitting_header);
-        $(this.$el).append(this.templates.pending_submitting_list);
-        //$('.pending_submitting_list', this.$el).append(this.templates.pending_submitting_header);
-
-        $(this.$el).append(this.templates.pending_review_header);
-        $(this.$el).append(this.templates.pending_review_list);
-        //$('.pending_review_list', this.$el).append(this.templates.pending_review_header);
+        $(this.$el).append(pendingWaitingList);
+        $(this.$el).append(pendingSubmittingList);
+        $(this.$el).append(pendingReviewList);
 
         _(App.collections.pending_waiting.models).each(function(form) {
             self.appendWaitingForm(form);
@@ -122,20 +117,20 @@ PendingListView = Backbone.View.extend({
         var view = new PendingWaitingView({
             model: form
         });
-        $('.pending_waiting_list', this.$el).append(view.render().$el);
+        $('#drafts-list-Waiting', this.$el).append(view.render().$el);
     },
 
     appendSubmittingForm: function(form) {
         var view = new PendingSubmittingItemView({
             model: form
         });
-        $('.pending_submitting_list', this.$el).append(view.render().$el);
+        $('#drafts-list-Submitting', this.$el).append(view.render().$el);
     },
 
     appendReviewForm: function(form) {
         var view = new PendingReviewItemView({
             model: form
         });
-        $('.pending_review_list', this.$el).append(view.render().$el);
+        $('#drafts-list-Review', this.$el).append(view.render().$el);
     }
 });

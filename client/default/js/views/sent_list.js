@@ -77,8 +77,8 @@ SentListView = Backbone.View.extend({
         $(this.$el).empty();
 
         // Add lists
-        $(this.$el).append(this.templates.sent_header);
-        $(this.$el).append(this.templates.sent_list);
+        var list = _.template($('#draft-list').html(), {title: "Sent"});
+        $(this.$el).append(list);
 
         _(App.collections.sent.models).each(function(form) {
             self.appendSentForm(form);
@@ -133,6 +133,6 @@ SentListView = Backbone.View.extend({
         var view = new PendingSubmittedItemView({
             model: form
         });
-        $('.sent_list', this.$el).append(view.render().$el);
+        $('#drafts-list-Sent', this.$el).append(view.render().$el);
     }
 });
