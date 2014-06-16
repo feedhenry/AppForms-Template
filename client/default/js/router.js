@@ -42,21 +42,16 @@ App.Router = Backbone.Router.extend({
                       $fh.forms.log.d("Device offline");
                       $('.fh_appform_alert_offline').show();
                     });
-
-
-                    $.when($.get("css/testGeneratedPhas3.css")).done(function(response) {
-                        var css = _.template(response, {
-                            color: "blue"
-                        });
-                        // if ($('#fh_appform_style').length > 0) {
-                        //     $('#fh_appform_style').html(css);
-                        // } else {
-                        //     $('head').append('<style id="fh_appform_style">' + css + '</style>');
-                        // }
-                        self.onReady();
+                    
+                    var css = _.template(response, {
+                        color: "blue"
                     });
-                    
-                    
+                    if ($('#fh_appform_style').length > 0) {
+                        $('#fh_appform_style').html(css);
+                    } else {
+                        $('head').append('<style id="fh_appform_style">' + css + '</style>');
+                    }
+                    self.onReady();
                 });
             });
         }
