@@ -18,9 +18,9 @@ PendingListView = Backbone.View.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'changed');
 
-        App.collections.pending_submitting.bind('add remove reset sync', this.changed, this);
-        App.collections.pending_review.bind('add remove reset sync', this.changed, this);
-        App.collections.pending_waiting.bind('add remove reset sync', this.changed, this);
+        App.collections.pending_submitting.bind('change add remove reset sync', this.changed, this);
+        App.collections.pending_review.bind('change remove reset sync', this.changed, this);
+        App.collections.pending_waiting.bind('change remove reset sync', this.changed, this);
 
         this.render();
     },
@@ -29,7 +29,7 @@ PendingListView = Backbone.View.extend({
         window.scrollTo(0, 0);
     },
     updateSubmissionProgress: function(progress, subLocalId) {
-        console.log(progress, subLocalId);
+        console.log("PROGRESS", progress, subLocalId);
         var progPercentage = 0;
 
         if (progress && subLocalId) {
@@ -41,11 +41,15 @@ PendingListView = Backbone.View.extend({
         }
 
         if (subLocalId && typeof subLocalId === 'string') {
-            var eleToUpdate = $('#' + subLocalId);
+            var eleToUpdate = $('#progress-' + subLocalId);
+            console.log("ELE ", eleToUpdate);
             if (eleToUpdate && eleToUpdate.length > 0) {
                 eleToUpdate = $(eleToUpdate[0]);
+                if(progPercentage === 100){
+                    eleToUpdate.addClass('progress-bar-success');
+                }
                 eleToUpdate.css("width", progPercentage + "%");
-                eleToUpdate.html(progPercentage + "%");
+                eleToUpdate.html('<span class="sr-only">' + progPercentage + '% Complete</span>');
             }
         }
     },
@@ -76,7 +80,6 @@ PendingListView = Backbone.View.extend({
     },
 
     changed: function() {
-        // debugger;
         var self = this;
 
         // Empty our existing view
@@ -94,15 +97,6 @@ PendingListView = Backbone.View.extend({
             self.appendWaitingForm(form);
         }, this);
 
-        if (App.collections.pending_waiting.length > 0) {
-            $('#pending_waiting_submissions').append(this.templates.pending_waiting_submitall);
-        }
-
-        if (App.collections.pending_submitting.length > 0) {
-            $('.loading', this.$el).show();
-        } else {
-            $('.loading', this.$el).hide();
-        }
 
         _(App.collections.pending_submitting.models).each(function(form) {
             self.appendSubmittingForm(form);

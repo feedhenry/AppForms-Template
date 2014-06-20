@@ -14,7 +14,10 @@ PendingReviewItemView = ItemView.extend({
         return "FormId: " + this.model.get("formId");
     },
     getItemTime: function() {
-        return "Submit: " + this.model.get("submitDate");
+        return "Submitted At: " + moment(this.model.get("submitDate")).calendar();
+    },
+    getType: function(){
+        return "review";
     },
     show: function() {
         var self = this;
@@ -32,5 +35,23 @@ PendingReviewItemView = ItemView.extend({
                 "submission": submission
             });
         });
+    },
+    getButtons : function(){
+        var draftButtons = [
+            {
+                itemText: "Delete",
+                itemClass: "delete-item fh_appform_button_cancel"
+            },
+            {
+                itemText: "Edit",
+                itemClass: "group-detail fh_appform_button_action"
+            },
+            {
+                itemText: "Submit",
+                itemClass: "submit-item fh_appform_button_action"
+            }
+        ];
+
+        return this.generateButtonHtml(draftButtons);
     }
 });

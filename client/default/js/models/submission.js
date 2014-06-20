@@ -29,24 +29,23 @@ SubmissionModel = Backbone.Model.extend({
         });
     },
     initModel: function() {
-        var coreModel = this.coreModel;
-        var self = this;
-        coreModel.on("progress", function(progress) {
-            console.log(progress, this.getLocalId());
-            App.views.pending_list.updateSubmissionProgress(progress, this.getLocalId());
-        });
-        coreModel.on("error", function(err) {
-            console.log(error, this.getLocalId());
-        });
-        coreModel.on("inprogress", function(ut) {
-            self.refreshAllCollections();
-        });
-        coreModel.on("submitted", function(submissionId) {
-            self.refreshAllCollections();
-        });
-        coreModel.on("submit", function() {
-            self.refreshAllCollections();
-        });
+      var coreModel = this.coreModel;
+      var self = this;
+      coreModel.on("inprogress", function(ut) {
+        self.refreshAllCollections();
+      });
+      coreModel.on("submitted", function(submissionId) {
+        self.refreshAllCollections();
+      });
+      coreModel.on("submit", function() {
+        self.refreshAllCollections();
+      });
+      coreModel.on("error", function() {
+        self.refreshAllCollections();
+      });
+      coreModel.on("progress", function(progress) {
+        App.views.pending_list.updateSubmissionProgress(progress, this.getLocalId());
+      });
     },
     refreshAllCollections: function() {
         refreshSubmissionCollections();
@@ -75,8 +74,9 @@ SubmissionCollection = Backbone.Collection.extend({
     },
     getSubmissionList: function(cb) {
         var self = this;
+        self.reset();
         $fh.forms.getSubmissions({}, function(err, subList) {
-            console.log("$fh.forms.getSubmissions", self.status);
+            
             if (err) {
                 console.log(err);
                 cb(err);
@@ -87,6 +87,12 @@ SubmissionCollection = Backbone.Collection.extend({
                     submissions = subList.findByStatus(status);
                 }
                 self.coreModel = subList;
+                if(self.models.length > submissions.length){
+                  self.length = submissions.length;
+                }
+
+                console.log("$fh.forms.getSubmissions", self.status, submissions);
+
                 cb(null, submissions);
             }
         });
@@ -140,6 +146,7 @@ App.collections.pending_review = new PendingReviewCollection();
 App.collections.pending_waiting = new PendingWaitingCollection();
 
 function refreshSubmissionCollections() {
+    console.log("Refreshing All Collections");
     App.collections.drafts.fetch();
     App.collections.sent.fetch();
     App.collections.pending_submitting.fetch();

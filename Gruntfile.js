@@ -128,6 +128,24 @@ module.exports = function(grunt) {
           dest: 'dist/client/default/main.js',
           src : 'dist-dev/client/default/main.js'
         }]
+      },
+      backbone: {
+        files: [{
+          dest: './client/default/lib/appFormjs-backbone.js',
+          src : '../fh-js-sdk/dist/appForms-backbone.js'
+        }]
+      },
+      toApp: {
+        files: [{
+          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/lib.min.js',
+          src : './dist-dev/client/default/lib.js'
+        }, {
+          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/main.js',
+          src : './dist-dev/client/default/main.js'
+        }, {
+          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/templates/templates.html',
+          src : './client/default/templates/templates.html'
+        }]
       }
     },
     uglify: {
@@ -342,6 +360,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'jshint','mkdirs','archive', 'concat', 'copy', 'uglify:lib', 'index']);
+  grunt.registerTask('default', ['clean', 'copy:backbone', 'jshint','mkdirs','archive', 'concat', 'copy:dist', 'index']);
 
 };

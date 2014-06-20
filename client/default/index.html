@@ -2,101 +2,100 @@
 <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="css/app.css">
 <title>Forms App</title>
-
 <script>
-    // Namespace
-    var App = App || {};
-    App.views = App.views || {};
-    App.collections = App.collections || {};
+// Namespace
+var App = App || {};
+App.views = App.views || {};
+App.collections = App.collections || {};
 </script>
-
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
-
 <div class="fh_appform_container fh_appform_body row">
-    <div id="includedContent" style="display:none"></div>
-    <div id="fh_appform_header"></div>
-
-    <div id="fh_content_form_list"></div>
-
-    <div id="fh_content_drafts"></div>
-
-    <div id="fh_content_pending"></div>
-
-    <div id="fh_content_sent"></div>
-
-
-    <div id="fh_content_settings"></div>
-
-
-    <div id="fh_appform_content"></div>
-    <script>
-        $fh.ready({},function (){
-            jQuery(document).ready(function(){
-                try {//TODO Needs to be changed to fh_appform_xxx when renaming classes.
-                    
-                } catch(e) {
-                    console.error("load failed");
-                    console.error(e);
-                }
-            });
-        });
-    </script>
-
+    <div id="includedContent" style="display:none;"></div>
+    <div class="fh_appform_body_area">
+        
+        <div class="row row-offcanvas row-offcanvas-right">
+            
+            
+            <div class="sidebar-offcanvas">
+                <div id="fh_appform_header"></div>
+            </div>
+            <div class="col-xs-12 content">
+                
+                <div id="fh_content_form_list" style="display:none;"></div>
+                <div id="fh_content_drafts" style="display:none;"></div>
+                <div id="fh_content_pending" style="display:none;"></div>
+                <div id="fh_content_sent" style="display:none;"></div>
+                <div id="fh_content_settings" style="display:none;"></div>
+                <div id="fh_appform_content" style="display:none;"></div>
+                
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="false">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                    <h4 class="modal-title" id="myModalLabel">Please Wait</h4>
+                </div>
+                <div class="modal-body center-block">
+                    <div class="progress">
+                        <div class="progress-bar bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     
-
     
     <script src="lib/jquery.js" type="text/javascript" charset="utf-8"></script>
-
-     <script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
+    <script src="lib/utils.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/underscore.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/backbone.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/async.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/moment.js" type="text/javascript" charset="utf-8"></script>
     <script src="lib/bootstrap.min.js" type="text/javascript" charset="utf-8"></script>
     
-
     <!-- mobiscroll -->
     <script src="lib/mobiscroll.custom.min.js" type="text/javascript" charset="utf-8"></script>
-
     <!-- Models -->
     <script src="js/models/form.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/models/submission.js" type="text/javascript" charset="utf-8"></script>
-
     <!-- Views -->
     <script src="js/views/loading.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/loading_collection.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/form.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
-     <script src="js/views/sent_list.js" type="text/javascript" charset="utf-8"></script> 
-     <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/views/sent_list.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/settings.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/item.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/draft_item.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/pending_review_item.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/pending_waiting_item.js" type="text/javascript" charset="utf-8"></script>
-
     <script src="js/views/pending_submitting_item.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/pending_submitted_item.js" type="text/javascript" charset="utf-8"></script>
     
     <script src="js/views/pending_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/alert.js" type="text/javascript" charset="utf-8"></script>
-     <!-- <script src="js/views/action_bar.js" type="text/javascript" charset="utf-8"></script> -->
-
+    <!-- <script src="js/views/action_bar.js" type="text/javascript" charset="utf-8"></script> -->
     <!-- Router -->
     <script src="js/router.js" type="text/javascript" charset="utf-8"></script>
-
-
     <script src="lib/appFormjs-backbone.js" type="text/javascript" charset="utf-8"></script>
-    <script> 
-        $(function(){
-          $("#includedContent").load("templates/templates.html"); 
-        });
-        </script> 
     <script>
-
+    $(function(){
+    $("#includedContent").load("templates/templates.html");
+    });
+    </script>
+    <script>
     </script>
 </div>

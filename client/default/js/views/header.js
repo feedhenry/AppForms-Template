@@ -12,6 +12,7 @@ HeaderView = Backbone.View.extend({
     initialize: function() {
         this.undelegateEvents();
         _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
+        this.initialising = false;
 
         App.collections.drafts.bind('add remove reset', this.updateCounts, this);
         App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
@@ -31,6 +32,29 @@ HeaderView = Backbone.View.extend({
         var header = $(_.template($('#header-list').html(), {}));
 
         $(this.$el).append(header);
+
+        $('[data-toggle=offcanvas]').click(function(e){
+            console.log("Toggle");
+            $('.row-offcanvas').toggleClass('active');
+            if(!$('.row-offcanvas').hasClass('active')){
+                $('#fh_appform_header .navbar-brand').hide();
+                $('#fh_appform_header .badge').hide();    
+            }
+        });
+
+       $('.row.row-offcanvas.row-offcanvas-right').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
+            if (e.originalEvent.propertyName == 'width') {
+               if($('.row-offcanvas').hasClass('active')){
+                    $('#fh_appform_header .navbar-brand').show();
+                    $('#fh_appform_header .badge').show();
+                    self.updateCounts();
+                } else {
+                    $('#fh_appform_header .navbar-brand').hide();
+                    $('#fh_appform_header .badge').hide();
+                }
+            }
+        });
+
         $(this.$el).show();  
     },
     adviseAll: function() {
@@ -70,12 +94,20 @@ HeaderView = Backbone.View.extend({
     },
 
     hideMenu: function(){
-        $('#forms-navbar-collapse').collapse('hide');
+        console.log("hideMenu");
+        $('.row-offcanvas').removeClass('active');
+        if($(window).width() < 768){
+            $('#fh_appform_header .navbar-brand').hide();     
+        }
+        
+        $('#fh_appform_header .badge').hide();
+        this.updateCounts();
     },
 
     showHome: function(e) {
         console.log("showHome");
-        this.hideMenu();
+        this.hideMenu(); 
+        
         this.hideAll();
         App.views.form_list.show();
         return false;
@@ -131,6 +163,14 @@ HeaderView = Backbone.View.extend({
     },
 
     updateCounts: function() {
+
+        var forms_count = App.collections.forms.length;
+        if (forms_count > 0) {
+            $('#header_forms .badge', this.$el).text(forms_count).show();
+        } else {
+            $('#header_forms .badge', this.$el).hide();
+        }
+
         var drafts_count = App.collections.drafts.length;
         if (drafts_count > 0) {
             $('#header_drafts .badge', this.$el).text(drafts_count).show();
@@ -152,5 +192,7 @@ HeaderView = Backbone.View.extend({
         } else {
             $('#header_sent .badge', this.$el).hide();
         }
+
+        console.log("updateCounts", drafts_count, pending_count, sent_count);
     }
 });

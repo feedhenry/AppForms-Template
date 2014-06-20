@@ -26,7 +26,6 @@ FormModel = Backbone.Model.extend({
                 self.coreModel = form;
                 self.set("fh_full_data_loaded", true);
                 self.id = formId;
-                self.trigger("change:fh_full_data_loaded");
             }
         });
     },

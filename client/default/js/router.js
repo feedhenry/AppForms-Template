@@ -13,13 +13,13 @@ App.Router = Backbone.Router.extend({
         var initRetryLimit = 20;
         var initRetryAttempts = 0;
         self.loadingView = new LoadingCollectionView();
-        self.loadingView.show("App Starting");
         self.deviceReady = false;
         self.initReady = false;
 
         function startForms() {
-
+            self.loadingView.show("Initialising Forms", 10);
             $fh.forms.init({}, function() {
+                self.loadingView.show("Fetching Theme", 15);
                 $fh.forms.getTheme({
                     "fromRemote": true,
                     "css": true
@@ -31,7 +31,7 @@ App.Router = Backbone.Router.extend({
                     App.views.sent_list = new SentListView();
                     App.views.settings = new SettingsView();
                     App.views.header = new HeaderView();
-                    App.views.header.showHome();
+                    
 
                     $fh.forms.config.mbaasOnline(function(){
                       $fh.forms.log.d("Device online");
@@ -43,23 +43,20 @@ App.Router = Backbone.Router.extend({
                       $('.fh_appform_alert_offline').show();
                     });
                     
-                    var css = _.template(response, {
-                        color: "blue"
-                    });
-                    if ($('#fh_appform_style').length > 0) {
-                        $('#fh_appform_style').html(css);
-                    } else {
-                        $('head').append('<style id="fh_appform_style">' + css + '</style>');
-                    }
+                    // if ($('#fh_appform_style').length > 0) {
+                    //     $('#fh_appform_style').html(themeCSS);
+                    // } else {
+                    //     $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                    // }
                     self.onReady();
                 });
             });
         }
 
         $fh.ready({}, function() {
-
-
-
+            $("#includedContent").load("templates/templates.html");
+            
+            self.loadingView.show("App Starting", 10);
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceready", function() {
                     self.deviceReady = true;
@@ -109,7 +106,7 @@ App.Router = Backbone.Router.extend({
         });
     },
     onReady: function() {
-        this.loadingView.show("App Ready, Loading form list");
+        this.loadingView.show("App Ready, Loading form list", 20);
 
         $fh.env(this.onPropsRead);
 
@@ -135,17 +132,16 @@ App.Router = Backbone.Router.extend({
         }
     },
     onConfigLoaded: function() {
-        this.fetchCollections("Config Loaded , fetching forms");
+        this.fetchCollections("Config Loaded , fetching forms", 30);
     },
 
     reload: function() {
         App.collections.forms.reset();
-        this.fetchCollections("reloading forms");
+        this.fetchCollections("reloading forms", 10);
     },
 
-    fetchCollections: function(msg, to) {
-        this.loadingView.show(msg);
-        // this.fetchTo = setTimeout(this.fetchTimeout,_.isNumber(to) ? to : 20000);
+    fetchCollections: function(msg, progress) {
+        this.loadingView.show(msg, progress);
         App.collections.forms.fetch();
 
         refreshSubmissionCollections();

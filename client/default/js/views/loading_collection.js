@@ -45,7 +45,7 @@ LoadingCollectionView = LoadingView.extend({
 
     updateLoadedCount: function() {
         this.formsCounter += 1;
-        this.updateMessage("Form list loaded. Loading forms. Loaded " + this.formsCounter + " of " + App.collections.forms.models.length);
+        this.updateMessage("Loading Form " + this.formsCounter + " of " + App.collections.forms.models.length);
     },
 
     modelLoaded: function(a, b, c) {
@@ -72,6 +72,7 @@ LoadingCollectionView = LoadingView.extend({
         if (this.totalCounter >= App.collections.forms.length) {
             this.updateMessage("Form sync complete");
             setTimeout(function() {
+                App.views.header.showHome();
                 self.hide();
             }, 1000);
         }

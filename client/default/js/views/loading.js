@@ -3,7 +3,6 @@ LoadingView = Backbone.View.extend({
     className: '',
 
     templates: {
-        //spinner: '<div id="loading_overlay" class="modal"></div><div class="loading_container"><div class="icon-spinner icon-spin icon-large"><div class="bar1"></div><div class="bar2"></div><div class="bar3"></div><div class="bar4"></div><div class="bar5"></div><div class="bar6"></div><div class="bar7"></div><div class="bar8"></div><div class="bar9"></div><div class="bar10"></div><div class="bar11"></div><div class="bar12"></div>    </div>    <div class="message"></div>    <div class="progress"><div class="bar"></div></div>  </div>'
         spinner: '<div class="modal" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false"><div class="modal-header"><h1>Processing...</h1></div><div class="modal-body"><div class="progress progress-striped active"><div class="bar" style="width: 100%;"></div></div></div></div>'
     },
 
@@ -13,9 +12,9 @@ LoadingView = Backbone.View.extend({
         this.percent = 0;
         _.bindAll(this, 'destroyView', "modelLoaded");
 
-        this.$el.html(this.templates.spinner);
+        //this.$el.html(_.template($('#loading-modal').html()));
 
-        $('body').append(this.$el);
+        $('#myModal').modal();
 
         if (model != null) {
             this.model = model;
@@ -65,7 +64,7 @@ LoadingView = Backbone.View.extend({
 
         this.updateMessage(message);
         if (!_.isNumber(progress)) {
-            progress = 50;
+            progress = 20;
         }
         this.updateProgress(progress); // halfway straight away. only a single step process
 
@@ -73,16 +72,16 @@ LoadingView = Backbone.View.extend({
     },
 
     updateMessage: function(message) {
-        $('.loading_container .message', this.$el).html(message);
+        $('#myModalLabel').html(message);
     },
 
     updateProgress: function(progress) {
-        $('.loading_container .progress .bar', this.$el).css('width', progress + '%');
+        $('#myModal .progress-bar').css('width', progress + '%');
     },
 
     reset: function() {
         this.removeError();
-        this.updateProgress(1);
+        this.updateProgress(5);
         this.updateMessage('');
         this.percent = 0;
         this.formsCounter = -1;
@@ -90,7 +89,8 @@ LoadingView = Backbone.View.extend({
     },
 
     hide: function() {
-        this.$el.fadeOut(this.destroyView);
+        $('#myModal').modal('hide');
+        this.destroyView();
     },
 
     destroyView: function() {

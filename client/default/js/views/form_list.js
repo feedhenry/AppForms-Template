@@ -3,16 +3,14 @@ var FormListView = Backbone.View.extend({
 
     events: {
         'click .settings': 'showSettings',
-        'click button.reload': 'reload',
-        'click #refresh_forms_list': 'reload'
+        'click button.reload': 'reload'
     },
 
     templates: {
         list: '<div id="fh_appform_form_list" class="col-xs-12"></div>',
         header: '<h1 class="col-xs-12 text-center">Your Forms</h1><h2 class="col-xs-12 text-center">Choose a form from the list below</h2>',
         error: '<button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>',
-        footer: '<a class="settings pull-right fh_appform_field_instructions"><i class="fa fa-cogs"></i></a><br style="clear:both;">',
-        refreshForms: '<div id="refresh_forms_list" class="fh_appform_form_title" style="text-align: right;margin-right:20px;font-size:30px;"><i class="fa fa-cloud-download fa-4"></i></div>'
+        logo: '<div class="fh_appform_logo_container  col-xs-12"><div class="fh_appform_logo  col-xs-12"></div></div>'
     },
 
     initialize: function() {
@@ -26,7 +24,6 @@ var FormListView = Backbone.View.extend({
                 });
             }
         });
-        App.collections.forms.bind('add remove reset error', this.render, this);
     },
 
     reload: function() {
@@ -37,6 +34,7 @@ var FormListView = Backbone.View.extend({
 
     show: function() {
         App.views.header.markActive('header_forms');
+        this.render();
         $(this.$el).show();
     },
 
@@ -64,7 +62,9 @@ var FormListView = Backbone.View.extend({
     render: function() {
         // Empty our existing view
         $(this.$el).empty();
-        $(this.$el).append(this.templates.refreshForms);
+
+        // Add logo
+        $(this.$el).append(this.templates.logo);
 
         // Add list
         $(this.$el).append(this.templates.list);
@@ -80,7 +80,6 @@ var FormListView = Backbone.View.extend({
         } else {
             this.renderErrorHandler(arguments[1]);
         }
-        this.$el.append(this.templates.footer);
     },
 
     appendForm: function(form) {

@@ -1,7 +1,6 @@
 PendingWaitingView = ItemView.extend({
 
     templates: {
-        item: '<td><%= name %></td> <td><%= id %></td><td><%= timestamp %></td><td><button class="button fh_appform_button_cancel button-negative delete-item first_button btn btn-danger">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button btn btn-primary">Submit</button></td>'
     },
     getIdText: function() {
         return "FormId: " + this.model.get("formId");
@@ -27,5 +26,22 @@ PendingWaitingView = ItemView.extend({
             });
             App.views.form.readOnly();
         });
+    },
+    getButtons : function(){
+        var draftButtons = [
+            {
+                itemText: "Delete",
+                itemClass: "delete-item fh_appform_button_cancel"
+            },
+            {
+                itemText: "Submit",
+                itemClass: "submit-item fh_appform_button_action"
+            }
+        ];
+
+        return this.generateButtonHtml(draftButtons);
+    },
+    getType: function(){
+        return "waiting";
     }
 });

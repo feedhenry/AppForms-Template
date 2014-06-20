@@ -1,9 +1,9 @@
 ItemView = Backbone.View.extend({
     className: 'fh_appform_field_input',
     events: {
-        'click button.delete-item': 'delete',
-        'click button.submit-item': 'submit',
-        'click .group-detail': 'show'
+        'click li.delete-item': 'delete',
+        'click li.submit-item': 'submit',
+        'click li.group-detail': 'show'
     },
 
     templates: {
@@ -38,6 +38,16 @@ ItemView = Backbone.View.extend({
         return "new";
     },
 
+    generateButtonHtml: function(buttonSections){
+        var buttonHtml = "";
+        for(var buttonDetail in buttonSections){
+            buttonHtml += _.template($('#draft-list-item-button').html(), 
+                buttonSections[buttonDetail]   
+            ); 
+        }
+        return buttonHtml;
+    },
+
     render: function() {
         var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
         var error = this.model.get('error');
@@ -45,12 +55,22 @@ ItemView = Backbone.View.extend({
         if (error && this.templates.item_failed) {
             template = this.templates.item_failed;
         }
+
+        var buttons = _.template($('#draft-list-item-buttons').html(), {
+            buttons: this.getButtons(),
+            id: this.getIdText()
+        });
+
+        buttons = this.getButtons === false ? "": buttons;
+
         var item = _.template($(template).html(), {
             name: this.model.get('formName'),
             id: this.getIdText(),
             timestamp: this.getItemTime(),
             error_type: (error && error.type) ? error.type : null,
-            error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults
+            error_message: (error && error.type && this.errorTypes[error.type]) ? this.errorTypes[error.type] : this.errorTypes.defaults,
+            buttons: buttons,
+            type: this.getType()
         });
 
         $(this.$el).html(item);

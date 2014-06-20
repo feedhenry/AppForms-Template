@@ -22,11 +22,28 @@ PendingSubmittedItemView = ItemView.extend({
             App.views.form.readOnly();
         });
     },
+    getType: function(){
+        return "submitted";
+    },
     getIdText: function(){
         return this.model.get("formId");    
     },
     getItemTime: function(){
-        return new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY');    
+        return "Submission Completed At: " + (new moment(this.model.get('submittedDate')).format('HH:mm:ss DD/MM/YYYY'));    
+    },
+    getButtons : function(){
+        var draftButtons = [
+            {
+                itemText: "Delete",
+                itemClass: "delete-item fh_appform_button_cancel"
+            },
+            {
+                itemText: "View Submission",
+                itemClass: "group-detail fh_appform_button_action"
+            }
+        ];
+
+        return this.generateButtonHtml(draftButtons);
     }
 
 });

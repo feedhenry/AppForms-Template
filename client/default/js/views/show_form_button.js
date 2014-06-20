@@ -5,7 +5,7 @@ ShowFormButtonView = Backbone.View.extend({
     },
 
     templates: {
-        form_button: '<button class="show btn btn-primary col-xs-12 text-center <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
+        form_button: '<button class="show btn btn-primary col-xs-12 text-center <%= enabledClass %> <%= dataClass %> fh_appform_button_action"><%= name %></button>'
     },
 
     initialize: function() {
@@ -18,11 +18,31 @@ ShowFormButtonView = Backbone.View.extend({
     render: function() {
         var html;
 
+        var name = this.model.get("name") || "";
+        var formattedName = "";
+
+        if(name.length > 24){
+            var nameArr = name.split(" ");
+            var nameCounter = 0;
+
+            for(var nameIndex = 0; nameIndex < nameArr.length; nameIndex++){
+                if(nameCounter + nameArr[nameIndex].length > 24){
+                    nameCounter = nameArr[nameIndex].length;
+                    formattedName += " </br> " + nameArr[nameIndex];
+                } else {
+                    nameCounter += nameArr[nameIndex].length;
+                    formattedName += " " + nameArr[nameIndex];   
+                }  
+            }
+        } else {
+            formattedName = name;    
+        }
+
         var fullyLoaded = this.model.get('fh_full_data_loaded');
         var errorLoading = this.model.get('fh_error_loading');
         var enabled = fullyLoaded || !errorLoading;
         html = _.template(this.templates.form_button, {
-            name: this.model.get("name"),
+            name: formattedName,
             enabledClass: enabled ? 'button-main' : '',
             dataClass: errorLoading ? 'fetch_error' : fullyLoaded ? 'fetched' : 'fetching'
         });
