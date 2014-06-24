@@ -1,31 +1,32 @@
 <script type="text/template" id="header-list">
-<div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="navbar-header">
-    <button type="button" class="navbar-toggle pull-left" data-toggle="offcanvas" data-target="#forms-navbar-collapse">
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-      <span class="icon-bar"></span>
-    </button>
-    <a class="navbar-brand pull-right" href="#">App Forms</a>
-  </div>
-
-  <div class="navbar-collapse collapse in" style="height: 1px;" id="forms-navbar-collapse">
-
-    <ul class="nav navbar-nav">
-      <li class="active" id="header_forms"><a href="#">Forms<span class="badge pull-right"></span></a></li>
-      <li class="" id="header_drafts"><a href="#">Drafts<span class="badge pull-right"></span></a></li>
-      <li class="" id="header_pending"><a href="#">Pending<span class="badge pull-right"></span></a></li>
-      <li class="" id="header_sent"><a href="#">Sent<span class="badge pull-right"></span></a></li>
-      <li class="" id="header_settings"><a href="#">Settings</a></li>
-    </ul>
-  </div>
-</div>
+ <ul class="nav navbar-nav">
+    <li class="header_forms active" id="header_forms"><a href="#">Forms<span class="badge pull-right"></span></a></li>
+    <li class="header_drafts" id="header_drafts"><a href="#">Drafts<span class="badge pull-right"></span></a></li>
+    <li class="header_pending" id="header_pending"><a href="#">Pending<span class="badge pull-right"></span></a></li>
+    <li class="header_sent" id="header_sent"><a href="#">Sent<span class="badge pull-right"></span></a></li>
+    <li class="header_settings" id="header_settings"><a href="#">Settings</a></li>
+</ul>
 </script>
 
 
 
 <script type="text/template" id="draft-list">
 <div class="list-group"  id="drafts-list-<%= title%>">
+
+<% if(title === "Sent"){%>
+<div class="list-group-item col-xs-12">
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      Options
+    </div>
+    <div class="panel-body" id="sent-items-options">
+      <div class="col-xs-12 group-detail">
+        
+      </div>
+    </div>
+  </div>
+</div>
+<%}%>
   
 </div>
 </script>
@@ -37,7 +38,7 @@
       <h3 class="panel-title" data-toggle="collapse" data-target="#drafts-list-<%= id%>"><%= name %></h3>
     </div>
 
-    <div class="panel-body collapse" id="drafts-list-<%= id%>">
+    <div class="panel-body" id="drafts-list-<%= id%>">
       <div class="col-xs-12 group-detail">
         
       </div>
@@ -102,6 +103,13 @@
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
       </div>
     </div>
+  </div>
+</div>
+</script>
+
+<script type="text/template" id="forms-logo">
+<div class="fh_appform_logo_container  col-xs-12">
+  <div class="fh_appform_logo">
   </div>
 </div>
 </script>

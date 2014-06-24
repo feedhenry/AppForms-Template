@@ -8,9 +8,8 @@ var FormListView = Backbone.View.extend({
 
     templates: {
         list: '<div id="fh_appform_form_list" class="col-xs-12"></div>',
-        header: '<h1 class="col-xs-12 text-center">Your Forms</h1><h2 class="col-xs-12 text-center">Choose a form from the list below</h2>',
-        error: '<button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>',
-        logo: '<div class="fh_appform_logo_container  col-xs-12"><div class="fh_appform_logo  col-xs-12"></div></div>'
+        header: '<h4 class="col-xs-12 text-center">Choose a form.</h4>',
+        error: '<button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
     },
 
     initialize: function() {
@@ -56,16 +55,15 @@ var FormListView = Backbone.View.extend({
             dataClass: 'fetched'
         });
         $('ul', this.$el).append(html);
-
     },
 
     render: function() {
         // Empty our existing view
         $(this.$el).empty();
 
-        // Add logo
-        $(this.$el).append(this.templates.logo);
-
+        
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
         // Add list
         $(this.$el).append(this.templates.list);
 

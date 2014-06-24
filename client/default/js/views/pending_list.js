@@ -24,6 +24,14 @@ PendingListView = Backbone.View.extend({
 
         this.render();
     },
+    render: function(){
+
+        // Empty our existing view
+        $(this.$el).empty();
+
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
+    },
 
     scrollToTop: function() {
         window.scrollTo(0, 0);
@@ -84,6 +92,9 @@ PendingListView = Backbone.View.extend({
 
         // Empty our existing view
         $(this.$el).empty();
+
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
 
         var pendingWaitingList = _.template($('#draft-list').html(), {title: "Waiting"});
         var pendingSubmittingList = _.template($('#draft-list').html(), {title: "Submitting"});

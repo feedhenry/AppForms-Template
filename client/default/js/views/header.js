@@ -2,11 +2,6 @@ HeaderView = Backbone.View.extend({
     el: '#fh_appform_header',
 
     events: {
-        'click #header_forms' : "showHome",
-        'click #header_drafts': "showDrafts",
-        'click #header_pending': "showPending",
-        'click #header_sent': "showSent",
-        'click #header_settings': "showSettings"
     },
 
     initialize: function() {
@@ -33,25 +28,36 @@ HeaderView = Backbone.View.extend({
 
         $(this.$el).append(header);
 
+        $('.header_drafts').click(function(e){
+            self.showDrafts();
+        });
+
+        $('.header_forms').click(function(e){
+            self.showHome();
+        });
+
+        $('.header_pending').click(function(e){
+            self.showPending();
+        });
+
+        $('.header_sent').click(function(e){
+            self.showSent();
+        });
+
+        $('.header_settings').click(function(e){
+            self.showSettings();
+        });
+
         $('[data-toggle=offcanvas]').click(function(e){
             console.log("Toggle");
             $('.row-offcanvas').toggleClass('active');
-            if(!$('.row-offcanvas').hasClass('active')){
-                $('#fh_appform_header .navbar-brand').hide();
-                $('#fh_appform_header .badge').hide();    
-            }
+            $('#fh_appform_header').toggleClass('active');
         });
 
-       $('.row.row-offcanvas.row-offcanvas-right').on('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function(e) {
-            if (e.originalEvent.propertyName == 'width') {
-               if($('.row-offcanvas').hasClass('active')){
-                    $('#fh_appform_header .navbar-brand').show();
-                    $('#fh_appform_header .badge').show();
-                    self.updateCounts();
-                } else {
-                    $('#fh_appform_header .navbar-brand').hide();
-                    $('#fh_appform_header .badge').hide();
-                }
+        $(document).click(function(e) {
+            console.log(e);
+            if(!$(e.target).hasClass('navbar-toggle')){
+                self.hideMenu();
             }
         });
 
@@ -96,11 +102,7 @@ HeaderView = Backbone.View.extend({
     hideMenu: function(){
         console.log("hideMenu");
         $('.row-offcanvas').removeClass('active');
-        if($(window).width() < 768){
-            $('#fh_appform_header .navbar-brand').hide();     
-        }
-        
-        $('#fh_appform_header .badge').hide();
+        $('#fh_appform_header').removeClass('active');
         this.updateCounts();
     },
 

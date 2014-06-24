@@ -23,6 +23,14 @@ SentListView = Backbone.View.extend({
 
         this.render();
     },
+    render: function(){
+
+        // Empty our existing view
+        $(this.$el).empty();
+
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
+    },
 
     saveMaxSelected: function() {
         var saveMax = parseInt($('#sentSaveMax', this.$el).val(), 10);
@@ -75,6 +83,9 @@ SentListView = Backbone.View.extend({
 
         // Empty our existing view
         $(this.$el).empty();
+
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
 
         // Add lists
         var list = _.template($('#draft-list').html(), {title: "Sent"});

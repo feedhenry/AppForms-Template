@@ -11,6 +11,12 @@ DraftListView = Backbone.View.extend({
 
         this.render();
     },
+    render: function(){
+        // Empty our existing view
+        $(this.$el).empty();
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
+    },
 
     show: function() {
         App.views.header.markActive('header_drafts');
@@ -26,6 +32,10 @@ DraftListView = Backbone.View.extend({
 
         // Empty our existing view
         $(this.$el).empty();
+
+        //Append Logo
+        $(this.$el).append(_.template($('#forms-logo').html()));
+
         // Add lists
         var template = _.template($('#draft-list').html(), {title: "Drafts"});
 

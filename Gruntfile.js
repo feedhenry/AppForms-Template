@@ -137,13 +137,13 @@ module.exports = function(grunt) {
       },
       toApp: {
         files: [{
-          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/lib.min.js',
+          dest: '/Users/ndonnelly/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/lib.min.js',
           src : './dist-dev/client/default/lib.js'
         }, {
-          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/main.js',
+          dest: '/Users/ndonnelly/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/main.js',
           src : './dist-dev/client/default/main.js'
         }, {
-          dest: '~/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/templates/templates.html',
+          dest: '/Users/ndonnelly/testApp/Test-Form-Niall-Project-Delete-Now-Test-Form-Niall-Project-Delete-Now-Client-App/www/templates/templates.html',
           src : './client/default/templates/templates.html'
         }]
       }
@@ -360,6 +360,6 @@ module.exports = function(grunt) {
   });
 
   // Default task.
-  grunt.registerTask('default', ['clean', 'copy:backbone', 'jshint','mkdirs','archive', 'concat', 'copy:dist', 'index']);
+  grunt.registerTask('default', ['clean', 'copy:backbone', 'jshint','mkdirs','archive', 'concat', 'copy:dist', 'copy:toApp', 'index']);
 
 };
