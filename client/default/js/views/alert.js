@@ -19,17 +19,17 @@ AlertView = Backbone.View.extend({
     var message = o.text || '';
     if(null != o.current ) {
       value  = Math.floor((o.current * 100)/ o.total);
-      template = Utils.isIOS() ? this.templates.ios_bar : this.templates.bar;
+      template = this.templates.bar;
     }
-
-    this.$el.html(_.template(template, {message:message,value:value,type:type}));
+    $(self.$el).find('.fh_appform_alert').remove();
+    this.$el.append(_.template(template, {message:message,value:value,type:type}));
     this.$el.show();
     clearTimeout(this.to);
     this.to = setTimeout(function() {
 //      self.$el.slideUp(function() {
 //
 //      });
-      $(self.$el).empty();
+      $(self.$el).find('.fh_appform_alert').remove();
     }, opts.timeout || 10000);
     return this;
   }
