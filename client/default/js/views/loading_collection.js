@@ -18,6 +18,7 @@ LoadingCollectionView = LoadingView.extend({
                 setTimeout(function() {
                     self.hide();
                     self.removeError();
+                    App.views.header.showHome();
                 }, 2000);
             }
         }, this);

@@ -23,7 +23,7 @@ DraftItemView = ItemView.extend({
         });
     },
     getItemTime: function() {
-        return "Saved At: " + moment(this.model.get("_localLastUpdate")).calendar();
+        return "Saved At: <br/>" + moment(this.model.get("_localLastUpdate")).calendar();
     },
     getIdText: function() {
         return this.model.get("_ludid");
@@ -34,7 +34,7 @@ DraftItemView = ItemView.extend({
     getButtons : function(){
         var draftButtons = [
             {
-                itemText: "Delete",
+                itemText: "Clear",
                 itemClass: "delete-item fh_appform_button_cancel"
             },
             {

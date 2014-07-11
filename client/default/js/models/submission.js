@@ -28,6 +28,23 @@ SubmissionModel = Backbone.Model.extend({
             });
         });
     },
+    deleteSubmission: function(cb){
+        var self = this;
+        self.loadSubmission(self.submissionMeta, function(err) {
+            if (err) {
+                $fh.forms.log.e("Error Loading Submission: ", err);
+            } else {
+                self.coreModel.clearLocal(function(err) {
+                    if (err) console.error("Error clearing local: ", err);
+                    
+                    if(cb){
+                        return cb(err);
+                    }
+                    return false;
+                });
+            }
+        });
+    },
     initModel: function() {
       var coreModel = this.coreModel;
       var self = this;
@@ -41,6 +58,9 @@ SubmissionModel = Backbone.Model.extend({
         self.refreshAllCollections();
       });
       coreModel.on("error", function() {
+        self.refreshAllCollections();
+      });
+      coreModel.on("queued", function() {
         self.refreshAllCollections();
       });
       coreModel.on("progress", function(progress) {
@@ -82,9 +102,13 @@ SubmissionCollection = Backbone.Collection.extend({
                 cb(err);
             } else {
                 var status = self.status;
+                var sortField = self.sortField;
                 var submissions = subList.getSubmissions();
                 if (status) {
-                    submissions = subList.findByStatus(status);
+                    submissions = subList.findByStatus({
+                        sortField: sortField,
+                        status: status
+                    });
                 }
                 self.coreModel = subList;
                 if(self.models.length > submissions.length){
@@ -95,6 +119,17 @@ SubmissionCollection = Backbone.Collection.extend({
 
                 cb(null, submissions);
             }
+        });
+    },
+    clearSentSubmissions: function(cb){
+        var self = this;
+        self.coreModel.clearSentSubmission(function(err){
+            console.log("Clear Sent Submissions Finished", err);
+            if(err){
+                return cb(err);
+            }
+            self.fetch();
+            return cb();
         });
     },
     sync: function(method, collection, options) {
@@ -114,28 +149,33 @@ SentModel = SubmissionModel.extend({});
 
 SentCollection = SubmissionCollection.extend({
     status: "submitted",
-    model: SentModel
+    model: SentModel,
+    sortField: "submittedDate"
 });
 PendingModel = SubmissionModel.extend({
 
 });
 
 PendingWaitingCollection = SubmissionCollection.extend({
-    status: "pending"
+    status: ["pending", "inprogress"],
+    sortField: "submitDate"
 });
 PendingSubmittingCollection = SubmissionCollection.extend({
-    status: "inprogress"
+    status: "queued",
+    sortField: "uploadStartDate"
 });
 
 PendingReviewCollection = SubmissionCollection.extend({
-    status: "error"
+    status: "error",
+    sortField: "uploadStartDate"
 });
 
 DraftModel = SubmissionModel.extend({});
 
 DraftsCollection = SubmissionCollection.extend({
     model: DraftModel,
-    status: "draft"
+    status: "draft",
+    sortField: "saveDate"
 });
 
 

@@ -28,6 +28,8 @@ App.Router = Backbone.Router.extend({
                     App.views.form_list = new FormListView();
                     App.views.drafts_list = new DraftListView();
                     App.views.pending_list = new PendingListView();
+                    App.views.queued_list = new QueuedListView();
+                    App.views.review_list = new ReviewListView();
                     App.views.sent_list = new SentListView();
                     App.views.settings = new SettingsView();
                     App.views.header = new HeaderView();
@@ -35,19 +37,16 @@ App.Router = Backbone.Router.extend({
 
                     $fh.forms.config.mbaasOnline(function(){
                       $fh.forms.log.d("Device online");
-                      $('.fh_appform_alert_offline').hide();
+                      console.log("Online");
+                      $('#fh_appform_alert_offline').addClass('hidden');
                     });
 
                     $fh.forms.config.mbaasOffline(function(){
                       $fh.forms.log.d("Device offline");
-                      $('.fh_appform_alert_offline').show();
+                      console.log("Offline");
+                      $('#fh_appform_alert_offline').removeClass('hidden');
                     });
                     
-                    // if ($('#fh_appform_style').length > 0) {
-                    //     $('#fh_appform_style').html(themeCSS);
-                    // } else {
-                    //     $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-                    // }
                     self.onReady();
                 });
             });
@@ -106,7 +105,7 @@ App.Router = Backbone.Router.extend({
         });
     },
     onReady: function() {
-        this.loadingView.show("App Ready, Loading form list", 20);
+        this.loadingView.show("App Ready, Loading Form List", 20);
 
         $fh.env(this.onPropsRead);
 
@@ -132,12 +131,12 @@ App.Router = Backbone.Router.extend({
         }
     },
     onConfigLoaded: function() {
-        this.fetchCollections("Config Loaded , fetching forms", 30);
+        this.fetchCollections("Config Loaded, Fetching Forms", 30);
     },
 
     reload: function() {
         App.collections.forms.reset();
-        this.fetchCollections("reloading forms", 10);
+        this.fetchCollections("Reloading Forms", 10);
     },
 
     fetchCollections: function(msg, progress) {

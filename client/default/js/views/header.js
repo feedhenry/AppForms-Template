@@ -1,8 +1,7 @@
 HeaderView = Backbone.View.extend({
     el: '#fh_appform_header',
 
-    events: {
-    },
+    events: {},
 
     initialize: function() {
         this.undelegateEvents();
@@ -28,46 +27,55 @@ HeaderView = Backbone.View.extend({
 
         $(this.$el).append(header);
 
-        $('.header_drafts').click(function(e){
+        $('.header_drafts').click(function(e) {
             self.showDrafts();
         });
 
-        $('.header_forms').click(function(e){
+        $('.header_forms').click(function(e) {
             self.showHome();
         });
 
-        $('.header_pending').click(function(e){
+        $('.header_pending').click(function(e) {
             self.showPending();
         });
 
-        $('.header_sent').click(function(e){
+        $('.header_queued').click(function(e) {
+            self.showQueued();
+        });
+
+        $('.header_review').click(function(e) {
+            self.showReview();
+        });
+
+        $('.header_sent').click(function(e) {
             self.showSent();
         });
 
-        $('.header_settings').click(function(e){
+        $('.header_settings').click(function(e) {
             self.showSettings();
         });
 
-        $('[data-toggle=offcanvas]').click(function(e){
-            console.log("Toggle");
+        $('#fh_appform_header_toggle_button').click(function(e) {
             $('.row-offcanvas').toggleClass('active');
             $('#fh_appform_header').toggleClass('active');
         });
 
         $(document).click(function(e) {
-            console.log(e);
-            if(!$(e.target).hasClass('navbar-toggle')){
+            if (!$(e.target).hasClass('navbar-toggle') && !$(e.target).hasClass('icon-bar')) {
                 self.hideMenu();
             }
         });
 
-        $(this.$el).show();  
+        $(this.$el).show();
     },
     adviseAll: function() {
         this.showHome = this.advise(this.showHome);
         this.showDrafts = this.advise(this.showDrafts);
         this.showPending = this.advise(this.showPending);
+        this.showQueued = this.advise(this.showQueued);
+        this.showReview = this.advise(this.showReview);
         this.showSent = this.advise(this.showSent);
+        this.showSettings = this.advise(this.showSettings);
     },
     advise: function(func) {
         var self = this;
@@ -89,17 +97,22 @@ HeaderView = Backbone.View.extend({
             if (skip || App.views.form == null || App.views.form.readonly) {
                 return proceed();
             } else {
-                var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
-                if (confirmDelete) {
-                    return proceed(true);
+
+                if (App.views.form.isFormEdited()) {
+                    var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
+                    if (confirmDelete) {
+                        return proceed(true);
+                    } else {
+                        return false;
+                    }
                 } else {
-                    return false;
+                    proceed(true);
                 }
             }
         };
     },
 
-    hideMenu: function(){
+    hideMenu: function() {
         console.log("hideMenu");
         $('.row-offcanvas').removeClass('active');
         $('#fh_appform_header').removeClass('active');
@@ -108,8 +121,8 @@ HeaderView = Backbone.View.extend({
 
     showHome: function(e) {
         console.log("showHome");
-        this.hideMenu(); 
-        
+        this.hideMenu();
+
         this.hideAll();
         App.views.form_list.show();
         return false;
@@ -129,6 +142,20 @@ HeaderView = Backbone.View.extend({
         return false;
     },
 
+    showQueued: function(e) {
+        this.hideMenu();
+        this.hideAll();
+        App.views.queued_list.show();
+        return false;
+    },
+
+    showReview: function(e) {
+        this.hideMenu();
+        this.hideAll();
+        App.views.review_list.show();
+        return false;
+    },
+
     showSent: function(e) {
         this.hideMenu();
         this.hideAll();
@@ -143,58 +170,78 @@ HeaderView = Backbone.View.extend({
         return false;
     },
     hideAll: function() {
-        window.scrollTo(0, 0);
         App.views.form_list.hide();
         App.views.drafts_list.hide();
         App.views.pending_list.hide();
+        App.views.queued_list.hide();
+        App.views.review_list.hide();
         App.views.sent_list.hide();
         App.views.settings.hide();
         $('#fh_appform_content').hide();
         if (_.isObject(App.views.form)) {
-            App.views.form.$el.hide();
-            //App.views.form = null;
+            App.views.form.$el.empty();
+            App.views.form = null;
         }
     },
 
-    markActive: function(tab_class) {
+    markActive: function(tab_class, headerText) {
         var self = this;
         tab_class = tab_class ? tab_class : "";
-        tab_class = "#" + tab_class;
-        $('#forms-navbar-collapse li').removeClass('active');
+        tab_class = "." + tab_class;
+        $('.nav.navbar-nav li').removeClass('active');
         $(tab_class).addClass('active');
+        if (headerText) {
+            $('.navbar-header .navbar-brand').html("App Forms <br/> " + headerText);
+        }
     },
 
     updateCounts: function() {
 
         var forms_count = App.collections.forms.length;
         if (forms_count > 0) {
-            $('#header_forms .badge', this.$el).text(forms_count).show();
+            $('#header_forms .badge').text(forms_count).show();
         } else {
-            $('#header_forms .badge', this.$el).hide();
+            $('#header_forms .badge').hide();
         }
 
         var drafts_count = App.collections.drafts.length;
         if (drafts_count > 0) {
-            $('#header_drafts .badge', this.$el).text(drafts_count).show();
+            $('#header_drafts .badge').text(drafts_count).show();
         } else {
-            $('#header_drafts .badge', this.$el).hide();
+            $('#header_drafts .badge').hide();
         }
 
-        var pending_count = App.collections.pending_submitting.length + App.collections.pending_review.length + App.collections.pending_waiting.length;
+        var pending_waiting_count = App.collections.pending_waiting.length;
 
-        if (pending_count > 0) {
-            $('#header_pending .badge', this.$el).text(pending_count).show();
+        if (pending_waiting_count > 0) {
+            $('#header_pending .badge').text(pending_waiting_count).show();
         } else {
-            $('#header_pending .badge', this.$el).hide();
+            $('#header_pending .badge').hide();
+        }
+
+        var pending_queued_count = App.collections.pending_submitting.length;
+
+        if (pending_queued_count > 0) {
+            $('#header_queued .badge').text(pending_queued_count).show();
+        } else {
+            $('#header_queued .badge').hide();
+        }
+
+        var pending_review_count = App.collections.pending_review.length;
+
+        if (pending_review_count > 0) {
+            $('#header_review .badge').text(pending_review_count).show();
+        } else {
+            $('#header_review .badge').hide();
         }
 
         var sent_count = App.collections.sent.length;
         if (sent_count > 0) {
-            $('#header_sent .badge', this.$el).text(sent_count).show();
+            $('#header_sent .badge').text(sent_count).show();
         } else {
-            $('#header_sent .badge', this.$el).hide();
+            $('#header_sent .badge').hide();
         }
 
-        console.log("updateCounts", drafts_count, pending_count, sent_count);
+        console.log("Update Counts: ", forms_count, drafts_count, pending_waiting_count, pending_queued_count, pending_review_count, sent_count);
     }
 });

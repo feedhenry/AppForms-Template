@@ -1,4 +1,4 @@
-PendingListView = Backbone.View.extend({
+PendingListView = SubmissionListview.extend({
     el: $('#fh_content_pending'),
 
     events: {
@@ -6,13 +6,6 @@ PendingListView = Backbone.View.extend({
     },
 
     templates: {
-        pending_waiting_list: '<div id="pending_waiting_submissions" class="table-responsive col-xs-12 text-center"><table class="fh_appform_field_area list inset pending_waiting_list table table-bordered"><tr><th colspan="4"><h2 class="text-center">Pending Submissions<h2></th></tr><tr><th class="text-center">Form Name</th class="text-center"><th class="text-center">Form Id</th><th class="text-center">Saved At</th><th class="text-center">Actions</th></tr></table></div>',
-        pending_waiting_header: '',
-        pending_waiting_submitall: '<button class="col-xs-12 fh_appform_button_action submit-all button button-positive button-block btn btn-default">Submit All Awaiting Forms</button>',
-        pending_submitting_list: '<div class="table-responsive col-xs-12 text-center"><table class="fh_appform_field_area list inset pending_submitting_list table table-bordered"><tr><th colspan="4"><h2 class="text-center">Currently Submitting<h2></th></tr><tr><th class="text-center">Form Name</th class="text-center"><th class="text-center">Form Id</th><th class="text-center">Uploaded At</th><th class="text-center">Progress</th></tr></table></div>',
-        pending_submitting_header: '',
-        pending_review_list: '<div class="table-responsive col-xs-12 text-center"><table class="fh_appform_field_area list inset pending_review_list table table-bordered"><tr><th colspan="5"><h2 class="text-center">These submissions need to be reviewed<h2></th></tr><tr><th class="text-center">Form Name</th class="text-center"><th class="text-center">Form Id</th><th class="text-center">Saved At</th><th class="text-center">Error</th><th class="text-center">Actions</th></tr></table></div>',
-        pending_review_header: ''
     },
 
     initialize: function() {
@@ -41,16 +34,20 @@ PendingListView = Backbone.View.extend({
         var progPercentage = 0;
 
         if (progress && subLocalId) {
+
+            if(progress.formJSON){
+                progPercentage = 15;   
+            }
+
             if (progress.totalSize && progress.totalSize > 0) {
                 if (progress.uploaded > 0) {
-                    progPercentage = (progress.uploaded / progress.totalSize) * 100;
+                    progPercentage += ((progress.uploaded / progress.totalSize) * 85);
                 }
             }
         }
 
         if (subLocalId && typeof subLocalId === 'string') {
             var eleToUpdate = $('#progress-' + subLocalId);
-            console.log("ELE ", eleToUpdate);
             if (eleToUpdate && eleToUpdate.length > 0) {
                 eleToUpdate = $(eleToUpdate[0]);
                 if(progPercentage === 100){
@@ -66,20 +63,26 @@ PendingListView = Backbone.View.extend({
         var self = this;
         this.scrollToTop();
         var loadingView = new LoadingCollectionView();
-        loadingView.show("Submitting Pending Forms");
+        loadingView.show("Queueing Pending Forms For Upload", 10);
         var c = 1;
         var tasks = _.collect(App.collections.pending_waiting.models, function(model) {
             return function(callback) {
-                model.coreModel.upload(function() {});
+                model.loadSubmission(model.submissionMeta, function(err){
+                    model.coreModel.upload(callback);    
+                });
             };
         }); // Kick things off by fetching when all stores are initialised
 
-        async.series(tasks, function() {});
+        async.series(tasks, function(err) {
+            console.log("Submissions Queued", err);
+            loadingView.show("Queueing Submissions Complete", 100);
+            loadingView.hide();  
+        });
         return false;
     },
 
     show: function() {
-        App.views.header.markActive('header_pending');
+        App.views.header.markActive('header_pending', "Pending");
         $(this.$el).show();
     },
 
@@ -94,48 +97,36 @@ PendingListView = Backbone.View.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html(), {}));
 
-        var pendingWaitingList = _.template($('#draft-list').html(), {title: "Waiting"});
-        var pendingSubmittingList = _.template($('#draft-list').html(), {title: "Submitting"});
-        var pendingReviewList = _.template($('#draft-list').html(), {title: "Review"});
+        var empty = App.collections.pending_waiting.models.length === 0;
 
-        $(this.$el).append(pendingWaitingList);
-        $(this.$el).append(pendingSubmittingList);
-        $(this.$el).append(pendingReviewList);
+        var optionsHtml = "";
 
-        _(App.collections.pending_waiting.models).each(function(form) {
-            self.appendWaitingForm(form);
-        }, this);
+        if(App.collections.pending_waiting.models.length > 0){
+            optionsHtml = _.template($("#pending-list-options").html(), {}); 
+        }
 
-
-        _(App.collections.pending_submitting.models).each(function(form) {
-            self.appendSubmittingForm(form);
-        }, this);
-
-        _(App.collections.pending_review.models).each(function(form) {
-            self.appendReviewForm(form);
-        }, this);
-    },
-
-    appendWaitingForm: function(form) {
-        var view = new PendingWaitingView({
-            model: form
+        var optionsTemplate = _.template($("#draft-list-options").html(), {
+            optionsHtml: optionsHtml,
+            hideOptions: empty,
+            type: "pending"   
         });
-        $('#drafts-list-Waiting', this.$el).append(view.render().$el);
-    },
 
-    appendSubmittingForm: function(form) {
-        var view = new PendingSubmittingItemView({
-            model: form
-        });
-        $('#drafts-list-Submitting', this.$el).append(view.render().$el);
-    },
+        this.$el.append(optionsTemplate);
 
-    appendReviewForm: function(form) {
-        var view = new PendingReviewItemView({
-            model: form
+        this.$el.find('.panel-heading').click(function(e){
+            console.log(e);
+
+            var type = $(e.currentTarget).data().type;
+            $('#submission-options-' + type).slideToggle();
+            $('#fh_appform_submission-options-' + type + '-body-icon').toggleClass('icon-chevron-sign-up');
+            $('#fh_appform_submission-options-' + type + '-body-icon').toggleClass('icon-chevron-sign-down');
         });
-        $('#drafts-list-Review', this.$el).append(view.render().$el);
+
+        self.renderGroup(App.collections.pending_waiting);
+    },
+    appendFunction: function(form, formId) {
+        this.appendItemView(form, formId, PendingWaitingView);
     }
 });

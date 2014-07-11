@@ -1,4 +1,4 @@
-DraftListView = Backbone.View.extend({
+DraftListView = SubmissionListview.extend({
     el: $('#fh_content_drafts'),
 
     templates: {
@@ -19,7 +19,7 @@ DraftListView = Backbone.View.extend({
     },
 
     show: function() {
-        App.views.header.markActive('header_drafts');
+        App.views.header.markActive('header_drafts', "Drafts");
         $(this.$el).show();
     },
 
@@ -36,19 +36,10 @@ DraftListView = Backbone.View.extend({
         //Append Logo
         $(this.$el).append(_.template($('#forms-logo').html()));
 
-        // Add lists
-        var template = _.template($('#draft-list').html(), {title: "Drafts"});
-
-        $(this.$el).append(template);
-        _(App.collections.drafts.models).each(function(form) {
-            self.appendDraftForm(form);
-        }, this);
+        self.renderGroup(App.collections.drafts);
     },
 
-    appendDraftForm: function(form) {
-        var view = new DraftItemView({
-            model: form
-        });
-        $('#drafts-list-Drafts', this.$el).append(view.render().$el);
+    appendFunction: function(form, formId) {
+        this.appendItemView(form, formId, DraftItemView);
     }
 });

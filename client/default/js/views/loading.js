@@ -52,11 +52,11 @@ LoadingView = Backbone.View.extend({
     },
 
     addError: function() {
-        this.$el.addClass('error');
+        $('#myModal .progress-bar').addClass('progress-bar-danger');
     },
 
     removeError: function() {
-        this.$el.removeClass('error');
+        $('#myModal .progress-bar').removeClass('progress-bar-danger');
     },
 
     show: function(message, progress) {
@@ -89,8 +89,11 @@ LoadingView = Backbone.View.extend({
     },
 
     hide: function() {
-        $('#myModal').modal('hide');
-        this.destroyView();
+        var self = this;
+        setTimeout(function(){
+            $('#myModal').modal('hide');   
+            self.destroyView(); 
+        }, 500);
     },
 
     destroyView: function() {

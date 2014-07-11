@@ -11,9 +11,10 @@ App.collections = App.collections || {};
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="format-detection" content="telephone=no" />
-<div class="fh_appform_body_area">
+<div class="fh_appform_form_area row">
     <div id="includedContent" style="display:none;"></div>
-    <div class="fh_appform_body_area">
+    <div id="fh_appform_alerts_area"><div class="fh_appform_alert_offline hidden error">Working Offline.</div></div>
+    <div class="fh_appform_body_area col-xs-12">
 
         <div class="navbar navbar-inverse navbar-fixed-top">
           <div class="navbar-header">
@@ -27,14 +28,20 @@ App.collections = App.collections || {};
 
           <div class="navbar-collapse collapse" style="height: 1px;" id="forms-navbar-collapse">
             <ul class="nav navbar-nav">
-                <li class="active" id="header_forms"><a href="#">Forms<span class="badge pull-right"></span></a></li>
-                <li class="" id="header_drafts"><a href="#">Drafts<span class="badge pull-right"></span></a></li>
-                <li class="" id="header_pending"><a href="#">Pending<span class="badge pull-right"></span></a></li>
-                <li class="" id="header_sent"><a href="#">Sent<span class="badge pull-right"></span></a></li>
-                <li class="" id="header_settings"><a href="#">Settings</a></li>
+                <li class="header_forms active" id="header_forms"><a href="#">Forms<span class="badge pull-right"></span></a></li>
+                <li class="header_drafts" id="header_drafts"><a href="#">Drafts<span class="badge pull-right"></span></a></li>
+                <li class="header_pending" id="header_pending"><a href="#">Pending<span class="badge pull-right"></span></a></li>
+                <li class="header_queued" id="header_queued"><a href="#">Uploading<span class="badge pull-right"></span></a></li>
+                <li class="header_review" id="header_review"><a href="#">Review<span class="badge pull-right"></span></a></li>
+                <li class="header_sent" id="header_sent"><a href="#">Sent<span class="badge pull-right"></span></a></li>
+                <li class="header_settings" id="header_settings"><a href="#">Settings</a></li>
             </ul>
             
           </div>
+        </div>
+
+        <div id="fh_appform_alerts_area">
+          <div id="fh_appform_alert_offline" class="alert alert-danger hidden">Working Offline.</div>
         </div>
         
         <div class="row row-offcanvas row-offcanvas-left">
@@ -42,13 +49,15 @@ App.collections = App.collections || {};
             </div>
             <div class="col-xs-12 content">
                 
-                <div id="fh_content_form_list" style="display:none;"></div>
-                <div id="fh_content_drafts" style="display:none;"></div>
-                <div id="fh_content_pending" style="display:none;"></div>
-                <div id="fh_content_sent" style="display:none;"></div>
+                <div id="fh_content_form_list" style="display:none;" class="fh_appform_form_list"></div>
+                <div id="fh_content_drafts" style="display:none;" class="fh_appform_submission_list"></div>
+                <div id="fh_content_pending" style="display:none;" class="fh_appform_submission_list"></div>
+                <div id="fh_content_queued" style="display:none;" class="fh_appform_submission_list"></div>
+                <div id="fh_content_review" style="display:none;" class="fh_appform_submission_list"></div>
+                <div id="fh_content_sent" style="display:none;" class="fh_appform_submission_list"></div>
                 <div id="fh_content_settings" style="display:none;"></div>
                 <div id="fh_appform_content" style="display:none;"></div>
-                
+                <div id="fh_appform_content" style="display:none;"></div>
             </div>
         </div>
     </div>
@@ -94,6 +103,7 @@ App.collections = App.collections || {};
     <script src="js/views/loading_collection.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/show_form_button.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/form.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/views/submission_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/form_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/sent_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/draft_list.js" type="text/javascript" charset="utf-8"></script>
@@ -106,6 +116,8 @@ App.collections = App.collections || {};
     <script src="js/views/pending_submitted_item.js" type="text/javascript" charset="utf-8"></script>
     
     <script src="js/views/pending_list.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/views/queued_list.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/views/review_list.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/header.js" type="text/javascript" charset="utf-8"></script>
     <script src="js/views/alert.js" type="text/javascript" charset="utf-8"></script>
     <!-- <script src="js/views/action_bar.js" type="text/javascript" charset="utf-8"></script> -->

@@ -23,16 +23,23 @@ $(function() {
                     // }
                 }  
 
-                loadingView.show("Theme Loaded. Now Loading Forms", 40);
+                loadingView.show("Theme Loaded. Now Loading Config", 30);
 
+                $fh.forms.config.refresh(function(err){
+                    if(err){
+                        console.log("Error Loading Config");
+                    }
 
-                App.collections.forms.fetch(); 
+                    loadingView.show("Config Loaded. Now Loading Forms", 40);
+
+                    App.collections.forms.fetch(); 
+                });
             });
             
         },
         render: function() {
             SettingsView.__super__.render.apply(this);
-            App.views.header.markActive('heading_settings');
+            App.views.header.markActive('header_settings', "Settings");
 
             if($fh.forms.config.editAllowed()){
                 this.$el.append(_.template($('#config-buttons').html()));    

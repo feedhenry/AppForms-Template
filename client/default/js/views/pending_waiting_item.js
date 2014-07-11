@@ -1,12 +1,11 @@
 PendingWaitingView = ItemView.extend({
-
     templates: {
     },
     getIdText: function() {
         return "FormId: " + this.model.get("formId");
     },
     getItemTime: function() {
-        return "Submit: " + this.model.get("submitDate");
+        return "Submitted: <br/>" + (new moment(this.model.get("submitDate")).format('HH:mm:ss DD/MM/YYYY'));  
     },
     show: function() {
         var self = this;
@@ -18,19 +17,26 @@ PendingWaitingView = ItemView.extend({
             }
 
             var submission = self.model.coreModel;
-            App.views.form = new FormView({
-                "parentEl": $("#fh_appform_content"),
-                "formId": submission.get("formId"),
-                "autoShow": true,
-                "submission": submission
+
+            submission.changeStatus("draft", function(){
+                    App.views.form = new FormView({
+                    "parentEl": $("#fh_appform_content"),
+                    "formId": submission.get("formId"),
+                    "autoShow": true,
+                    "submission": submission,
+                    readOnly: false
+                });    
             });
-            App.views.form.readOnly();
         });
     },
     getButtons : function(){
         var draftButtons = [
             {
-                itemText: "Delete",
+                itemText: "Edit",
+                itemClass: "group-detail fh_appform_button_action"
+            },
+            {
+                itemText: "Clear",
                 itemClass: "delete-item fh_appform_button_cancel"
             },
             {
@@ -42,6 +48,6 @@ PendingWaitingView = ItemView.extend({
         return this.generateButtonHtml(draftButtons);
     },
     getType: function(){
-        return "waiting";
+        return "Pending";
     }
 });

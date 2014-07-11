@@ -1,14 +1,12 @@
 ItemView = Backbone.View.extend({
-    className: 'fh_appform_field_input',
+    className: 'list-group-item fh_appform_field_area col-xs-12',
     events: {
-        'click li.delete-item': 'delete',
-        'click li.submit-item': 'submit',
-        'click li.group-detail': 'show'
+        'click button.delete-item': 'delete',
+        'click button.submit-item': 'submit',
+        'click button.group-detail': 'show'
     },
 
     templates: {
-        item_failed: '<span class="name <%= screen %>"><%= name %></span><span class="title <%= screen %>"><%= id %></span><span class="ts">Submitted At: <%= timestamp %></span><span class="pending_review_type fh_appform_error <%= error_type %>"><%= error_message %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Retry</button>',
-        item: '<span class="name <%= screen %>"><%= name %></span><span class="title <%= screen %>"><%= id %></span><span class="ts"><%= timestamp %></span><button class="button fh_appform_button_cancel button-negative delete-item first_button">Delete</button><button class="button fh_appform_button_action button-positive submit-item second_button">Submit</button>'
     },
 
     errorTypes: {
@@ -52,16 +50,16 @@ ItemView = Backbone.View.extend({
         var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
         var error = this.model.get('error');
         var template = "#" + "draft-list-item";//this.templates.item;
-        if (error && this.templates.item_failed) {
-            template = this.templates.item_failed;
-        }
+        // if (error && this.templates.item_failed) {
+        //     template = this.templates.item_failed;
+        // }
 
         var buttons = _.template($('#draft-list-item-buttons').html(), {
             buttons: this.getButtons(),
             id: this.getIdText()
         });
 
-        buttons = this.getButtons === false ? "": buttons;
+        buttons = this.getButtons() === false ? false: buttons;
 
         var item = _.template($(template).html(), {
             name: this.model.get('formName'),
@@ -77,24 +75,28 @@ ItemView = Backbone.View.extend({
         return this;
     },
 
-    "delete": function(e) {
+    deleteSubmission: function(cb){
+        var self = this;
+
+        self.model.deleteSubmission(function(err){
+            self.model.destroy();
+            if(cb){
+                return cb();
+            }
+        });
+    },
+
+    delete: function(e) {
         var self = this;
         e.stopPropagation();
 
-
+        //TODO NIALL SHOW MODAL.
         var confirmDelete = confirm("Are you sure you want to delete this submission?");
         if (confirmDelete) {
-            self.model.loadSubmission(self.model.submissionMeta, function(err) {
-                if (err) {
-                    $fh.forms.log.e("Error Loading Submission: ", err);
-                } else {
-                    self.model.coreModel.clearLocal(function(err) {
-                        if (err) console.error("Error clearing local: ", err);
-                        self.model.destroy();
-                        return false;
-                    });
-                }
-            });
+            self.deleteSubmission(function(err){
+                console.log("Submission deleted");
+                //TODO NIALL Update modal and close.
+            });   
         }
     },
     submit: function(e) {

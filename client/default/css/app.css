@@ -1,30 +1,600 @@
-.navbar-fixed-top.fh_appform_button_bar{
-  margin-top: 0px;
+
+/*
+ * Off Canvas APP STUFF
+ * --------------------------------------------------
+ */
+@media screen and (max-width: 767px) {
+  .row-offcanvas {
+    /* position: relative; */
+    
+  }
+
+  .row-offcanvas-right {
+    right: 0;
+  }
+
+  .row-offcanvas-left {
+    left: 0;
+  
+    min-height: 100%;
+    -webkit-transition: left .5s ease-in-out;
+       -moz-transition: left .5s ease-in-out;
+            transition: left .5s ease-in-out;
+    margin: 0px;
+    /* margin-top: 50px; */
 }
 
-#fh_appform_container {
-  margin:0px;
-  padding:0px;
-  width:100%;
+  .row-offcanvas-right
+  .sidebar-offcanvas {
+    right: -50%; /* 6 columns */
+  }
+
+  .row-offcanvas-right.active {
+    right: 35%; /* 6 columns */
+  }
+
+  .row-offcanvas-left.active {
+    /* left: 50%; */ /* 6 columns */
+  
+    min-height: 100%;
+    -webkit-transition: left .5s ease-in-out;
+       -moz-transition: left .5s ease-in-out;
+            transition: left .5s ease-in-out;
+}
+
+  .sidebar-offcanvas.active {
+    position: fixed;
+    z-index: 1000;
+    top: 50px;
+    width: 50%; /* 6 columns */
+    left: 0%;
+    /* background-color: black; */
+    height: 100%;
+    -webkit-transition: left .5s ease-in-out;
+       -moz-transition: left .5s ease-in-out;
+            transition: left .5s ease-in-out;
+  }
+  
+  .sidebar-offcanvas {
+    position: fixed;
+    top: 50px;
+    z-index: 1000;
+    width: 50%; /* 6 columns */
+    left: -50%;
+    background-color: black;
+     height: 100%; 
+    -webkit-transition: left .5s ease-in-out;
+       -moz-transition: left .5s ease-in-out;
+            transition: left .5s ease-in-out;
+  }
+}
+
+body {
+     background-color: rgba(202, 221, 250, 1);
+}
+.content {
+    /* margin-top: 44px; */
+    padding: 0px;
+
+}
+ul.navbar-nav {
+    padding: 0px;
+    /* width: 100%; */
+    margin: -1px 0px 0px 0px;
+}
+.navbar-fixed-top.fh_appform_button_bar {
+    margin-top: 0px;
+    padding: 0px; margin: 0px; 
+    border: none;
 }
 
 .pagination {
-  padding-right:0px;
+    padding-right: 0px;
+    margin: 5px 0px 5px 0px;
 }
-
-
-#fh_appform_tabbs li{
-  padding-right:4px;  
-  padding-left: 4px;
+#fh_appform_tabbs li {
+    padding-right: 4px;
+    padding-left: 4px;
 }
-
 #fh_appform_tabbs {
-  height:50px;
+    height: 50px;
+}
+#fh_appform_tabbs div {
+    border-radius: 0px;
+    height: inherit;
+    padding-top: 15px;
+}
+.panel-body {
+    padding: 0px;
 }
 
-#fh_appform_tabbs div{
-  border-radius: 0px;
-  height: inherit;
-  padding-top: 15px;
+.panel.panel-default.first{
+  margin-top:55px;
 }
+
+.navbar-header .navbar-toggle{
+    margin-top: 0px;
+
+    margin-bottom: 0px;
+    padding: 18px;
+    border-radius: 0px;
+    /* left: -20px; */
+}
+
+.navbar-brand.fh_appform_brand_icon{
+    padding:0px;
+}
+
+.badge.pull-right{
+    margin-left:10px;
+}
+
+#fh_content_settings .fh_appform_button_cancel {
+    margin-bottom: 0px;
+    margin-top: -1px;
+}
+
+#fh_content_drafts, #fh_content_pending, #fh_content_queued, #fh_content_review, #fh_content_sent, #fh_content_settings, #fh_content_form_list {
+    padding: 5px 5px 5px 5px;
+}
+
+#fh_content_settings .fh_appform_button_action {
+    margin-bottom: 0px;    
+    margin-top: -1px;
+}
+
+
+#fh_appform_container .alert{
+    margin-bottom: 0px;
+    text-align: center;
+    border-radius: 0px;
+    padding: 5px;
+}
+
+#fh_appform_container ul.dropdown-menu {
+    margin: 0px;
+    padding: 0px;
+}
+#fh_appform_container ul.dropdown-menu li.list-group-item{
+    margin: 0px;
+}
+
+#fh_appform_container .section_icon{
+    float: left;
+    padding-top: 5px;
+}
+
+#fh_appform_alerts_area {
+    margin-top: 50px;
+}
+
+
+#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading{
+    padding: 0px;
+    border: none;
+}
+
+#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading .panel-title{
+    padding: 5px 5px 5px 10px;
+    border: none;
+}
+
+#fh_content_settings .fh_appform_config_actions{
+    padding: 0px;
+    
+    margin-top: 8px;
+}
+
+
+#fh_appform_container .fh_appform_submission_list .list-group-item {
+    padding: 0px;
+}
+
+#fh_appform_container .fh_appform_submission_list .panel.fh_appform_section_area .panel-heading.fh_appform_section_title .panel-title{
+    font-size: inherit;
+}
+
+
+
+#fh_appform_container .fh_appform_submission_list .group-detail.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .submit-item.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .delete-item.fh_appform_button_cancel{
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_submission_list .btn-group.btn-group-vertical.col-xs-12 {
+    padding: 5px 10px 5px 10px;  
+}
+
+#fh_appform_container .panel-heading.fh_appform_section_title{
+    padding: 5px 5px 5px 5px;
+    margin: 0px 0px 5px 0px;
+}
+
+#fh_appform_container .fh_appform_submission_list .panel.panel-default.fh_appform_section_area{
+    margin: 5px 0px 0px 0px;
+}
+
+#fh_appform_container .fh_appform_settings_list .panel.panel-default.fh_appform_section_area{
+    margin: 5px 0px 0px 0px;    
+    padding: 5px;
+}
+
+#fh_appform_container .sidebar-offcanvas.visible-xs.fh_appform_section_area {
+    margin: 0px;
+    padding: 0px;
+    border-top: none;
+    border-left: none;
+}
+
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title{
+    margin: 0px;
+    padding: 0px;
+    background-color: transparent;
+    font-size: 14pt;
+}
+
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active{
+    margin: 0px;
+    padding: 0px;
+    background-color: rgba(255, 255, 255, 0.54);
+    font-size: 14pt;
+}
+
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title > a{
+    color: inherit;
+    background-color: inherit;
+}
+
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active > a{
+    color: inherit;
+    background-color: inherit;
+}
+
+#fh_appform_container .navbar.navbar-inverse.navbar-fixed-top.fh_appform_section_area {
+    padding: 0px;
+    margin: 0px;
+    border: none;
+}
+
+#fh_appform_container .navbar.navbar-inverse.navbar-fixed-top.fh_appform_section_area button.navbar-toggle {
+    background-color: inherit;
+    border: none;
+}
+
+#fh_appform_container .navbar-brand.pull-center{
+    margin: 0px;
+    
+    padding: 15px 5px 0px 5px;
+    background-color: rgba(0, 128, 0, 0);
+    border: none;
+    font-size: 18pt;
+}
+
+#fh_appform_container .fh_appform_form_area.col-xs-12.app_parent_el{
+    border: none;
+    padding: 0px 0px 5px 0px;
+}
+
+
+
+
+
+/*TEST THEME*/
+
+.fh_appform_form_area {
+    background-color: rgba(144, 216, 244, 1);
+    border: none;
+    padding: 5px 5px 5px 5px;
+}
+
+#fh_appform_container .fh_appform_form_title {
+    font-size: 28pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-weight: bold;
+    font-style: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 0px 5px 0px;
+}
+
+#fh_appform_container .fh_appform_form_description {
+    font-size: 18pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-style: italic;
+    font-weight: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+#fh_appform_container .fh_appform_page_title {
+    font-size: 24pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-weight: bold;
+    font-style: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 0px 5px 0px;
+}
+
+#fh_appform_container .fh_appform_page_description {
+    font-size: 20pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-weight: normal;
+    font-style: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+}
+
+#fh_appform_container .fh_appform_progress_steps {
+    background-color: rgba(144, 216, 244, 1);
+    border: none;
+    margin: 5px 0px 5px 0px;
+    padding: 5px 5px 5px 5px;
+}
+
+#fh_appform_container .fh_appform_progress_steps .number_container {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(248, 248, 248, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(65, 163, 200, 1);
+    border: none;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_progress_steps li.active .number_container {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(255, 254, 254, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(38, 129, 164, 1);
+    border: none;
+}
+
+#fh_appform_container .fh_appform_section_area {
+    background-color: rgba(99, 191, 226, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_section_title {
+    font-size: 24pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(65, 163, 200, 1);
+    border: none;
+    margin: 0px 0px 10px 0px;
+    padding: 10px 5px 10px 5px;
+}
+
+#fh_appform_container .fh_appform_section_description {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-style: italic;
+    font-weight: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+}
+
+#fh_appform_container .fh_appform_field_area {
+    background-color: rgba(38, 129, 164, 1);
+    border: none;
+    margin: 0px 0px 5px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_field_instructions {
+    font-size: 14pt;
+    font-family: arial;
+    color: rgba(255, 255, 255, 1);
+    font-weight: bold;
+    font-style: normal;
+    background-color: rgba(23, 95, 123, 0.5);
+    border: none;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_field_title {
+    font-size: 18pt;
+    font-family: arial;
+    color: rgba(255, 255, 255, 1);
+    font-weight: bold;
+    font-style: normal;
+    background-color: rgba(23, 95, 123, 0.5);
+    margin: 0px 0px 5px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_field_input {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(23, 95, 123, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(144, 216, 244, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+    line-height: 1.5em;
+    height: 100%;
+}
+
+#fh_appform_container .fh_appform_field_error {
+    font-size: 11pt;
+    font-family: arial;
+    color: rgba(0, 0, 0, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(255, 0, 0, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+    line-height: 1.5em;
+    height: 100%;
+}
+
+#fh_appform_container .fh_appform_field_numbering {
+    font-size: 11pt;
+    font-family: arial;
+    color: rgba(0, 0, 0, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(255, 0, 0, 0);
+    padding: 0px 0px 0px 0px;
+}
+
+#fh_appform_container .fh_appform_field_required:after {
+    font-size: 10pt;
+    font-family: arial;
+    color: rgba(255, 0, 0, 1);
+    font-weight: bold;
+    font-style: normal;
+    content: "*";
+    vertical-align: top;
+}
+
+#fh_appform_container .fh_appform_button_bar {
+    background-color: rgba(38, 129, 164, 1);
+    border: none;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 5px 5px 5px;
+}
+
+#fh_appform_container .fh_appform_button_default {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(254, 252, 252, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(99, 191, 226, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_button_default:active, #fh_appform_container .button_default.active {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(255, 255, 255, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(65, 163, 200, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_button_action {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(255, 254, 254, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(65, 163, 200, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_button_action:active, #fh_appform_container .fh_appform_button_action.active {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(255, 255, 255, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(38, 129, 164, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_button_cancel {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(0, 0, 0, 1);
+    font-weight: normal;
+    font-style: normal;
+    background-color: rgba(255, 0, 0, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_button_cancel:active, #fh_appform_container .button_cancel.active {
+    font-size: 12pt;
+    font-family: arial;
+    color: rgba(255, 0, 0, 1);
+    font-weight: bold;
+    font-style: normal;
+    background-color: rgba(252, 3, 3, 1);
+    border: none;
+    margin: 5px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    border-radius: 0px;
+}
+
+#fh_appform_container .fh_appform_logo {
+    background-image: url("data:image/png;base64,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");
+    height: 38px;
+    width: 271px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    display: inline-block;
+    max-height: 150px;
+    max-width: 90%;
+}
+
+#fh_appform_container .fh_appform_progress_steps .pagination {
+    padding-right: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px
+}
+
+#fh_appform_container .fh_appform_field_input_container.col-xs-12 {
+    padding-left: 0px;
+    padding-right: 0px
+}
+
+#fh_appform_container .fh_appform_page.col-xs-12 {
+    padding-left: 0px;
+    padding-right: 0px
+}
+
+#fh_appform_container .fh_appform_logo_container.col-xs-12 {
+    text-align: center
+}
+
+#fh_appform_container .fh_appform_input_wrapper.col-xs-12 {
+    padding-left: 0px;
+    padding-right: 0px
+}
+
+#fh_appform_container .fh_appform_section_area.panel.panel-default .panel-body {
+    padding: 0px
+}
+
+#fh_appform_container .sigPad ul {
+    margin: 0px
+}
+
 

@@ -123,7 +123,7 @@ FormsCollection = Backbone.Collection.extend({
                 fromRemote: true
             }, function(err, formList) {
                 if (err) {
-                    self.trigger("error", err.getMessage());
+                    self.trigger("error", err);
                     options.error(err);
                 } else {
                     var count = formList.size();

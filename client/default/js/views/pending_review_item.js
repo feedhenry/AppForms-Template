@@ -1,7 +1,5 @@
 PendingReviewItemView = ItemView.extend({
     templates: {
-        //item: '<span class="name <%= screen %>"><%= name %></span><br/><span class="title <%= screen %>"><%= id %></span><br/><span class="ts">Submitted At: <br/><%= timestamp %></span><br/><span class="pending_review_type"><%= error_type %></span><button class="button button-negative fh_appform_button_cancel delete-item first_button">Delete</button><button class="button button-positive submit-item fh_appform_button_action second_button">Retry</button>'
-        item: '<td><%= name %></td><td><%= id %></td><td><%= timestamp %></td><td><%= error_type %></td><td><button class="button button-negative fh_appform_button_cancel delete-item first_button btn btn-danger">Delete</button><button class="button button-positive submit-item fh_appform_button_action second_button btn btn-primary">Retry</button></td>'
     },
     errorTypes: {
         "validation": "Validation Error. Please review for details.",
@@ -14,7 +12,7 @@ PendingReviewItemView = ItemView.extend({
         return "FormId: " + this.model.get("formId");
     },
     getItemTime: function() {
-        return "Submitted At: " + moment(this.model.get("submitDate")).calendar();
+        return "Submitted At: <br/>" + moment(this.model.get("submitDate")).calendar();
     },
     getType: function(){
         return "review";
@@ -39,7 +37,7 @@ PendingReviewItemView = ItemView.extend({
     getButtons : function(){
         var draftButtons = [
             {
-                itemText: "Delete",
+                itemText: "Clear",
                 itemClass: "delete-item fh_appform_button_cancel"
             },
             {

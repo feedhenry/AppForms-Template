@@ -9,7 +9,7 @@ var FormListView = Backbone.View.extend({
     templates: {
         list: '<div id="fh_appform_form_list" class="col-xs-12"></div>',
         header: '<h4 class="col-xs-12 text-center">Choose a form.</h4>',
-        error: '<button class="reload button-block <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
+        error: '<button class="reload btn col-xs-12 fh_appform_button_cancel <%= enabledClass %> <%= dataClass %>"><%= name %><div class="loading"></div></button>'
     },
 
     initialize: function() {
@@ -32,7 +32,7 @@ var FormListView = Backbone.View.extend({
     },
 
     show: function() {
-        App.views.header.markActive('header_forms');
+        App.views.header.markActive('header_forms', "Forms");
         this.render();
         $(this.$el).show();
     },
@@ -51,10 +51,10 @@ var FormListView = Backbone.View.extend({
         }
         var html = _.template(this.templates.error, {
             name: msg + "<br/>Please Retry Later",
-            enabledClass: 'button-negative',
+            enabledClass: 'button-danger fh_appform_button_cancel',
             dataClass: 'fetched'
         });
-        $('ul', this.$el).append(html);
+        this.$el.append(html);
     },
 
     render: function() {
