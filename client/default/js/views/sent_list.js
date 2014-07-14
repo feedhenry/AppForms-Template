@@ -19,7 +19,7 @@ SentListView = SubmissionListview.extend({
 
         this.render();
     },
-    render: function(){
+    render: function() {
 
         // Empty our existing view
         $(this.$el).empty();
@@ -39,7 +39,7 @@ SentListView = SubmissionListview.extend({
             if (saveMax <= $fh.forms.config.get("sent_save_max") && saveMax >= $fh.forms.config.get("sent_save_min")) {
                 $fh.forms.config.set("max_sent_saved", saveMax);
                 $fh.forms.config.saveConfig();
-                App.collections.sent.clearSentSubmissions(function(err){
+                App.collections.sent.clearSentSubmissions(function(err) {
                     console.log("Submissions cleared", err);
                 });
             }
@@ -67,7 +67,7 @@ SentListView = SubmissionListview.extend({
         var self = this;
         e.stopPropagation();
 
-        
+
 
         var confirmDismiss = confirm("Are you sure you want to dismiss all submissions?");
         if (confirmDismiss) {
@@ -84,9 +84,9 @@ SentListView = SubmissionListview.extend({
             var increment = 90 / (all.length ? all.length : 1);
             var incrIndex = 0;
 
-            async.forEachSeries(all, function(model, cb){
-                model.deleteSubmission(function(err){
-                    if(err){
+            async.forEachSeries(all, function(model, cb) {
+                model.deleteSubmission(function(err) {
+                    if (err) {
                         console.error("Error deleting submission: ", err);
                     }
                     incrIndex += 1;
@@ -96,9 +96,9 @@ SentListView = SubmissionListview.extend({
                     loadingView.show("Removing Submission " + incrIndex + " of " + all.length, 10 + incrIndex * increment);
 
                     cb();
-                });   
-            }, function(err){
-                if(err){
+                });
+            }, function(err) {
+                if (err) {
                     console.log(err);
                 }
 
@@ -116,21 +116,21 @@ SentListView = SubmissionListview.extend({
         // Empty our existing view
         $(this.$el).empty();
 
-        var configOptions = this.getSentSaveMaxOptions();
+        var configOptions = $fh.form.config.get("sent_items_to_keep_list") || [5, 10, 15, 20, 25];
         var empty = App.collections.sent.models.length === 0;
 
         var optionsHtml = _.template($('#draft-list-option').html(), {
             label: '<label for="sentSaveMax" class="fh_appform_field_title col-xs-12">Number of sent items to keep</label>',
-            inputHtml: '<select class="fh_appform_field_input form-control col-xs-12" id="sentSaveMax">' + configOptions + '</select>'   
-        });  
+            inputHtml: '<select class="fh_appform_field_input form-control col-xs-12" id="sentSaveMax">' + configOptions + '</select>'
+        });
 
-        if(!empty){
+        if (!empty) {
             optionsHtml += _.template($('#draft-list-option').html(), {
                 label: '',
-                inputHtml: '<button class="col-xs-12 btn btn-danger fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button>'   
-            });     
+                inputHtml: '<button class="col-xs-12 btn btn-danger fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button>'
+            });
         }
-         
+
 
         //Append Logo
         $(this.$el).append(_.template($('#forms-logo').html()));
@@ -138,12 +138,12 @@ SentListView = SubmissionListview.extend({
         var optionsTemplate = _.template($("#draft-list-options").html(), {
             optionsHtml: optionsHtml,
             hideOptions: empty,
-            type: "submitted"   
+            type: "submitted"
         });
 
         this.$el.append(optionsTemplate);
 
-        this.$el.find('.panel-heading').click(function(e){
+        this.$el.find('.panel-heading').click(function(e) {
             console.log(e);
 
             var type = $(e.currentTarget).data().type;
@@ -155,47 +155,6 @@ SentListView = SubmissionListview.extend({
         self.renderGroup(App.collections.sent);
 
         this.populate();
-    },
-    getSentSaveMaxOptions: function(){
-        var self = this;
-        var interval = $fh.forms.config.get("sent_save_max") - $fh.forms.config.get("sent_save_min");
-
-        var currentVal = $fh.forms.config.get("max_sent_saved") ? $fh.forms.config.get("max_sent_saved") : $fh.forms.config.get("sent_save_min");
-        var steps = 10;
-        var stepSize = Math.floor(interval / steps);
-        var optionsString = "";
-
-        //max and min are the same.
-        if (interval > 0) {
-
-            optionsString += _.template(this.templates.save_max_option, {
-                "value": $fh.forms.config.get("sent_save_min")
-            });
-
-            for (var step = 2; step <= steps; step++) {
-                var currentStep = (step * stepSize) + $fh.forms.config.get("sent_save_min");
-                var nextStep = (step + 1) * stepSize;
-
-                if (currentVal > currentStep && currentVal < nextStep) {
-                    optionsString += _.template(this.templates.save_max_option, {
-                        "value": currentStep
-                    });
-                    optionsString += _.template(this.templates.save_max_option, {
-                        "value": currentVal
-                    });
-                } else {
-                    optionsString += _.template(this.templates.save_max_option, {
-                        "value": currentStep
-                    });
-                }
-            }
-        } else {
-            optionsString += _.template(this.templates.save_max_option, {
-                "value": $fh.forms.config.get("sent_save_max")
-            });
-        }
-
-        return optionsString;
     },
     appendFunction: function(form, formId) {
         this.appendItemView(form, formId, PendingSubmittedItemView);
