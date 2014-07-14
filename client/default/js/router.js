@@ -34,6 +34,11 @@ App.Router = Backbone.Router.extend({
                     App.views.settings = new SettingsView();
                     App.views.header = new HeaderView();
 
+                    if ($('#fh_appform_style').length > 0) {
+                        $('#fh_appform_style').html(themeCSS);
+                    } else {
+                        $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                    }
 
                     $fh.forms.config.mbaasOnline(function() {
                         $fh.forms.log.d("Device online");
