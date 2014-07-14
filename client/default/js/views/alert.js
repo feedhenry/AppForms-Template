@@ -1,6 +1,10 @@
 AlertView = Backbone.View.extend({
-    options: {
-        el: $("#fh_appform_alerts_area")
+    el: $("#fh_appform_alerts_area"),
+    alertClasses: {
+        error: 'alert-danger',
+        info: 'alert-info',
+        success: 'alert-success',
+        warning: 'alert-warning'
     },
 
     initialize: function() {},
@@ -8,9 +12,11 @@ AlertView = Backbone.View.extend({
     render: function(opts) {
         var self = this;
 
+        opts.type = opts.type || "info";
+
         var alertHtml = _.template($('#alert-entry').html(), {
-            alertClass: "alert-info",
-            alertMessage: "This is an alert"
+            alertClass: self.alertClasses[opts.type] || self.alertClasses['info'],
+            alertMessage: opts.message
         });
 
         alertHtml = $(alertHtml);
@@ -19,18 +25,23 @@ AlertView = Backbone.View.extend({
 
         if (typeof(opts.timeout) === "number") {
             setTimeout(function() {
-
+                alertHtml.animate({
+                    height: 0,
+                    opacity: 0
+                }, 'slow', function() {
+                    alertHtml.remove();
+                });
             }, opts.timeout);
         }
 
         return this;
     }
 });
-var alertView = new AlertView(); //{o:o, type:type, timeout:timeout});
+var alertView = new AlertView();
 
-AlertView.showAlert = function(o, type, timeout) {
+AlertView.showAlert = function(message, type, timeout) {
     alertView.render({
-        o: o,
+        message: message,
         type: type,
         timeout: timeout
     });

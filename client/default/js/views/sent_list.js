@@ -36,13 +36,11 @@ SentListView = SubmissionListview.extend({
         //SHOW MODAL HERE
 
         if (_.isNumber(saveMax)) {
-            if (saveMax <= $fh.forms.config.get("sent_save_max") && saveMax >= $fh.forms.config.get("sent_save_min")) {
-                $fh.forms.config.set("max_sent_saved", saveMax);
-                $fh.forms.config.saveConfig();
-                App.collections.sent.clearSentSubmissions(function(err) {
-                    console.log("Submissions cleared", err);
-                });
-            }
+            $fh.forms.config.set("max_sent_saved", saveMax);
+            $fh.forms.config.saveConfig();
+            App.collections.sent.clearSentSubmissions(function(err) {
+                console.log("Submissions cleared", err);
+            });
         }
     },
 
@@ -116,8 +114,15 @@ SentListView = SubmissionListview.extend({
         // Empty our existing view
         $(this.$el).empty();
 
-        var configOptions = $fh.form.config.get("sent_items_to_keep_list") || [5, 10, 15, 20, 25];
+        var configOptions = $fh.forms.config.get("sent_items_to_keep_list") || [5, 10, 15, 20, 25];
         var empty = App.collections.sent.models.length === 0;
+
+        configOptions = _.map(configOptions, function(sentItem) {
+            return _.template(self.templates.save_max_option, {
+                value: sentItem
+            });
+        });
+
 
         var optionsHtml = _.template($('#draft-list-option').html(), {
             label: '<label for="sentSaveMax" class="fh_appform_field_title col-xs-12">Number of sent items to keep</label>',

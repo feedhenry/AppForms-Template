@@ -33,20 +33,20 @@ App.Router = Backbone.Router.extend({
                     App.views.sent_list = new SentListView();
                     App.views.settings = new SettingsView();
                     App.views.header = new HeaderView();
-                    
 
-                    $fh.forms.config.mbaasOnline(function(){
-                      $fh.forms.log.d("Device online");
-                      console.log("Online");
-                      $('#fh_appform_alert_offline').addClass('hidden');
+
+                    $fh.forms.config.mbaasOnline(function() {
+                        $fh.forms.log.d("Device online");
+                        console.log("Online");
+                        $('#fh_appform_alert_offline').addClass('hidden');
                     });
 
-                    $fh.forms.config.mbaasOffline(function(){
-                      $fh.forms.log.d("Device offline");
-                      console.log("Offline");
-                      $('#fh_appform_alert_offline').removeClass('hidden');
+                    $fh.forms.config.mbaasOffline(function() {
+                        $fh.forms.log.d("Device offline");
+                        console.log("Offline");
+                        $('#fh_appform_alert_offline').removeClass('hidden');
                     });
-                    
+
                     self.onReady();
                 });
             });
@@ -54,16 +54,16 @@ App.Router = Backbone.Router.extend({
 
         $fh.ready({}, function() {
             $("#includedContent").load("templates/templates.html");
-            
+
             self.loadingView.show("App Starting", 10);
             if (window.PhoneGap || window.cordova) {
                 document.addEventListener("deviceready", function() {
                     self.deviceReady = true;
                 }, false);
-                document.addEventListener("backbutton", function(){
+                document.addEventListener("backbutton", function() {
                     $fh.forms.log.d("Back Button Clicked");
-                    if(App.views.form && typeof(App.views.form.backEvent) === 'function'){
-                        if(App.views.form.backEvent() === false){//Clicked back while on the first page. Should go home
+                    if (App.views.form && typeof(App.views.form.backEvent) === 'function') {
+                        if (App.views.form.backEvent() === false) { //Clicked back while on the first page. Should go home
                             App.views.header.showHome();
                         }
                     } else {
@@ -86,10 +86,10 @@ App.Router = Backbone.Router.extend({
                     startForms();
                     clearInterval(deviceReadyInterval);
                 } else {
-                    if(initRetryAttempts > initRetryLimit){
+                    if (initRetryAttempts > initRetryLimit) {
                         console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
 
-                        if(self.deviceReady === true){
+                        if (self.deviceReady === true) {
                             console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
                             startForms();
                             clearInterval(deviceReadyInterval);
@@ -98,7 +98,7 @@ App.Router = Backbone.Router.extend({
                             initRetryAttempts = 0;
                         }
                     } else {
-                        initRetryAttempts += 1;   
+                        initRetryAttempts += 1;
                     }
                 }
             }, 500);

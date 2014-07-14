@@ -29,34 +29,30 @@ $fh.ready({}, function() {
                 self.render();
             });
         },
-        saveToDraft: function(){
-            var loadingView = new LoadingCollectionView();
+        saveToDraft: function() {
+            AlertView.showAlert("Saving Draft", "info", 1000);
+            $fh.forms.backbone.FormView.prototype.saveToDraft.apply(this, [
 
-            loadingView.show("Saving Draft", 10);
-
-            $fh.forms.backbone.FormView.prototype.saveToDraft.apply(this, [function(){
-                loadingView.show("Draft Saved", 100); 
-                App.views.header.showHome();
-                loadingView.hide();      
-            }]);
-        },
-        submit: function(){
-            var loadingView = new LoadingCollectionView();
-
-            loadingView.show("Processing Submission", 10);  
-
-            $fh.forms.backbone.FormView.prototype.submit.apply(this, [function(err){
-                if(err){
-                    console.log(err);
-                    loadingView.show("Submission Error", 100); 
-                    loadingView.addError();
-                    loadingView.hide(); 
-                } else {
-                    loadingView.show("Adding To Upload Queue", 100); 
-                    App.views.header.showHome();
-                    loadingView.hide();      
+                function() {
+                    AlertView.showAlert("Draft Saved", "success", 1000);
                 }
-            }]);   
+            ]);
+        },
+        submit: function() {
+
+            AlertView.showAlert("Processing Submission", "info", 1000);
+
+            $fh.forms.backbone.FormView.prototype.submit.apply(this, [
+
+                function(err) {
+                    if (err) {
+                        console.log(err);
+                        AlertView.showAlert("Submission Error", "error", 1000);
+                    } else {
+                        AlertView.showAlert("Adding To Upload Queue", "info", 1000);
+                    }
+                }
+            ]);
         }
     });
 });

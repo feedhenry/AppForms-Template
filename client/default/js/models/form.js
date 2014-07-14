@@ -40,77 +40,8 @@ FormModel = Backbone.Model.extend({
         }
     },
     initialize: function() {
-        _.bindAll(this, "loadForm", "get", "handleError");
+        _.bindAll(this, "loadForm", "get");
         this.loadForm();
-    },
-
-    handleError: function(e, cb) {
-        var type = e.msg || "unknown";
-        var err = e.err;
-        var msg;
-        if (type === "error_ajaxfail") {
-
-            msg = "Unexpected Network Error : "; // + (err ? err.error : "");
-            if (!err.error || err.error.length === 0 || err.error === "\"error\"") {
-                if (err.message && err.message.length !== 0) {
-                    msg += err.message;
-                } else {
-                    msg += "Unknown";
-                }
-            } else {
-                msg += "Unknown";
-
-            }
-            AlertView.showAlert({
-                text: msg
-            }, "error", 5000);
-            return cb({
-                error: msg,
-                type: "network"
-            }, msg);
-        }
-
-        if (type === "validation") {
-            msg = "Form Validation Error : " + (err ? err : "please fix the errors");
-            AlertView.showAlert({
-                text: msg
-            }, "error", 5000);
-            return cb({
-                error: msg,
-                type: "validation"
-            }, e.res || msg);
-        }
-
-        if (type === "offline") {
-            msg = err || "You are currently offline";
-            AlertView.showAlert({
-                text: msg
-            }, "error", 5000);
-            return cb({
-                error: msg,
-                type: "network"
-            }, msg);
-        }
-
-        if (type === "network") {
-            msg = "Network Error : " + (err || JSON.stringify(e));
-            AlertView.showAlert({
-                text: msg
-            }, "error", 5000);
-            return cb({
-                error: type,
-                type: "network"
-            });
-        }
-
-        msg = "Unknown Error : " + JSON.stringify(e);
-        AlertView.showAlert({
-            text: msg
-        }, "error", 5000);
-        return cb({
-            error: msg,
-            type: "unknown"
-        }, msg);
     }
 });
 

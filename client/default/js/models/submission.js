@@ -28,7 +28,7 @@ SubmissionModel = Backbone.Model.extend({
             });
         });
     },
-    deleteSubmission: function(cb){
+    deleteSubmission: function(cb) {
         var self = this;
         self.loadSubmission(self.submissionMeta, function(err) {
             if (err) {
@@ -36,8 +36,8 @@ SubmissionModel = Backbone.Model.extend({
             } else {
                 self.coreModel.clearLocal(function(err) {
                     if (err) console.error("Error clearing local: ", err);
-                    
-                    if(cb){
+
+                    if (cb) {
                         return cb(err);
                     }
                     return false;
@@ -46,26 +46,29 @@ SubmissionModel = Backbone.Model.extend({
         });
     },
     initModel: function() {
-      var coreModel = this.coreModel;
-      var self = this;
-      coreModel.on("inprogress", function(ut) {
-        self.refreshAllCollections();
-      });
-      coreModel.on("submitted", function(submissionId) {
-        self.refreshAllCollections();
-      });
-      coreModel.on("submit", function() {
-        self.refreshAllCollections();
-      });
-      coreModel.on("error", function() {
-        self.refreshAllCollections();
-      });
-      coreModel.on("queued", function() {
-        self.refreshAllCollections();
-      });
-      coreModel.on("progress", function(progress) {
-        App.views.pending_list.updateSubmissionProgress(progress, this.getLocalId());
-      });
+        var coreModel = this.coreModel;
+        var self = this;
+        coreModel.on("inprogress", function(ut) {
+            self.refreshAllCollections();
+        });
+        coreModel.on("submitted", function(submissionId) {
+            AlertView.showAlert("Submission Upload Complete", "success", 1000);
+            self.refreshAllCollections();
+        });
+        coreModel.on("submit", function() {
+            self.refreshAllCollections();
+        });
+        coreModel.on("error", function() {
+            AlertView.showAlert("Error Uploading Submission", "error", 1000);
+            self.refreshAllCollections();
+        });
+        coreModel.on("queued", function() {
+            AlertView.showAlert("Submission Queued for Upload", "info", 1000);
+            self.refreshAllCollections();
+        });
+        coreModel.on("progress", function(progress) {
+            App.views.pending_list.updateSubmissionProgress(progress, this.getLocalId());
+        });
     },
     refreshAllCollections: function() {
         refreshSubmissionCollections();
@@ -96,7 +99,7 @@ SubmissionCollection = Backbone.Collection.extend({
         var self = this;
         self.reset();
         $fh.forms.getSubmissions({}, function(err, subList) {
-            
+
             if (err) {
                 console.log(err);
                 cb(err);
@@ -111,8 +114,8 @@ SubmissionCollection = Backbone.Collection.extend({
                     });
                 }
                 self.coreModel = subList;
-                if(self.models.length > submissions.length){
-                  self.length = submissions.length;
+                if (self.models.length > submissions.length) {
+                    self.length = submissions.length;
                 }
 
                 console.log("$fh.forms.getSubmissions", self.status, submissions);
@@ -121,11 +124,11 @@ SubmissionCollection = Backbone.Collection.extend({
             }
         });
     },
-    clearSentSubmissions: function(cb){
+    clearSentSubmissions: function(cb) {
         var self = this;
-        self.coreModel.clearSentSubmission(function(err){
+        self.coreModel.clearSentSubmission(function(err) {
             console.log("Clear Sent Submissions Finished", err);
-            if(err){
+            if (err) {
                 return cb(err);
             }
             self.fetch();
