@@ -6,43 +6,43 @@ $(function() {
             "click #saveBtn": "save",
             "click #_refreshFormsButton": "refreshForms"
         },
-        refreshForms: function(){
+        refreshForms: function() {
             var loadingView = new LoadingCollectionView();
             loadingView.show("Reloading Content.", 10);
             $fh.forms.getTheme({
-                    "fromRemote": true,
-                    "css": true
+                "fromRemote": true,
+                "css": true
             }, function(err, themeCSS) {
-                if(err){
+                if (err) {
                     $fh.forms.log.e("Error Loading Theme, ", err);
-                } else{
+                } else {
                     // if ($('#fh_appform_style').length > 0) {
                     //     $('#fh_appform_style').html(themeCSS);
                     // } else {
                     //     $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
                     // }
-                }  
+                }
 
                 loadingView.show("Theme Loaded. Now Loading Config", 30);
 
-                $fh.forms.config.refresh(function(err){
-                    if(err){
+                $fh.forms.config.refresh(function(err) {
+                    if (err) {
                         console.log("Error Loading Config");
                     }
 
                     loadingView.show("Config Loaded. Now Loading Forms", 40);
 
-                    App.collections.forms.fetch(); 
+                    App.collections.forms.fetch();
                 });
             });
-            
+
         },
         render: function() {
             SettingsView.__super__.render.apply(this);
             App.views.header.markActive('header_settings', "Settings");
 
-            if($fh.forms.config.editAllowed()){
-                this.$el.append(_.template($('#config-buttons').html()));    
+            if ($fh.forms.config.editAllowed()) {
+                this.$el.append(_.template($('#config-buttons').html()));
             }
             return this;
         },

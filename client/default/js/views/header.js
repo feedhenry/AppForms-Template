@@ -190,8 +190,15 @@ HeaderView = Backbone.View.extend({
         tab_class = "." + tab_class;
         $('.nav.navbar-nav li').removeClass('active');
         $(tab_class).addClass('active');
+
+        var appName = "App Forms";
+
+        if ($fh.app_props.apptitle) {
+            appName = $fh.app_props.apptitle;
+        }
+
         if (headerText) {
-            $('.navbar-header .navbar-brand').html("App Forms <br/> " + headerText);
+            $('.navbar-header .navbar-brand').html(appName + "<br/> " + headerText);
         }
     },
 
