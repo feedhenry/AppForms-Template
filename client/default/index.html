@@ -3,11 +3,68 @@
 <link rel="stylesheet" type="text/css" href="css/bootstrap-tagsinput.css">
 <link rel="stylesheet" type="text/css" href="css/app.css">
 <title>Forms App</title>
-<script>
-// Namespace
-var App = App || {};
-App.views = App.views || {};
-App.collections = App.collections || {};
+<script type="text/javascript">
+    // Namespace
+    var App = App || {};
+    App.views = App.views || {};
+    App.collections = App.collections || {};
+    App.lastScrollTop = 0;
+    App.testCounter = 0;
+    App.scrollDiffTotal = 0;
+    $(function() {
+        if(typeof window.Phonegap !== "undefined" || typeof window.cordova !== "undefined"){
+          FastClick.attach(document.body); 
+        }
+        //Windows phone overlays the task bar on the top of the screen. 
+        //http://stackoverflow.com/questions/19518145/windows-phone-8-html5-viewport-is-higher-than-the-screen-after-update-to-8-0-103
+        $(window).scroll(function(e){
+          var scrollPos = $(window).scrollTop();
+          var diff = $(window).height() - window.outerHeight;
+          var diffpx = "" + diff + "px";
+          var scrollpx = "" + scrollPos + "px";
+          var scrollDiff = App.lastScrollTop - scrollPos;
+          
+          var offset = $(".navbar-fixed-top.fh_appform_section_area").offset().top; 
+
+          if(diff > 0){
+            if(scrollPos >= diff){
+              offset = diff;  
+            } else {
+              offset = scrollPos;
+            } 
+
+            if(scrollDiff > 0){
+              App.scrollDiffTotal += scrollDiff;
+
+              if(App.scrollDiffTotal < 0){
+                App.scrollDiffTotal = 0;
+              } else if(App.scrollDiffTotal > diff){
+                App.scrollDiffTotal = diff;
+              }
+
+              offset -= App.scrollDiffTotal;
+            } else {
+              App.scrollDiffTotal += scrollDiff;
+              if(App.scrollDiffTotal < 0){
+                App.scrollDiffTotal = 0;
+              } else if(App.scrollDiffTotal > diff){
+                App.scrollDiffTotal = diff;
+              }
+
+              offset -= App.scrollDiffTotal;
+            } 
+
+            if(offset < 0){
+              offset = 0;
+            }
+
+            var offsetPx = "" + offset + "px";
+            $(".navbar-fixed-top.fh_appform_section_area").css("top", offsetPx);  
+            $("#fh_appform_header").css("margin-top", offsetPx);   
+          }
+          App.lastScrollTop = scrollPos;
+        });
+    });
 </script>
 <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes" />

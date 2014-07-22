@@ -1673,7 +1673,7 @@ var FieldView = Backbone.View.extend({
     removeInputButtonClass: ".fh_appform_removeInputBtn",
     fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
     input: "<input class='fh_appform_field_input <%= repeatingClassName%> col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>' value='<%= value %>' type='<%= inputType %>' />",
-    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden col-xs-12 text-center' ></div></div><br style='clear:both'/>    </div>",
+    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden col-xs-12 text-center' ></div></div><br class='clearfix'/>    </div>",
     inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering col-xs-2'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container repeating col-xs-10' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden col-xs-12'></div></div></div>",
 
 
@@ -1734,9 +1734,6 @@ var FieldView = Backbone.View.extend({
         this.getWrapper(lastIndex).remove();
         this.curRepeat--;
     },
-    renderTitle: function() {
-        //TODO Remove
-    },
     renderInput: function(index) {
         var fieldId = this.model.getFieldId();
         var type = this.getHTMLInputType();
@@ -1770,9 +1767,6 @@ var FieldView = Backbone.View.extend({
 
         }
         return required;
-    },
-    renderEle: function(titleHtml, inputHtml, index) {
-        //TODO can be removed
     },
     renderHelpText: function() {
         var helpText = this.model.getHelpText();
@@ -2275,7 +2269,6 @@ FieldCheckboxView = FieldView.extend({
       choice = $(choice);
       choice.off('click');
       choice.on('click', function(e){
-        //$(this).toggleClass('active');
         $(this).find('.choice_icon').toggleClass('icon-check-empty');
         $(this).find('.choice_icon').toggleClass('icon-check');
       });
@@ -2316,7 +2309,7 @@ FieldEmailView = FieldView.extend({
 FieldFileView = FieldView.extend({
     input: "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action select col-xs-12' data-index='<%= index %>'  type='<%= inputType %>'><i class='icon-folder-openSelect'></i> A File</button>" +
         "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action remove col-xs-12' data-index='<%= index %>'  type='<%= inputType %>'><i class='icon-remove-circle'></i>&nbsp;Remove File Entry</button>" +
-        "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' style='max-width:1px; max-height: 1px; padding: 0px;margin: 0px;'/>",
+        "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' style=''/>",
     type: "file",
     initialize: function() {
         var self = this;
@@ -2379,11 +2372,14 @@ FieldFileView = FieldView.extend({
             button_remove.hide();
         }
 
-        button.off("click");
-        button.on("click", function() {
-            var index = $(this).data().index;
-            $(fileEle).trigger('click');
-        });
+        //Some operating systems do not support opening a file select browser
+        //http://viljamis.com/blog/2012/file-upload-support-on-mobile/
+        if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/)) {
+            //If not supported, show a warning on-device. There is also a warning in the studio when creating the form.
+           $(button).text("File upload not supported");
+           $(button).attr("disabled", true);
+           button.off("click");
+         }
 
         button_remove.off("click");
         button_remove.on("click", function() {
@@ -2461,9 +2457,6 @@ FieldGeoView = FieldView.extend({
         var textInput = this.getWrapper(index).find(".fh_appform_field_input");
         textInput.val("");
         this.geoValues.splice(index, 1); // Remove the geo value from the field
-    },
-    onRender: function() {
-        var that = this;
     },
     convertLocation: function(location) {
         var lat = location.lat;
@@ -2742,7 +2735,6 @@ FieldRadioView = FieldView.extend({
 
       jQObj.off('click');
       jQObj.on('click', function(e){
-        //$(this).toggleClass('active');
         $(this).parent().find('.choice_icon').removeClass('icon-circle');
         $(this).parent().find('.choice_icon').addClass('icon-circle-blank');
 
@@ -2812,7 +2804,7 @@ FieldSignatureView = FieldView.extend({
     extension_type: 'fhsig',
     input: "<img class='sigImage img-responsive' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
     templates: {
-        signaturePad: ['<div class="sigPad">', '<div class="sigPad_header col-xs-12">', '<button class="clearButton fh_appform_button_cancel btn btn-danger col-xs-5 col-xs-offset-1">Clear</button><button class="cap_sig_done_btn fh_appform_button_action btn btn-primary col-xs-5 col-xs-offset-1" style="float:right;">Done</button>', '<br style="clear:both;" />', '</div>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
+        signaturePad: ['<div class="sigPad">', '<div class="sigPad_header col-xs-12">', '<button class="clearButton fh_appform_button_cancel btn btn-danger col-xs-5 col-xs-offset-1">Clear</button><button class="cap_sig_done_btn fh_appform_button_action btn btn-primary col-xs-5 col-xs-offset-1 pull-right">Done</button>', '<br style="clear:both;" />', '</div>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
     },
 
     initialize: function(options) {
@@ -2846,12 +2838,15 @@ FieldSignatureView = FieldView.extend({
             "canvasWidth": canvasWidth
         }));
         var signaturePad = $('.sigPad', this.$el);
+
+        var diff = $(window).height() - window.outerHeight;
+        var diffpx = "" + diff + "px";
         signaturePad.css({
             position: 'fixed',
             'z-index': 9999,
             'bottom': '0px',
             'right': '0px',
-            top: '0px',
+            top: diffpx,
             left: '0px',
             'background-color': '#fff'
         });
@@ -3434,7 +3429,7 @@ var FormView = BaseView.extend({
     this.formEdited = true;
   },
   isFormEdited: function(){
-    return this.formEdited === true;
+    return this.formEdited;
   },
   onValidateError: function(res) {
     var self = this;
@@ -3818,11 +3813,9 @@ var FormView = BaseView.extend({
     //Positioning the window to the top of the form container
     $('html, body').animate({
           scrollTop: 0
-    }, 500);
-
-    setTimeout(function() { 
+    }, 500, function() { 
         window.scrollTo(0, 0);
-    }, 500 + 75);
+    });
   },
   backEvent: function(){
     var self = this;
@@ -4095,7 +4088,7 @@ var ConfigView = Backbone.View.extend({
     templates: {
 
     },
-    "_myEvents": {
+    events: {
         "click #_viewLogsBtn": "viewLogs",
         "click #_clearLogsBtn": "clearLogs",
         "click #_sendLogsBtn": "sendLogs",
@@ -4135,19 +4128,19 @@ var ConfigView = Backbone.View.extend({
         var logs = $fh.forms.log.getLogs();
         var patterns = [{
             reg: /^.+\sERROR\s.*/,
-            class: "list-group-item-danger"
+            classStyle: "list-group-item-danger"
         }, {
             reg: /^.+\sWARNING\s.*/,
-            class: "list-group-item-warning"
+            classStyle: "list-group-item-warning"
         }, {
             reg: /^.+\sLOG\s.*/,
-            class: "list-group-item-info"
+            classStyle: "list-group-item-info"
         }, {
             reg: /^.+\sDEBUG\s.*/,
-            class: "list-group-item-success"
+            classStyle: "list-group-item-success"
         }, {
             reg: /^.+\sUNKNOWN\s.*/,
-            class: "list-group-item-warning"
+            classStyle: "list-group-item-warning"
         }];
 
 
@@ -4159,7 +4152,7 @@ var ConfigView = Backbone.View.extend({
                 var p = patterns[j];
                 if (p.reg.test(log)) {
                     listStr += _.template($('#temp_config_log_item').html(), {
-                        logClass: p.class,
+                        logClass: p.classStyle,
                         message: log
                     });
                     break;
@@ -4191,10 +4184,9 @@ var ConfigView = Backbone.View.extend({
     closeViewLogs: function() {
         this.$el.find("#_logsViewPanel").hide();
     },
-    events: {},
     initialize: function(options) {
         this.options = options;
-        this.events = _.extend({}, this._myEvents, this.events);
+        this.events = _.extend({}, this.events);
     },
     render: function() {
         this.$el.empty();

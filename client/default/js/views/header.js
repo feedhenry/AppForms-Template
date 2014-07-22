@@ -198,7 +198,7 @@ HeaderView = Backbone.View.extend({
         }
 
         if (headerText) {
-            $('.navbar-header .navbar-brand').html(appName + "<br/> " + headerText);
+            $('.navbar-header .navbar-brand').html("<div class='fh_appform_header_name'>" + appName + "</div><div class='fh_appform_header_section'> " + headerText + "</div>");
         }
     },
 

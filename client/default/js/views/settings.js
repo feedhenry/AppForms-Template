@@ -16,11 +16,11 @@ $(function() {
                 if (err) {
                     $fh.forms.log.e("Error Loading Theme, ", err);
                 } else {
-                    // if ($('#fh_appform_style').length > 0) {
-                    //     $('#fh_appform_style').html(themeCSS);
-                    // } else {
-                    //     $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
-                    // }
+                    if ($('#fh_appform_style').length > 0) {
+                        $('#fh_appform_style').html(themeCSS);
+                    } else {
+                        $('head').append('<style id="fh_appform_style">' + themeCSS + '</style>');
+                    }
                 }
 
                 loadingView.show("Theme Loaded. Now Loading Config", 30);
