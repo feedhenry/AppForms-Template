@@ -7,7 +7,7 @@ DraftListView = SubmissionListview.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'appendDraftForm', 'changed');
 
-        App.collections.drafts.bind('add remove reset sync', this.changed, this);
+        this.listenTo(App.collections.drafts, 'add remove reset sync', this.changed);
 
         this.render();
     },

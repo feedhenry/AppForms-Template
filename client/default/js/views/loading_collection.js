@@ -7,9 +7,9 @@ LoadingCollectionView = LoadingView.extend({
 
         LoadingView.prototype.initialize.call(this);
 
-        App.collections.forms.bind('sync', this.formFetch, this);
+        this.listenTo(App.collections.forms, 'sync', this.formFetch);
 
-        App.collections.forms.on('error', function(collection, msg, options) {
+        this.listenTo(App.collections.forms, 'error', function(collection, msg, options) {
             if (collection instanceof Backbone.Collection) {
                 self.updateProgress(100);
                 self.updateMessage("<p>Your forms couldn't be synced.</p> <p>Please try again later<p>");
@@ -21,7 +21,7 @@ LoadingCollectionView = LoadingView.extend({
                     App.views.header.showHome();
                 }, 2000);
             }
-        }, this);
+        });
     },
 
     formFetch: function(collection, options) {

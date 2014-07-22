@@ -4,17 +4,17 @@ HeaderView = Backbone.View.extend({
     events: {},
 
     initialize: function() {
+        var self = this;
         this.undelegateEvents();
         _.bindAll(this, 'render', 'advise', 'adviseAll', 'showHome', 'showDrafts', 'showPending', 'updateCounts');
         this.initialising = false;
 
-        App.collections.drafts.bind('add remove reset', this.updateCounts, this);
-        App.collections.pending_submitting.bind('add remove reset', this.updateCounts, this);
-        App.collections.pending_review.bind('add remove reset', this.updateCounts, this);
-        App.collections.pending_waiting.bind('add remove reset', this.updateCounts, this);
-        App.collections.sent.bind('add remove reset', this.updateCounts, this);
-
-        var self = this;
+        this.listenTo(App.collections.drafts, 'add remove reset', this.updateCounts);
+        this.listenTo(App.collections.pending_submitting, 'add remove reset', this.updateCounts);
+        this.listenTo(App.collections.pending_review, 'add remove reset', this.updateCounts);
+        this.listenTo(App.collections.pending_waiting, 'add remove reset', this.updateCounts);
+        this.listenTo(App.collections.sent, 'add remove reset', this.updateCounts);  
+        
         this.adviseAll();
         this.render();
     },

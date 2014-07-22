@@ -10,8 +10,8 @@ QueuedListView = SubmissionListview.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'changed');
 
-        App.collections.pending_submitting.bind('change add remove reset sync', this.changed, this);
-
+        this.listenTo(App.collections.pending_submitting, 'change add remove reset sync', this.changed);
+        
         this.render();
     },
     render: function(){

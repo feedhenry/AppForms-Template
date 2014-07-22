@@ -16,7 +16,7 @@ var FormListView = Backbone.View.extend({
         _.bindAll(this, 'render', 'appendForm');
         this.views = [];
 
-        App.collections.forms.bind('reset', function(collection, options) {
+        this.listenTo(App.collections.forms, 'reset', function(collection, options) {
             if (options == null || !options.noFetch) {
                 App.collections.forms.each(function(form) {
                     form.fetch();

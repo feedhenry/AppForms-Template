@@ -10,7 +10,7 @@ ReviewListView = SubmissionListview.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'changed');
 
-        App.collections.pending_review.bind('change add remove reset sync', this.changed, this);
+        this.listenTo(App.collections.pending_review, 'change add remove reset sync', this.changed);
 
         this.render();
     },

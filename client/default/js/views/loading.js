@@ -12,16 +12,14 @@ LoadingView = Backbone.View.extend({
         this.percent = 0;
         _.bindAll(this, 'destroyView', "modelLoaded");
 
-        //this.$el.html(_.template($('#loading-modal').html()));
-
         $('#myModal').modal();
 
         if (model != null) {
             this.model = model;
             // bind to model change and error events if model not fully loaded yet
             if (!this.model.get('fh_full_data_loaded')) {
-                this.model.on('change:fh_full_data_loaded', self.modelLoaded, self);
-                this.model.on('error', self.modelLoadError, self);
+                this.listenTo(this.model, 'change:fh_full_data_loaded', self.modelLoaded);
+                this.listenTo(this.model, 'error', self.modelLoadError);
             } else {
                 // async behaviour
                 setTimeout(function() {
@@ -97,9 +95,6 @@ LoadingView = Backbone.View.extend({
     },
 
     destroyView: function() {
-        //COMPLETELY UNBIND THE VIEW
-        this.undelegateEvents();
-
         $(this.$el).removeData().unbind();
 
         if (this.model != null) {

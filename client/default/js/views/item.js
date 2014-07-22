@@ -19,8 +19,8 @@ ItemView = Backbone.View.extend({
 
     initialize: function() {
         _.bindAll(this, 'render', 'unrender', 'show', 'delete', 'submit');
-        this.model.bind('change', this.render);
-        this.model.bind('remove', this.unrender);
+        this.listenTo(this.model, 'change', this.render);
+        this.listenTo(this.model, 'remove', this.unrender);
     },
 
     renderId: function() {
@@ -49,10 +49,7 @@ ItemView = Backbone.View.extend({
     render: function() {
         var time = new moment(this.model.get('savedAt')).format('HH:mm:ss DD/MM/YYYY');
         var error = this.model.get('error');
-        var template = "#" + "draft-list-item";//this.templates.item;
-        // if (error && this.templates.item_failed) {
-        //     template = this.templates.item_failed;
-        // }
+        var template = "#" + "draft-list-item";
 
         var buttons = _.template($('#draft-list-item-buttons').html(), {
             buttons: this.getButtons(),
@@ -90,12 +87,16 @@ ItemView = Backbone.View.extend({
         var self = this;
         e.stopPropagation();
 
-        //TODO NIALL SHOW MODAL.
+
         var confirmDelete = confirm("Are you sure you want to delete this submission?");
         if (confirmDelete) {
+            AlertView.showAlert("Deleting Submission", "info", 1000);
             self.deleteSubmission(function(err){
-                console.log("Submission deleted");
-                //TODO NIALL Update modal and close.
+                if(err){
+                    AlertView.showAlert("Error deleting submission.", "warning", 1000);
+                } else {
+                    AlertView.showAlert("Submission Deleted.", "info", 1000);    
+                }
             });   
         }
     },

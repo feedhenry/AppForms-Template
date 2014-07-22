@@ -15,7 +15,7 @@ SentListView = SubmissionListview.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'appendSentForm', 'changed');
 
-        App.collections.sent.bind('add remove reset sync', this.changed, this);
+        this.listenTo(App.collections.sent, 'add remove reset sync',  this.changed);
 
         this.render();
     },

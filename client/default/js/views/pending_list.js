@@ -11,9 +11,9 @@ PendingListView = SubmissionListview.extend({
     initialize: function() {
         _.bindAll(this, 'render', 'changed');
 
-        App.collections.pending_submitting.bind('change add remove reset sync', this.changed, this);
-        App.collections.pending_review.bind('change remove reset sync', this.changed, this);
-        App.collections.pending_waiting.bind('change remove reset sync', this.changed, this);
+        this.listenTo(App.collections.pending_submitting, 'change add remove reset sync', this.changed);
+        this.listenTo(App.collections.pending_review, 'change add remove reset sync', this.changed);
+        this.listenTo(App.collections.pending_waiting, 'change add remove reset sync', this.changed);
 
         this.render();
     },

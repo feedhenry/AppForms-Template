@@ -3,9 +3,7 @@ FormModel = Backbone.Model.extend({
     sync: function(method, model, options) {
         if (method == "read") {
             this.loadForm();
-        } else {
-            console.log("MEH");
-        }
+        } 
     },
     defaults: {
         "Theme": "",
