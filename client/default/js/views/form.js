@@ -12,8 +12,6 @@ $fh.ready({}, function() {
 
             this.loadForm(params, function() {
                 self.submission.on("savedraft", function(submission) {
-                    App.views.header.showDrafts(true);
-                    App.views.form = null;
                     refreshSubmissionCollections();
                 });
                 self.submission.on("submit", function() {
@@ -33,8 +31,12 @@ $fh.ready({}, function() {
             AlertView.showAlert("Saving Draft", "info", 1000);
             $fh.forms.backbone.FormView.prototype.saveToDraft.apply(this, [
 
-                function() {
-                    AlertView.showAlert("Draft Saved", "success", 1000);
+                function(err) {
+                    if(err){
+                        AlertView.showAlert("Error Saving Draft.", "error", 1000);
+                    } else {    
+                        AlertView.showAlert("Draft Saved", "success", 1000);
+                    }
                 }
             ]);
         },
