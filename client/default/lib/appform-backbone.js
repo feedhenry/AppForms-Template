@@ -1521,6 +1521,7 @@ var BaseView=Backbone.View.extend({
     "onLoad":function(){},
     "onLoadEnd":function(){}
 }); 
+var FormTemplates = '<script type="text/template" id="temp_form_structure"><div id="fh_appform_container" class="fh_appform_form_area col-xs-12 fh_appform_container">  <div class="fh_appform_logo_container  col-xs-12">    <div class="fh_appform_logo">    </div>  </div>  <div class="fh_appform_form_title col-xs-12 text-center">    <%= title%>  </div></div></script><script type="text/template" id="temp_form_buttons"><div id="fh_appform_navigation_buttons" class="fh_appform_button_bar btn-group btn-group-justified col-xs-12">  <div class="btn-group">    <button class="fh_appform_button_saveDraft fh_appform_button_main fh_appform_button_action btn btn-primary">Save Draft</button>  </div>  <div class="btn-group">    <button class="fh_appform_button_previous fh_appform_button_default btn btn-default">Previous</button>  </div>  <div class="btn-group">    <button class="fh_appform_button_next fh_appform_button_default btn btn-default">Next</button>  </div>  <div class="btn-group">    <button class="fh_appform_button_submit fh_appform_button_action btn btn-primary">Submit</button>  </div>  </div></script><script type="text/template" id="temp_page_structure"><div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area panel panel-default">  <div class="panel-heading text-center col-xs-12 fh_appform_section_title" data-field="fh_appform_<%= sectionId %>_body">    <i id="fh_appform_<%= sectionId %>_body_icon" class="pull-right <%= index === 0 ? \"icon-chevron-sign-down\" : \"icon-chevron-sign-up\"%> section_icon" ></i><%=title%>  </div>  <div id="fh_appform_<%= sectionId %>_body" class="panel-body col-xs-12" style="<%= index === 0 ? \"\" : \"display:none;\"%>">  </div></div></script><script type="text/template" id="temp_field_structure"><div class="fh_appform_input_wrapper col-xs-12">    <% if(repeating === true){ %>    <div class="fh_appform_field_title col-xs-12">      <i class="<%= field_icon %>"><%= icon_content %></i>      <%= title %>    </div>  <%} else {%>    <div class="fh_appform_field_title col-xs-12 <%= required %>">      <i class="<%= field_icon %>"><%= icon_content %></i>      <%= title %>    </div>  <% } %>    <% if(helpText){ %>    <p class="fh_appform_field_instructions col-xs-12">      <%= helpText %>    </p>  <% } %></div><div class="fh_appform_field_button_bar col-xs-12" >  <button class="fh_appform_removeInputBtn special_button fh_appform_button_action btn btn-primary col-xs-offset-1 col-xs-5">-</button>  <button class="special_button fh_appform_addInputBtn fh_appform_button_action btn btn-primary col-xs-offset-1 col-xs-5 pull-right">+</button></div></script><script type="text/template" id="temp_field_wrapper"><div id="wrapper_<%= fieldId %>_<%= index %>" class="col-xs-12 fh_appform_field_wrapper">  <% if(repeating === true){ %>    <div class="<%= required %> fh_appform_field_title fh_appform_field_numbering col-xs-2">      <%=d_index%>.    </div>  <% } %>    <div class="fh_appform_field_input_container repeating <%= repeating === true ? \"col-xs-10\" : \"col-xs-12\"%>" >    <div class="fh_appform_field_error_container col-xs-12 fh_appform_hidden">    </div>  </div></div></script><script type="text/template" id="temp_config_camera"><div class="panel panel-default fh_appform_section_area col-xs-12" id="camera-settings">  <div class="panel-heading" data-field="camera-settings-body">    <h3 class="panel-title fh_appform_section_title"><i id="camera-settings-body-icon" class="pull-right icon-chevron-sign-down" > </i>Camera Settings</h3>  </div>  <div class="panel-body fh_appform_section_area" id="camera-settings-body">    <div class="col-xs-12">       <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="targetWidth">Width (px)</label>        <input type="number" class="form-control fh_appform_field_input text-center" id="targetWidth" value="<%= targetWidth %>" data-key="targetWidth">      </div>      <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="targetHeight">Height (px)</label>        <input type="number" class="form-control fh_appform_field_input text-center" id="targetHeight" value="<%= targetHeight %>" data-key="targetHeight">      </div>      <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="quality">Quality (%)</label>        <input type="number" class="form-control fh_appform_field_input text-center" id="quality" value="<%= quality %>" data-key="quality" min="0" max="100">      </div>    </div>  </div></div></script><script type="text/template" id="temp_config_submissions"><div class="panel panel-default fh_appform_section_area col-xs-12" id="submission-settings">  <div class="panel-heading" data-field="submission-settings-body">    <h3 class="panel-title fh_appform_section_title"><i id="submission-settings-body-icon" class="pull-right icon-chevron-sign-down" > </i>Submission Settings</h3>  </div>  <div class="panel-body" id="submission-settings-body">    <div class="col-xs-12 fh_appform_section_area">       <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="max_retries">Max Retries</label>        <input type="number" class="form-control fh_appform_field_input text-center" id="max_retries" value="<%= max_retries %>" data-key="max_retries">      </div>      <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="timeout">Timeout (s)</label>        <input type="number" class="form-control fh_appform_field_input text-center" id="timeout" value="<%= timeout %>" data-key="timeout">      </div>      <div class="form-group fh_appform_field_area">        <label class="fh_appform_field_title col-xs-12" for="sent_items_to_keep_list">Number of sent submissions to keep.</label>        <select id="sent_items_to_keep_list" multiple data-role="tagsinput" data-key="sent_items_to_keep_list">          <% for(var sent_item_index = 0; sent_item_index < sent_items_to_keep_list.length; sent_item_index++){ %>            <option value="<%= sent_items_to_keep_list[sent_item_index] %>"><%= sent_items_to_keep_list[sent_item_index] %></option>          <%}%>        </select>      </div>    </div>    </div></div><div class="modal fade" id="logsModal" tabindex="-1" role="dialog" aria-labelledby="logsModalLabel" aria-hidden="true">  <div class="modal-dialog">    <div class="modal-content fh_appform_section_area">      <div class="modal-header">        <h4 class="modal-title fh_appform_section_title text-center" id="logsModalLabel">Info</h4>      </div>      <div class="modal-body" id="logsModalLabelBody">      </div>      <div class="modal-footer">        <button type="button" class="btn btn-default fh_appform_button_cancel" data-dismiss="modal">Close</button>      </div>    </div>  </div></div></script><script type="text/template" id="temp_config_log"><ul class="list-group col-xs-12">  <%= listStr%>  </ul></script><script type="text/template" id="temp_config_log_item">  <li class="list-group-item <%= logClass %>" style="overflow:auto;"><%= message%></li></script><script type="text/template" id="temp_config_debugging"><div class="panel panel-default fh_appform_section_area col-xs-12" id="debugging-settings">  <div class="panel-heading" data-field="debugging-settings-body">    <h3 class="panel-title fh_appform_section_title"><i id="debugging-settings-body-icon" class="pull-right icon-chevron-sign-down" > </i>Debugging Options</h3>  </div>  <div class="panel-body" id="debugging-settings-body">      <div class="col-xs-12 fh_appform_section_area">          <div class="form-group fh_appform_field_area" id="log_level_div">              <label class="fh_appform_field_title col-xs-12" for="log_level">Log Level</label>              <select class="form-control fh_appform_field_input text-center" id="log_level" value="<%= log_level %>" data-key="log_level" >                <% for (var i=0;i<log_levels.length;i++){                  var val=log_levels[i];                  var selected=(i==log_level)?"selected":""; %>                  <option value="<%= i %>" <%= selected%>><%= val%></option>              <%}%>              </select>          </div>          <div class="form-group fh_appform_field_area" id="log_email_div">              <label class="fh_appform_field_title col-xs-12" for="log_email">Log Reporting Email</label>              <input type="email" class="form-control fh_appform_field_input text-center" id="log_email" value="<%= log_email %>" data-key="logger" value="<%= log_email%>">          </div>          <div class="form-group fh_appform_field_area" id="log_line_limit_div">              <label class="fh_appform_field_title col-xs-12" for="log_line_limit">Log Line Limit</label>              <input type="number" class="form-control fh_appform_field_input text-center" id="log_line_limit" value="<%= log_line_limit %>" data-key="log_line_limit" value="<%= log_line_limit%>" min="0">          </div>          <div class="btn-group-vertical col-xs-12">              <div class="btn-group" data-toggle="buttons" id="logger_wrapper_div">                <button class="btn btn-primary text-left fh_appform_button_action <%= logger?"active":"" %>" type="button" data-key="logger" id="logger"><i class="<%= logger?"icon-circle":"icon-circle-blank" %> choice_icon"></i><div id="logger_message"> <%= logger?"Logging Enabled":"Logging Disabled" %> </div>                </button>              </div>              <button class="btn btn-primary fh_appform_button_action" id="fh_appform_show_deviceId">Show Device Id</button>              <button type="button" class="btn btn-default fh_appform_button_action" id="_viewLogsBtn">View Logs</button>              <button type="button" class="btn btn-default fh_appform_button_action" id="_sendLogsBtn">Send Logs</button>              <button type="button" class="btn btn-default fh_appform_button_cancel" id="_clearLogsBtn">Clear Logs</button>          </div>      </div>  </div></div></script><script type="text/template" id="temp_config_misc">  <div class="panel panel-default fh_appform_section_area  col-xs-12 first" id="misc-settings">  <div class="panel-heading" data-field="misc-settings-body">    <h3 class="panel-title fh_appform_section_title"><i id="misc-settings-body-icon" class="pull-right icon-chevron-sign-down" > </i>Misc Settings</h3>  </div>  <div class="panel-body" id="misc-settings-body">      <div class="col-xs-12 fh_appform_section_area">          <div class="btn-group-vertical col-xs-12">              <button type="button" class="btn btn-default fh_appform_button_action" id="_refreshFormsButton">Refresh Forms</button>          </div>      </div>  </div></div></script><script type="text/template" id="forms-logo-sdk"><div class="fh_appform_logo_container  col-xs-12">  <div class="fh_appform_logo">  </div></div></script>';
 var FormListView = BaseView.extend({
     events: {
         'click button#formlist_reload': 'reload'
@@ -1532,7 +1533,8 @@ var FormListView = BaseView.extend({
         error: '<li><button id="formlist_reload" class="button-block <%= enabledClass %> <%= dataClass %> fh_appform_button_default"><%= name %><div class="loading"></div></button></li>'
     },
 
-    initialize: function() {
+    initialize: function(options) {
+        this.options = options;
         $fh.forms.log.l("Initialize Form List");
         _.bindAll(this, 'render', 'appendForm');
         this.views = [];
@@ -1661,7 +1663,7 @@ var FormListItemView = BaseView.extend({
   });
 var FieldView = Backbone.View.extend({
 
-    className: 'fh_appform_field_area',
+    className: 'fh_appform_field_area col-xs-12',
     errMessageContainer: ".fh_appform_field_error_container",
     requiredClassName: "fh_appform_field_required",
     errorClassName: "fh_appform_field_error",
@@ -1670,15 +1672,32 @@ var FieldView = Backbone.View.extend({
     addInputButtonClass: ".fh_appform_addInputBtn",
     removeInputButtonClass: ".fh_appform_removeInputBtn",
     fieldWrapper: '<div class="fh_appform_input_wrapper"></div>',
-    input: "<input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' value='<%= value %>' type='<%= inputType %>' />",
-    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden' ></div></div><br style='clear:both'/>    </div>",
-    inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' > <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden'></div></div><br style='clear:both'/></div>",
+    input: "<input class='fh_appform_field_input <%= repeatingClassName%> col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>' value='<%= value %>' type='<%= inputType %>' />",
+    inputTemplate: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='fh_appform_field_input_container non_repeating' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden col-xs-12 text-center' ></div></div><br class='clearfix'/>    </div>",
+    inputTemplateRepeating: "<div id='wrapper_<%= fieldId %>_<%= index %>' class='col-xs-12'> <div class='<%= required %> fh_appform_field_title fh_appform_field_numbering col-xs-2'> <%=index + 1%>.  </div> <div class='fh_appform_field_input_container repeating col-xs-10' >  <%= inputHtml %> <div class='fh_appform_field_error_container fh_appform_hidden col-xs-12'></div></div></div>",
 
 
-    fh_appform_fieldActionBar: "<div class='fh_appform_field_button_bar' ><button class='fh_appform_removeInputBtn special_button fh_appform_button_action'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action'>+</button></div>",
-    title: '<label class="fh_appform_field_title <%= required%>"><%= title %> </label>',
-    titleRepeating: '<label class="fh_appform_field_title"><%= title %> </label>',
-    instructions: '<p class="fh_appform_field_instructions"><%= helpText %></p>',
+    fh_appform_fieldActionBar: "<div class='fh_appform_field_button_bar col-xs-12' ><button class='fh_appform_removeInputBtn special_button fh_appform_button_action btn btn-primary col-xs-offset-1 col-xs-5'>-</button><button class='special_button fh_appform_addInputBtn fh_appform_button_action btn btn-primary col-xs-offset-1 col-xs-5 pull-right'>+</button></div>",
+    title: '<div class="fh_appform_field_title"><h3 class="text-left  <%= required%>"><%= title %></h3></div>',
+    titleRepeating: '<div class="fh_appform_field_title"><h3 class="text-left"><%= title %></h3></div>',
+    instructions: '',
+    fieldIconNames: {
+        text: "icon-font",
+        textarea: "icon icon-align-justify",
+        url: "icon-link",
+        number: "icon-number",
+        emailAddress: "icon-envelope-alt",
+        dropdown: "icon-caret-down",
+        checkboxes: "icon-check",
+        location: "icon-location-arrow",
+        locationMap: "icon-map-marker",
+        photo: "icon-camera",
+        signature: "icon-pencil",
+        file: "icon-cloud-upload",
+        dateTime: "icon-calendar",
+        sectionBreak: "icon-minus",
+        radio: "icon-circle-blank"
+    },
     events: {
         "change": "contentChanged",
         "blur input,select,textarea": "validate",
@@ -1715,32 +1734,20 @@ var FieldView = Backbone.View.extend({
         this.getWrapper(lastIndex).remove();
         this.curRepeat--;
     },
-    renderTitle: function() {
-        var name = this.model.getName();
-        var title = name;
-        var template = this.title;
-
-        if (this.model.isRepeating()) {
-            template = this.titleRepeating;
-        }
-
-        return _.template(template, {
-            "title": title,
-            "required": this.getFieldRequired(0)
-        });
-    },
     renderInput: function(index) {
         var fieldId = this.model.getFieldId();
         var type = this.getHTMLInputType();
         var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
 
-        return _.template(this.input, {
+        var inputEle = _.template(this.input, {
             "fieldId": fieldId,
             "index": index,
             "inputType": type,
             "repeatingClassName": repeatingClassName,
             "value":this.model.getDefaultValue()
         });
+
+        return $(inputEle);
     },
     getHTMLInputType: function() {
         return this.type || "text";
@@ -1748,7 +1755,7 @@ var FieldView = Backbone.View.extend({
     /**
     * Repeating fields can have required and non-required repeating inputs depending on the minRepeat and maxRepeat values defined for the field
     **/
-    "getFieldRequired": function(index) {
+    getFieldRequired: function(index) {
         var required = "";
         if(this.model.isRequired()){
             if(index < this.initialRepeat){
@@ -1761,22 +1768,6 @@ var FieldView = Backbone.View.extend({
         }
         return required;
     },
-    renderEle: function(titleHtml, inputHtml, index) {
-        var fieldId = this.model.getFieldId();
-        var template = this.inputTemplate;
-
-
-        if (this.model.isRepeating()) {
-            template = this.inputTemplateRepeating;
-        }
-
-        return _.template(template, {
-            "fieldId": fieldId,
-            "index": index,
-            "inputHtml": inputHtml,
-            "required": this.getFieldRequired(index)
-        });
-    },
     renderHelpText: function() {
         var helpText = this.model.getHelpText();
 
@@ -1787,13 +1778,24 @@ var FieldView = Backbone.View.extend({
         } else {
             return "";
         }
-
     },
     addElement: function() {
+        var self = this;
         var index = this.curRepeat;
         var inputHtml = this.renderInput(index);
-        var eleHtml = this.renderEle("", inputHtml, index);
-        this.$fieldWrapper.append(eleHtml);
+
+        var eleTemplate = _.template(self.options.formView.$el.find("#temp_field_wrapper").html(), {
+            index: index,
+            d_index: index + 1,
+            required: this.model.isRequired() ? self.requiredClassName : "",
+            fieldId: this.model.getFieldId(),
+            repeating: this.model.isRepeating()  
+        });
+
+        eleTemplate = $(eleTemplate);
+        eleTemplate.find('.fh_appform_field_input_container').prepend(inputHtml);
+
+        this.$fieldWrapper.append(eleTemplate);
         this.curRepeat++;
         this.onElementShow(index);
     },
@@ -1806,30 +1808,35 @@ var FieldView = Backbone.View.extend({
         this.maxRepeat = 1;
         this.curRepeat = 0;
 
-        this.$fieldWrapper.append(this.renderTitle());
-        this.$fieldWrapper.append(this.renderHelpText());
+        var fieldTemplate = $(_.template(self.options.formView.$el.find("#temp_field_structure").html(), {
+            title: this.model.getName(),
+            helpText: this.model.getHelpText(),
+            required: this.model.isRequired() ? self.requiredClassName : "",
+            repeating: this.model.isRepeating(),
+            field_icon: this.fieldIconNames[this.model.getType()],
+            icon_content: this.model.getType() === "number" ? 123 : ""
+        }));
+
+        this.$fieldWrapper = $(fieldTemplate[0]);
+        this.$fh_appform_fieldActionBar = $(fieldTemplate[1]);
+
+        if(this.readonly){
+            this.$fh_appform_fieldActionBar.hide();   
+        }
 
         if (this.model.isRepeating()) {
             this.initialRepeat = this.model.getMinRepeat();
             this.maxRepeat = this.model.getMaxRepeat();
         }
+
         for (var i = 0; i < this.initialRepeat; i++) {
             this.addElement();
         }
 
-        this.$el.append(this.$fieldWrapper);
-        this.$el.append(this.$fh_appform_fieldActionBar);
+        this.$el.append(fieldTemplate);
         this.$el.attr("data-field", this.model.getFieldId());
 
-
-        if (this.options.sectionName) {
-            //This field belongs to a section
-            this.options.parentEl.find('#fh_appform_' + this.options.sectionName).append(this.$el);
-        } else {
-            this.options.parentEl.append(this.$el);
-        }
-
-
+        this.options.parentEl.append(this.$el);
 
         // force the element to be initially hidden
         if (this.$el.hasClass("hide")) {
@@ -1843,6 +1850,8 @@ var FieldView = Backbone.View.extend({
                 self.value(res);
             });
         }
+
+
         this.show();
         this.checkActionBar();
         this.onRender();
@@ -1851,15 +1860,12 @@ var FieldView = Backbone.View.extend({
 
     },
     // TODO: cache the input element lookup?
-    initialize: function() {
+    initialize: function(options) {
+        this.options = options;
+        this.readonly = options.formView.readonly;
         _.bindAll(this, 'dumpContent', 'clearError', 'onAddInput', 'onRemoveInput');
 
-        // if (this.model.isRequired()) {
-        //   this.$el.addClass('required');
-        // }
-        this.$fieldWrapper = $(this.fieldWrapper);
-        this.$fh_appform_fieldActionBar = $(this.fh_appform_fieldActionBar);
-        // only call render once. model will never update
+        
         this.render();
     },
 
@@ -1906,6 +1912,7 @@ var FieldView = Backbone.View.extend({
     },
     validate: function(e) {
         var self = this;
+        this.options.formView.markFormEdited();
         var target = $(e.currentTarget);
         var index = target.data().index;
         var val = self.valueFromElement(index);
@@ -1917,9 +1924,15 @@ var FieldView = Backbone.View.extend({
         wrapperObj.find(this.errMessageContainer).text(text);
         wrapperObj.find(this.errMessageContainer).show();
         wrapperObj.find(this.errMessageContainer).addClass(this.errorClassName);
-        wrapperObj.find("input,textarea,select").addClass(this.errorClassName);
+
+        if(wrapperObj.find("input[type='checkbox']").length === 0){
+            wrapperObj.find("input,textarea,select").addClass(this.errorClassName);    
+        }
+        
     },
     contentChanged: function(e) {
+        this.options.formView.markFormEdited();
+        e.preventDefault();
         this.validate(e);
     },
 
@@ -1933,7 +1946,7 @@ var FieldView = Backbone.View.extend({
     },
     renderButton: function(index, label, extension_type) {
         var button = $('<button>');
-        button.addClass('special_button fh_appform_button_action');
+        button.addClass('special_button fh_appform_button_action col-xs-12');
         button.addClass(extension_type);
         button.attr("data-index", index);
         button.html(' ' + label);
@@ -1944,7 +1957,7 @@ var FieldView = Backbone.View.extend({
     addButton: function(input, extension_type, label) {
         var self = this;
         var button = $('<button>');
-        button.addClass('special_button fh_appform_button_action');
+        button.addClass('special_button fh_appform_button_action col-xs-12');
         button.addClass(extension_type);
         button.html(' ' + label);
 
@@ -2033,10 +2046,11 @@ FieldCameraView = FieldView.extend({
         '<div class="cam"></div>' +
         '</div>',
     onElementShow: function(index) {
-        var captureBtn = $(this.renderButton(index, "<i class='fa fa-camera'></i>&nbsp;Capture Photo From Camera", "fhcam"));
-        var libBtn = $(this.renderButton(index, "<i class='fa fa-folder'></i>&nbsp;Choose Photo from Library", "fhcam_lib"));
-        var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i>&nbsp;Remove Photo", "remove"));
+        var captureBtn = $(this.renderButton(index, "<i class='icon-camera'></i>&nbsp;Capture Photo From Camera", "fhcam"));
+        var libBtn = $(this.renderButton(index, "<i class='icon-folder-open'></i>&nbsp;Choose Photo from Library", "fhcam_lib"));
+        var rmBtn = $(this.renderButton(index, "<i class='icon-remove-circle'></i>&nbsp;Remove Photo", "remove"));
 
+      if(!this.readonly){
         this.getWrapper(index).append(captureBtn);
         this.getWrapper(index).append(libBtn);
         this.getWrapper(index).append(rmBtn);
@@ -2057,6 +2071,7 @@ FieldCameraView = FieldView.extend({
         } else if ($fh.forms.config.get("picture_source") === "camera"){
           libBtn.hide();
         }
+      }
     },
     setImage: function(index, base64Img) {
         var wrapper = this.getWrapper(index);
@@ -2173,7 +2188,20 @@ FieldCameraView = FieldView.extend({
             file.type = 'file';
             var fileObj = $(file);
             fileObj.hide();
-            self.$el.append(fileObj);
+
+            if(self.$el.find('input[type="file"]').length > 0){
+                fileObj = $(self.$el.find('input[type="file"]')[0]);
+            } else {
+                self.$el.append(fileObj);    
+                fileObj = $(self.$el.find('input[type="file"]')[0]);
+            }
+
+            fileObj.off('click');
+            fileObj.on('click', function(e){
+                console.log("File CLicked ", e);
+            });
+
+            fileObj.off('change');
             fileObj.on('change', function() {
                 var file = fileObj[0];
                 if (file.files && file.files.length > 0) {
@@ -2188,7 +2216,7 @@ FieldCameraView = FieldView.extend({
                     });
                 }
             });
-            fileObj.click();
+            fileObj.trigger('click');
         }
     },
     valueFromElement: function(index) {
@@ -2209,34 +2237,41 @@ FieldCameraView = FieldView.extend({
     }
 });
 FieldCheckboxView = FieldView.extend({
-  checkboxes: '<div class="fh_appform_field_input <%= repeatingClassName%>"><div class="checkboxes"><%= choices %></div></div>',
-  choice: '<input data-fieldId="<%= fieldId %>" <%= checked %> data-index="<%= index %>" name="<%= fieldId %>[]" type="checkbox" class="field checkbox" value="<%= value %>" ><label class="choice" ><%= choice %></label><br/>',
+  checkboxes: '<div class="btn-group-vertical fh_appform_field_input col-xs-12 <%= repeatingClassName%>" data-toggle="buttons-checkbox"></div>',
+  choice: '<button class="btn btn-primary text-left fh_appform_button_action col-xs-12" type="button" value="<%= value %>" name="<%= fieldId %>[]" data-field="<%= fieldId %>" data-index="<%= index %>"><i class="icon-check-empty choice_icon"></i><%= choice %></button>',
 
 
   renderInput: function(index) {
+    var self=this;
     var subfields = this.model.getCheckBoxOptions();
     var fieldId=this.model.getFieldId();
     var choicesHtml = "";
     var checkboxesHtml = "";
     var html = "";
     var required = this.getFieldRequired(index);
-    var self=this;
+    
     var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
-
-
+    checkboxesHtml = _.template(this.checkboxes, {"repeatingClassName": repeatingClassName});
+    checkboxesHtml = $(checkboxesHtml);
 
     $.each(subfields, function(i, subfield) {
-      choicesHtml+= _.template(self.choice, {
+      var choice = _.template(self.choice, {
         "fieldId": fieldId,
         "index": index,
         "choice": subfield.label,
         "value": subfield.label,
         "checked": (subfield.checked) ? "checked='checked'" : ""
       });
+      choice = $(choice);
+      choice.off('click');
+      choice.on('click', function(e){
+        $(this).find('.choice_icon').toggleClass('icon-check-empty');
+        $(this).find('.choice_icon').toggleClass('icon-check');
+      });
+
+      checkboxesHtml.append(choice);
     });
-
-    checkboxesHtml = _.template(this.checkboxes, {"choices": choicesHtml, "repeatingClassName": repeatingClassName});
-
+    
     return checkboxesHtml;
   },
   valueFromElement: function(index) {
@@ -2244,7 +2279,7 @@ FieldCheckboxView = FieldView.extend({
       selections: []
     };
     var wrapperObj=this.getWrapper(index);
-    var checked=wrapperObj.find("input:checked");
+    var checked=wrapperObj.find("button.active");
     checked.each(function(){
       value.selections.push($(this).val());
     });
@@ -2257,7 +2292,9 @@ FieldCheckboxView = FieldView.extend({
     }
     for (var i=0; i < value.length; i++){
       var v=value[i];
-      wrapperObj.find("input[value='"+v+"']").attr("checked","checked");
+      wrapperObj.find("button[value='"+v+"']").addClass("active");
+      wrapperObj.find("button[value='"+v+"'] .choice_icon").removeClass("icon-check-empty");
+      wrapperObj.find("button[value='"+v+"'] .choice_icon").addClass("icon-check");
     }
   }
 });
@@ -2266,9 +2303,9 @@ FieldEmailView = FieldView.extend({
    type:"email"
 });
 FieldFileView = FieldView.extend({
-    input: "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action select' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'>Select A File</button>" +
-        "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action remove' data-index='<%= index %>' style='margin-top:0px;'  type='<%= inputType %>'><i class='fa fa-times-circle'></i>&nbsp;Remove File Entry</button>" +
-        "<input style='opacity: 0; filter:alpha(opacity: 0); width:2px;height:2px' class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>'/>",
+    input: "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action select col-xs-12' data-index='<%= index %>'  type='<%= inputType %>'><i class='icon-folder-openSelect'></i> A File</button>" +
+        "<button data-field='<%= fieldId %>' class='special_button fh_appform_button_action remove col-xs-12' data-index='<%= index %>'  type='<%= inputType %>'><i class='icon-remove-circle'></i>&nbsp;Remove File Entry</button>" +
+        "<input class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>' type='<%= inputType %>' style=''/>",
     type: "file",
     initialize: function() {
         var self = this;
@@ -2300,7 +2337,6 @@ FieldFileView = FieldView.extend({
         } else { //user cancelled file selection
             self.showButton(index, null);
         }
-
     },
     valueFromElement: function(index) {
         var wrapperObj = this.getWrapper(index);
@@ -2317,6 +2353,7 @@ FieldFileView = FieldView.extend({
         var button = wrapperObj.find("button.select");
         var button_remove = wrapperObj.find("button.remove");
         var fileEle = wrapperObj.find(".fh_appform_field_input");
+
         button.show();
 
         if (fileObj == null) {
@@ -2327,11 +2364,18 @@ FieldFileView = FieldView.extend({
             button_remove.show();
         }
 
-        button.off("click");
-        button.on("click", function() {
-            var index = $(this).data().index;
-            fileEle.click();
-        });
+        if (this.readonly) {
+            button_remove.hide();
+        }
+
+        //Some operating systems do not support opening a file select browser
+        //http://viljamis.com/blog/2012/file-upload-support-on-mobile/
+        if (navigator.userAgent.match(/(Android (1.0|1.1|1.5|1.6|2.0|2.1))|(Windows Phone (OS 7|8.0))|(XBLWP)|(ZuneWP)|(w(eb)?OSBrowser)|(webOS)|(Kindle\/(1.0|2.0|2.5|3.0))/)) {
+            //If not supported, show a warning on-device. There is also a warning in the studio when creating the form.
+           $(button).text("File upload not supported");
+           $(button).attr("disabled", true);
+           button.off("click");
+         }
 
         button_remove.off("click");
         button_remove.on("click", function() {
@@ -2342,6 +2386,7 @@ FieldFileView = FieldView.extend({
             self.resetFormElement(fileEle);
             self.showButton(index, null); // remove file entry
         });
+
     },
     resetFormElement: function(e) {
         e.wrap("<form>").closest("form").get(0).reset();
@@ -2358,132 +2403,136 @@ FieldFileView = FieldView.extend({
     }
 });
 FieldGeoView = FieldView.extend({
-  input: "<input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
-  buttonHtml: "<i class='fa fa-map-marker'></i>&nbsp<%= buttonText %>",
-  type: "text",
-  initialize: function() {
-    this.geoValues=[];
-    this.locationUnit = this.model.getFieldDefinition().locationUnit;
-    FieldView.prototype.initialize.apply(this, arguments);
-  },
-  renderInput: function(index) {
-    var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
-    var html = _.template(this.input, {
-      "fieldId": this.model.getFieldId(),
-      "index": index,
-      "inputType": "text",
-      "repeatingClassName": repeatingClassName
-    });
+    input: "<input class='fh_appform_field_input col-xs-12 text-center <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>'  type='<%= inputType %>' disabled/>",
+    buttonHtml: "<i class='icon-location-arrow'></i>&nbsp<%= buttonText %>",
+    type: "text",
+    initialize: function() {
+        this.geoValues = [];
+        this.locationUnit = this.model.getFieldDefinition().locationUnit;
+        FieldView.prototype.initialize.apply(this, arguments);
+    },
+    renderInput: function(index) {
+        var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
+        var html = _.template(this.input, {
+            "fieldId": this.model.getFieldId(),
+            "index": index,
+            "inputType": "text",
+            "repeatingClassName": repeatingClassName
+        });
+
+        return $(html);
+    },
+    onElementShow: function(index) {
+        var self = this;
+        var rmBtn = $(this.renderButton(index, "<i class='icon-remove-circle'></i>&nbsp;Remove Location", "remove"));
+        var btnLabel = this.locationUnit === "latlong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
+        btnLabel = _.template(this.buttonHtml, {
+            "buttonText": btnLabel
+        });
+        var geoButton = $(this.renderButton(index, btnLabel, "fhgeo"));
+
+        if (!this.readonly) {
+            this.getWrapper(index).append(geoButton);
+            this.getWrapper(index).append(rmBtn);
+
+            geoButton.on("click", function(e) {
+                self.getLocation(e, index);
+            });
+
+            rmBtn.on("click", function(e) {
+                self.clearLocation(e, index);
+                rmBtn.hide();
+            });
+
+            rmBtn.hide();
+        }
 
 
-    return html;
-  },
-  onElementShow: function(index){
-    var self = this;
-    var rmBtn = $(this.renderButton(index, "<i class='fa fa-times-circle'></i>&nbsp;Remove Location", "remove"));
-    var btnLabel = this.locationUnit === "latlong" ? 'Capture Location (Lat/Lon)' : 'Capture Location (East/North)';
-    btnLabel = _.template(this.buttonHtml, {"buttonText": btnLabel});
-    var geoButton = $(this.renderButton(index, btnLabel, "fhgeo"));
-
-
-    this.getWrapper(index).append(geoButton);
-    this.getWrapper(index).append(rmBtn);
-
-    geoButton.on("click", function(e){
-      self.getLocation(e, index);
-    });
-
-    rmBtn.on("click", function(e){
-      self.clearLocation(e, index);
-      rmBtn.hide();
-    });
-
-    rmBtn.hide();
-  },
-  clearLocation: function(e, index){
-    var textInput = this.getWrapper(index).find(".fh_appform_field_input");
-    textInput.val("");
-    this.geoValues.splice(index, 1);// Remove the geo value from the field
-  },
-  onRender: function() {
-    var that = this;
-  },
-  convertLocation: function(location) {
-    var lat = location.lat;
-    var lon = location.lon;
-    var params = {
-      lat: function() {
-        return lat;
-      },
-      lon: function() {
-        return lon;
-      }
-    };
-    return OsGridRef.latLongToOsGrid(params);
-  },
-  renderElement: function(index) {
-    var location = this.geoValues[index];
-    var locStr = "";
-    var wrapper = this.getWrapper(index);
-    var textInput = wrapper.find(".fh_appform_field_input");
-    if (location) {
-      if (this.locationUnit === "latlong") {
-        locStr = '(' + location.lat + ', ' + location["long"] + ')';
-        wrapper.find(".remove").show();
-      } else if (this.locationUnit === "eastnorth") {
-        locStr = '(' + location.zone+' '+location.eastings + ', ' + location.northings + ')';
-        wrapper.find(".remove").show();
-      } else {
-        $fh.forms.log.e("FieldGeo: Invalid location unit: " + locStr);
-      }
-      textInput.val(locStr);
-    } else {
-      wrapper.find(".remove").hide();
-    }
-    textInput.blur();
-  },
-  valuePopulateToElement: function (index, value) {
-    this.geoValues[index] = value;
-    this.renderElement(index);
-  },
-  valueFromElement: function (index) {
-    return this.geoValues[index];
-  },
-  getLocation: function(e, index) {
-    var that = this;
-    e.preventDefault();
-    var wrapper = that.getWrapper(index);
-    var textInput = wrapper.find(".fh_appform_field_input");
-
-
-    //$fh.geo does not exist on the theme preview.
-    if($fh.geo){
-      $fh.geo(function(res) {
-        var location;
-        if (that.locationUnit === "latlong") {
-          that.geoValues[index] = {
-            "lat": res.lat,
-            "long": res.lon
-          };
-        }else if (that.locationUnit==="eastnorth"){
-          var en_location = that.convertLocation(res);
-          var locArr=en_location.toString().split(" ");
-          that.geoValues[index]={
-            "zone":locArr[0],
-            "eastings":locArr[1],
-            "northings":locArr[2]
-          };
+    },
+    clearLocation: function(e, index) {
+        var textInput = this.getWrapper(index).find(".fh_appform_field_input");
+        textInput.val("");
+        this.geoValues.splice(index, 1); // Remove the geo value from the field
+    },
+    convertLocation: function(location) {
+        var lat = location.lat;
+        var lon = location.lon;
+        var params = {
+            lat: function() {
+                return lat;
+            },
+            lon: function() {
+                return lon;
+            }
+        };
+        return OsGridRef.latLongToOsGrid(params);
+    },
+    renderElement: function(index) {
+        var location = this.geoValues[index];
+        var locStr = "";
+        var wrapper = this.getWrapper(index);
+        var textInput = wrapper.find(".fh_appform_field_input");
+        if (location) {
+            if (this.locationUnit === "latlong") {
+                locStr = '(' + location.lat + ', ' + location["long"] + ')';
+                wrapper.find(".remove").show();
+            } else if (this.locationUnit === "eastnorth") {
+                locStr = '(' + location.zone + ' ' + location.eastings + ', ' + location.northings + ')';
+                wrapper.find(".remove").show();
+            } else {
+                $fh.forms.log.e("FieldGeo: Invalid location unit: " + locStr);
+            }
+            textInput.val(locStr);
         } else {
-          $fh.forms.log.e("FieldGeo: Invalid location unit: " + locStr);
-       }
-        that.renderElement(index);
-      }, function(msg, err) {
-        textInput.attr('placeholder', 'Location could not be determined');
-      });
-    }
+            wrapper.find(".remove").hide();
+        }
+        textInput.blur();
+    },
+    valuePopulateToElement: function(index, value) {
+        this.geoValues[index] = value;
+        this.renderElement(index);
+    },
+    valueFromElement: function(index) {
+        return this.geoValues[index];
+    },
+    getLocation: function(e, index) {
+        var that = this;
+        e.preventDefault();
+        var wrapper = that.getWrapper(index);
+        var textInput = wrapper.find(".fh_appform_field_input");
 
-    return false;
-  }
+
+        //$fh.geo does not exist on the theme preview.
+        if ($fh.geo) {
+            $fh.geo(function(res) {
+                var location;
+
+                res.lat = Number(Number(res.lat).toFixed(4));
+                res.lon = Number(Number(res.lon).toFixed(4));
+                if (that.locationUnit === "latlong") {
+                    that.geoValues[index] = {
+                        "lat": res.lat,
+                        "long": res.lon
+                    };
+                } else if (that.locationUnit === "eastnorth") {
+                    var en_location = that.convertLocation(res);
+                    var locArr = en_location.toString().split(" ");
+                    that.geoValues[index] = {
+                        "zone": locArr[0],
+                        "eastings": locArr[1],
+                        "northings": locArr[2]
+                    };
+                } else {
+                    $fh.forms.log.e("FieldGeo: Invalid location unit: " + locStr);
+                }
+                that.renderElement(index);
+            }, function(msg, err) {
+                textInput.attr('placeholder', 'Location could not be determined');
+            });
+        }
+
+        return false;
+    }
 });
 FieldMapView = FieldView.extend({
   extension_type: 'fhmap',
@@ -2506,12 +2555,13 @@ FieldMapView = FieldView.extend({
     FieldView.prototype.initialize.apply(this, arguments);
   },
   renderInput: function(index) {
-    return _.template(this.input, {
+    var inputEle = _.template(this.input, {
       width: this.mapSettings.mapWidth,
       height: this.mapSettings.mapHeight,
       'index': index,
       'id':Math.random()
     });
+    return $(inputEle);
   },
   show: function() {
     this.$el.show();
@@ -2565,13 +2615,15 @@ FieldMapView = FieldView.extend({
           target: mapCanvas,
           lon: location.lon,
           lat: location.lat,
-          zoom: self.mapSettings.defaultZoom
+          zoom: self.mapSettings.defaultZoom,
+          draggable: !self.readonly
         }, function(res) {
           self.maps[index] = res.map;
+
           var marker = new google.maps.Marker({
             position: self.maps[index].getCenter(),
             map: self.maps[index],
-            draggable: true,
+            draggable: !self.readonly,
             animation: google.maps.Animation.DROP,
             title: 'Drag this to set position'
           });
@@ -2647,9 +2699,8 @@ FieldPhoneView = FieldView.extend({
   type:"tel"
 });
 FieldRadioView = FieldView.extend({
-  hidden_field: '<input  id="radio<%= id %>" type="fh_appform_hidden" value="" data-type="radio">',
-  choice: '<input data-field="<%= fieldId %>" data-index="<%= index %>" name="<%= fieldId %>_<%= index %>" class="field radio" value="<%= value %>" type="radio"><label class="choice" ><%= choice %></label><br/>',
-  radio: '<div class="fh_appform_field_input <%= repeatingClassName%>"><%= radioChoices %></div>',
+  choice: '<button class="btn btn-primary text-left fh_appform_button_action" type="button" data-field="<%= fieldId %>" data-index="<%= index %>" data-value="<%= choice %>"><i class="icon-circle-blank choice_icon"></i><%= choice %></button>',
+  radio: '<div class="btn-group-vertical fh_appform_field_input col-xs-12 <%= repeatingClassName%>" data-toggle="buttons-radio"></div>',
 
   renderInput: function(index) {
     var choices = this.model.getRadioOption();
@@ -2658,39 +2709,66 @@ FieldRadioView = FieldView.extend({
     var fullRadioHtml = "";
     var html = "";
     var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
+    var inputElement = _.template(self.radio, { "repeatingClassName": repeatingClassName});
+    inputElement = $(inputElement);
 
     var fieldId = this.model.getFieldId();
     $.each(choices, function(i, choice) {
-      var jQObj = $(_.template(self.choice, {
+      var jQObj = _.template(self.choice, {
         "fieldId": fieldId,
         "choice": choice.label,
         "value": choice.label,
         "index": index
-      }));
+      });
+
+      jQObj = $(jQObj);
 
       if (choice.checked === true) {
-        jQObj.attr('checked', 'checked');
+        jQObj.addClass('active');
+        jQObj.removeClass('icon-circle-blank');
+        jQObj.addClass('icon-circle');
       }
-      radioChoicesHtml += self.htmlFromjQuery(jQObj);
+
+      jQObj.off('click');
+      jQObj.on('click', function(e){
+        $(this).parent().find('.choice_icon').removeClass('icon-circle');
+        $(this).parent().find('.choice_icon').addClass('icon-circle-blank');
+
+        $(this).find('.choice_icon').removeClass('icon-circle-blank');
+        $(this).find('.choice_icon').addClass('icon-circle');  
+      });
+
+      inputElement.append(jQObj);
     });
 
-    return _.template(this.radio, {"radioChoices": radioChoicesHtml, "repeatingClassName": repeatingClassName});
+    return inputElement;
   },
   valuePopulateToElement: function (index, value) {
     var wrapperObj = this.getWrapper(index);
-    var opt = wrapperObj.find('input[value=\'' + value + '\']');
+    var opt = wrapperObj.find('button[data-value=\'' + value + '\']');
     if (opt.length === 0) {
-      opt = wrapperObj.find('input:first-child');
+      opt = wrapperObj.find('button:first-child');
     }
-    opt.attr('checked', 'checked');
+    opt.addClass("active");
+    opt.find('.choice_icon').removeClass('icon-circle-blank');
+    opt.find('.choice_icon').addClass('icon-circle');
   },
   valueFromElement: function (index) {
     var wrapperObj = this.getWrapper(index);
-    return wrapperObj.find('input:checked').val() || this.model.getRadioOption()[0].label;
+
+    var data = wrapperObj.find('button.active').data();
+    if(data){
+      return wrapperObj.find('button.active').data().value;  
+    } else {
+      return this.model.getRadioOption()[0].label;
+    }
+  },
+  onElementShow: function(index){
+    
   }
 });
 FieldSelectView = FieldView.extend({
-  select: "<select class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
+  select: "<select class='fh_appform_field_input form-control <%= repeatingClassName%> col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>'><%= options %></select>",
   option: '<option value="<%= value %>" <%= selected %>><%= value %></option>',
 
   renderInput: function(index) {
@@ -2710,32 +2788,35 @@ FieldSelectView = FieldView.extend({
       });
     });
 
-    return _.template(this.select, {
+    return $(_.template(this.select, {
       "fieldId":fieldId,
       "index":index,
       "options":options,
       "repeatingClassName": repeatingClassName
-    });
+    }));
   }
 });
 FieldSignatureView = FieldView.extend({
     extension_type: 'fhsig',
-    input: "<img class='sigImage' style='width: 100%;' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
+    input: "<img class='sigImage img-responsive' data-field='<%= fieldId %>' data-index='<%= index %>'/>",
     templates: {
-        signaturePad: ['<div class="sigPad">', '<ul class="sigNav" style="text-align: center;">', '<button class="clearButton fh_appform_button_cancel">Clear</button><button class="cap_sig_done_btn fh_appform_button_action">Done</button>', '<br style="clear:both;" />', '</ul>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
+        signaturePad: ['<div class="sigPad">', '<div class="sigPad_header col-xs-12">', '<button class="clearButton fh_appform_button_cancel btn btn-danger col-xs-5 col-xs-offset-1">Clear</button><button class="cap_sig_done_btn fh_appform_button_action btn btn-primary col-xs-5 col-xs-offset-1 pull-right">Done</button>', '<br style="clear:both;" />', '</div>', '<div class="sig sigWrapper">', '<canvas class="pad" width="<%= canvasWidth %>" height="<%= canvasHeight %>"></canvas>', '</div>', '</div>']
     },
 
-    initialize: function() {
-        FieldView.prototype.initialize.call(this);
+    initialize: function(options) {
+        FieldView.prototype.initialize.call(this, options);
         this.on('visible', this.clearError);
     },
     onElementShow: function(index) {
-        var html = $(this.renderButton(index, "<i class='fa fa-pencil'></i>&nbsp;Capture Signature", this.extension_type));
-        this.getWrapper(index).append(html);
-        var self = this;
-        html.on("click", function() {
-            self.showSignatureCapture(index);
-        });
+        if (!this.readonly) {
+            var html = $(this.renderButton(index, "<i class='icon-pencil'></i>&nbsp;Capture Signature", this.extension_type));
+            this.getWrapper(index).append(html);
+            var self = this;
+            html.on("click", function() {
+                self.showSignatureCapture(index);
+            });
+        }
+
     },
     validate: function(e) {
         this.trigger("checkrules");
@@ -2753,12 +2834,15 @@ FieldSignatureView = FieldView.extend({
             "canvasWidth": canvasWidth
         }));
         var signaturePad = $('.sigPad', this.$el);
+
+        var diff = $(window).height() - window.outerHeight;
+        var diffpx = "" + diff + "px";
         signaturePad.css({
             position: 'fixed',
             'z-index': 9999,
             'bottom': '0px',
             'right': '0px',
-            top: '0px',
+            top: diffpx,
             left: '0px',
             'background-color': '#fff'
         });
@@ -2996,12 +3080,12 @@ FieldTextView = FieldView.extend({
 
 });
 FieldTextareaView = FieldView.extend({
-    input: "<textarea class='fh_appform_field_input' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
+    input: "<textarea class='fh_appform_field_input col-xs-12' data-field='<%= fieldId %>' data-index='<%= index %>'  ></textarea>"
 });
 FieldSectionBreak = FieldView.extend({
-  className: "fh_appform_section_break",
+  className: "fh_appform_section_break panel panel-default",
   templates: {
-    sectionBreak: '<div class="fh_appform_section_title"><%= sectionTitle %></div><div class="fh_appform_section_description"><%= sectionDescription%></div>'
+      sectionBreak: '<div class="panel-heading"><%= sectionTitle %></div>'
   },
   renderEle:function(){
     return _.template(this.templates.sectionBreak, {sectionTitle: this.model.getName(), sectionDescription: this.model.getHelpText()});
@@ -3009,15 +3093,15 @@ FieldSectionBreak = FieldView.extend({
   renderTitle: function(){
     return "";
   },
-  "renderHelpText": function(){
+  renderHelpText: function(){
     return "";
   }
 });
 FieldDateTimeView = FieldView.extend({
   extension_type: 'fhdate',
-  inputTime:"<div><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='time'></div>",
-  inputDate:"<div ><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='date'></div>",
-  inputDateTime:"<div ><input class='fh_appform_field_input <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='text'></div>",
+  inputTime: "<input class='fh_appform_field_input col-xs-12 text-center <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='time'>",
+  inputDate: "<input class='fh_appform_field_input col-xs-12 text-center   <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='date'>",
+  inputDateTime: "<input class='fh_appform_field_input col-xs-12 text-center   <%= repeatingClassName%>' data-field='<%= fieldId %>' data-index='<%= index %>' type='text'>",
   renderInput:function(index){
     var fieldId = this.model.getFieldId();
     var repeatingClassName = this.model.isRepeating() ? this.repeatingClassName : this.nonRepeatingClassName;
@@ -3027,22 +3111,26 @@ FieldDateTimeView = FieldView.extend({
     var buttonLabel="";
     if (unit==="datetime"){
       template=this.inputDateTime;
-      buttonLabel="<i class='fa fa-calendar'></i> <i class='fa fa-clock-o'></i>&nbspGet Current Date & Time";
+      buttonLabel="<i class='icon-calendar'></i> <i class='icon-time'></i>&nbspGet Current Date & Time";
     }else if (unit==="date"){
       template=this.inputDate;
-      buttonLabel="<i class='fa fa-calendar'></i>&nbspGet Current Date";
+      buttonLabel="<i class='icon-calendar'></i>&nbspGet Current Date";
     }else if (unit==="time"){
       template=this.inputTime;
-      buttonLabel="<i class='fa fa-clock-o'></i>&nbspGet Current Time";
+      buttonLabel="<i class='icon-time'></i>&nbspGet Current Time";
     }
     var html=_.template(template,{
       "fieldId":fieldId,
       "index":index,
       "repeatingClassName": repeatingClassName
     });
-    html+=this.renderButton(index,buttonLabel,"fhdate");
 
-    return html;
+    if(!this.readonly){
+      html+=this.renderButton(index,buttonLabel,"fhdate");   
+    }
+    
+
+    return $(html);
   },
   getUnit:function(){
     var def=this.model.getFieldDefinition();
@@ -3050,9 +3138,12 @@ FieldDateTimeView = FieldView.extend({
   },
   onRender:function(){
     var that=this;
-    this.$el.on("click","button",function(){
-      that.action(this);
-    });
+
+    if(!this.readonly){
+      this.$el.on("click","button",function(){
+        that.action(this);
+      });  
+    }
   },
   action: function(el) {
     var index=$(el).data().index;
@@ -3104,12 +3195,13 @@ var PageView=BaseView.extend({
     "url":FieldUrlView
   },
   templates : {
-    pageTitle : '<div class="fh_appform_page_title"><%= pageTitle %></div>',
-    pageDescription: '<div class="fh_appform_page_description"><%= pageDescription%></div>',
-    section: '<div id="fh_appform_<%= sectionId %>" class="fh_appform_section_area"></div>'
+    pageTitle: '<div class="fh_appform_page_title text-center"><%= pageTitle %></div>',
+    pageDescription: '<div class="fh_appform_page_description text-center"><h4><%= pageDescription%></h4></div>',
+    section: ''
   },
 
-  initialize: function() {
+  initialize: function(options) {
+    this.options = options;
     var self = this;
     _.bindAll(this, 'render',"show","hide");
     // Page Model will emit events if user input meets page rule to hide / show the page.
@@ -3123,10 +3215,7 @@ var PageView=BaseView.extend({
     this.fieldViews = {};
     this.sectionViews = {};
     // all pages hidden initially
-    this.$el.empty().addClass('fh_appform_page fh_appform_hidden');
-
-    //Need to add the page title and description
-    this.$el.append(_.template(this.templates.pageDescription, {pageDescription: this.model.getDescription()}));
+    this.$el.empty().addClass('fh_appform_page fh_appform_hidden col-xs-12');
 
     // add to parent before init fields so validation can work
     this.options.parentEl.append(this.$el);
@@ -3135,32 +3224,64 @@ var PageView=BaseView.extend({
 
     var sections = this.model.getSections();
 
+    function toggleSection(fieldTarget){
+      if(fieldTarget){
+        $('#' + fieldTarget).slideToggle(600);
+        $('#' + fieldTarget + "_icon").toggleClass('icon-chevron-sign-up');
+        $('#' + fieldTarget + "_icon").toggleClass('icon-chevron-sign-down');
+      } 
+    }
+
     if(sections != null){
       var sectionKey;
-      for(sectionKey in sections){
-        this.$el.append(_.template(this.templates.section, {"sectionId": sectionKey}));
-      }
+      var sectionIndex = 0;
+
+      var sectionGroup = $('<div class="panel-group" id="accordion"></div>');
+      
 
       //Add the section fields
       for(sectionKey in sections){
-        sections[sectionKey].forEach(function(field, index){
+        var sectionEl = $(_.template(self.options.formView.$el.find('#temp_page_structure').html(), {"sectionId": sectionKey, title: sections[sectionKey].title, index: sectionIndex}));
+        var sectionDivId = '#fh_appform_' + sectionKey + '_body_icon';
+        sectionIndex++;
+        sectionEl.find('.panel-heading').off('click');
+        sectionEl.find(sectionDivId).off('click');
+
+        sectionEl.find(sectionDivId).on('click', function(e){
+          var fieldTarget = $(this).parent().data().field;
+          toggleSection(fieldTarget);
+        });
+
+        sectionEl.find('.panel-heading').on('click', function(e){
+          if($(e.target).data()){
+            if($(e.target).data().field){
+              toggleSection($(e.target).data().field);
+            }  
+          }
+        });
+        sectionGroup.append(sectionEl);
+        sections[sectionKey].fields.forEach(function(field, index){
           var fieldType = field.getType();
           if (self.viewMap[fieldType]) {
 
             $fh.forms.log.l("*- "+fieldType);
 
-            self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
-              parentEl: self.$el,
-              parentView: self,
-              model: field,
-              formView: self.options.formView,
-              sectionName: sectionKey
-            });
+            if(fieldType !== "sectionBreak"){
+                self.fieldViews[field.get('_id')] = new self.viewMap[fieldType]({
+                parentEl: sectionEl.find('.panel-body'),
+                parentView: self,
+                model: field,
+                formView: self.options.formView,
+                sectionName: sectionKey
+              });  
+            } 
           } else {
             $fh.forms.log.w('FIELD NOT SUPPORTED:' + fieldType);
           }
         });
       }
+
+      this.$el.append(sectionGroup);
     } else {
       fieldModelList.forEach(function (field, index) {
         if(!field) {
@@ -3184,9 +3305,32 @@ var PageView=BaseView.extend({
     }
   },
 
+  expandSection: function(fieldId){
+    var sections = this.model.getSections();
+    var sectionFound = false;
+    var sectionId = "";
+    for(var sectionKey in sections){
+      sections[sectionKey].fields.forEach(function(field, index){
+        if(field.get("_id") === fieldId){
+          sectionFound = true;
+          sectionId = sectionKey;
+        }
+      });
+    }
+
+    if(sectionFound){
+      $("#fh_appform_" + sectionId + "_body").slideDown(20);
+      $("#fh_appform_" + sectionId + "_body_icon").removeClass('icon-minus');
+
+      if(!$("#fh_appform_" + sectionId + "_body_icon").hasClass('icon-plus')){
+         $("#fh_appform_" + sectionId + "_body_icon").addClass('icon-plus');
+      }
+    }
+  },
+
   show: function () {
     var self = this;
-    self.$el.removeClass('fh_appform_hidden');
+    self.$el.show();
 
     for(var fieldViewId in self.fieldViews){
       if(self.fieldViews[fieldViewId].mapResize){
@@ -3197,7 +3341,7 @@ var PageView=BaseView.extend({
 
   hide: function () {
 
-    this.$el.addClass('fh_appform_hidden');
+    this.$el.hide();
   },
 
   showField: function (id) {
@@ -3228,17 +3372,18 @@ var FormView = BaseView.extend({
   "submission": null,
   "fieldValue": [],
   templates: {
-    formLogo: '<div class="fh_appform_logo_container" style="text-align:center;"><div class="fh_appform_logo"></div></div>',
-    formTitle: '<div class="fh_appform_form_title"><%= title %></div>',
-    formContainer: '<div id="fh_appform_container" class="fh_appform_form_area fh_appform_container"></div>',
-    buttons: '<div id="fh_appform_navigation_buttons" class="fh_appform_button_bar"><button class="fh_appform_button_saveDraft fh_appform_hidden fh_appform_button_main fh_appform_button_action">Save Draft</button><button class="fh_appform_button_previous fh_appform_hidden fh_appform_button_default">Previous</button><button class="fh_appform_button_next fh_appform_hidden fh_appform_button_default">Next</button><button class="fh_appform_button_submit fh_appform_hidden fh_appform_button_action">Submit</button></div>'
+    formLogo: '<div class="fh_appform_logo_container col-xs-12"><div class="fh_appform_logo"></div></div>',
+    formTitle: '<div class="fh_appform_form_title col-xs-12 text-center"><h1><%= title %></h1></div>'
   },
   events: {},
   elementNames: {
     formContainer: "#fh_appform_container"
   },
 
-  initialize: function() {
+  initialize: function(options) {
+    this.formEdited = false;
+    this.options = this.options || options;
+    this.readonly = this.options.readOnly;
     var self = this;
     _.bindAll(this, "checkRules", "onValidateError");
     this.$el = this.options.parentEl;
@@ -3276,6 +3421,12 @@ var FormView = BaseView.extend({
     this.$el.find("button.fh_appform_button_saveDraft").hide();
     this.$el.find(" button.fh_appform_button_submit").hide();
   },
+  markFormEdited: function(){
+    this.formEdited = true;
+  },
+  isFormEdited: function(){
+    return this.formEdited;
+  },
   onValidateError: function(res) {
     var self = this;
     var firstView = null;
@@ -3312,6 +3463,16 @@ var FormView = BaseView.extend({
 
     if(invalidFieldId !== null && invalidPageNum !== null){
       var displayedIndex = this.getDisplayIndex(invalidPageNum) + 1;
+      self.goToPage(invalidPageNum, false);
+
+      self.pageViews[invalidPageNum].expandSection(invalidFieldId);
+
+      $('html, body').animate({
+          scrollTop: $("[data-field='" + invalidFieldId + "']").offset().top - 100
+      }, 1000);
+
+
+
       this.$el.find("#fh_appform_page_error").html("Unable to submit form. Validation error on page " + displayedIndex);
       this.$el.find("#fh_appform_page_error").show();
     }
@@ -3322,14 +3483,14 @@ var FormView = BaseView.extend({
     self.formId = form.getFormId();
 
     self.$el.empty();
+    self.$el.append("<div id='fh_appform_templates' style='display:none;'>" + FormTemplates + "</div>");
     self.model = form;
 
     //Page views are always added before anything else happens, need to render the form title first
-    self.$el.append(this.templates.formContainer);
-    self.$el.find(this.elementNames.formContainer).append(_.template(this.templates.formLogo, {}));
-    self.$el.find(this.elementNames.formContainer).append(_.template(this.templates.formTitle, {
-      title: this.model.getName()
-    }));
+
+    var formHtml = _.template(self.$el.find('#temp_form_structure').html(), {title: self.model.getName()});
+
+    self.$el.append(formHtml);
 
     if (!params.submission) {
       params.submission = self.model.newSubmission();
@@ -3384,6 +3545,8 @@ var FormView = BaseView.extend({
     self.fieldViews = fieldViews;
     self.pageViews = pageViews;
     self.pageCount = pageViews.length;
+    var buttonsHtml = _.template(self.$el.find('#temp_form_buttons').html());
+    this.$el.find("#fh_appform_container.fh_appform_form_area").append(buttonsHtml);
   },
   checkRules: function(params) {
     var self = this;
@@ -3451,7 +3614,11 @@ var FormView = BaseView.extend({
     });
 
     this.$el.find("button.fh_appform_button_saveDraft").unbind().bind("click", function() {
-      self.saveToDraft();
+      if($fh.forms.config.isStudioMode()){//Studio mode does not submit.
+        alert("Please create a project and interact with the form there.");
+      } else {
+        self.saveToDraft();
+      }
     });
     this.$el.find("button.fh_appform_button_submit").unbind().bind("click", function() {
       if($fh.forms.config.isStudioMode()){//Studio mode does not submit.
@@ -3466,6 +3633,16 @@ var FormView = BaseView.extend({
   },
   getSubmission: function() {
     return this.submission;
+  },
+  getPageIndexById: function(pageId){
+    for (var i = 0; i < this.pageViews.length; i++) {
+      var pageView = this.pageViews[i];
+      var pId = pageView.model.getPageId();
+      if (pId === pageId) {
+        return i;
+      }
+    }
+    return null;
   },
   getPageViewById: function(pageId) {
     for (var i = 0; i < this.pageViews.length; i++) {
@@ -3492,44 +3669,46 @@ var FormView = BaseView.extend({
     var displayedPages = this.getNumDisplayedPages();
     var displayedIndex = this.getDisplayIndex();
 
+    var prevButton = this.$el.find("button.fh_appform_button_previous").parent();
+    var nextButton = this.$el.find("button.fh_appform_button_next").parent();
+    var submitButton = this.$el.find(" button.fh_appform_button_submit").parent();
+    var saveDraftButton = this.$el.find("button.fh_appform_button_saveDraft").parent();
+    
+
     if (displayedIndex === 0 && displayedIndex === displayedPages - 1) {
-      this.$el.find(" button.fh_appform_button_previous").addClass("fh_appform_hidden");
-      this.$el.find("button.fh_appform_button_next").addClass("fh_appform_hidden");
-      this.$el.find("button.fh_appform_button_saveDraft").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_submit").removeClass("fh_appform_hidden");
-      this.$el.find(".fh_appform_button_bar button").removeClass('fh_appform_three_button');
-      this.$el.find(".fh_appform_button_bar button").addClass('fh_appform_two_button');
+        prevButton.hide();
+        nextButton.hide();
+        saveDraftButton.show();
+        submitButton.show();
+        if(this.readonly){
+          this.$el.find("#fh_appform_navigation_buttons").hide();  
+        }
+        
     } else if (displayedIndex === 0) {
-      this.$el.find(" button.fh_appform_button_previous").addClass("fh_appform_hidden");
-      this.$el.find("button.fh_appform_button_next").removeClass("fh_appform_hidden");
-      this.$el.find("button.fh_appform_button_saveDraft").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_submit").addClass("fh_appform_hidden");
-      this.$el.find(".fh_appform_button_bar button").removeClass('fh_appform_three_button');
-      this.$el.find(".fh_appform_button_bar button").addClass('fh_appform_two_button');
+        prevButton.hide();
+        nextButton.show();
+        saveDraftButton.show();
+        submitButton.hide();
     } else if (displayedIndex === displayedPages - 1) {
-      this.$el.find(" button.fh_appform_button_previous").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_next").addClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_saveDraft").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_submit").removeClass("fh_appform_hidden");
-      this.$el.find(".fh_appform_button_bar button").removeClass('fh_appform_two_button');
-      this.$el.find(".fh_appform_button_bar button").addClass('fh_appform_three_button');
+        prevButton.show();
+        nextButton.hide();
+        saveDraftButton.show();
+        submitButton.show();
     } else {
-      this.$el.find(" button.fh_appform_button_previous").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_next").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_saveDraft").removeClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_submit").addClass("fh_appform_hidden");
-      this.$el.find(".fh_appform_button_bar button").removeClass('fh_appform_two_button');
-      this.$el.find(".fh_appform_button_bar button").addClass('fh_appform_three_button');
-    }
-    if (this.readonly) {
-      this.$el.find("button.fh_appform_button_saveDraft").addClass("fh_appform_hidden");
-      this.$el.find(" button.fh_appform_button_submit").addClass("fh_appform_hidden");
+        prevButton.show();
+        nextButton.show();
+        saveDraftButton.show();
+        submitButton.hide();
     }
 
+    if (this.readonly) {
+        saveDraftButton.hide();
+        submitButton.hide();
+    }
   },
   render: function() {
-    this.$el.find("#fh_appform_container.fh_appform_form_area").append(this.templates.buttons);
     this.rebindButtons();
+    this.hideAllPages();
     this.pageViews[0].show();
     this.pageNum = 0;
     this.steps.activePageChange(this);
@@ -3601,31 +3780,38 @@ var FormView = BaseView.extend({
 
     return displayedPages;
   },
-  nextPage: function() {
+  displayCurrentPage: function(scroll){
     this.hideAllPages();
-    this.pageNum = this.getNextPageIndex(this.pageNum);
     this.pageViews[this.pageNum].show();
     this.steps.activePageChange(this);
     this.checkPages();
-    this.scrollToTop();
+    if(scroll){
+      this.scrollToTop();  
+    }
+  },
+  goToPage: function(pageNum, scroll){
+    if(_.isFinite(pageNum)){
+      this.pageNum = parseInt(pageNum);
+      this.displayCurrentPage(scroll);
+    } else {
+      $fh.forms.log.e("Error switching page: Invalid argument ", pageNum);
+    }     
+  },
+  nextPage: function() {
+    this.pageNum = this.getNextPageIndex(this.pageNum);
+    this.displayCurrentPage(true);
   },
   prevPage: function() {
-    this.hideAllPages();
     this.pageNum = this.getPrevPageIndex(this.pageNum);
-    this.pageViews[this.pageNum].show();
-    this.steps.activePageChange(this);
-    this.checkPages();
-    this.scrollToTop();
+    this.displayCurrentPage(true);
   },
   scrollToTop: function(){
     //Positioning the window to the top of the form container
-    var containerSize = $(this.elementNames.formContainer).outerHeight();
-    if(containerSize > 0){
-      containerSize *= -1;
-      window.scrollBy(0, containerSize);
-    } else {
-      window.scrollTo(0, 0);
-    }
+    $('html, body').animate({
+          scrollTop: 0
+    }, 500, function() { 
+        window.scrollTo(0, 0);
+    });
   },
   backEvent: function(){
     var self = this;
@@ -3647,16 +3833,23 @@ var FormView = BaseView.extend({
       self.submission.validateSubmission(cb);
     });
   },
-  submit: function() {
+  submit: function(cb) {
     var self = this;
     this.populateFieldViewsToSubmission(function() {
       self.submission.submit(function(err, res) {
         if (err) {
           $fh.forms.log.e("Error Submitting Form:", err);
+          if(typeof(cb) === "function"){
+            cb(err);
+          }
         } else {
           self.submission.upload(function(err, uploadTask) {
             if (err) {
               $fh.forms.log.e("Error Uploading Form:", err);
+            }
+
+            if(typeof(cb) === "function"){
+              cb();
             }
 
             self.$el.empty();
@@ -3665,14 +3858,19 @@ var FormView = BaseView.extend({
       });
     });
   },
-  saveToDraft: function() {
+  saveToDraft: function(cb) {
     var self = this;
     this.populateFieldViewsToSubmission(function() {
       self.submission.saveDraft(function(err, res) {
         if (err) {
           $fh.forms.log.e(err);
+        } else {
+          self.formEdited = false;  
         }
-        self.$el.empty();
+        
+        if(typeof(cb) === "function"){
+          cb(err);
+        }
       });
     });
   },
@@ -3759,7 +3957,8 @@ var FromJsonView = BaseView.extend({
         body: '<h1>Insert JSON</h1><textarea id="jsonBox" rows="30" cols="50"></textarea><button id="convert">Convert</button><div id="resultArea"></div>'
     },
     el: '#jsonPage',
-    initialize: function() {
+    initialize: function(options) {
+        this.options = options;
         _.bindAll(this, 'render');
     },
     show: function() {
@@ -3796,9 +3995,9 @@ var FromJsonView = BaseView.extend({
 });
 SectionView=BaseView.extend({
 
-  initialize: function() {
+  initialize: function(options) {
+    this.options = options;
     _.bindAll(this, 'render');
-    this.$el.addClass("fh_appform_section");
   },
   render: function(){
     this.options.parentEl.append(this.$el);
@@ -3806,14 +4005,19 @@ SectionView=BaseView.extend({
 
 });
 StepsView = Backbone.View.extend({
-  className: 'fh_appform_steps',
+  className: 'fh_appform_progress_steps col-xs-12',
 
   templates: {
-    table: '<div class="fh_appform_progress_wrapper"><table class="fh_appform_progress_steps" cellspacing="0"><tr></tr></table><span class="fh_appform_page_title"></span><span id="fh_appform_page_error" class="fh_appform_hidden fh_appform_page_title fh_appform_field_error" style="display:none;"></span></div>',
-    step: '<td><span class="number_container" style=""><div class="number"><%= step_num %></div></span><br style="clear:both"/></td>'
+      table: '<ul class="pagination pagination-lg col-xs-12"></ul>',
+      step: '<li data-index="<%= index %>"><span class="number_container text-center" style="width: <%= width %>%;"><%= step_num %></span></li>',
+      page_title: '<div class="col-xs-12 text-center"><h3 class="fh_appform_page_title"></h3></div>'
+  },
+  events: {
+    'click li': 'switchPage'
   },
 
-  initialize: function() {
+  initialize: function(options) {
+    this.options = options;
     var self = this;
 
     _.bindAll(this, 'render');
@@ -3834,222 +4038,244 @@ StepsView = Backbone.View.extend({
     }
 
     displayedPages.forEach(function(pageId, index) {
-
       var pageModel = self.parentView.getPageViewById(pageId).model;
       var item = $(_.template(self.templates.step, {
-        step_name: pageModel.getName(),
-        step_num: index + 1
+          step_name: pageModel.getName(),
+          step_num: index + 1,
+          index: self.parentView.getPageIndexById(pageId),
+          width: width
       }));
-      item.css('width', width + '%');
-      $('tr:first', table).append(item);
+      $(table).append(item);
     });
 
     this.$el.append(table);
+    this.$el.append(self.templates.page_title);
+    return this;
+  },
+  switchPage: function(e){
+    var index = 0;
+
+    if(e && $(e.currentTarget).data()){
+      index = $(e.currentTarget).data().index;
+      if(typeof(index) !== "undefined"){
+        this.parentView.goToPage(index, false);
+      }
+    }
   },
 
   activePageChange: function() {
     var self = this;
     self.render();
-    self.$el.find('td').removeClass('active');
+    self.$el.find('li').removeClass('active');
 
     var displayIndex = self.parentView.getDisplayIndex();
     var pageModel = self.parentView.pageViews[self.parentView.pageNum].model;
+    var pageName = pageModel.getName();
 
-    self.$el.find('td:eq(' + displayIndex + ')').addClass('active');
-    self.$el.find('.fh_appform_page_title').html(pageModel.getName());
+    self.$el.find('li:eq(' + displayIndex + ')').addClass('active');
+
+    if(pageName.length === 0){
+      pageName = "Page " + (displayIndex + 1);
+    }
+
+    self.$el.find('.fh_appform_page_title').html(pageName);
   }
 
 });
 var ConfigView = Backbone.View.extend({
-  "templates": [
-    '<div class="fh_appform_field_area config_camera">' +
-    '<fieldset>' +
-    '<div class="fh_appform_field_title">Camera</div>' +
-    '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Quality</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="quality" value="<%= quality%>"/>' +
-    '</div>' +
-    '<br/>' +
-    '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Target Width</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="targetWidth" value="<%= targetWidth%>"/>' +
-    '</div><br/><div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Target Height</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="targetHeight" value="<%= targetHeight%>"/>' +
-    '</div>' +
-    '<br/>' +
-    '</fieldset>' +
-    '</div>',
-    '<div class="fh_appform_field_area config_submission">' +
-    '<fieldset>' +
-    '<div class="fh_appform_field_title">Submission</div>' +
-    '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Max Retries</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="max_retries" value="<%= max_retries%>"/>' +
-    '</div>' +
-    '<br/>' +
-    '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Timeout</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="timeout" value="<%= timeout%>"/>' +
-    '</div><br/><div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Min Sent Items to Save</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="sent_save_min" value="<%= sent_save_min%>"/>' +
-    '</div><br/><div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Max Sent Items to Save</label>' +
-    '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="sent_save_max" value="<%= sent_save_max%>"/>' +
-    '</div>' +
-    '<br/>' +
-    '</fieldset>' +
-    '</div>',
-    '<style type="text/css">'+
-  '#_logsViewPanel{'+
-    'position:fixed;'+
-    'left:10px;'+
-    'top:10px;'+
-    'right:10px;'+
-    'bottom:10px;'+
-    'padding:8px;'+
-    'background: white;'+
-    '-webkit-border-radius: 8px;'+
-    'border-radius: 8px;'+
-    'overflow: auto;'+
-  '}'+
-  '#_closeViewBtn{'+
-    'border: 1px solid;'+
-    'padding:3px;'+
-  '}'+
-'</style>'+
-'<div class="fh_appform_field_area config_debugging">'+
-  '<fieldset>'+
-    '<div class="fh_appform_field_title">Debugging</div>'+
-    '<br/>' +
-    '<div class="form-group" style="margin:5px 5px 5px 5px;">' +
-    '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Device Id</label>' +
-    '<button class="fh_appform_button_action" id="fh_appform_show_deviceId">Show Device Id</button>' +
-    '</div>' +
-    '<br/>' +
-      '<div id="config_debugging_log_enabled" class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Enabled</label>'+
-        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" type="checkbox" data-key="logger"  <%= logger?"checked":"" %> value="true"/>'+
-      '</div>'+
-      '<br/>' +
-      '<div id="config_debugging_log_level" class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;margin-top:5px;">Log Level</label>'+
-        '<select class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="log_level">'+
-          '<%'+
-              'for (var i=0;i<log_levels.length;i++){'+
-                'var val=log_levels[i];'+
-                'var selected=(i==log_level)?"selected":"";'+
-                '%>'+
-                  '<option value="<%= i %>" <%= selected%>><%= val%></option>'+
-                '<%'+
-              '}'+
-            '%>'+
-        '</select>'+
-      '</div><br/><div id="config_debugging_log_line_limit" class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Line Number</label>'+
-        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 40%;float: right;" data-key="log_line_limit" value="<%= log_line_limit%>"/>'+
-      '</div><br/><div id="config_debugging_log_email" class="form-group" style="margin:5px 5px 5px 5px;">'+
-        '<label class="fh_appform_field_instructions" style="margin-top: 5px;font-weight: bold;line-height: 2em;">Log Email Address</label>'+
-        '<input class="fh_appform_field_input" style="display: inline-block;text-align: center;width: 98%;float: right;" data-key="log_email" value="<%= log_email%>"/>'+
-      '</div>'+
-      '<div class="log_buttons" style="width:100%;margin: 20px 0px 20px 0px;padding:0px 0px 0px 0px;text-align:center;">'+
-        '<button class="fh_appform_button_default" style="width:30%;margin-right:10px" type="button" id="_viewLogsBtn">View Logs</button>'+
-        '<button class="fh_appform_button_cancel" style="width:30%;margin-right:10px" type="button" id="_clearLogsBtn">Clear Logs</button>'+
-        '<button class="fh_appform_button_action" style="width:30%;" type="button" id="_sendLogsBtn">Send Logs</button>'+
-      '</div>'+
-  '</fieldset>'+
-'</div>'+
-'<div class="hidden" id="_logsViewPanel">'+
-  '<div><span class="fh_appform_button_cancel" id="_closeViewBtn">Close</span></div>'+
-  '<div class="fh_appform_field_area" id="_logViewDiv"></div>'+
-'</div>'
-  ],
-  "_myEvents": {
-    "click #_viewLogsBtn": "viewLogs",
-    "click #_clearLogsBtn": "clearLogs",
-    "click #_sendLogsBtn": "sendLogs",
-    "click #_closeViewBtn": "closeViewLogs",
-    "click #fh_appform_show_deviceId": "showDeviceId"
-  },
-  showDeviceId: function(){
-    alert($fh.forms.config.getDeviceId());  
-  },
-  "viewLogs": function() {
-    var logs = $fh.forms.log.getPolishedLogs();
-    var logStr = logs.join("");
-    this.$el.find("#_logViewDiv").html(logStr);
-    this.$el.find("#_logsViewPanel").show();
-  },
+    templates: {
 
-  "clearLogs":function(){
-    var self=this;
-    $fh.forms.log.clearLogs(function(){
-      self.$el.find("#_logViewDiv").html("");
-      alert("Logs cleared.");
-    });
-  },
-  "sendLogs":function(){
-    $fh.forms.log.sendLogs(function(err){
-      if (err){
-        alert(err);
-      }else{
-        alert("Log has been sent to:"+$fh.forms.config.get("log_email"));
-      }
-    });
-  },  
-  "closeViewLogs":function(){
-    this.$el.find("#_logsViewPanel").hide();
-  },
-  "events": {},
-  "initialize": function() {
-    this.events = _.extend({}, this._myEvents, this.events);
-  },
-  "render": function() {
-    var self = this;
-    self.$el.html("");
-    var props = $fh.forms.config.getConfig();
-    props.deviceId = $fh.forms.config.getDeviceId();
-    var html = _.template(self.templates.join(""), props);
-    self.$el.append(html);
+    },
+    events: {
+        "click #_viewLogsBtn": "viewLogs",
+        "click #_clearLogsBtn": "clearLogs",
+        "click #_sendLogsBtn": "sendLogs",
+        "click #_closeViewBtn": "closeViewLogs",
+        "click #fh_appform_show_deviceId": "showDeviceId",
+        "click #logger": "toggleLogging"
+    },
+    toggleLogging: function() {
+        var loggingEnabled = $fh.forms.config.getConfig().logger;
+        loggingEnabled = !loggingEnabled;
+        $fh.forms.config.set("logger", loggingEnabled);
 
-    if($fh.forms.config.editAllowed() === false){
-      self.$el.find(".config_camera").hide();
-      self.$el.find(".config_submission").hide();
+        var loggingMessage = loggingEnabled ? "Logging Enabled" : "Logging Disabled";
+        var checkedClass = loggingEnabled ? "active" : "";
 
-      self.$el.find("#config_debugging_log_enabled").hide();
-      self.$el.find("#config_debugging_log_level").hide();
-      self.$el.find("#config_debugging_log_line_limit").hide();
-      self.$el.find("#config_debugging_log_email").hide();
-    }
-
-    return self;
-  },
-  "save": function(cb) {
-    $fh.forms.log.l("Saving config");
-    var inputs = this.$el.find("input,select,textarea");
-
-    if($fh.forms.config.editAllowed()){
-      inputs.each(function() {
-        var key = $(this).data().key;
-        var val = $(this).val();
-
-        if ($(this).attr("type") && $(this).attr("type").toLowerCase() === "checkbox") {
-          if ($(this).attr("checked")) {
-            val = true;
-          } else {
-            val = false;
-          }
+        if (loggingEnabled) {
+            this.$el.find('.choice_icon').addClass('icon-circle');
+            this.$el.find('.choice_icon').removeClass('icon-circle-blank');
+        } else {
+            this.$el.find('.choice_icon').addClass('icon-circle-blank');
+            this.$el.find('.choice_icon').removeClass('icon-circle');
         }
 
-        $fh.forms.config.set(key, val);
-      });
+        this.$el.find('#logger_message').html(loggingMessage);
+    },
+    showDeviceId: function() {
+        this.$el.find("#logsModalLabelBody").html("Device Id: " + $fh.forms.config.getDeviceId());
+        this.$el.find("#logsModal").modal();
+    },
+    viewLogs: function() {
+        var logs = this.getPolishedLogs();
+        this.$el.find("#logsModalLabelBody").html(logs);
+        this.$el.find("#logsModal").modal();
+    },
+    getPolishedLogs: function() {
+        var arr = [];
+        var logs = $fh.forms.log.getLogs();
+        var patterns = [{
+            reg: /^.+\sERROR\s.*/,
+            classStyle: "list-group-item-danger"
+        }, {
+            reg: /^.+\sWARNING\s.*/,
+            classStyle: "list-group-item-warning"
+        }, {
+            reg: /^.+\sLOG\s.*/,
+            classStyle: "list-group-item-info"
+        }, {
+            reg: /^.+\sDEBUG\s.*/,
+            classStyle: "list-group-item-success"
+        }, {
+            reg: /^.+\sUNKNOWN\s.*/,
+            classStyle: "list-group-item-warning"
+        }];
 
-      $fh.forms.config.saveConfig(cb);
-    } else {
-      alert("Editing config not permitted.");
+
+        var listStr = "";
+
+        for (var i = 0; i < logs.length; i++) {
+            var log = logs[i];
+            for (var j = 0; j < patterns.length; j++) {
+                var p = patterns[j];
+                if (p.reg.test(log)) {
+                    listStr += _.template($('#temp_config_log_item').html(), {
+                        logClass: p.classStyle,
+                        message: log
+                    });
+                    break;
+                }
+            }
+        }
+        var listGroup = _.template($('#temp_config_log').html(), {
+            listStr: listStr
+        });
+        return listGroup;
+    },
+
+    clearLogs: function() {
+        var self = this;
+        $fh.forms.log.clearLogs(function() {
+            self.$el.find("#_logViewDiv").html("");
+            alert("Logs cleared.");
+        });
+    },
+    sendLogs: function() {
+        $fh.forms.log.sendLogs(function(err) {
+            if (err) {
+                alert(err);
+            } else {
+                alert("Log has been sent to:" + $fh.forms.config.get("log_email"));
+            }
+        });
+    },
+    closeViewLogs: function() {
+        this.$el.find("#_logsViewPanel").hide();
+    },
+    initialize: function(options) {
+        this.options = options;
+        this.events = _.extend({}, this.events);
+    },
+    render: function() {
+        this.$el.empty();
+
+        this.$el.append("<div id='fh_appform_templates' style='display:none;'>" + FormTemplates + "</div>");
+        //Append Logo
+        this.$el.append(_.template(this.$el.find('#forms-logo-sdk').html()));
+        var props = $fh.forms.config.getConfig();
+
+        var cameraSettingsHtml = _.template(this.$el.find('#temp_config_camera').html(), props);
+        var submissionSettingsHtml = _.template(this.$el.find('#temp_config_submissions').html(), props);
+        var debuggingSettingsHtml = _.template(this.$el.find('#temp_config_debugging').html(), props);
+        var miscSettingsHtml = _.template(this.$el.find('#temp_config_misc').html(), props);
+
+        this.$el.append(miscSettingsHtml);
+        this.$el.append(debuggingSettingsHtml);
+        this.$el.append(cameraSettingsHtml);
+        this.$el.append(submissionSettingsHtml);
+
+        this.$el.find('#sent_items_to_keep_list').tagsinput('items');
+        this.$el.find('.bootstrap-tagsinput').addClass('fh_appform_field_input');
+
+        this.$el.find('.panel-heading').click(function(e) {
+            console.log(e);
+
+            var field = $(e.currentTarget).data().field;
+            $('#' + field).slideToggle();
+            $('#' + field + '-icon').toggleClass('icon-chevron-sign-up');
+            $('#' + field + '-icon').toggleClass('icon-chevron-sign-down');
+        });
+
+
+        if (!$fh.forms.config.editAllowed()) {
+            //Hide sections
+            this.$el.find('#camera-settings').hide();
+            this.$el.find('#submission-settings').hide();
+
+            //Hide fields
+            this.$el.find('#log_level_div').hide();
+            this.$el.find('#log_email_div').hide();
+            this.$el.find('#log_line_limit_div').hide();
+            this.$el.find('#logger_wrapper_div').hide();
+        }
+        return this;
+    },
+    save: function(cb) {
+        $fh.forms.log.l("Saving config");
+        var inputs = this.$el.find("input,select,textarea,button[data-key='logger']");
+
+        if ($fh.forms.config.editAllowed()) {
+            inputs.each(function() {
+                var key = $(this).data().key;
+                var val = $(this).val();
+
+                if (key === "logger") {
+                    if ($(this).hasClass("active")) {
+                        val = true;
+                    } else {
+                        val = false;
+                    }
+                }
+
+                if (key === "sent_items_to_keep_list") {
+                    //Parse the strings
+                    if (val && val.filter) {
+                        val = val.filter(function(selectValue) {
+                            selectValue = parseInt(selectValue);
+                            return !isNaN(selectValue);
+                        });
+
+                        val = _.map(val, function(value) {
+                            return parseInt(value);
+                        });
+
+                        val.sort(function(a, b) {
+                            return a - b;
+                        });
+                    } else {
+                        return;
+                    }
+
+                }
+
+                $fh.forms.config.set(key, val);
+            });
+
+            $fh.forms.config.saveConfig(cb);
+        } else {
+            alert("Editing config not permitted.");
+        }
     }
-  }
 });
 if (typeof $fh === 'undefined') {
   $fh = {};
