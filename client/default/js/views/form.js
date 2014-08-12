@@ -5,21 +5,11 @@ $fh.ready({}, function() {
             self.options = params || {};
             $fh.forms.backbone.FormView.prototype.initialize.apply(this, params);
 
-
             if (params.form) {
                 params.formId = params.form.getFormId();
             }
 
             this.loadForm(params, function() {
-                self.submission.on("savedraft", function(submission) {
-                    refreshSubmissionCollections();
-                });
-                self.submission.on("submit", function() {
-                    App.views.header.showPending(true);
-                    App.views.form = null;
-                    refreshSubmissionCollections();
-                });
-
                 self.trigger("loaded");
                 if (params.autoShow) {
                     self.$el.show();
@@ -32,6 +22,7 @@ $fh.ready({}, function() {
             $fh.forms.backbone.FormView.prototype.saveToDraft.apply(this, [
 
                 function(err) {
+                    refreshSubmissionCollections();
                     if(err){
                         AlertView.showAlert("Error Saving Draft.", "error", 1000);
                     } else {    
@@ -47,10 +38,13 @@ $fh.ready({}, function() {
             $fh.forms.backbone.FormView.prototype.submit.apply(this, [
 
                 function(err) {
+                    refreshSubmissionCollections();
                     if (err) {
                         console.log(err);
                         AlertView.showAlert("Submission Error", "error", 1000);
                     } else {
+                        App.views.header.showHome(true);
+                        App.views.form = null;
                         AlertView.showAlert("Adding To Upload Queue", "info", 1000);
                     }
                 }

@@ -43,10 +43,6 @@ PendingReviewItemView = ItemView.extend({
             {
                 itemText: "Edit",
                 itemClass: "group-detail fh_appform_button_action"
-            },
-            {
-                itemText: "Submit",
-                itemClass: "submit-item fh_appform_button_action"
             }
         ];
 

@@ -42,14 +42,12 @@ App.Router = Backbone.Router.extend({
 
                     $fh.forms.config.mbaasOnline(function() {
                         $fh.forms.log.d("Device online");
-                        console.log("Online");
-                        $('#fh_appform_alert_offline').addClass('hidden');
+                        AlertView.showAlert("Working Online", "info", 1000);
                     });
 
                     $fh.forms.config.mbaasOffline(function() {
                         $fh.forms.log.d("Device offline");
-                        console.log("Offline");
-                        $('#fh_appform_alert_offline').removeClass('hidden');
+                        AlertView.showAlert("Working Offline", "error", 1000);
                     });
 
                     self.onReady();

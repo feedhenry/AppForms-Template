@@ -1,90 +1,173 @@
-
 /*
  * Off Canvas APP STUFF
  * --------------------------------------------------
  */
-@media screen and (max-width: 767px) {
-  .row-offcanvas {
-    /* position: relative; */
+
+@-webkit-viewport   { width: device-width; }
+@-moz-viewport      { width: device-width; }
+@-ms-viewport       { width: device-width; }
+@-o-viewport        { width: device-width; }
+@viewport           { width: device-width; }
+
+#testdiv{
+    height: 20px; width: 100%; position: fixed; top: 0px; display: block; background-color: black; z-index: 9999;
     
-  }
-
-  .row-offcanvas-right {
-    right: 0;
-  }
-
-  .row-offcanvas-left {
-    left: 0;
-  
-    min-height: 100%;
-    -webkit-transition: left .5s ease-in-out;
-       -moz-transition: left .5s ease-in-out;
-            transition: left .5s ease-in-out;
-    margin: 0px;
-    /* margin-top: 50px; */
 }
 
-  .row-offcanvas-right
-  .sidebar-offcanvas {
-    right: -50%; /* 6 columns */
-  }
-
-  .row-offcanvas-right.active {
-    right: 35%; /* 6 columns */
-  }
-
-  .row-offcanvas-left.active {
-    /* left: 50%; */ /* 6 columns */
-  
-    min-height: 100%;
-    -webkit-transition: left .5s ease-in-out;
-       -moz-transition: left .5s ease-in-out;
-            transition: left .5s ease-in-out;
+div#debuggingWindow {
+    position: fixed;
+    top: 250px;
+    left: 10%;
+    background: white;
 }
 
-  .sidebar-offcanvas.active {
-    position: fixed;
-    z-index: 1000;
-    top: 50px;
-    width: 50%; /* 6 columns */
-    left: 0%;
-    /* background-color: black; */
-    height: 100%;
-    -webkit-transition: left .5s ease-in-out;
-       -moz-transition: left .5s ease-in-out;
-            transition: left .5s ease-in-out;
-  }
-  
+@media screen and (max-width: 767px) {
+    .row-offcanvas {
+        /* position: relative; */
+
+    }
+
+    .row-offcanvas-right {
+        right: 0;
+    }
+
+    .row-offcanvas-left {
+        left: 0;
+
+        min-height: 100%;
+        -webkit-transition: left .5s ease-in-out;
+        -moz-transition: left .5s ease-in-out;
+        transition: left .5s ease-in-out;
+        margin: 0px;
+        /* margin-top: 50px; */
+    }
+
+    .row-offcanvas-right
   .sidebar-offcanvas {
-    position: fixed;
-    top: 50px;
-    z-index: 1000;
-    width: 50%; /* 6 columns */
-    left: -50%;
-    background-color: black;
-     height: 100%; 
-    -webkit-transition: left .5s ease-in-out;
-       -moz-transition: left .5s ease-in-out;
-            transition: left .5s ease-in-out;
-  }
+        right: -50%; /* 6 columns */
+    }
+
+    .row-offcanvas-right.active {
+        right: 35%; /* 6 columns */
+    }
+
+    .row-offcanvas-left.active {
+        /* left: 50%; */
+        /* 6 columns */
+
+        min-height: 100%;
+        -webkit-transition: left .5s ease-in-out;
+        -moz-transition: left .5s ease-in-out;
+        transition: left .5s ease-in-out;
+    }
+
+    .sidebar-offcanvas.active {
+        position: fixed;
+        z-index: 1000;
+        top: 50px;
+        width: 50%; /* 6 columns */
+        left: 0%;
+        /* background-color: black; */
+        height: 100%;
+        -webkit-transition: left .5s ease-in-out;
+        -moz-transition: left .5s ease-in-out;
+        transition: left .5s ease-in-out;
+    }
+
+    .sidebar-offcanvas {
+        position: fixed;
+        top: 50px;
+        z-index: 1000;
+        width: 50%; /* 6 columns */
+        left: -50%;
+        background-color: black;
+        height: 100%;
+        -webkit-transition: left .5s ease-in-out;
+        -moz-transition: left .5s ease-in-out;
+        transition: left .5s ease-in-out;
+    }
+
+    #fh_appform_container .navbar-brand.fh_appform_section_title {
+        width: 83%;
+    
+        font-size: 1.2em;
+}
+
+
+    #fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title > a {
+        color: inherit;
+        background-color: inherit;
+        padding-left: 5px;
+        padding-right: 5px;
+        /* padding-bottom: 5px; */
+        /* padding-top: 5px; */
+    }
+}
+
+@media screen and (min-width: 768px) {
+    #fh_appform_container .navbar-brand.fh_appform_section_title {
+        width: 100%;
+    }
+    #fh_appform_container .navbar-header {
+        padding-left:0px;
+        padding-right: 0px;
+    }
+
+    #fh_appform_container #header_forms {
+        width: 12%;
+    }
+
+    #fh_appform_container #header_settings {
+        width:13%;
+    }
+    #fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title > a {
+        color: inherit;
+        background-color: inherit;
+        padding-left: 0px;
+        padding-right: 0px;
+        /* padding-bottom: 5px; */
+        /* padding-top: 5px; */
+    }
 }
 
 body {
-     background-color: rgba(202, 221, 250, 1);
+    padding:0px!important;
+    font-size: 14px;
+    border: none!important;
 }
+
+#fh_appform_container .navbar-header {
+    padding-left:0px;
+    padding-right: 0px;
+}
+
+#fh_appform_container .navbar-header .fh_appform_header_name{
+    max-height: 20px;
+
+    overflow: hidden;
+}
+
+#fh_appform_container .bootstrap-tagsinput.fh_appform_field_input {
+    width: 100%;
+}
+
 .content {
-    /* margin-top: 44px; */
+    margin-top: 50px;
     padding: 0px;
 
 }
+
 ul.navbar-nav {
     padding: 0px;
-    /* width: 100%; */
-    margin: -1px 0px 0px 0px;
+    width: 100%;
+    margin: 0px 0px 0px 0px;
+    float: right;
 }
+
 .navbar-fixed-top.fh_appform_button_bar {
     margin-top: 0px;
-    padding: 0px; margin: 0px; 
+    padding: 0px;
+    margin: 0px;
     border: none;
 }
 
@@ -92,27 +175,31 @@ ul.navbar-nav {
     padding-right: 0px;
     margin: 5px 0px 5px 0px;
 }
+
 #fh_appform_tabbs li {
     padding-right: 4px;
     padding-left: 4px;
 }
+
 #fh_appform_tabbs {
     height: 50px;
 }
+
 #fh_appform_tabbs div {
     border-radius: 0px;
     height: inherit;
     padding-top: 15px;
 }
+
 .panel-body {
     padding: 0px;
 }
 
-.panel.panel-default.first{
-  margin-top:55px;
+.panel.panel-default.first {
+    margin-top: 55px;
 }
 
-.navbar-header .navbar-toggle{
+.navbar-header .navbar-toggle {
     margin-top: 0px;
 
     margin-bottom: 0px;
@@ -121,12 +208,12 @@ ul.navbar-nav {
     /* left: -20px; */
 }
 
-.navbar-brand.fh_appform_brand_icon{
-    padding:0px;
+.navbar-brand.fh_appform_brand_icon {
+    padding: 0px;
 }
 
-.badge.pull-right{
-    margin-left:10px;
+.badge.pull-right {
+    margin-left: 10px;
 }
 
 #fh_content_settings .fh_appform_button_cancel {
@@ -139,12 +226,11 @@ ul.navbar-nav {
 }
 
 #fh_content_settings .fh_appform_button_action {
-    margin-bottom: 0px;    
+    margin-bottom: 0px;
     margin-top: -1px;
 }
 
-
-#fh_appform_container .alert{
+#fh_appform_container .alert {
     margin-bottom: 0px;
     text-align: center;
     border-radius: 0px;
@@ -155,67 +241,91 @@ ul.navbar-nav {
     margin: 0px;
     padding: 0px;
 }
-#fh_appform_container ul.dropdown-menu li.list-group-item{
+
+#fh_appform_container ul.dropdown-menu li.list-group-item {
     margin: 0px;
 }
 
-#fh_appform_container .section_icon{
+#fh_appform_container .section_icon {
     float: left;
-    padding-top: 5px;
+    /* padding-top: 0px; */
 }
 
 #fh_appform_alerts_area {
     margin-top: 50px;
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: 100%;
+    z-index: 9999;
 }
 
-
-#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading{
+#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading {
     padding: 0px;
     border: none;
 }
 
-#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading .panel-title{
+#fh_content_settings .panel.panel-default.fh_appform_section_area .panel-heading .panel-title {
     padding: 5px 5px 5px 10px;
     border: none;
 }
 
-#fh_content_settings .fh_appform_config_actions{
+#fh_content_settings .fh_appform_config_actions {
     padding: 0px;
-    
+
     margin-top: 8px;
 }
 
+#fh_content_settings .bootstrap-tagsinput.fh_appform_field_input span.label {
+    font-size: inherit;
+    color: inherit;
+    margin-top: 5px;
+    display: inline-block;
+}
+
+#fh_appform_container input[type=file].fh_appform_field_input {
+    position: absolute;
+    
+    opacity: 0.01;
+    z-index: 9999;
+}
 
 #fh_appform_container .fh_appform_submission_list .list-group-item {
     padding: 0px;
 }
 
-#fh_appform_container .fh_appform_submission_list .panel.fh_appform_section_area .panel-heading.fh_appform_section_title .panel-title{
+#fh_appform_container .fh_appform_submission_list button:first-child, #fh_appform_container .fh_appform_submission_list .btn-group button:first-child {
+    margin-top: 5px;
+}
+
+#fh_appform_container .fh_appform_submission_list .panel.fh_appform_section_area .panel-heading.fh_appform_section_title .panel-title {
     font-size: inherit;
 }
 
-
-
-#fh_appform_container .fh_appform_submission_list .group-detail.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .submit-item.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .delete-item.fh_appform_button_cancel{
+#fh_appform_container .fh_appform_submission_list .group-detail.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .submit-item.fh_appform_button_action, #fh_appform_container .fh_appform_submission_list .delete-item.fh_appform_button_cancel {
     border-radius: 0px;
 }
 
 #fh_appform_container .fh_appform_submission_list .btn-group.btn-group-vertical.col-xs-12 {
-    padding: 5px 10px 5px 10px;  
+    padding: 5px 10px 5px 10px;
 }
 
-#fh_appform_container .panel-heading.fh_appform_section_title{
-    padding: 5px 5px 5px 5px;
-    margin: 0px 0px 5px 0px;
+#fh_appform_container .panel-heading.fh_appform_section_title {
+    /* padding: 5px 5px 5px 5px; */
+    /* margin: 0px 0px 5px 0px; */
 }
 
-#fh_appform_container .fh_appform_submission_list .panel.panel-default.fh_appform_section_area{
+#fh_appform_container .fh_appform_submission_list .panel.panel-default.fh_appform_section_area {
     margin: 5px 0px 0px 0px;
 }
 
-#fh_appform_container .fh_appform_settings_list .panel.panel-default.fh_appform_section_area{
-    margin: 5px 0px 0px 0px;    
+#fh_appform_container .fh_appform_settings_list .panel.fh_appform_section_area {
+    margin: 5px 0px 0px 0px;
     padding: 5px;
+}
+
+#fh_appform_container .fh_appform_settings_list .panel.fh_appform_section_area button{
+    margin-top: 5px;
 }
 
 #fh_appform_container .sidebar-offcanvas.visible-xs.fh_appform_section_area {
@@ -223,57 +333,101 @@ ul.navbar-nav {
     padding: 0px;
     border-top: none;
     border-left: none;
+    z-index: 9999;
 }
 
-#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title{
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title {
     margin: 0px;
     padding: 0px;
     background-color: transparent;
-    font-size: 14pt;
 }
 
-#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active{
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active {
     margin: 0px;
     padding: 0px;
     background-color: rgba(255, 255, 255, 0.54);
-    font-size: 14pt;
 }
 
-#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title > a{
+#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active > a {
     color: inherit;
     background-color: inherit;
-}
-
-#fh_appform_container ul > li.fh_appform_header_list.fh_appform_field_title.active > a{
-    color: inherit;
-    background-color: inherit;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
 #fh_appform_container .navbar.navbar-inverse.navbar-fixed-top.fh_appform_section_area {
     padding: 0px;
     margin: 0px;
     border: none;
+    /* top: 40px; */
 }
 
 #fh_appform_container .navbar.navbar-inverse.navbar-fixed-top.fh_appform_section_area button.navbar-toggle {
-    background-color: inherit;
+    background-color: transparent!important;
     border: none;
+    margin-right: 0px;
+    max-width: 50px;
+    min-width: 50px;
 }
 
-#fh_appform_container .navbar-brand.pull-center{
+#fh_appform_container .navbar-brand.fh_appform_section_title {
     margin: 0px;
-    
-    padding: 15px 5px 0px 5px;
+
+    padding: 5px 0px 0px 0px;
     background-color: rgba(0, 128, 0, 0);
     border: none;
-    font-size: 18pt;
+    line-height: 1.2em;
 }
 
-#fh_appform_container .fh_appform_form_area.col-xs-12.app_parent_el{
+#fh_appform_container .fh_appform_form_area.col-xs-12.app_parent_el {
     border: none;
     padding: 0px 0px 5px 0px;
 }
 
+#fh_appform_container #forms-navbar-collapse {
+     width: 100%; 
+
+}
+
+#fh_appform_container #forms-navbar-collapse .badge{
+     float: right;
+
+}
+
+#fh_appform_container .fh_appform_form_area.row{
+    margin:0px;
+    border: none;
+    padding: 0px;
+}
+
+#fh_appform_container button.show.fetched{
+    white-space: normal;
+}
+
+#fh_appform_container #logger_message {
+    display: inline;
+}
+
+#fh_appform_container .modal-header{
+    border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+    
+}
+
+#fh_appform_container .progress{
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+#fh_appform_container #myModal .modal-dialog{
+    /*margin-top:50%;*/
+}
+
+#fh_appform_container #fh_appform_form_list button{
+    margin-bottom:5px;
+}
+
+#fh_appform_container .fh_appform_logo_container.col-xs-12 {
+    /* margin-top: 50px; */
+}
 
 
 
@@ -283,41 +437,32 @@ ul.navbar-nav {
 .fh_appform_form_area {
     background-color: rgba(144, 216, 244, 1);
     border: none;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
 }
 
 #fh_appform_container .fh_appform_form_title {
-    font-size: 28pt;
+    font-size: 2.5em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
     font-weight: bold;
     font-style: normal;
     margin: 0px 0px 0px 0px;
-    padding: 5px 0px 5px 0px;
-}
-
-#fh_appform_container .fh_appform_form_description {
-    font-size: 18pt;
-    font-family: arial;
-    color: rgba(23, 95, 123, 1);
-    font-style: italic;
-    font-weight: normal;
-    margin: 0px 0px 0px 0px;
-    padding: 0px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
 }
 
 #fh_appform_container .fh_appform_page_title {
-    font-size: 24pt;
+    font-size: 2em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
     font-weight: bold;
     font-style: normal;
     margin: 0px 0px 0px 0px;
-    padding: 5px 0px 5px 0px;
+    padding: 5px 0px 0px 0px;
 }
 
 #fh_appform_container .fh_appform_page_description {
-    font-size: 20pt;
+    font-size: 1.5em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
     font-weight: normal;
@@ -329,53 +474,58 @@ ul.navbar-nav {
 #fh_appform_container .fh_appform_progress_steps {
     background-color: rgba(144, 216, 244, 1);
     border: none;
-    margin: 5px 0px 5px 0px;
-    padding: 5px 5px 5px 5px;
+    margin: 0px 0px 0px 0px;
+    padding: 10px 5px 5px 5px;
 }
 
 #fh_appform_container .fh_appform_progress_steps .number_container {
-    font-size: 12pt;
+    font-size: 1.5em;
     font-family: arial;
     color: rgba(248, 248, 248, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(65, 163, 200, 1);
     border: none;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 0px 5px 0px;
     border-radius: 0px;
 }
 
 #fh_appform_container .fh_appform_progress_steps li.active .number_container {
-    font-size: 12pt;
+    font-size: 1.5em;
     font-family: arial;
     color: rgba(255, 254, 254, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(38, 129, 164, 1);
     border: none;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 0px 5px 0px;
 }
 
 #fh_appform_container .fh_appform_section_area {
     background-color: rgba(99, 191, 226, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
 }
 
 #fh_appform_container .fh_appform_section_title {
-    font-size: 24pt;
+    font-size: 2em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
-    font-weight: normal;
+    font-weight: bold;
     font-style: normal;
     background-color: rgba(65, 163, 200, 1);
     border: none;
-    margin: 0px 0px 10px 0px;
-    padding: 10px 5px 10px 5px;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
+    line-height: 1em;
 }
 
 #fh_appform_container .fh_appform_section_description {
-    font-size: 12pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
     font-style: italic;
@@ -387,53 +537,51 @@ ul.navbar-nav {
 #fh_appform_container .fh_appform_field_area {
     background-color: rgba(38, 129, 164, 1);
     border: none;
-    margin: 0px 0px 5px 0px;
+    margin: 5px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
 }
 
+#fh_appform_container .fh_appform_field_title {
+    font-size: 1.0em;
+    font-family: arial;
+    color: rgba(255, 255, 255, 1);
+    font-weight: bold;
+    font-style: normal;
+    background-color: rgba(23, 95, 123, 0.5);
+    margin: 5px 0px 5px 0px;
+    padding: 5px 0px 5px 5px;
+    border-radius: 0px;
+}
+
 #fh_appform_container .fh_appform_field_instructions {
-    font-size: 14pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(255, 255, 255, 1);
     font-weight: bold;
     font-style: normal;
     background-color: rgba(23, 95, 123, 0.5);
     border: none;
-    margin: 0px 0px 0px 0px;
-    padding: 5px 5px 5px 5px;
-    border-radius: 0px;
-}
-
-#fh_appform_container .fh_appform_field_title {
-    font-size: 18pt;
-    font-family: arial;
-    color: rgba(255, 255, 255, 1);
-    font-weight: bold;
-    font-style: normal;
-    background-color: rgba(23, 95, 123, 0.5);
     margin: 0px 0px 5px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
 }
 
 #fh_appform_container .fh_appform_field_input {
-    font-size: 12pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(23, 95, 123, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(144, 216, 244, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
-    line-height: 1.5em;
-    height: 100%;
 }
 
 #fh_appform_container .fh_appform_field_error {
-    font-size: 11pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(0, 0, 0, 1);
     font-weight: normal;
@@ -443,26 +591,28 @@ ul.navbar-nav {
     margin: 5px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
-    line-height: 1.5em;
     height: 100%;
 }
 
 #fh_appform_container .fh_appform_field_numbering {
-    font-size: 11pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(0, 0, 0, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(255, 0, 0, 0);
-    padding: 0px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
+    padding: 5px 5px 5px 5px;
 }
 
 #fh_appform_container .fh_appform_field_required:after {
-    font-size: 10pt;
+    font-size: 1.0em;
     font-family: arial;
     color: rgba(255, 0, 0, 1);
     font-weight: bold;
     font-style: normal;
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
     content: "*";
     vertical-align: top;
 }
@@ -471,85 +621,92 @@ ul.navbar-nav {
     background-color: rgba(38, 129, 164, 1);
     border: none;
     margin: 0px 0px 0px 0px;
-    padding: 0px 5px 5px 5px;
+    padding: 5px 0px 5px 0px;
+    border-spacing: 5px 0px;
 }
 
 #fh_appform_container .fh_appform_button_default {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(254, 252, 252, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(99, 191, 226, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_button_default:active, #fh_appform_container .button_default.active {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(255, 255, 255, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(65, 163, 200, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_button_action {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(255, 254, 254, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(65, 163, 200, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_button_action:active, #fh_appform_container .fh_appform_button_action.active {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(255, 255, 255, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(38, 129, 164, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_button_cancel {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(0, 0, 0, 1);
     font-weight: normal;
     font-style: normal;
     background-color: rgba(255, 0, 0, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_button_cancel:active, #fh_appform_container .button_cancel.active {
-    font-size: 12pt;
+    font-size: 1.3em;
     font-family: arial;
     color: rgba(255, 0, 0, 1);
     font-weight: bold;
     font-style: normal;
     background-color: rgba(252, 3, 3, 1);
     border: none;
-    margin: 5px 0px 0px 0px;
+    margin: 0px 0px 0px 0px;
     padding: 5px 5px 5px 5px;
     border-radius: 0px;
+    white-space: normal;
 }
 
 #fh_appform_container .fh_appform_logo {
@@ -565,19 +722,19 @@ ul.navbar-nav {
 }
 
 #fh_appform_container .fh_appform_progress_steps .pagination {
-    padding-right: 0px;
+    padding-right: 0;
     margin-top: 5px;
     margin-bottom: 5px
 }
 
 #fh_appform_container .fh_appform_field_input_container.col-xs-12 {
-    padding-left: 0px;
-    padding-right: 0px
+    padding-left: 0;
+    padding-right: 0
 }
 
 #fh_appform_container .fh_appform_page.col-xs-12 {
-    padding-left: 0px;
-    padding-right: 0px
+    padding-left: 0;
+    padding-right: 0
 }
 
 #fh_appform_container .fh_appform_logo_container.col-xs-12 {
@@ -585,16 +742,112 @@ ul.navbar-nav {
 }
 
 #fh_appform_container .fh_appform_input_wrapper.col-xs-12 {
-    padding-left: 0px;
-    padding-right: 0px
+    padding-left: 0;
+    padding-right: 0
 }
 
 #fh_appform_container .fh_appform_section_area.panel.panel-default .panel-body {
-    padding: 0px
+    padding: 0;
+    margin: 0
 }
 
-#fh_appform_container .sigPad ul {
-    margin: 0px
+#fh_appform_container .sigPad .sigPad_header {
+    margin: 5px 5px 5px 0px;
 }
 
+#fh_appform_container .sigPad .sigPad_header button, #fh_appform_container .sigPad .sigPad_header button.active, #fh_appform_container .sigPad .sigPad_header button:active{
+    margin: 0px;
+}
 
+#fh_appform_container .btn.text-left {
+    text-align: left
+}
+
+#fh_appform_container .choice_icon:before {
+    width: 15px
+}
+
+#fh_appform_container .choice_icon {
+    padding-right: 10px
+}
+
+#fh_appform_container .fh_appform_field_area button:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .fh_appform_field_area button, #fh_appform_container .fh_appform_field_area button.fh_appform_removeInputBtn {
+    margin-top: 5px}
+
+#fh_appform_container .panel-body .fh_appform_field_area:first-child {
+    margin-top: 5px
+}
+
+#fh_appform_container .fh_appform_field_area button.fh_appform_removeInputBtn.active {
+    margin-top: 5px !important
+}
+
+#fh_appform_container .fh_appform_field_area button.active {
+    margin-top: 5px
+}
+
+#fh_appform_container .fh_appform_field_area button:active {
+    margin-top: 5px
+}
+
+#fh_appform_container .fh_appform_field_area button.fh_appform_removeInputBtn:active {
+    margin-top: 5px !important
+}
+
+#fh_appform_container .fh_appform_field_area button:active:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .fh_appform_field_area button.active:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .fh_appform_field_input_container.repeating {
+    padding-right: 0;
+    padding-left: 0
+}
+
+#fh_appform_container .fh_appform_field_input_container.repeating button.special_button {
+    /* margin-top: 0 */}
+
+#fh_appform_container .fh_appform_input_wrapper .fh_appform_field_wrapper:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .fh_appform_section_area .fh_appform_field_area:last-child {
+    margin-bottom: 0
+}
+
+#fh_appform_container .fh_appform_page .fh_appform_field_area:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .fh_appform_page .fh_appform_section_area:first-child {
+    margin-top: 0
+}
+
+#fh_appform_container .btn-group {
+    font-size: 12px
+}
+
+#fh_appform_container .fh_appform_field_wrapper {
+    padding: 0px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+}
+
+#fh_appform_container .fh_appform_field_button_bar {
+    padding: 0
+}
+
+#fh_appform_container #debugging-settings .btn-group-vertical.col-xs-12 {
+    padding: 0px;
+}
+
+#fh_appform_container #misc-settings .btn-group-vertical.col-xs-12 {
+    padding:0px;
+}
