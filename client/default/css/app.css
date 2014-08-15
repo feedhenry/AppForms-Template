@@ -153,7 +153,7 @@ body {
 
 .content {
     margin-top: 50px;
-    padding: 0px;
+    padding: 0px 0px 5px 0px;
 
 }
 
@@ -855,6 +855,8 @@ ul.navbar-nav {
 #fh_appform_container input[type=number].fh_appform_field_input {height:100%};
 #fh_appform_container input[type=url].fh_appform_field_input {height:100%};
 #fh_appform_container input[type=email].fh_appform_field_input {height:100%};
+#fh_appform_container input[type=date].fh_appform_field_input {height:100%};
+#fh_appform_container input[type=time].fh_appform_field_input {height:100%};
 
 #fh_appform_container .sigPad .sigPad_header button{
   margin-top: 5px!important;
