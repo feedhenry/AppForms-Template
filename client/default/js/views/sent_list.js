@@ -113,8 +113,17 @@ SentListView = SubmissionListview.extend({
 
         // Empty our existing view
         $(this.$el).empty();
+        var defaultOptions = [5, 10, 20, 30, 40, 50, 60, 70, 80, 100];
 
-        var configOptions = $fh.forms.config.get("sent_items_to_keep_list") || [5, 10, 20, 30, 40, 50, 60, 70, 80, 100];
+
+
+        var configOptions = $fh.forms.config.get("sent_items_to_keep_list") || defaultOptions;
+
+        if(configOptions.length === 0){
+          configOptions = defaultOptions;
+        }
+
+
         var empty = App.collections.sent.models.length === 0;
 
         configOptions = _.map(configOptions, function(sentItem) {
