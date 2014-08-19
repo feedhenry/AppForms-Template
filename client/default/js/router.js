@@ -55,57 +55,56 @@ App.Router = Backbone.Router.extend({
             });
         }
 
-        $fh.ready({}, function() {
-            $("#includedContent").load("templates/templates.html");
+        
+        $("#includedContent").load("templates/templates.html");
 
-            self.loadingView.show("App Starting", 10);
-            if (window.PhoneGap || window.cordova) {
-                document.addEventListener("deviceready", function() {
-                    self.deviceReady = true;
-                }, false);
-                document.addEventListener("backbutton", function() {
-                    $fh.forms.log.d("Back Button Clicked");
-                    if (App.views.form && typeof(App.views.form.backEvent) === 'function') {
-                        if (App.views.form.backEvent() === false) { //Clicked back while on the first page. Should go home
-                            App.views.header.showHome();
-                        }
-                    } else {
+        self.loadingView.show("App Starting", 10);
+        if (window.PhoneGap || window.cordova) {
+            document.addEventListener("deviceready", function() {
+                self.deviceReady = true;
+            }, false);
+            document.addEventListener("backbutton", function() {
+                $fh.forms.log.d("Back Button Clicked");
+                if (App.views.form && typeof(App.views.form.backEvent) === 'function') {
+                    if (App.views.form.backEvent() === false) { //Clicked back while on the first page. Should go home
                         App.views.header.showHome();
                     }
-                }, false);
-            } else {
-                self.deviceReady = true;
-            }
-            $fh.on('fhinit', function(err, cloudProps) {
-                console.log("fhinit called");
-                if (err) {
-                    console.error("Error on fhinit", err);
-                }
-
-                self.initReady = true;
-            });
-            var deviceReadyInterval = setInterval(function() {
-                if (self.deviceReady === true && self.initReady === true) {
-                    startForms();
-                    clearInterval(deviceReadyInterval);
                 } else {
-                    if (initRetryAttempts > initRetryLimit) {
-                        console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
-
-                        if (self.deviceReady === true) {
-                            console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
-                            startForms();
-                            clearInterval(deviceReadyInterval);
-                        } else {
-                            console.error("Forms Device Not Ready. Trying again.");
-                            initRetryAttempts = 0;
-                        }
-                    } else {
-                        initRetryAttempts += 1;
-                    }
+                    App.views.header.showHome();
                 }
-            }, 500);
+            }, false);
+        } else {
+            self.deviceReady = true;
+        }
+        $fh.on('fhinit', function(err, cloudProps) {
+            console.log("fhinit called");
+            if (err) {
+                console.error("Error on fhinit", err);
+            }
+
+            self.initReady = true;
         });
+        var deviceReadyInterval = setInterval(function() {
+            if (self.deviceReady === true && self.initReady === true) {
+                startForms();
+                clearInterval(deviceReadyInterval);
+            } else {
+                if (initRetryAttempts > initRetryLimit) {
+                    console.error("Forms Not Ready Yet. Retry Attempts Exceeded");
+
+                    if (self.deviceReady === true) {
+                        console.error("Forms Not Ready Yet. Device Ready. Starting in offline mode.");
+                        startForms();
+                        clearInterval(deviceReadyInterval);
+                    } else {
+                        console.error("Forms Device Not Ready. Trying again.");
+                        initRetryAttempts = 0;
+                    }
+                } else {
+                    initRetryAttempts += 1;
+                }
+            }
+        }, 500);
     },
     onReady: function() {
         this.loadingView.show("App Ready, Loading Form List", 20);
