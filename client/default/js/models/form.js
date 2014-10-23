@@ -63,7 +63,7 @@ FormsCollection = Backbone.Collection.extend({
                             formId: formId
                         });
                     }
-                    App.collections.forms.length = formIdArr.length; 
+                    
                     options.success(formIdArr);
                 }
             });
