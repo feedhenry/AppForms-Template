@@ -23,7 +23,7 @@ HeaderView = Backbone.View.extend({
         var self = this;
         $(this.$el).empty();
 
-        var header = $(_.template($('#header-list').html(), {}));
+        var header = $(_.template($('#header-list').html(), {})());
 
         $(this.$el).append(header);
 

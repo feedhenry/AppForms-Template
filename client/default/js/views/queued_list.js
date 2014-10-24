@@ -20,7 +20,7 @@ QueuedListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
     },
 
     scrollToTop: function() {

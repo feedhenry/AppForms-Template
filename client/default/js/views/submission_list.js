@@ -33,7 +33,7 @@ SubmissionListview = Backbone.View.extend({
           if(status instanceof(Array)){
             status = status[0];
           }
-          var group = _.template($('#draft-list-group').html(), {
+          var group = _.template($('#draft-list-group').html())( {
             formName: formName,
             formId: formId,
             type: status

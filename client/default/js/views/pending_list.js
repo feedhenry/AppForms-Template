@@ -23,7 +23,7 @@ PendingListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
     },
 
     scrollToTop: function() {
@@ -97,17 +97,17 @@ PendingListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html(), {}));
+        $(this.$el).append(_.template($('#forms-logo').html())( {}));
 
         var empty = App.collections.pending_waiting.models.length === 0;
 
         var optionsHtml = "";
 
         if(App.collections.pending_waiting.models.length > 0){
-            optionsHtml = _.template($("#pending-list-options").html(), {}); 
+            optionsHtml = _.template($("#pending-list-options").html())( {}); 
         }
 
-        var optionsTemplate = _.template($("#draft-list-options").html(), {
+        var optionsTemplate = _.template($("#draft-list-options").html())( {
             optionsHtml: optionsHtml,
             hideOptions: empty,
             type: "pending"   

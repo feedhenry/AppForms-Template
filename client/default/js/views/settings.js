@@ -112,17 +112,17 @@ $(function() {
             var empty = false;
 
             configOptions = _.map(configOptions, function(sentItem) {
-                return _.template(self.templates.save_max_option, {
+                return _.template(self.templates.save_max_option)( {
                     value: sentItem
                 });
             });
 
-            var optionsHtml = _.template($('#draft-list-option').html(), {
+            var optionsHtml = _.template($('#draft-list-option').html())( {
                 label: '<label for="sentSaveMax" class="fh_appform_field_title col-xs-12">Number of sent items to keep</label>',
                 inputHtml: '<select class="fh_appform_field_input form-control col-xs-12" id="sentSaveMax">' + configOptions + '</select>'
             });
             
-            optionsHtml += _.template($('#draft-list-option').html(), {
+            optionsHtml += _.template($('#draft-list-option').html())( {
                 label: '',
                 inputHtml: '<button class="col-xs-12 btn btn-danger fh_appform_button_cancel dismiss-all button button-main button-block">Dismiss All</button>'
             });
@@ -137,7 +137,7 @@ $(function() {
             App.views.header.markActive('header_settings', "Settings");
 
             if ($fh.forms.config.editAllowed()) {
-                this.$el.append(_.template($('#config-buttons').html()));
+                this.$el.append(_.template($('#config-buttons').html())());
             }
             return this;
         },

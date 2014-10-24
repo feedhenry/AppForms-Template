@@ -49,7 +49,7 @@ var FormListView = Backbone.View.extend({
         } catch (e) {
             msg = "An unexpected error occurred.";
         }
-        var html = _.template(this.templates.error, {
+        var html = _.template(this.templates.error)( {
             name: msg + "<br/>Please Retry Later",
             enabledClass: 'button-danger fh_appform_button_cancel',
             dataClass: 'fetched'
@@ -63,7 +63,7 @@ var FormListView = Backbone.View.extend({
 
         
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
         // Add list
         $(this.$el).append(this.templates.list);
 

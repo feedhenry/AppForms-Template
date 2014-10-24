@@ -20,7 +20,7 @@ ReviewListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
     },
 
     scrollToTop: function() {
@@ -43,7 +43,7 @@ ReviewListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html(), {}));
+        $(this.$el).append(_.template($('#forms-logo').html())( {}));
 
         var empty = App.collections.pending_review.models.length === 0;
 

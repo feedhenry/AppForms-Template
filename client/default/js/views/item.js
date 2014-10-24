@@ -39,7 +39,7 @@ ItemView = Backbone.View.extend({
     generateButtonHtml: function(buttonSections){
         var buttonHtml = "";
         for(var buttonDetail in buttonSections){
-            buttonHtml += _.template($('#draft-list-item-button').html(), 
+            buttonHtml += _.template($('#draft-list-item-button').html())( 
                 buttonSections[buttonDetail]   
             ); 
         }
@@ -51,14 +51,14 @@ ItemView = Backbone.View.extend({
         var error = this.model.get('error');
         var template = "#" + "draft-list-item";
 
-        var buttons = _.template($('#draft-list-item-buttons').html(), {
+        var buttons = _.template($('#draft-list-item-buttons').html())( {
             buttons: this.getButtons(),
             id: this.getIdText()
         });
 
         buttons = this.getButtons() === false ? false: buttons;
 
-        var item = _.template($(template).html(), {
+        var item = _.template($(template).html())( {
             name: this.model.get('formName'),
             id: this.getIdText(),
             timestamp: this.getItemTime(),

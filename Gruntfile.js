@@ -360,6 +360,6 @@ module.exports = function(grunt) {
     });
 
     // Default task.
-    grunt.registerTask('default', ['clean', 'jshint', 'mkdirs', 'archive', 'concat', 'copy:dist', 'index', 'uglify']);
+    grunt.registerTask('default', ['clean', 'jshint', 'mkdirs', 'archive', 'concat', 'copy:dist', 'index']);
 
 };

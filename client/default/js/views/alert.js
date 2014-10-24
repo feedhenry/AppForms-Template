@@ -14,7 +14,7 @@ AlertView = Backbone.View.extend({
 
         opts.type = opts.type || "info";
 
-        var alertHtml = _.template($('#alert-entry').html(), {
+        var alertHtml = _.template($('#alert-entry').html())( {
             alertClass: self.alertClasses[opts.type] || self.alertClasses['info'],
             alertMessage: opts.message
         });

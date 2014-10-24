@@ -11,7 +11,7 @@ SentListView = SubmissionListview.extend({
     },
 
     initialize: function() {
-        _.bindAll(this, 'render', 'appendSentForm', 'changed');
+        _.bindAll(this, 'render', 'changed');
 
         this.listenTo(App.collections.sent, 'add remove reset sync',  this.changed);
 
@@ -23,7 +23,7 @@ SentListView = SubmissionListview.extend({
         $(this.$el).empty();
 
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
         return this;
     },
 
@@ -45,7 +45,7 @@ SentListView = SubmissionListview.extend({
         // Empty our existing view
         $(this.$el).empty();
 
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
 
         self.renderGroup(App.collections.sent);
     },

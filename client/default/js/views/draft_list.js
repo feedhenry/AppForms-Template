@@ -5,7 +5,7 @@ DraftListView = SubmissionListview.extend({
     },
 
     initialize: function() {
-        _.bindAll(this, 'render', 'appendDraftForm', 'changed');
+        _.bindAll(this, 'render', 'changed');
 
         this.listenTo(App.collections.drafts, 'add remove reset sync', this.changed);
 
@@ -15,7 +15,7 @@ DraftListView = SubmissionListview.extend({
         // Empty our existing view
         $(this.$el).empty();
         //Append Logo
-        $(this.$el).append(_.template($('#forms-logo').html()));
+        $(this.$el).append(_.template($('#forms-logo').html())());
     },
 
     show: function() {
