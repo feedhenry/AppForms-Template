@@ -157,6 +157,12 @@ body {
 
 }
 
+
+#fh_appform_container b.slider-label {
+    margin-top: 5px;
+    margin-bottom: 0px;
+}
+
 ul.navbar-nav {
     padding: 0px;
     width: 100%;
@@ -860,4 +866,8 @@ ul.navbar-nav {
 
 #fh_appform_container .sigPad .sigPad_header button{
   margin-top: 5px!important;
+}
+
+#fh_appform_container button.special_button.fh_appform_button_action.remove.col-xs-12 {
+    margin-top: 5px;
 }
