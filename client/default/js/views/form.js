@@ -3,7 +3,7 @@ $fh.ready({}, function() {
         initialize: function(params) {
             var self = this;
             self.options = params || {};
-            $fh.forms.backbone.FormView.prototype.initialize.apply(this, params);
+            $fh.forms.backbone.FormView.prototype.initialize.call(this, params);
 
             if (params.form) {
                 params.formId = params.form.getFormId();
