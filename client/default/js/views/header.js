@@ -99,12 +99,15 @@ HeaderView = Backbone.View.extend({
             } else {
 
                 if (App.views.form.isFormEdited()) {
-                    var confirmDelete = confirm('It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?');
-                    if (confirmDelete) {
-                        return proceed(true);
-                    } else {
-                        return false;
-                    }
+                    AlertView.confirm({
+                        message: 'It looks like you have unsaved data -- if you leave before submitting your changes will be lost. Continue?'
+                    }, function(confirmDelete){
+                        if (confirmDelete) {
+                            return proceed(true);
+                        } else {
+                            return false;
+                        }
+                    });
                 } else {
                     proceed(true);
                 }

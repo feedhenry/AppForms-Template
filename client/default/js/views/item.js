@@ -87,18 +87,20 @@ ItemView = Backbone.View.extend({
         var self = this;
         e.stopPropagation();
 
-
-        var confirmDelete = confirm("Are you sure you want to delete this submission?");
-        if (confirmDelete) {
-            AlertView.showAlert("Deleting Submission", "info", 1000);
-            self.deleteSubmission(function(err){
-                if(err){
-                    AlertView.showAlert("Error deleting submission.", "warning", 1000);
-                } else {
-                    AlertView.showAlert("Submission Deleted.", "info", 1000);    
-                }
-            });   
-        }
+        AlertView.confirm({
+            message: "Are you sure you want to delete this submission?"
+        }, function(confirmDelete){
+            if (confirmDelete) {
+                AlertView.showAlert("Deleting Submission", "info", 1000);
+                self.deleteSubmission(function(err){
+                    if(err){
+                        AlertView.showAlert("Error deleting submission.", "warning", 1000);
+                    } else {
+                        AlertView.showAlert("Submission Deleted.", "info", 1000);
+                    }
+                });
+            }
+        });
     },
     submit: function(e) {
         var self = this;

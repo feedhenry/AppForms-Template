@@ -46,3 +46,20 @@ AlertView.showAlert = function(message, type, timeout) {
         timeout: timeout
     });
 };
+
+/**
+ * Allowing the user to confirm an action
+ * @param params
+ * @param cb
+ */
+AlertView.confirm = function(params, cb){
+    var message = params.message || "Confirm Action";
+    if(navigator && navigator.notification && navigator.notification.confirm){
+        navigator.notification.confirm(message, function(actionSelected){
+            //Call back with whether the action was confirmed or not.
+            return cb(actionSelected === 2);
+        }, "Confirm Action", ["Cancel", "Confirm"]);
+    } else {
+        return cb(confirm(message));
+    }
+};

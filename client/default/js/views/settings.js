@@ -27,43 +27,46 @@ $(function() {
             var self = this;
             e.stopPropagation();
 
-            var confirmDismiss = confirm("Are you sure you want to dismiss all sent submissions?");
-            if (confirmDismiss) {
+            AlertView.confirm({
+                message: "Are you sure you want to dismiss all sent submissions?"
+            }, function(confirmDismiss){
+                if (confirmDismiss) {
 
-                var loadingView = new LoadingCollectionView();
+                    var loadingView = new LoadingCollectionView();
 
-                loadingView.show("Removing All Submissions", 10);
-                var all = [];
+                    loadingView.show("Removing All Submissions", 10);
+                    var all = [];
 
-                _(App.collections.sent.models).forEach(function(model) {
-                    all.push(model);
-                });
-
-                var increment = 90 / (all.length ? all.length : 1);
-                var incrIndex = 0;
-
-                async.forEachSeries(all, function(model, cb) {
-                    model.deleteSubmission(function(err) {
-                        if (err) {
-                            console.error("Error deleting submission: ", err);
-                        }
-                        incrIndex += 1;
-                        console.log("Submission Deleted", model);
-                        model.destroy();
-
-                        loadingView.show("Removing Submission " + incrIndex + " of " + all.length, 10 + incrIndex * increment);
-
-                        cb();
+                    _(App.collections.sent.models).forEach(function(model) {
+                        all.push(model);
                     });
-                }, function(err) {
-                    if (err) {
-                        console.log(err);
-                    }
 
-                    loadingView.show("All Submissions Removed", 100);
-                    loadingView.hide();
-                });
-            }
+                    var increment = 90 / (all.length ? all.length : 1);
+                    var incrIndex = 0;
+
+                    async.forEachSeries(all, function(model, cb) {
+                        model.deleteSubmission(function(err) {
+                            if (err) {
+                                console.error("Error deleting submission: ", err);
+                            }
+                            incrIndex += 1;
+                            console.log("Submission Deleted", model);
+                            model.destroy();
+
+                            loadingView.show("Removing Submission " + incrIndex + " of " + all.length, 10 + incrIndex * increment);
+
+                            cb();
+                        });
+                    }, function(err) {
+                        if (err) {
+                            console.log(err);
+                        }
+
+                        loadingView.show("All Submissions Removed", 100);
+                        loadingView.hide();
+                    });
+                }
+            });
 
             return false;
         },
