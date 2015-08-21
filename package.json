@@ -1,6 +1,6 @@
 {
   "name": "FeedHenry-App-Forms-App-Generator",
-  "version": "0.4.01",
+  "version": "0.4.02",
   "dependencies": {
     "cheerio": "0.10.8",
     "wrench": "1.4.4",
